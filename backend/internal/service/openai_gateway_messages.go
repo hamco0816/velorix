@@ -436,12 +436,12 @@ func (s *OpenAIGatewayService) readOpenAICompatBufferedTerminal(
 				return nil, usage, acc, ev.err
 			}
 
+			if isOpenAICompatDoneSentinelLine(ev.line) {
+				return nil, usage, acc, nil
+			}
 			payload, ok := extractOpenAISSEDataLine(ev.line)
 			if !ok || payload == "" {
 				continue
-			}
-			if strings.TrimSpace(payload) == "[DONE]" {
-				return nil, usage, acc, nil
 			}
 
 			var event apicompat.ResponsesStreamEvent
@@ -635,12 +635,12 @@ func (s *OpenAIGatewayService) handleAnthropicStreamingResponse(
 	if streamInterval <= 0 && keepaliveInterval <= 0 {
 		for scanner.Scan() {
 			line := scanner.Text()
+			if isOpenAICompatDoneSentinelLine(line) {
+				return missingTerminalErr()
+			}
 			payload, ok := extractOpenAISSEDataLine(line)
 			if !ok {
 				continue
-			}
-			if strings.TrimSpace(payload) == "[DONE]" {
-				return missingTerminalErr()
 			}
 			if processDataLine(payload) {
 				return finalizeStream()
@@ -708,12 +708,12 @@ func (s *OpenAIGatewayService) handleAnthropicStreamingResponse(
 			}
 			lastDataAt = time.Now()
 			line := ev.line
+			if isOpenAICompatDoneSentinelLine(line) {
+				return missingTerminalErr()
+			}
 			payload, ok := extractOpenAISSEDataLine(line)
 			if !ok {
 				continue
-			}
-			if strings.TrimSpace(payload) == "[DONE]" {
-				return missingTerminalErr()
 			}
 			if processDataLine(payload) {
 				return finalizeStream()
