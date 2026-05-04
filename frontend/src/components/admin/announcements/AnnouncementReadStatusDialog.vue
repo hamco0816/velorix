@@ -116,8 +116,8 @@ const items = ref<AnnouncementUserReadStatus[]>([])
 const columns = computed<Column[]>(() => [
   { key: 'email', label: t('common.email'), sortable: true },
   { key: 'username', label: t('admin.users.columns.username'), sortable: true },
-  { key: 'balance', label: t('common.balance'), sortable: true },
-  { key: 'eligible', label: t('admin.announcements.eligible') },
+  { key: 'balance', label: t('common.balance'), sortable: true, numeric: true },
+  { key: 'eligible', label: t('admin.announcements.eligible'), align: 'center' },
   { key: 'read_at', label: t('admin.announcements.readAt') }
 ])
 

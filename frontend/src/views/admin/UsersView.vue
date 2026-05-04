@@ -705,17 +705,17 @@ const allColumns = computed<Column[]>(() => [
   { key: 'notes', label: t('admin.users.columns.notes'), sortable: false },
   // Dynamic attribute columns
   ...attributeColumns.value,
-  { key: 'role', label: t('admin.users.columns.role'), sortable: true },
+  { key: 'role', label: t('admin.users.columns.role'), sortable: true, align: 'center' },
   { key: 'groups', label: t('admin.users.columns.groups'), sortable: false },
   { key: 'subscriptions', label: t('admin.users.columns.subscriptions'), sortable: false },
-  { key: 'balance', label: t('admin.users.columns.balance'), sortable: true },
+  { key: 'balance', label: t('admin.users.columns.balance'), sortable: true, numeric: true },
   { key: 'usage', label: t('admin.users.columns.usage'), sortable: false },
-  { key: 'concurrency', label: t('admin.users.columns.concurrency'), sortable: true },
-  { key: 'status', label: t('admin.users.columns.status'), sortable: true },
+  { key: 'concurrency', label: t('admin.users.columns.concurrency'), sortable: true, numeric: true },
+  { key: 'status', label: t('admin.users.columns.status'), sortable: true, align: 'center' },
   { key: 'last_active_at', label: t('admin.users.columns.lastActive'), sortable: true },
   { key: 'last_used_at', label: t('admin.users.columns.lastUsed'), sortable: true },
   { key: 'created_at', label: t('admin.users.columns.created'), sortable: true },
-  { key: 'actions', label: t('admin.users.columns.actions'), sortable: false }
+  { key: 'actions', label: t('admin.users.columns.actions'), sortable: false, align: 'center' }
 ])
 
 // Columns that can be toggled (exclude email and actions which are always visible)

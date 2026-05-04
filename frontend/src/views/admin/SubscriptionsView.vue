@@ -820,8 +820,8 @@ const allColumns = computed<Column[]>(() => [
   { key: 'group', label: t('admin.subscriptions.columns.group'), sortable: false },
   { key: 'usage', label: t('admin.subscriptions.columns.usage'), sortable: false },
   { key: 'expires_at', label: t('admin.subscriptions.columns.expires'), sortable: true },
-  { key: 'status', label: t('admin.subscriptions.columns.status'), sortable: true },
-  { key: 'actions', label: t('admin.subscriptions.columns.actions'), sortable: false }
+  { key: 'status', label: t('admin.subscriptions.columns.status'), sortable: true, align: 'center' },
+  { key: 'actions', label: t('admin.subscriptions.columns.actions'), sortable: false, align: 'center' }
 ])
 
 // Columns that can be toggled (exclude user and actions which are always visible)

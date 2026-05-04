@@ -547,14 +547,14 @@ const usageStats = ref<UsageStatsResponse | null>(null)
 const columns = computed<Column[]>(() => [
   { key: 'api_key', label: t('usage.apiKeyFilter'), sortable: false },
   { key: 'model', label: t('usage.model'), sortable: true },
-  { key: 'reasoning_effort', label: t('usage.reasoningEffort'), sortable: false },
+  { key: 'reasoning_effort', label: t('usage.reasoningEffort'), sortable: false, align: 'center' },
   { key: 'endpoint', label: t('usage.endpoint'), sortable: false },
-  { key: 'stream', label: t('usage.type'), sortable: false },
-  { key: 'billing_mode', label: t('admin.usage.billingMode'), sortable: false },
-  { key: 'tokens', label: t('usage.tokens'), sortable: false },
-  { key: 'cost', label: t('usage.cost'), sortable: false },
-  { key: 'first_token', label: t('usage.firstToken'), sortable: false },
-  { key: 'duration', label: t('usage.duration'), sortable: false },
+  { key: 'stream', label: t('usage.type'), sortable: false, align: 'center' },
+  { key: 'billing_mode', label: t('admin.usage.billingMode'), sortable: false, align: 'center' },
+  { key: 'tokens', label: t('usage.tokens'), sortable: false, numeric: true },
+  { key: 'cost', label: t('usage.cost'), sortable: false, numeric: true },
+  { key: 'first_token', label: t('usage.firstToken'), sortable: false, numeric: true },
+  { key: 'duration', label: t('usage.duration'), sortable: false, numeric: true },
   { key: 'created_at', label: t('usage.time'), sortable: true },
   { key: 'user_agent', label: t('usage.userAgent'), sortable: false }
 ])

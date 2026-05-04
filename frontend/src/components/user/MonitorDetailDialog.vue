@@ -16,12 +16,12 @@
         <thead class="border-b border-gray-200 dark:border-dark-700">
           <tr class="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">
             <th class="py-2 pr-3">{{ t('channelStatus.detailColumns.model') }}</th>
-            <th class="py-2 pr-3">{{ t('channelStatus.detailColumns.latestStatus') }}</th>
-            <th class="py-2 pr-3">{{ t('channelStatus.detailColumns.latestLatency') }}</th>
-            <th class="py-2 pr-3">{{ t('channelStatus.detailColumns.availability7d') }}</th>
-            <th class="py-2 pr-3">{{ t('channelStatus.detailColumns.availability15d') }}</th>
-            <th class="py-2 pr-3">{{ t('channelStatus.detailColumns.availability30d') }}</th>
-            <th class="py-2 pr-3">{{ t('channelStatus.detailColumns.avgLatency7d') }}</th>
+            <th class="py-2 pr-3 text-center">{{ t('channelStatus.detailColumns.latestStatus') }}</th>
+            <th class="py-2 pr-3 text-right">{{ t('channelStatus.detailColumns.latestLatency') }}</th>
+            <th class="py-2 pr-3 text-right">{{ t('channelStatus.detailColumns.availability7d') }}</th>
+            <th class="py-2 pr-3 text-right">{{ t('channelStatus.detailColumns.availability15d') }}</th>
+            <th class="py-2 pr-3 text-right">{{ t('channelStatus.detailColumns.availability30d') }}</th>
+            <th class="py-2 pr-3 text-right">{{ t('channelStatus.detailColumns.avgLatency7d') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -31,7 +31,7 @@
             class="border-b border-gray-100 dark:border-dark-800"
           >
             <td class="py-2 pr-3 font-medium text-gray-900 dark:text-gray-100">{{ m.model }}</td>
-            <td class="py-2 pr-3">
+            <td class="py-2 pr-3 text-center">
               <span
                 class="inline-flex items-center rounded-full px-2 py-0.5 text-[11px]"
                 :class="statusBadgeClass(m.latest_status)"
@@ -39,11 +39,11 @@
                 {{ statusLabel(m.latest_status) }}
               </span>
             </td>
-            <td class="py-2 pr-3 text-gray-700 dark:text-gray-300">{{ formatLatency(m.latest_latency_ms) }}</td>
-            <td class="py-2 pr-3 text-gray-700 dark:text-gray-300">{{ formatPercent(m.availability_7d) }}</td>
-            <td class="py-2 pr-3 text-gray-700 dark:text-gray-300">{{ formatPercent(m.availability_15d) }}</td>
-            <td class="py-2 pr-3 text-gray-700 dark:text-gray-300">{{ formatPercent(m.availability_30d) }}</td>
-            <td class="py-2 pr-3 text-gray-700 dark:text-gray-300">{{ formatLatency(m.avg_latency_7d_ms) }}</td>
+            <td class="py-2 pr-3 text-right tabular-nums text-gray-700 dark:text-gray-300">{{ formatLatency(m.latest_latency_ms) }}</td>
+            <td class="py-2 pr-3 text-right tabular-nums text-gray-700 dark:text-gray-300">{{ formatPercent(m.availability_7d) }}</td>
+            <td class="py-2 pr-3 text-right tabular-nums text-gray-700 dark:text-gray-300">{{ formatPercent(m.availability_15d) }}</td>
+            <td class="py-2 pr-3 text-right tabular-nums text-gray-700 dark:text-gray-300">{{ formatPercent(m.availability_30d) }}</td>
+            <td class="py-2 pr-3 text-right tabular-nums text-gray-700 dark:text-gray-300">{{ formatLatency(m.avg_latency_7d_ms) }}</td>
           </tr>
         </tbody>
       </table>

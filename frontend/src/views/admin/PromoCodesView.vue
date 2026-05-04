@@ -479,12 +479,12 @@ const statusOptions = computed(() => [
 
 const columns = computed<Column[]>(() => [
   { key: 'code', label: t('admin.promo.columns.code') },
-  { key: 'bonus_amount', label: t('admin.promo.columns.bonusAmount'), sortable: true },
+  { key: 'bonus_amount', label: t('admin.promo.columns.bonusAmount'), sortable: true, numeric: true },
   { key: 'usage', label: t('admin.promo.columns.usage') },
-  { key: 'status', label: t('admin.promo.columns.status'), sortable: true },
+  { key: 'status', label: t('admin.promo.columns.status'), sortable: true, align: 'center' },
   { key: 'expires_at', label: t('admin.promo.columns.expiresAt'), sortable: true },
   { key: 'created_at', label: t('admin.promo.columns.createdAt'), sortable: true },
-  { key: 'actions', label: t('admin.promo.columns.actions') }
+  { key: 'actions', label: t('admin.promo.columns.actions'), align: 'center' }
 ])
 
 // Helpers

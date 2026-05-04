@@ -2776,26 +2776,31 @@ const columns = computed<Column[]>(() => [
     key: "platform",
     label: t("admin.groups.columns.platform"),
     sortable: true,
+    align: "center",
   },
   {
     key: "billing_type",
     label: t("admin.groups.columns.billingType"),
     sortable: true,
+    align: "center",
   },
   {
     key: "rate_multiplier",
     label: t("admin.groups.columns.rateMultiplier"),
     sortable: true,
+    numeric: true,
   },
   {
     key: "is_exclusive",
     label: t("admin.groups.columns.type"),
     sortable: true,
+    align: "center",
   },
   {
     key: "account_count",
     label: t("admin.groups.columns.accounts"),
     sortable: true,
+    numeric: true,
   },
   {
     key: "capacity",
@@ -2803,8 +2808,8 @@ const columns = computed<Column[]>(() => [
     sortable: false,
   },
   { key: "usage", label: t("admin.groups.columns.usage"), sortable: false },
-  { key: "status", label: t("admin.groups.columns.status"), sortable: true },
-  { key: "actions", label: t("admin.groups.columns.actions"), sortable: false },
+  { key: "status", label: t("admin.groups.columns.status"), sortable: true, align: "center" },
+  { key: "actions", label: t("admin.groups.columns.actions"), sortable: false, align: "center" },
 ]);
 
 // Filter options

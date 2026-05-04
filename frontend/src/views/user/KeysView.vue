@@ -1102,10 +1102,10 @@ const columns = computed<Column[]>(() => [
   { key: 'usage', label: t('keys.usage'), sortable: false },
   { key: 'rate_limit', label: t('keys.rateLimitColumn'), sortable: false },
   { key: 'expires_at', label: t('keys.expiresAt'), sortable: true },
-  { key: 'status', label: t('common.status'), sortable: true },
+  { key: 'status', label: t('common.status'), sortable: true, align: 'center' },
   { key: 'last_used_at', label: t('keys.lastUsedAt'), sortable: true },
   { key: 'created_at', label: t('keys.created'), sortable: true },
-  { key: 'actions', label: t('common.actions'), sortable: false }
+  { key: 'actions', label: t('common.actions'), sortable: false, align: 'center' }
 ])
 
 const apiKeys = ref<ApiKey[]>([])

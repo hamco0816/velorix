@@ -128,14 +128,14 @@ const editingPlan = ref<SubscriptionPlan | null>(null)
 const deletingPlanId = ref<number | null>(null)
 
 const planColumns = computed((): Column[] => [
-  { key: 'id', label: 'ID' },
+  { key: 'id', label: 'ID', numeric: true },
   { key: 'name', label: t('payment.admin.planName') },
   { key: 'group_id', label: t('payment.admin.group') },
-  { key: 'price', label: t('payment.admin.price') },
-  { key: 'validity_days', label: t('payment.admin.validityDays') },
-  { key: 'for_sale', label: t('payment.admin.forSale') },
-  { key: 'sort_order', label: t('payment.admin.sortOrder') },
-  { key: 'actions', label: t('common.actions') },
+  { key: 'price', label: t('payment.admin.price'), numeric: true },
+  { key: 'validity_days', label: t('payment.admin.validityDays'), numeric: true },
+  { key: 'for_sale', label: t('payment.admin.forSale'), align: 'center' },
+  { key: 'sort_order', label: t('payment.admin.sortOrder'), numeric: true },
+  { key: 'actions', label: t('common.actions'), align: 'center' },
 ])
 
 async function loadPlans() {

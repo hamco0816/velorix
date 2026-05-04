@@ -77,8 +77,9 @@
             :key="column.key"
             scope="col"
             :class="[
-              'sticky-header-cell py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400',
+              'sticky-header-cell py-3 text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400',
               getAdaptivePaddingClass(),
+              getColumnAlignClass(column),
               { 'cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-700': column.sortable },
               getStickyColumnClass(column, index),
               column.class
@@ -170,6 +171,7 @@
               :class="[
                 'whitespace-nowrap py-4 text-sm text-gray-900 dark:text-gray-100',
                 getAdaptivePaddingClass(),
+                getColumnAlignClass(column),
                 getStickyColumnClass(column, colIndex),
                 column.class
               ]"
@@ -633,6 +635,14 @@ const getStickyColumnClass = (column: Column, index: number) => {
   }
 
   return classes.join(' ')
+}
+
+// 列对齐：numeric 优先，其次 align，默认左对齐
+const getColumnAlignClass = (column: Column) => {
+  if (column.numeric) return 'text-right tabular-nums'
+  if (column.align === 'center') return 'text-center'
+  if (column.align === 'right') return 'text-right'
+  return 'text-left'
 }
 
 // 根据列数自适应调整内边距

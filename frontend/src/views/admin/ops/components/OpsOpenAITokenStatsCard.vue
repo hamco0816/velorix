@@ -215,12 +215,12 @@ function onNextPage() {
             <thead class="sticky top-0 z-10 bg-white dark:bg-dark-800">
               <tr class="border-b border-gray-200 text-gray-500 dark:border-dark-700 dark:text-gray-400">
                 <th class="px-2 py-2 font-semibold">{{ t('admin.ops.openaiTokenStats.table.model') }}</th>
-                <th class="px-2 py-2 font-semibold">{{ t('admin.ops.openaiTokenStats.table.requestCount') }}</th>
-                <th class="px-2 py-2 font-semibold">{{ t('admin.ops.openaiTokenStats.table.avgTokensPerSec') }}</th>
-                <th class="px-2 py-2 font-semibold">{{ t('admin.ops.openaiTokenStats.table.avgFirstTokenMs') }}</th>
-                <th class="px-2 py-2 font-semibold">{{ t('admin.ops.openaiTokenStats.table.totalOutputTokens') }}</th>
-                <th class="px-2 py-2 font-semibold">{{ t('admin.ops.openaiTokenStats.table.avgDurationMs') }}</th>
-                <th class="px-2 py-2 font-semibold">{{ t('admin.ops.openaiTokenStats.table.requestsWithFirstToken') }}</th>
+                <th class="px-2 py-2 text-right font-semibold">{{ t('admin.ops.openaiTokenStats.table.requestCount') }}</th>
+                <th class="px-2 py-2 text-right font-semibold">{{ t('admin.ops.openaiTokenStats.table.avgTokensPerSec') }}</th>
+                <th class="px-2 py-2 text-right font-semibold">{{ t('admin.ops.openaiTokenStats.table.avgFirstTokenMs') }}</th>
+                <th class="px-2 py-2 text-right font-semibold">{{ t('admin.ops.openaiTokenStats.table.totalOutputTokens') }}</th>
+                <th class="px-2 py-2 text-right font-semibold">{{ t('admin.ops.openaiTokenStats.table.avgDurationMs') }}</th>
+                <th class="px-2 py-2 text-right font-semibold">{{ t('admin.ops.openaiTokenStats.table.requestsWithFirstToken') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -230,12 +230,12 @@ function onNextPage() {
                 class="border-b border-gray-100 text-gray-700 last:border-b-0 dark:border-dark-800 dark:text-gray-200"
               >
                 <td class="px-2 py-2 font-medium">{{ row.model }}</td>
-                <td class="px-2 py-2">{{ formatInt(row.request_count) }}</td>
-                <td class="px-2 py-2">{{ formatRate(row.avg_tokens_per_sec) }}</td>
-                <td class="px-2 py-2">{{ formatRate(row.avg_first_token_ms) }}</td>
-                <td class="px-2 py-2">{{ formatInt(row.total_output_tokens) }}</td>
-                <td class="px-2 py-2">{{ formatInt(row.avg_duration_ms) }}</td>
-                <td class="px-2 py-2">{{ formatInt(row.requests_with_first_token) }}</td>
+                <td class="px-2 py-2 text-right tabular-nums">{{ formatInt(row.request_count) }}</td>
+                <td class="px-2 py-2 text-right tabular-nums">{{ formatRate(row.avg_tokens_per_sec) }}</td>
+                <td class="px-2 py-2 text-right tabular-nums">{{ formatRate(row.avg_first_token_ms) }}</td>
+                <td class="px-2 py-2 text-right tabular-nums">{{ formatInt(row.total_output_tokens) }}</td>
+                <td class="px-2 py-2 text-right tabular-nums">{{ formatInt(row.avg_duration_ms) }}</td>
+                <td class="px-2 py-2 text-right tabular-nums">{{ formatInt(row.requests_with_first_token) }}</td>
               </tr>
             </tbody>
           </table>

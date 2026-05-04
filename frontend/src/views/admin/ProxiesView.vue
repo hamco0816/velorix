@@ -901,14 +901,14 @@ const { copyToClipboard } = useClipboard()
 const columns = computed<Column[]>(() => [
   { key: 'select', label: '', sortable: false },
   { key: 'name', label: t('admin.proxies.columns.name'), sortable: true },
-  { key: 'protocol', label: t('admin.proxies.columns.protocol'), sortable: true },
+  { key: 'protocol', label: t('admin.proxies.columns.protocol'), sortable: true, align: 'center' },
   { key: 'address', label: t('admin.proxies.columns.address'), sortable: false },
   { key: 'auth', label: t('admin.proxies.columns.auth'), sortable: false },
   { key: 'location', label: t('admin.proxies.columns.location'), sortable: false },
-  { key: 'account_count', label: t('admin.proxies.columns.accounts'), sortable: true },
-  { key: 'latency', label: t('admin.proxies.columns.latency'), sortable: false },
-  { key: 'status', label: t('admin.proxies.columns.status'), sortable: true },
-  { key: 'actions', label: t('admin.proxies.columns.actions'), sortable: false }
+  { key: 'account_count', label: t('admin.proxies.columns.accounts'), sortable: true, numeric: true },
+  { key: 'latency', label: t('admin.proxies.columns.latency'), sortable: false, numeric: true },
+  { key: 'status', label: t('admin.proxies.columns.status'), sortable: true, align: 'center' },
+  { key: 'actions', label: t('admin.proxies.columns.actions'), sortable: false, align: 'center' }
 ])
 
 // Filter options

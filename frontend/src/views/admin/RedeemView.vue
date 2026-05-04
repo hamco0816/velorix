@@ -501,12 +501,12 @@ const downloadGeneratedCodes = () => {
 
 const columns = computed<Column[]>(() => [
   { key: 'code', label: t('admin.redeem.columns.code') },
-  { key: 'type', label: t('admin.redeem.columns.type'), sortable: true },
-  { key: 'value', label: t('admin.redeem.columns.value'), sortable: true },
-  { key: 'status', label: t('admin.redeem.columns.status'), sortable: true },
+  { key: 'type', label: t('admin.redeem.columns.type'), sortable: true, align: 'center' },
+  { key: 'value', label: t('admin.redeem.columns.value'), sortable: true, numeric: true },
+  { key: 'status', label: t('admin.redeem.columns.status'), sortable: true, align: 'center' },
   { key: 'used_by', label: t('admin.redeem.columns.usedBy') },
   { key: 'used_at', label: t('admin.redeem.columns.usedAt'), sortable: true },
-  { key: 'actions', label: t('admin.redeem.columns.actions') }
+  { key: 'actions', label: t('admin.redeem.columns.actions'), align: 'center' }
 ])
 
 const typeOptions = computed(() => [

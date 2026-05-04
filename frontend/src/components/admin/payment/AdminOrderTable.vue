@@ -186,12 +186,12 @@ function emitFiltersChanged() {
 const columns = computed<Column[]>(() => [
   { key: 'id', label: t('payment.orders.orderId') },
   { key: 'user_id', label: t('payment.orders.userId') },
-  { key: 'pay_amount', label: t('payment.orders.payAmount') },
-  { key: 'payment_type', label: t('payment.orders.paymentMethod') },
-  { key: 'status', label: t('payment.orders.status') },
-  { key: 'order_type', label: t('payment.orders.orderType') },
+  { key: 'pay_amount', label: t('payment.orders.payAmount'), numeric: true },
+  { key: 'payment_type', label: t('payment.orders.paymentMethod'), align: 'center' },
+  { key: 'status', label: t('payment.orders.status'), align: 'center' },
+  { key: 'order_type', label: t('payment.orders.orderType'), align: 'center' },
   { key: 'created_at', label: t('payment.orders.createdAt') },
-  { key: 'actions', label: t('payment.orders.actions') },
+  { key: 'actions', label: t('payment.orders.actions'), align: 'center' },
 ])
 
 const statusFilterOptions = computed(() => [

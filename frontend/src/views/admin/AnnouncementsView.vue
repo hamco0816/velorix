@@ -309,12 +309,12 @@ const notifyModeOptions = computed(() => [
 
 const columns = computed<Column[]>(() => [
   { key: 'title', label: t('admin.announcements.columns.title'), sortable: true },
-  { key: 'status', label: t('admin.announcements.columns.status'), sortable: true },
-  { key: 'notify_mode', label: t('admin.announcements.columns.notifyMode'), sortable: true },
+  { key: 'status', label: t('admin.announcements.columns.status'), sortable: true, align: 'center' },
+  { key: 'notify_mode', label: t('admin.announcements.columns.notifyMode'), sortable: true, align: 'center' },
   { key: 'targeting', label: t('admin.announcements.columns.targeting') },
   { key: 'timeRange', label: t('admin.announcements.columns.timeRange') },
   { key: 'created_at', label: t('admin.announcements.columns.createdAt'), sortable: true },
-  { key: 'actions', label: t('admin.announcements.columns.actions') }
+  { key: 'actions', label: t('admin.announcements.columns.actions'), align: 'center' }
 ])
 
 const statusLabel = (status: string) => {

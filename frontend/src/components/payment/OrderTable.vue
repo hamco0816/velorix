@@ -65,11 +65,11 @@ const columns = computed((): Column[] => {
     cols.push({ key: 'user_email', label: t('payment.admin.colUser') })
   }
   cols.push(
-    { key: 'pay_amount', label: t('payment.orders.payAmount') },
-    { key: 'payment_type', label: t('payment.orders.paymentMethod') },
-    { key: 'status', label: t('payment.orders.status') },
+    { key: 'pay_amount', label: t('payment.orders.payAmount'), numeric: true },
+    { key: 'payment_type', label: t('payment.orders.paymentMethod'), align: 'center' },
+    { key: 'status', label: t('payment.orders.status'), align: 'center' },
     { key: 'created_at', label: t('payment.orders.createdAt') },
-    { key: 'actions', label: t('common.actions') },
+    { key: 'actions', label: t('common.actions'), align: 'center' },
   )
   return cols
 })
