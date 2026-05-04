@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center gap-1">
+  <div class="flex items-center justify-center gap-1">
     <button
       @click="$emit('run', row)"
       :disabled="running"

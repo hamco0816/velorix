@@ -92,7 +92,7 @@
               :sort-key="sortKey"
               :sort-order="sortOrder"
             >
-              <div class="flex items-center space-x-1">
+              <div :class="['flex items-center space-x-1', getHeaderJustifyClass(column)]">
                 <span>{{ column.label }}</span>
                 <span v-if="column.sortable" class="text-gray-400 dark:text-dark-500">
                   <svg
@@ -176,14 +176,16 @@
                 column.class
               ]"
             >
-              <slot :name="`cell-${column.key}`"
-                    :row="sortedData[virtualRow.index]"
-                    :value="sortedData[virtualRow.index][column.key]"
-                    :expanded="actionsExpanded">
-                {{ column.formatter
-                   ? column.formatter(sortedData[virtualRow.index][column.key], sortedData[virtualRow.index])
-                   : sortedData[virtualRow.index][column.key] }}
-              </slot>
+              <div :class="['flex items-center', getHeaderJustifyClass(column)]">
+                <slot :name="`cell-${column.key}`"
+                      :row="sortedData[virtualRow.index]"
+                      :value="sortedData[virtualRow.index][column.key]"
+                      :expanded="actionsExpanded">
+                  {{ column.formatter
+                     ? column.formatter(sortedData[virtualRow.index][column.key], sortedData[virtualRow.index])
+                     : sortedData[virtualRow.index][column.key] }}
+                </slot>
+              </div>
             </td>
           </tr>
           <tr v-if="virtualPaddingBottom > 0" aria-hidden="true">
@@ -637,12 +639,28 @@ const getStickyColumnClass = (column: Column, index: number) => {
   return classes.join(' ')
 }
 
-// 列对齐：numeric 优先，其次 align，默认左对齐
+// 解析列对齐方向：显式 align 优先；未声明时统一默认居中
+const resolveColumnAlign = (column: Column): 'left' | 'center' | 'right' => {
+  return column.align ?? 'center'
+}
+
+// 列对齐：同时作用于表头与单元格的文本对齐；numeric 列叠加 tabular-nums 等宽数字
 const getColumnAlignClass = (column: Column) => {
-  if (column.numeric) return 'text-right tabular-nums'
-  if (column.align === 'center') return 'text-center'
-  if (column.align === 'right') return 'text-right'
-  return 'text-left'
+  const align = resolveColumnAlign(column)
+  const alignClass = align === 'left'
+    ? 'text-left'
+    : align === 'right'
+      ? 'text-right'
+      : 'text-center'
+  return column.numeric ? `${alignClass} tabular-nums` : alignClass
+}
+
+// 表头标题与排序图标用 flex 排列，必须显式 justify-* 才会生效，与单元格对齐保持一致
+const getHeaderJustifyClass = (column: Column) => {
+  const align = resolveColumnAlign(column)
+  if (align === 'left') return 'justify-start'
+  if (align === 'right') return 'justify-end'
+  return 'justify-center'
 }
 
 // 根据列数自适应调整内边距

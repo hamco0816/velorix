@@ -310,7 +310,7 @@
           </template>
 
           <template #cell-actions="{ row }">
-            <div class="flex items-center gap-1">
+            <div class="flex items-center justify-center gap-1">
               <!-- Use Key Button -->
               <button
                 @click="openUseKeyModal(row)"

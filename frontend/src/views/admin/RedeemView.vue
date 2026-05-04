@@ -138,7 +138,7 @@
           </template>
 
           <template #cell-actions="{ row }">
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center justify-center space-x-2">
               <button
                 v-if="row.status === 'unused'"
                 @click="handleDelete(row)"

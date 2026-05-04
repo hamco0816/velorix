@@ -115,7 +115,7 @@
           </template>
 
           <template #cell-billing_type="{ row }">
-            <div class="space-y-1">
+            <div class="inline-block space-y-1 text-left align-middle">
               <!-- Type Badge -->
               <span
                 :class="[
@@ -194,7 +194,7 @@
           </template>
 
           <template #cell-account_count="{ row }">
-            <div class="space-y-0.5 text-xs">
+            <div class="inline-block space-y-0.5 text-left align-middle text-xs">
               <div>
                 <span class="text-gray-500 dark:text-gray-400">{{
                   t("admin.groups.accountsAvailable")
@@ -255,7 +255,7 @@
 
           <template #cell-usage="{ row }">
             <div v-if="usageLoading" class="text-xs text-gray-400">—</div>
-            <div v-else class="space-y-0.5 text-xs">
+            <div v-else class="inline-block space-y-0.5 text-left align-middle text-xs">
               <div class="text-gray-500 dark:text-gray-400">
                 <span class="text-gray-400 dark:text-gray-500">{{
                   t("admin.groups.usageToday")
@@ -291,7 +291,7 @@
           </template>
 
           <template #cell-actions="{ row }">
-            <div class="flex items-center gap-1">
+            <div class="flex items-center justify-center gap-1">
               <button
                 @click="handleEdit(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400"
