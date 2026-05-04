@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -40,6 +41,12 @@ func NewPaymentWebhookHandler(paymentService *service.PaymentService, registry *
 // POST /api/v1/payment/webhook/easypay
 func (h *PaymentWebhookHandler) EasyPayNotify(c *gin.Context) {
 	h.handleNotify(c, payment.TypeEasyPay)
+}
+
+// XunhupayNotify 处理虎皮椒（Xunhupay）异步通知，签名校验后回写 "success" 即可。
+// POST /api/v1/payment/webhook/xunhupay
+func (h *PaymentWebhookHandler) XunhupayNotify(c *gin.Context) {
+	h.handleNotify(c, payment.TypeXunhupay)
 }
 
 // AlipayNotify handles Alipay payment notifications.
@@ -145,6 +152,24 @@ func extractOutTradeNo(rawBody, providerKey string) string {
 		values, err := url.ParseQuery(rawBody)
 		if err == nil {
 			return values.Get("out_trade_no")
+		}
+	case payment.TypeXunhupay:
+		// 虎皮椒回调字段名为 trade_order_id，可能以 form-urlencoded 或 JSON 提交。
+		body := strings.TrimSpace(rawBody)
+		if strings.HasPrefix(body, "{") {
+			var raw map[string]any
+			if err := json.Unmarshal([]byte(body), &raw); err == nil {
+				if v, ok := raw["trade_order_id"]; ok {
+					if s, ok := v.(string); ok {
+						return s
+					}
+				}
+			}
+			return ""
+		}
+		values, err := url.ParseQuery(body)
+		if err == nil {
+			return values.Get("trade_order_id")
 		}
 	}
 	// For other providers (Stripe, Alipay direct, WxPay direct), the registry

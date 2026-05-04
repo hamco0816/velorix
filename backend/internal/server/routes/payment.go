@@ -59,6 +59,9 @@ func RegisterPaymentRoutes(
 		// EasyPay sends GET callbacks with query params
 		webhook.GET("/easypay", webhookHandler.EasyPayNotify)
 		webhook.POST("/easypay", webhookHandler.EasyPayNotify)
+		// 虎皮椒同时下发 GET（同步跳转）和 POST（异步通知）
+		webhook.GET("/xunhupay", webhookHandler.XunhupayNotify)
+		webhook.POST("/xunhupay", webhookHandler.XunhupayNotify)
 		webhook.POST("/alipay", webhookHandler.AlipayNotify)
 		webhook.POST("/wxpay", webhookHandler.WxpayNotify)
 		webhook.POST("/stripe", webhookHandler.StripeWebhook)

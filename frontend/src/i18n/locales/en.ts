@@ -2041,7 +2041,7 @@ export default {
         tooltipEdit: 'Select one or more groups of the same platform. After saving, current group accounts will be replaced with accounts from these groups (deduplicated).',
         selectPlaceholder: 'Select groups to copy accounts from...',
         hint: 'Multiple groups can be selected, accounts will be deduplicated',
-        hintEdit: '⚠️ Warning: This will replace all existing account bindings'
+        hintEdit: 'Warning: This will replace all existing account bindings'
       },
       modelRouting: {
         title: 'Model Routing',
@@ -2220,7 +2220,7 @@ export default {
         defaultImagePrice: 'Default image price (fallback when no tier matches)',
         platformConfig: 'Platform Configuration',
         webSearchEmulation: 'Web Search Emulation',
-        webSearchEmulationHint: '⚠️ When enabled, all accounts in this channel\'s Anthropic groups will intercept web_search requests. Use with caution.',
+        webSearchEmulationHint: 'When enabled, all accounts in this channel\'s Anthropic groups will intercept web_search requests. Use with caution.',
         webSearchEmulationGlobalDisabled: 'Please enable the global switch first in Settings → Gateway → Web Search Emulation',
         basicSettings: 'Basic Settings',
         addPlatform: 'Add Platform',
@@ -2516,7 +2516,7 @@ export default {
       syncFromCrsTitle: 'Sync Accounts from CRS',
       syncFromCrsDesc:
         'Sync accounts from claude-relay-service (CRS) into this system (CRS is called server-to-server).',
-      crsVersionRequirement: '⚠️ Note: CRS version must be ≥ v1.1.240 to support this feature',
+      crsVersionRequirement: 'Note: CRS version must be ≥ v1.1.240 to support this feature',
       crsBaseUrl: 'CRS Base URL',
       crsBaseUrlPlaceholder: 'e.g. http://127.0.0.1:3000',
       crsUsername: 'Username',
@@ -4348,7 +4348,7 @@ export default {
         responseHintSucceeded: 'Showing succeeded retry response_preview (#{id})',
         responseHintFallback: 'No succeeded retry found; showing stored error_body',
         suggestion: 'Suggestion',
-        suggestUpstreamResolved: '✓ Upstream error resolved by retry; no action needed',
+        suggestUpstreamResolved: 'Upstream error resolved by retry; no action needed',
         suggestUpstream: 'Upstream instability: check account status, consider switching accounts, or retry',
         suggestRequest: 'Client request error: ask customer to fix request parameters',
         suggestAuth: 'Auth failed: verify API key/credentials',
@@ -5105,7 +5105,7 @@ export default {
         homeContent: 'Home Page Content',
         homeContentPlaceholder: 'Enter custom content for the home page. Supports Markdown & HTML. If a URL is entered, it will be displayed as an iframe.',
         homeContentHint: 'Customize the home page content. Supports Markdown/HTML. If you enter a URL (starting with http:// or https://), it will be used as an iframe src to embed an external page. When set, the default status information will no longer be displayed.',
-        homeContentIframeWarning: '⚠️ iframe mode note: Some websites have X-Frame-Options or CSP security policies that prevent embedding in iframes. If the page appears blank or shows an error, please verify the target website allows embedding, or consider using HTML mode to build your own content.',
+        homeContentIframeWarning: 'iframe mode note: Some websites have X-Frame-Options or CSP security policies that prevent embedding in iframes. If the page appears blank or shows an error, please verify the target website allows embedding, or consider using HTML mode to build your own content.',
         hideCcsImportButton: 'Hide CCS Import Button',
         hideCcsImportButtonHint: 'When enabled, the "Import to CCS" button will be hidden on the API Keys page'
       },
@@ -5118,7 +5118,7 @@ export default {
         urlPlaceholder: 'https://example.com/purchase',
         urlHint: 'Must be an absolute http(s) URL',
         iframeWarning:
-          '⚠️ iframe note: Some websites block embedding via X-Frame-Options or CSP (frame-ancestors). If the page is blank, provide an "Open in new tab" alternative.',
+          'iframe note: Some websites block embedding via X-Frame-Options or CSP (frame-ancestors). If the page is blank, provide an "Open in new tab" alternative.',
         integrationDoc: 'Payment Integration Docs',
         integrationDocHint: 'Covers endpoint specs, idempotency semantics, and code samples'
       },
@@ -5191,6 +5191,7 @@ export default {
         helpImagePlaceholder: 'Upload or enter image URL',
         helpTextPlaceholder: 'Enter help text...',
         providerEasypay: 'EasyPay',
+        providerXunhupay: 'Xunhupay',
         providerAlipay: 'Alipay (Direct)',
         providerWxpay: 'WeChat Pay (Direct)',
         providerStripe: 'Stripe',
@@ -5225,6 +5226,8 @@ export default {
         field_cid: 'Channel ID',
         field_cidAlipay: 'Alipay Channel ID',
         field_cidWxpay: 'WeChat Channel ID',
+        field_appsecret: 'AppSecret',
+        field_callbackUrl: 'Cancel Redirect URL',
         stripeWebhookHint: 'Configure the following URL as a Webhook endpoint in Stripe Dashboard:',
         limitsTitle: 'Limits',
         limitSingleMin: 'Min per order',
@@ -6045,6 +6048,7 @@ export default {
     createOrder: 'Confirm Payment',
     methods: {
       easypay: 'EasyPay',
+      xunhupay: 'Xunhupay',
       alipay: 'Alipay',
       wxpay: 'WeChat Pay',
       stripe: 'Stripe',

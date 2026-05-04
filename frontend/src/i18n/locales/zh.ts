@@ -2125,7 +2125,7 @@ export default {
         tooltipEdit: '选择一个或多个相同平台的分组，保存后当前分组的账号会被替换为这些分组的账号（去重）。',
         selectPlaceholder: '选择分组以复制其账号...',
         hint: '可选多个分组，账号会自动去重',
-        hintEdit: '⚠️ 注意：这会替换当前分组的所有账号绑定'
+        hintEdit: '注意：这会替换当前分组的所有账号绑定'
       },
       modelRouting: {
         title: '模型路由配置',
@@ -2297,7 +2297,7 @@ export default {
         defaultImagePrice: '默认图片价格（未命中层级时使用）',
         platformConfig: '平台配置',
         webSearchEmulation: 'Web Search 模拟',
-        webSearchEmulationHint: '⚠️ 开启后该渠道下所有 Anthropic 分组的账号将自动拦截 web_search 请求，请谨慎操作',
+        webSearchEmulationHint: '注意：开启后该渠道下所有 Anthropic 分组的账号将自动拦截 web_search 请求，请谨慎操作',
         webSearchEmulationGlobalDisabled: '请先在系统设置 → 网关 → Web Search 模拟中启用全局开关',
         basicSettings: '基础设置',
         addPlatform: '添加平台',
@@ -2592,7 +2592,7 @@ export default {
       syncFromCrsTitle: '从 CRS 同步账号',
       syncFromCrsDesc:
         '将 claude-relay-service（CRS）中的账号同步到当前系统（不会在浏览器侧直接请求 CRS）。',
-      crsVersionRequirement: '⚠️ 注意：CRS 版本必须 ≥ v1.1.240 才支持此功能',
+      crsVersionRequirement: '注意：CRS 版本必须 ≥ v1.1.240 才支持此功能',
       crsBaseUrl: 'CRS 服务地址',
       crsBaseUrlPlaceholder: '例如：http://127.0.0.1:3000',
       crsUsername: '用户名',
@@ -4510,11 +4510,11 @@ export default {
         responseHintSucceeded: '展示重试成功的 response_preview（#{id}）',
         responseHintFallback: '没有成功的重试结果，展示存储的 error_body',
         suggestion: '处理建议',
-        suggestUpstreamResolved: '✓ 上游错误已通过重试解决，无需人工介入',
-        suggestUpstream: '⚠️ 上游服务不稳定，建议：检查上游账号状态 / 考虑切换账号 / 再次重试',
-        suggestRequest: '⚠️ 客户端请求错误，建议：联系客户修正请求参数 / 手动标记已解决',
-        suggestAuth: '⚠️ 认证失败，建议：检查 API Key 是否有效 / 联系客户更新凭证',
-        suggestPlatform: '🚨 平台错误，建议立即排查修复',
+        suggestUpstreamResolved: '上游错误已通过重试解决，无需人工介入',
+        suggestUpstream: '上游服务不稳定，建议：检查上游账号状态 / 考虑切换账号 / 再次重试',
+        suggestRequest: '客户端请求错误，建议：联系客户修正请求参数 / 手动标记已解决',
+        suggestAuth: '认证失败，建议：检查 API Key 是否有效 / 联系客户更新凭证',
+        suggestPlatform: '平台错误，建议立即排查修复',
         suggestGeneric: '查看详情了解更多信息'
       },
       requestDetails: {
@@ -5266,7 +5266,7 @@ export default {
         homeContentHint:
           '自定义首页内容，支持 Markdown/HTML。如果输入的是链接（以 http:// 或 https:// 开头），则会使用该链接作为 iframe 的 src 属性，这允许你设置任意网页作为首页。设置后首页的状态信息将不再显示。',
         homeContentIframeWarning:
-          '⚠️ iframe 模式提示：部分网站设置了 X-Frame-Options 或 CSP 安全策略，禁止被嵌入到 iframe 中。如果页面显示空白或报错，请确认目标网站允许被嵌入，或考虑使用 HTML 模式自行构建页面内容。',
+          'iframe 模式提示：部分网站设置了 X-Frame-Options 或 CSP 安全策略，禁止被嵌入到 iframe 中。如果页面显示空白或报错，请确认目标网站允许被嵌入，或考虑使用 HTML 模式自行构建页面内容。',
         hideCcsImportButton: '隐藏 CCS 导入按钮',
         hideCcsImportButtonHint: '启用后将在 API Keys 页面隐藏"导入 CCS"按钮'
       },
@@ -5279,7 +5279,7 @@ export default {
         urlPlaceholder: 'https://example.com/purchase',
         urlHint: '必须是完整的 http(s) 链接',
         iframeWarning:
-          '⚠️ iframe 提示：部分网站会通过 X-Frame-Options 或 CSP（frame-ancestors）禁止被 iframe 嵌入，出现空白时可引导用户使用”新窗口打开”。',
+          'iframe 提示：部分网站会通过 X-Frame-Options 或 CSP（frame-ancestors）禁止被 iframe 嵌入，出现空白时可引导用户使用”新窗口打开”。',
         integrationDoc: '支付集成文档',
         integrationDocHint: '包含接口说明、幂等语义及示例代码'
       },
@@ -5352,6 +5352,7 @@ export default {
         helpImagePlaceholder: '上传或输入图片链接',
         helpTextPlaceholder: '输入帮助说明文本...',
         providerEasypay: '易支付',
+        providerXunhupay: '虎皮椒',
         providerAlipay: '支付宝官方',
         providerWxpay: '微信官方',
         providerStripe: 'Stripe',
@@ -5386,6 +5387,8 @@ export default {
         field_cid: '支付渠道 ID',
         field_cidAlipay: '支付宝渠道 ID',
         field_cidWxpay: '微信渠道 ID',
+        field_appsecret: 'AppSecret',
+        field_callbackUrl: '取消支付跳转地址',
         stripeWebhookHint: '请在 Stripe Dashboard 中将以下地址配置为 Webhook 端点：',
         limitsTitle: '限额配置',
         limitSingleMin: '单笔最低',
@@ -6230,6 +6233,7 @@ export default {
     createOrder: '确认支付',
     methods: {
       easypay: '易支付',
+      xunhupay: '虎皮椒',
       alipay: '支付宝',
       wxpay: '微信支付',
       stripe: 'Stripe',
