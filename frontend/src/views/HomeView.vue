@@ -20,7 +20,7 @@
     <!-- 极简网格背景：保留视觉层次但去除迷幻渐变光球 -->
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
       <div
-        class="absolute inset-0 bg-[linear-gradient(rgba(100,116,139,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(100,116,139,0.06)_1px,transparent_1px)] bg-[size:64px_64px]"
+        class="absolute inset-0 bg-[linear-gradient(rgba(113,113,122,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(113,113,122,0.06)_1px,transparent_1px)] bg-[size:64px_64px]"
       ></div>
     </div>
 
@@ -61,36 +61,24 @@
             <Icon v-else name="moon" size="md" />
           </button>
 
-          <!-- Login / Dashboard Button -->
+          <!-- Login / Dashboard Button：低对比白胶囊 + 灰边，让 Hero 主 CTA 成为唯一视觉锚点 -->
           <router-link
             v-if="isAuthenticated"
             :to="dashboardPath"
-            class="inline-flex items-center gap-2 rounded-md bg-gray-900 py-1 pl-1 pr-3 transition-colors hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700"
+            class="group inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-300 dark:hover:bg-dark-700 dark:hover:text-white"
           >
-            <span
-              class="flex h-5 w-5 items-center justify-center rounded-md bg-brand-700 text-[10px] font-semibold text-white"
-            >
-              {{ userInitial }}
-            </span>
-            <span class="text-xs font-medium text-white">{{ t('home.dashboard') }}</span>
-            <svg
-              class="h-3 w-3 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"
-              />
-            </svg>
+            <span>{{ t('home.dashboard') }}</span>
+            <Icon
+              name="arrowRight"
+              size="xs"
+              class="text-gray-400 transition-transform duration-200 group-hover:translate-x-0.5 dark:text-gray-500"
+              :stroke-width="2"
+            />
           </router-link>
           <router-link
             v-else
             to="/login"
-            class="inline-flex items-center rounded-md bg-gray-900 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700"
+            class="group inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-300 dark:hover:bg-dark-700 dark:hover:text-white"
           >
             {{ t('home.login') }}
           </router-link>

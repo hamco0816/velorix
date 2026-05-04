@@ -73,11 +73,12 @@
     @apply disabled:cursor-not-allowed disabled:opacity-50;
   }
 
-  /* 主行动按钮：日落橙 + 白字，蓝海军底色配暖橙互补，专业又温润 */
+  /* 主行动按钮：纯黑 + 白字（Vercel / Apple 高级感锚点），暗模式反相为白底黑字 */
   .btn-primary {
-    @apply bg-brand-600 text-white shadow-inner-top;
-    @apply hover:bg-brand-700;
-    @apply dark:bg-brand-500 dark:hover:bg-brand-400;
+    @apply bg-primary-950 text-white shadow-inner-top;
+    @apply hover:bg-primary-800;
+    @apply dark:bg-white dark:text-primary-950 dark:shadow-none;
+    @apply dark:hover:bg-primary-100;
   }
 
   .btn-secondary {

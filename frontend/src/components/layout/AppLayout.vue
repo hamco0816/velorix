@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-50 dark:bg-dark-950">
     <!-- Background Decoration: 极淡中性 radial 替代彩色 mesh，避免 SaaS 模板感 -->
-    <div class="pointer-events-none fixed inset-0 bg-[radial-gradient(at_40%_20%,rgba(100,116,139,0.04)_0px,transparent_50%),radial-gradient(at_80%_0%,rgba(234,88,12,0.025)_0px,transparent_50%)]"></div>
+    <div class="pointer-events-none fixed inset-0 bg-[radial-gradient(at_40%_20%,rgba(113,113,122,0.04)_0px,transparent_50%),radial-gradient(at_80%_0%,rgba(234,88,12,0.025)_0px,transparent_50%)]"></div>
 
     <!-- Sidebar -->
     <AppSidebar />
