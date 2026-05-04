@@ -679,7 +679,7 @@ urlFallbackLoop:
 					}, nil)
 				}
 
-				// ★ 统一入口：自定义错误码 + 临时不可调度
+				// 统一入口：自定义错误码 + 临时不可调度
 				if handled, outStatus, policyErr := s.applyErrorPolicy(p, resp.StatusCode, resp.Header, respBody); handled {
 					if policyErr != nil {
 						return nil, policyErr

@@ -2336,12 +2336,15 @@ func (h *SettingHandler) SendTestEmail(c *gin.Context) {
 <head>
     <meta charset="UTF-8">
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
-        .content { padding: 40px 30px; text-align: center; }
-        .success { color: #10b981; font-size: 48px; margin-bottom: 20px; }
-        .footer { background-color: #f8f9fa; padding: 20px; text-align: center; color: #999; font-size: 12px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px; color: #1f2937; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 4px; overflow: hidden; }
+        .header { background-color: #111827; color: #ffffff; padding: 24px 32px; }
+        .header h1 { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: 0.2px; }
+        .content { padding: 32px; }
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 4px; background-color: #ecfdf5; color: #047857; font-size: 12px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; }
+        .content h2 { margin: 16px 0 12px; font-size: 18px; font-weight: 600; }
+        .content p { margin: 0; color: #4b5563; line-height: 1.6; }
+        .footer { background-color: #f9fafb; padding: 16px 32px; color: #6b7280; font-size: 12px; border-top: 1px solid #e5e7eb; }
     </style>
 </head>
 <body>
@@ -2350,8 +2353,8 @@ func (h *SettingHandler) SendTestEmail(c *gin.Context) {
             <h1>` + siteName + `</h1>
         </div>
         <div class="content">
-            <div class="success">✓</div>
-            <h2>Email Configuration Successful!</h2>
+            <span class="badge">SMTP Test Passed</span>
+            <h2>Email configuration successful</h2>
             <p>This is a test email to verify your SMTP settings are working correctly.</p>
         </div>
         <div class="footer">

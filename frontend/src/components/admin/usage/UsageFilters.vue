@@ -19,10 +19,10 @@
             v-if="filters.user_id"
             type="button"
             @click="clearUser"
-            class="absolute right-2 top-9 text-gray-400"
+            class="absolute right-2 top-9 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
             aria-label="Clear user filter"
           >
-            ✕
+            <Icon name="x" size="xs" :stroke-width="2" />
           </button>
           <div
             v-if="showUserDropdown && (userResults.length > 0 || userKeyword)"
@@ -56,10 +56,10 @@
             v-if="filters.api_key_id"
             type="button"
             @click="onClearApiKey"
-            class="absolute right-2 top-9 text-gray-400"
+            class="absolute right-2 top-9 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
             aria-label="Clear API key filter"
           >
-            ✕
+            <Icon name="x" size="xs" :stroke-width="2" />
           </button>
           <div
             v-if="showApiKeyDropdown && apiKeyResults.length > 0"
@@ -99,10 +99,10 @@
             v-if="filters.account_id"
             type="button"
             @click="clearAccount"
-            class="absolute right-2 top-9 text-gray-400"
+            class="absolute right-2 top-9 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
             aria-label="Clear account filter"
           >
-            ✕
+            <Icon name="x" size="xs" :stroke-width="2" />
           </button>
           <div
             v-if="showAccountDropdown && (accountResults.length > 0 || accountKeyword)"
@@ -172,6 +172,7 @@ import { ref, onMounted, onUnmounted, toRef, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { adminAPI } from '@/api/admin'
 import Select, { type SelectOption } from '@/components/common/Select.vue'
+import Icon from '@/components/icons/Icon.vue'
 import type { SimpleApiKey, SimpleUser } from '@/api/admin/usage'
 
 type ModelValue = Record<string, any>

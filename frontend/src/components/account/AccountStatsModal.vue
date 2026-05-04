@@ -136,15 +136,15 @@
 
           <!-- Daily Average Requests -->
           <div
-            class="card border-purple-200 bg-gradient-to-br from-purple-50 to-white p-4 dark:border-purple-800/30 dark:from-purple-900/10 dark:to-dark-700"
+            class="card border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-800"
           >
             <div class="mb-2 flex items-center justify-between">
               <span class="text-xs font-medium text-gray-500 dark:text-gray-400">{{
                 t('admin.accounts.stats.avgDailyRequests')
               }}</span>
-              <div class="rounded-lg bg-purple-100 p-1.5 dark:bg-purple-900/30">
+              <div class="rounded bg-gray-100 p-1.5 dark:bg-dark-700">
                 <svg
-                  class="h-4 w-4 text-purple-600 dark:text-purple-400"
+                  class="h-4 w-4 text-gray-600 dark:text-gray-300"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
