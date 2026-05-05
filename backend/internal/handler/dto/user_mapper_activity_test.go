@@ -31,3 +31,21 @@ func TestUserFromServiceAdmin_MapsActivityTimestamps(t *testing.T) {
 	require.WithinDuration(t, lastActiveAt, *out.LastActiveAt, time.Second)
 	require.WithinDuration(t, lastUsedAt, *out.LastUsedAt, time.Second)
 }
+
+func TestUserFromServiceAdmin_MapsAvatar(t *testing.T) {
+	t.Parallel()
+
+	out := UserFromServiceAdmin(&service.User{
+		ID:           42,
+		Email:        "admin@example.com",
+		Username:     "admin",
+		Role:         service.RoleAdmin,
+		Status:       service.StatusActive,
+		AvatarURL:    "/api/users/me/avatar/42.png",
+		AvatarSource: "upload",
+	})
+
+	require.NotNil(t, out)
+	require.Equal(t, "/api/users/me/avatar/42.png", out.AvatarURL)
+	require.Equal(t, "upload", out.AvatarSource)
+}

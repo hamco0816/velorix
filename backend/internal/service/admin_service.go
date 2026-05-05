@@ -590,6 +590,7 @@ func (s *adminServiceImpl) ListUsers(ctx context.Context, page, pageSize int, fi
 			}
 		}
 	}
+	s.hydrateUserAvatars(ctx, users)
 	// 批量加载用户专属分组倍率
 	if s.userGroupRateRepo != nil && len(users) > 0 {
 		if batchRepo, ok := s.userGroupRateRepo.(userGroupRateBatchReader); ok {
@@ -615,6 +616,24 @@ func (s *adminServiceImpl) ListUsers(ctx context.Context, page, pageSize int, fi
 	return users, result.Total, nil
 }
 
+func (s *adminServiceImpl) hydrateUserAvatars(ctx context.Context, users []User) {
+	for i := range users {
+		s.hydrateUserAvatar(ctx, &users[i])
+	}
+}
+
+func (s *adminServiceImpl) hydrateUserAvatar(ctx context.Context, user *User) {
+	if user == nil || s.userRepo == nil {
+		return
+	}
+	avatar, err := s.userRepo.GetUserAvatar(ctx, user.ID)
+	if err != nil {
+		logger.LegacyPrintf("service.admin", "failed to load user avatar: user_id=%d err=%v", user.ID, err)
+		return
+	}
+	applyUserAvatar(user, avatar)
+}
+
 func (s *adminServiceImpl) loadUserGroupRatesOneByOne(ctx context.Context, users []User) {
 	if s.userGroupRateRepo == nil {
 		return
@@ -634,6 +653,7 @@ func (s *adminServiceImpl) GetUser(ctx context.Context, id int64) (*User, error)
 	if err != nil {
 		return nil, err
 	}
+	s.hydrateUserAvatar(ctx, user)
 	lastUsedAt, latestErr := s.userRepo.GetLatestUsedAtByUserID(ctx, id)
 	if latestErr != nil {
 		logger.LegacyPrintf("service.admin", "failed to load user last_used_at: user_id=%d err=%v", id, latestErr)

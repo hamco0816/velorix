@@ -19,6 +19,8 @@ type userRepoStubForListUsers struct {
 	listWithFiltersParams pagination.PaginationParams
 	lastUsedByUserID      map[int64]*time.Time
 	lastUsedErr           error
+	avatarsByUserID       map[int64]*UserAvatar
+	avatarErr             error
 }
 
 func (s *userRepoStubForListUsers) ListWithFilters(_ context.Context, params pagination.PaginationParams, _ UserListFilters) ([]User, *pagination.PaginationResult, error) {
@@ -53,6 +55,13 @@ func (s *userRepoStubForListUsers) GetLatestUsedAtByUserID(_ context.Context, us
 		return nil, s.lastUsedErr
 	}
 	return s.lastUsedByUserID[userID], nil
+}
+
+func (s *userRepoStubForListUsers) GetUserAvatar(_ context.Context, userID int64) (*UserAvatar, error) {
+	if s.avatarErr != nil {
+		return nil, s.avatarErr
+	}
+	return s.avatarsByUserID[userID], nil
 }
 
 type userGroupRateRepoStubForListUsers struct {
@@ -182,4 +191,30 @@ func TestAdminService_ListUsers_PopulatesLastUsedAt(t *testing.T) {
 	require.Len(t, users, 1)
 	require.NotNil(t, users[0].LastUsedAt)
 	require.WithinDuration(t, lastUsed, *users[0].LastUsedAt, time.Second)
+}
+
+func TestAdminService_ListUsers_PopulatesAvatar(t *testing.T) {
+	userRepo := &userRepoStubForListUsers{
+		users: []User{{ID: 101, Email: "u@example.com"}},
+		avatarsByUserID: map[int64]*UserAvatar{
+			101: {
+				StorageProvider: "upload",
+				URL:             "/api/users/me/avatar/101.png",
+				ContentType:     "image/png",
+				ByteSize:        1234,
+				SHA256:          "avatar-sha",
+			},
+		},
+	}
+	svc := &adminServiceImpl{userRepo: userRepo}
+
+	users, total, err := svc.ListUsers(context.Background(), 1, 20, UserListFilters{}, "", "")
+	require.NoError(t, err)
+	require.Equal(t, int64(1), total)
+	require.Len(t, users, 1)
+	require.Equal(t, "/api/users/me/avatar/101.png", users[0].AvatarURL)
+	require.Equal(t, "upload", users[0].AvatarSource)
+	require.Equal(t, "image/png", users[0].AvatarMIME)
+	require.Equal(t, 1234, users[0].AvatarByteSize)
+	require.Equal(t, "avatar-sha", users[0].AvatarSHA256)
 }
