@@ -1,0 +1,122 @@
+name: Docker Image
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: docker-image-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/velorix
+          tags: |
+            type=raw,value=latest
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Delete old GHCR versions
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const packageName = 'velorix';
+            const packageType = 'container';
+
+            async function listVersions() {
+              try {
+                return await github.paginate(
+                  github.rest.packages.getAllPackageVersionsForPackageOwnedByUser,
+                  {
+                    package_type: packageType,
+                    package_name: packageName,
+                    username: owner,
+                    per_page: 100,
+                  },
+                );
+              } catch (error) {
+                if (error.status !== 404) throw error;
+                return await github.paginate(
+                  github.rest.packages.getAllPackageVersionsForPackageOwnedByOrg,
+                  {
+                    package_type: packageType,
+                    package_name: packageName,
+                    org: owner,
+                    per_page: 100,
+                  },
+                );
+              }
+            }
+
+            async function deleteVersion(versionId) {
+              try {
+                await github.rest.packages.deletePackageVersionForUser({
+                  package_type: packageType,
+                  package_name: packageName,
+                  username: owner,
+                  package_version_id: versionId,
+                });
+              } catch (error) {
+                if (error.status !== 404) throw error;
+                await github.rest.packages.deletePackageVersionForOrg({
+                  package_type: packageType,
+                  package_name: packageName,
+                  org: owner,
+                  package_version_id: versionId,
+                });
+              }
+            }
+
+            const versions = await listVersions();
+            const sorted = versions.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            const keep = new Set();
+
+            for (const version of sorted) {
+              const tags = version.metadata?.container?.tags || [];
+              if (tags.includes('latest')) keep.add(version.id);
+            }
+
+            for (const version of sorted.slice(0, 1)) keep.add(version.id);
+
+            for (const version of sorted) {
+              if (!keep.has(version.id)) {
+                core.info(`Deleting old GHCR version ${version.id}`);
+                await deleteVersion(version.id);
+              }
+            }
