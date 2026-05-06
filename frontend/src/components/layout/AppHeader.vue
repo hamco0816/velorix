@@ -45,9 +45,11 @@
         <SubscriptionProgressMini v-if="user" />
 
         <!-- Balance Display -->
-        <div
+        <router-link
           v-if="user"
-          class="hidden items-center gap-2 rounded-xl bg-primary-50 px-3 py-1.5 dark:bg-primary-900/20 sm:flex"
+          :to="{ path: '/purchase', query: { tab: 'recharge' } }"
+          class="hidden items-center gap-2 rounded-xl bg-primary-50 px-3 py-1.5 transition-colors hover:bg-primary-100 dark:bg-primary-900/20 dark:hover:bg-primary-900/35 sm:flex"
+          :title="t('nav.buySubscription')"
         >
           <svg
             class="h-4 w-4 text-primary-600 dark:text-primary-400"
@@ -65,7 +67,7 @@
           <span class="text-sm font-semibold text-primary-700 dark:text-primary-300">
             ${{ user.balance?.toFixed(2) || '0.00' }}
           </span>
-        </div>
+        </router-link>
 
         <!-- User Dropdown -->
         <div v-if="user" class="relative" ref="dropdownRef">
@@ -106,14 +108,18 @@
               </div>
 
               <!-- Balance (mobile only) -->
-              <div class="border-b border-gray-100 px-4 py-2 dark:border-dark-700 sm:hidden">
+              <router-link
+                :to="{ path: '/purchase', query: { tab: 'recharge' } }"
+                class="block border-b border-gray-100 px-4 py-2 transition-colors hover:bg-gray-50 dark:border-dark-700 dark:hover:bg-dark-800 sm:hidden"
+                @click="closeDropdown"
+              >
                 <div class="text-xs text-gray-500 dark:text-dark-400">
                   {{ t('common.balance') }}
                 </div>
                 <div class="text-sm font-semibold text-primary-600 dark:text-primary-400">
                   ${{ user.balance?.toFixed(2) || '0.00' }}
                 </div>
-              </div>
+              </router-link>
 
               <div class="py-1">
                 <router-link to="/profile" @click="closeDropdown" class="dropdown-item">

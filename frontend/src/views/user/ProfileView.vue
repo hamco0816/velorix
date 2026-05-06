@@ -14,59 +14,64 @@
         :wechat-mp-enabled="wechatOAuthMPEnabled"
       />
 
-      <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-        <div class="space-y-6">
-          <section
-            data-testid="profile-security-panel"
-            class="card border border-gray-100 bg-white/95 shadow-sm shadow-gray-200/50 dark:border-dark-700 dark:bg-dark-900/60 dark:shadow-none"
-          >
-            <div class="border-b border-gray-100 px-6 py-4 dark:border-dark-700">
-              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-                {{ t('profile.securityTitle') }}
-              </h2>
-              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                {{ t('profile.securityDescription') }}
-              </p>
-            </div>
-            <div class="px-6 py-6">
-              <ProfilePasswordForm embedded />
-            </div>
-          </section>
-
-          <ProfileBalanceNotifyCard
-            v-if="user && balanceLowNotifyEnabled"
-            :enabled="user.balance_notify_enabled ?? true"
-            :threshold="user.balance_notify_threshold"
-            :extra-emails="user.balance_notify_extra_emails ?? []"
-            :system-default-threshold="systemDefaultThreshold"
-            :user-email="user.email"
-          />
-        </div>
-
-        <aside class="space-y-6 xl:sticky xl:top-24 xl:self-start">
-          <div
-            v-if="contactInfo"
-            class="card overflow-hidden border border-primary-100 bg-white dark:border-primary-900/40 dark:bg-dark-900/70"
-          >
-            <div class="border-b border-primary-100 bg-primary-50/80 px-5 py-4 dark:border-primary-900/40 dark:bg-primary-950/20">
-              <div class="flex items-center gap-3">
-                <div class="rounded-xl bg-primary-100 p-2.5 text-primary-600 dark:bg-primary-900/50 dark:text-primary-300">
-                  <Icon name="chat" size="md" />
-                </div>
-                <h3 class="font-semibold text-primary-800 dark:text-primary-200">
-                  {{ t('common.contactSupport') }}
-                </h3>
+      <section data-testid="profile-security-panel" class="space-y-4">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300">
+                <Icon name="shield" size="md" />
+              </div>
+              <div>
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white">
+                  {{ t('profile.securityTitle') }}
+                </h2>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  {{ t('profile.securityDescription') }}
+                </p>
               </div>
             </div>
-            <div class="px-5 py-4">
-              <p class="break-words text-sm font-medium text-gray-700 dark:text-gray-200">
-                {{ contactInfo }}
-              </p>
+          </div>
+          <div class="rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-500 shadow-sm ring-1 ring-gray-200 dark:bg-dark-900 dark:text-gray-300 dark:ring-dark-700">
+            Password · 2FA
+          </div>
+        </div>
+
+        <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+          <ProfilePasswordForm embedded />
+          <ProfileTotpCard />
+        </div>
+      </section>
+
+      <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <ProfileBalanceNotifyCard
+          v-if="user && balanceLowNotifyEnabled"
+          :enabled="user.balance_notify_enabled ?? true"
+          :threshold="user.balance_notify_threshold"
+          :extra-emails="user.balance_notify_extra_emails ?? []"
+          :system-default-threshold="systemDefaultThreshold"
+          :user-email="user.email"
+        />
+
+        <div
+          v-if="contactInfo"
+          class="card overflow-hidden border border-primary-100 bg-white dark:border-primary-900/40 dark:bg-dark-900/70"
+        >
+          <div class="border-b border-primary-100 bg-primary-50/80 px-5 py-4 dark:border-primary-900/40 dark:bg-primary-950/20">
+            <div class="flex items-center gap-3">
+              <div class="rounded-xl bg-primary-100 p-2.5 text-primary-600 dark:bg-primary-900/50 dark:text-primary-300">
+                <Icon name="chat" size="md" />
+              </div>
+              <h3 class="font-semibold text-primary-800 dark:text-primary-200">
+                {{ t('common.contactSupport') }}
+              </h3>
             </div>
           </div>
-
-          <ProfileTotpCard />
-        </aside>
+          <div class="px-5 py-4">
+            <p class="break-words text-sm font-medium text-gray-700 dark:text-gray-200">
+              {{ contactInfo }}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </AppLayout>

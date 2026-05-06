@@ -32,13 +32,13 @@
           </p>
         </div>
 
-        <div class="flex shrink-0 items-end justify-between rounded-2xl bg-white/90 px-4 py-3 text-right shadow-sm ring-1 ring-gray-100 dark:bg-dark-700/70 dark:ring-dark-600 sm:block sm:min-w-[126px]">
+        <div class="flex shrink-0 items-center justify-between gap-4 rounded-2xl bg-white/90 px-4 py-3 text-right shadow-sm ring-1 ring-gray-100 dark:bg-dark-700/70 dark:ring-dark-600 sm:min-w-[172px] sm:flex-col sm:items-end sm:justify-center sm:gap-1">
           <span class="text-xs font-medium text-gray-400 dark:text-dark-500 sm:hidden">{{ t('payment.admin.price') }}</span>
-          <div class="flex items-baseline justify-end gap-1">
+          <div class="flex flex-wrap items-end justify-end gap-x-1.5 gap-y-0">
             <span class="text-xs font-semibold text-gray-400 dark:text-dark-500">$</span>
             <span :class="['text-3xl font-extrabold tracking-tight', textClass]">{{ plan.price }}</span>
+            <span class="whitespace-nowrap pb-1 text-xs text-gray-400 dark:text-dark-500">/ {{ validitySuffix }}</span>
           </div>
-          <span class="block text-xs text-gray-400 dark:text-dark-500">/ {{ validitySuffix }}</span>
           <div v-if="plan.original_price" class="mt-0.5 flex items-center justify-end gap-1.5">
             <span class="text-xs text-gray-400 line-through dark:text-dark-500">${{ plan.original_price }}</span>
             <span :class="['rounded px-1 py-0.5 text-[10px] font-semibold', discountClass]">{{ discountText }}</span>
