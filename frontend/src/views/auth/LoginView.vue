@@ -1,6 +1,6 @@
 <template>
   <AuthLayout>
-    <div class="space-y-6">
+    <div class="min-h-[326px] space-y-6">
       <!-- Title -->
       <div class="text-center">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
@@ -11,34 +11,42 @@
         </p>
       </div>
 
-  <div v-if="!backendModeEnabled && (linuxdoOAuthEnabled || wechatOAuthEnabled || oidcOAuthEnabled)" class="space-y-4">
-        <LinuxDoOAuthSection
-          v-if="linuxdoOAuthEnabled"
-          :disabled="isLoading"
-          :show-divider="false"
-        />
-        <WechatOAuthSection
-          v-if="wechatOAuthEnabled"
-          :disabled="isLoading"
-          :show-divider="false"
-        />
-        <OidcOAuthSection
-          v-if="oidcOAuthEnabled"
-          :disabled="isLoading"
-          :provider-name="oidcOAuthProviderName"
-          :show-divider="false"
-        />
-        <div class="flex items-center gap-3">
-          <div class="h-px flex-1 bg-gray-200 dark:bg-dark-700"></div>
-          <span class="text-xs text-gray-500 dark:text-dark-400">
-            {{ t('auth.oauthOrContinue') }}
-          </span>
-          <div class="h-px flex-1 bg-gray-200 dark:bg-dark-700"></div>
-        </div>
+      <div
+        v-if="!settingsLoaded"
+        class="flex min-h-[214px] items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 dark:border-dark-700 dark:bg-dark-800/60"
+      >
+        <div class="h-7 w-7 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
       </div>
 
-      <!-- Login Form -->
-      <form @submit.prevent="handleLogin" class="space-y-5">
+      <template v-else>
+        <div v-if="!backendModeEnabled && (linuxdoOAuthEnabled || wechatOAuthEnabled || oidcOAuthEnabled)" class="space-y-4">
+          <LinuxDoOAuthSection
+            v-if="linuxdoOAuthEnabled"
+            :disabled="isLoading"
+            :show-divider="false"
+          />
+          <WechatOAuthSection
+            v-if="wechatOAuthEnabled"
+            :disabled="isLoading"
+            :show-divider="false"
+          />
+          <OidcOAuthSection
+            v-if="oidcOAuthEnabled"
+            :disabled="isLoading"
+            :provider-name="oidcOAuthProviderName"
+            :show-divider="false"
+          />
+          <div class="flex items-center gap-3">
+            <div class="h-px flex-1 bg-gray-200 dark:bg-dark-700"></div>
+            <span class="text-xs text-gray-500 dark:text-dark-400">
+              {{ t('auth.oauthOrContinue') }}
+            </span>
+            <div class="h-px flex-1 bg-gray-200 dark:bg-dark-700"></div>
+          </div>
+        </div>
+
+        <!-- Login Form -->
+        <form @submit.prevent="handleLogin" class="space-y-5">
         <!-- Email Input -->
         <div>
           <label for="email" class="input-label">
@@ -144,7 +152,8 @@
           <Icon v-else name="login" size="md" class="mr-2" />
           {{ isLoading ? t('auth.signingIn') : t('auth.signIn') }}
         </button>
-      </form>
+        </form>
+      </template>
     </div>
 
     <!-- Footer -->
@@ -188,8 +197,8 @@ import TotpLoginModal from '@/components/auth/TotpLoginModal.vue'
 import Icon from '@/components/icons/Icon.vue'
 import TurnstileWidget from '@/components/TurnstileWidget.vue'
 import { useAuthStore, useAppStore } from '@/stores'
-import { getPublicSettings, isTotp2FARequired, isWeChatWebOAuthEnabled } from '@/api/auth'
-import type { TotpLoginResponse } from '@/types'
+import { isTotp2FARequired, isWeChatWebOAuthEnabled } from '@/api/auth'
+import type { PublicSettings, TotpLoginResponse } from '@/types'
 import { clearAllAffiliateReferralCodes } from '@/utils/oauthAffiliate'
 
 const { t } = useI18n()
@@ -251,6 +260,23 @@ watch(validationToastMessage, (value, previousValue) => {
 
 // ==================== Lifecycle ====================
 
+function applyPublicSettings(settings: PublicSettings): void {
+  turnstileEnabled.value = settings.turnstile_enabled
+  turnstileSiteKey.value = settings.turnstile_site_key || ''
+  linuxdoOAuthEnabled.value = settings.linuxdo_oauth_enabled
+  wechatOAuthEnabled.value = isWeChatWebOAuthEnabled(settings)
+  backendModeEnabled.value = settings.backend_mode_enabled
+  oidcOAuthEnabled.value = settings.oidc_oauth_enabled
+  oidcOAuthProviderName.value = settings.oidc_oauth_provider_name || 'OIDC'
+  passwordResetEnabled.value = settings.password_reset_enabled
+  registrationEnabled.value = settings.registration_enabled
+}
+
+if (appStore.cachedPublicSettings) {
+  applyPublicSettings(appStore.cachedPublicSettings)
+  settingsLoaded.value = true
+}
+
 onMounted(async () => {
   const expiredFlag = sessionStorage.getItem('auth_expired')
   if (expiredFlag) {
@@ -261,17 +287,10 @@ onMounted(async () => {
   }
 
   try {
-    const settings = await getPublicSettings()
-    turnstileEnabled.value = settings.turnstile_enabled
-    turnstileSiteKey.value = settings.turnstile_site_key || ''
-    linuxdoOAuthEnabled.value = settings.linuxdo_oauth_enabled
-    wechatOAuthEnabled.value = isWeChatWebOAuthEnabled(settings)
-    backendModeEnabled.value = settings.backend_mode_enabled
-    oidcOAuthEnabled.value = settings.oidc_oauth_enabled
-    oidcOAuthProviderName.value = settings.oidc_oauth_provider_name || 'OIDC'
-    backendModeEnabled.value = settings.backend_mode_enabled
-    passwordResetEnabled.value = settings.password_reset_enabled
-    registrationEnabled.value = settings.registration_enabled
+    const settings = await appStore.fetchPublicSettings()
+    if (settings) {
+      applyPublicSettings(settings)
+    }
   } catch (error) {
     console.error('Failed to load public settings:', error)
   } finally {
