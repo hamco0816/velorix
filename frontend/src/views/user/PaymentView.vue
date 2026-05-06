@@ -133,32 +133,36 @@
                       </div>
                     </div>
 
-                    <div class="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                      <div class="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-100 dark:bg-dark-800/70 dark:ring-dark-700">
-                        <span class="block text-xs text-gray-400 dark:text-gray-500">{{ t('payment.planCard.rate') }}</span>
-                        <span :class="['mt-1 block text-lg font-bold', planTextClass]">{{ selectedPlanRateDisplay }}</span>
+                    <div class="mt-6 rounded-2xl border border-gray-100 bg-white/80 p-3 shadow-inner shadow-slate-100/70 dark:border-dark-700 dark:bg-dark-800/45 dark:shadow-none">
+                      <div class="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                      <div class="rounded-xl bg-slate-50 px-4 py-3 dark:bg-dark-900/60">
+                        <span class="block text-xs font-medium text-gray-400 dark:text-gray-500">{{ t('payment.planCard.rate') }}</span>
+                        <span :class="['mt-1 block text-xl font-extrabold', planTextClass]">{{ selectedPlanRateDisplay }}</span>
                       </div>
-                      <div v-if="selectedPlan.daily_limit_usd != null" class="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-100 dark:bg-dark-800/70 dark:ring-dark-700">
-                        <span class="block text-xs text-gray-400 dark:text-gray-500">{{ t('payment.planCard.dailyLimit') }}</span>
-                        <span class="mt-1 block text-lg font-semibold text-gray-900 dark:text-white">${{ selectedPlan.daily_limit_usd }}</span>
+                      <div v-if="selectedPlan.daily_limit_usd != null" class="rounded-xl bg-slate-50 px-4 py-3 dark:bg-dark-900/60">
+                        <span class="block text-xs font-medium text-gray-400 dark:text-gray-500">{{ t('payment.planCard.dailyLimit') }}</span>
+                        <span class="mt-1 block text-xl font-extrabold text-gray-900 dark:text-white">${{ selectedPlan.daily_limit_usd }}</span>
                       </div>
-                      <div v-if="selectedPlan.weekly_limit_usd != null" class="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-100 dark:bg-dark-800/70 dark:ring-dark-700">
-                        <span class="block text-xs text-gray-400 dark:text-gray-500">{{ t('payment.planCard.weeklyLimit') }}</span>
-                        <span class="mt-1 block text-lg font-semibold text-gray-900 dark:text-white">${{ selectedPlan.weekly_limit_usd }}</span>
+                      <div v-if="selectedPlan.weekly_limit_usd != null" class="rounded-xl bg-slate-50 px-4 py-3 dark:bg-dark-900/60">
+                        <span class="block text-xs font-medium text-gray-400 dark:text-gray-500">{{ t('payment.planCard.weeklyLimit') }}</span>
+                        <span class="mt-1 block text-xl font-extrabold text-gray-900 dark:text-white">${{ selectedPlan.weekly_limit_usd }}</span>
                       </div>
-                      <div v-if="selectedPlan.monthly_limit_usd != null" class="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-100 dark:bg-dark-800/70 dark:ring-dark-700">
-                        <span class="block text-xs text-gray-400 dark:text-gray-500">{{ t('payment.planCard.monthlyLimit') }}</span>
-                        <span class="mt-1 block text-lg font-semibold text-gray-900 dark:text-white">${{ selectedPlan.monthly_limit_usd }}</span>
+                      <div v-if="selectedPlan.monthly_limit_usd != null" class="rounded-xl bg-slate-50 px-4 py-3 dark:bg-dark-900/60">
+                        <span class="block text-xs font-medium text-gray-400 dark:text-gray-500">{{ t('payment.planCard.monthlyLimit') }}</span>
+                        <span class="mt-1 block text-xl font-extrabold text-gray-900 dark:text-white">${{ selectedPlan.monthly_limit_usd }}</span>
                       </div>
-                      <div v-if="selectedPlan.daily_limit_usd == null && selectedPlan.weekly_limit_usd == null && selectedPlan.monthly_limit_usd == null" class="rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-100 dark:bg-dark-800/70 dark:ring-dark-700">
-                        <span class="block text-xs text-gray-400 dark:text-gray-500">{{ t('payment.planCard.quota') }}</span>
-                        <span class="mt-1 block text-lg font-semibold text-gray-900 dark:text-white">{{ t('payment.planCard.unlimited') }}</span>
+                      <div v-if="selectedPlan.daily_limit_usd == null && selectedPlan.weekly_limit_usd == null && selectedPlan.monthly_limit_usd == null" class="rounded-xl bg-slate-50 px-4 py-3 dark:bg-dark-900/60">
+                        <span class="block text-xs font-medium text-gray-400 dark:text-gray-500">{{ t('payment.planCard.quota') }}</span>
+                        <span class="mt-1 block text-xl font-extrabold text-gray-900 dark:text-white">{{ t('payment.planCard.unlimited') }}</span>
                       </div>
-                    </div>
+                      </div>
 
-                    <div v-if="selectedPlanModelScopeItems.length > 0" class="mt-4 rounded-2xl bg-slate-50 px-4 py-3 ring-1 ring-slate-100 dark:bg-dark-800/70 dark:ring-dark-700">
-                      <span class="mb-2 block text-xs text-gray-400 dark:text-gray-500">{{ t('payment.planCard.models') }}</span>
-                      <div class="flex flex-wrap gap-2">
+                      <div v-if="selectedPlanModelScopeItems.length > 0" class="mt-3 rounded-xl bg-slate-50 px-4 py-3 dark:bg-dark-900/60">
+                        <div class="mb-2 flex items-center justify-between gap-3">
+                          <span class="text-xs font-medium text-gray-400 dark:text-gray-500">{{ t('payment.planCard.models') }}</span>
+                          <span class="h-px flex-1 bg-slate-200 dark:bg-dark-700" />
+                        </div>
+                        <div class="flex flex-wrap gap-2">
                         <span
                           v-for="scope in selectedPlanModelScopeItems"
                           :key="scope.key"
@@ -167,6 +171,7 @@
                           <ModelIcon :model="scope.iconModel" size="15px" />
                           {{ scope.label }}
                         </span>
+                        </div>
                       </div>
                     </div>
 
@@ -179,21 +184,22 @@
                   </div>
 
                   <aside class="border-t border-gray-100 bg-slate-50/80 p-5 dark:border-dark-700 dark:bg-dark-800/45 lg:border-l lg:border-t-0">
-                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">{{ t('payment.amountLabel') }}</p>
-                    <div class="mt-3 rounded-2xl bg-white px-4 py-4 ring-1 ring-gray-100 dark:bg-dark-900/70 dark:ring-dark-700">
-                      <div class="flex items-baseline gap-1 whitespace-nowrap">
-                        <span :class="['text-2xl font-extrabold leading-none', planTextClass]">¥</span>
-                        <span :class="['text-5xl font-extrabold leading-none tracking-tight', planTextClass]">{{ selectedPlan.price }}</span>
+                    <div class="rounded-2xl bg-white px-4 py-5 text-center ring-1 ring-gray-100 dark:bg-dark-900/70 dark:ring-dark-700">
+                      <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">{{ t('payment.amountLabel') }}</p>
+                      <div class="mt-3 flex items-end justify-center gap-2 whitespace-nowrap">
+                        <span :class="['mb-2 text-3xl font-black leading-none', planTextClass]">¥</span>
+                        <span :class="['text-6xl font-black leading-none tracking-tight', planTextClass]">{{ selectedPlan.price }}</span>
                       </div>
-                      <div class="mt-3 flex flex-wrap items-center gap-2">
-                        <span class="inline-flex whitespace-nowrap rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-gray-500 ring-1 ring-slate-200 dark:bg-dark-800 dark:text-dark-300 dark:ring-dark-600">
+                      <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+                        <span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-slate-100 px-3 py-1.5 text-sm font-semibold text-gray-600 ring-1 ring-slate-200 dark:bg-dark-800 dark:text-dark-200 dark:ring-dark-600">
+                          <Icon name="calendar" size="xs" :stroke-width="2" />
                           {{ planValiditySuffix }}
                         </span>
-                        <span v-if="selectedPlan.original_price" class="text-sm text-gray-400 line-through dark:text-gray-500">
-                          ¥{{ selectedPlan.original_price }}
-                        </span>
-                        <span v-if="selectedPlanDiscountText" :class="['inline-flex rounded-full px-2 py-1 text-xs font-semibold', selectedPlanDiscountClass]">
-                          {{ selectedPlanDiscountText }}
+                        <span v-if="selectedPlan.original_price" class="inline-flex items-center gap-2">
+                          <span class="text-sm text-gray-400 line-through dark:text-gray-500">¥{{ selectedPlan.original_price }}</span>
+                          <span v-if="selectedPlanDiscountText" :class="['inline-flex rounded-full px-2 py-1 text-xs font-semibold', selectedPlanDiscountClass]">
+                            {{ selectedPlanDiscountText }}
+                          </span>
                         </span>
                       </div>
                     </div>
@@ -226,7 +232,7 @@
 
               <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                 <button class="btn btn-secondary w-full sm:w-auto sm:min-w-[120px]" @click="selectedPlan = null">{{ t('common.cancel') }}</button>
-                <button :class="['btn w-full px-8 py-3 text-base font-semibold sm:w-auto sm:min-w-[220px]', paymentButtonClass]" :disabled="!canSubmitSubscription || submitting" @click="confirmSubscribe">
+                <button :class="['btn w-full px-7 py-3 text-base font-semibold sm:w-auto sm:min-w-[180px]', paymentButtonClass]" :disabled="!canSubmitSubscription || submitting" @click="confirmSubscribe">
                   <span v-if="submitting" class="flex items-center justify-center gap-2">
                     <span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
                     {{ t('common.processing') }}

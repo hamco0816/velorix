@@ -466,13 +466,6 @@ func xunhupayPaymentChannel(paymentType string) string {
 	return ""
 }
 
-func xunhupayDeviceType(isMobile bool) string {
-	if isMobile {
-		return "WAP"
-	}
-	return "PC"
-}
-
 func xunhupayMapStatus(raw string) string {
 	switch raw {
 	case xunhupayQueryStatusPaid:
