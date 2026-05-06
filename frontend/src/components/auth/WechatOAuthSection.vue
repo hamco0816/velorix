@@ -1,10 +1,13 @@
 <template>
   <div class="space-y-4">
-    <button type="button" :disabled="buttonDisabled" class="btn btn-secondary w-full" @click="startLogin">
-      <span
-        class="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-green-100 text-xs font-semibold text-green-700 dark:bg-green-900/30 dark:text-green-300"
-      >
-        W
+    <button
+      type="button"
+      :disabled="buttonDisabled"
+      class="btn w-full border-green-100 bg-green-50/80 text-green-700 shadow-sm shadow-green-100/70 hover:border-green-200 hover:bg-green-100 dark:border-green-900/40 dark:bg-green-950/30 dark:text-green-300 dark:shadow-none"
+      @click="startLogin"
+    >
+      <span class="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-green-100 dark:bg-green-950 dark:ring-green-900/50">
+        <BrandIcon brand="wechat" size="18px" />
       </span>
       {{ t('auth.oidc.signIn', { providerName }) }}
     </button>
@@ -32,6 +35,7 @@ import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { resolveWeChatOAuthStart } from '@/api/auth'
+import BrandIcon from '@/components/common/BrandIcon.vue'
 import { useAppStore } from '@/stores'
 import { resolveAffiliateReferralCode, storeOAuthAffiliateCode } from '@/utils/oauthAffiliate'
 

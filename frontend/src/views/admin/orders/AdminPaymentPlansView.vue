@@ -40,15 +40,15 @@
           <button
             type="button"
             :class="[
-              'relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-              value ? 'bg-primary-500' : 'bg-gray-300 dark:bg-dark-600'
+              'inline-flex min-w-[82px] items-center justify-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+              value
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-emerald-100 hover:bg-emerald-100 dark:border-emerald-900/50 dark:bg-emerald-950/25 dark:text-emerald-300 dark:shadow-none'
+                : 'border-slate-200 bg-slate-50 text-slate-500 hover:bg-slate-100 dark:border-dark-600 dark:bg-dark-800 dark:text-dark-300'
             ]"
             @click="toggleForSale(row)"
           >
-            <span :class="[
-              'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-              value ? 'translate-x-4' : 'translate-x-0'
-            ]" />
+            <Icon :name="value ? 'checkCircle' : 'ban'" size="xs" :stroke-width="2" />
+            {{ value ? t('payment.admin.onSale') : t('payment.admin.offSale') }}
           </button>
         </template>
         <template #cell-actions="{ row }">

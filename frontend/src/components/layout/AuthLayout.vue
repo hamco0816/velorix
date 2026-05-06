@@ -1,51 +1,36 @@
 <template>
-  <div class="relative flex min-h-screen items-center justify-center overflow-hidden p-4">
+  <div class="auth-shell relative flex min-h-screen items-center justify-center overflow-hidden p-4">
     <!-- Background -->
     <div
-      class="absolute inset-0 bg-gradient-to-br from-gray-50 via-primary-50/30 to-gray-100 dark:from-dark-950 dark:via-dark-900 dark:to-dark-950"
+      class="absolute inset-0 bg-slate-50 dark:bg-dark-950"
     ></div>
 
     <!-- Decorative Elements -->
     <div class="pointer-events-none absolute inset-0 overflow-hidden">
-      <!-- Gradient Orbs -->
-      <div
-        class="absolute -right-40 -top-40 h-80 w-80 rounded-full bg-primary-400/20 blur-3xl"
-      ></div>
-      <div
-        class="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-primary-500/15 blur-3xl"
-      ></div>
-      <div
-        class="absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary-300/10 blur-3xl"
-      ></div>
-
       <!-- Grid Pattern -->
       <div
-        class="absolute inset-0 bg-[linear-gradient(rgba(20,184,166,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(20,184,166,0.03)_1px,transparent_1px)] bg-[size:64px_64px]"
+        class="absolute inset-0 bg-[linear-gradient(rgba(15,23,42,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.045)_1px,transparent_1px)] bg-[size:64px_64px] dark:bg-[linear-gradient(rgba(148,163,184,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.05)_1px,transparent_1px)]"
       ></div>
+      <div class="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-primary-100/60 to-transparent dark:from-primary-950/25"></div>
+      <div class="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-white to-transparent dark:from-dark-950"></div>
     </div>
 
     <!-- Content Container -->
-    <div class="relative z-10 w-full max-w-md">
+    <div class="relative z-10 w-full max-w-[440px]">
       <!-- Logo/Brand -->
-      <div class="mb-8 text-center">
+      <div class="mb-7 text-center">
         <!-- Custom Logo or Default Logo -->
         <template v-if="settingsLoaded">
           <div
-            class="mb-4 inline-flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl shadow-lg shadow-primary-500/30"
+            class="inline-flex h-24 w-24 items-center justify-center overflow-hidden rounded-[1.75rem] bg-white p-1 shadow-xl shadow-slate-200/80 ring-1 ring-slate-200/80 dark:bg-dark-900 dark:shadow-black/30 dark:ring-dark-700"
           >
             <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
           </div>
-          <h1 class="text-gradient mb-2 text-3xl font-bold">
-            {{ siteName }}
-          </h1>
-          <p class="text-sm text-gray-500 dark:text-dark-400">
-            {{ siteSubtitle }}
-          </p>
         </template>
       </div>
 
       <!-- Card Container -->
-      <div class="card-glass rounded-lg p-8 shadow-card">
+      <div class="rounded-2xl border border-white/80 bg-white/90 p-7 shadow-2xl shadow-slate-200/70 backdrop-blur-xl dark:border-dark-700/80 dark:bg-dark-900/85 dark:shadow-black/25">
         <slot />
       </div>
 
@@ -71,7 +56,6 @@ const appStore = useAppStore()
 
 const siteName = computed(() => appStore.siteName || 'Sub2API')
 const siteLogo = computed(() => sanitizeUrl(appStore.siteLogo || '', { allowRelative: true, allowDataUrl: true }))
-const siteSubtitle = computed(() => appStore.cachedPublicSettings?.site_subtitle || 'Subscription to API Conversion Platform')
 const settingsLoaded = computed(() => appStore.publicSettingsLoaded)
 
 const currentYear = computed(() => new Date().getFullYear())

@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <div class="mx-auto max-w-4xl space-y-6">
+    <div class="settings-page mx-auto max-w-6xl space-y-6">
       <!-- Loading State -->
       <div v-if="loading" class="flex items-center justify-center py-12">
         <div
@@ -11,7 +11,7 @@
       <!-- Settings Form -->
       <form v-else @submit.prevent="saveSettings" class="space-y-6" novalidate>
         <!-- Tab Navigation -->
-        <div class="sticky top-0 z-10 overflow-x-auto settings-tabs-scroll">
+        <div class="sticky top-0 z-10 -mx-1 overflow-x-auto px-1 py-1 settings-tabs-scroll">
           <nav class="settings-tabs">
             <button
               v-for="tab in settingsTabs"
@@ -7994,6 +7994,24 @@ watch(
   @apply h-[42px];
 }
 
+.settings-page :deep(.card) {
+  @apply overflow-hidden rounded-2xl border border-gray-100 bg-white/95 shadow-sm shadow-gray-200/60 dark:border-dark-700 dark:bg-dark-900/85 dark:shadow-none;
+}
+
+.settings-page :deep(.card > div:first-child) {
+  @apply bg-gradient-to-r from-slate-50 to-white dark:from-dark-800 dark:to-dark-900;
+}
+
+.settings-page :deep(.input),
+.settings-page :deep(textarea),
+.settings-page :deep(select) {
+  @apply rounded-xl border-gray-200 bg-white shadow-sm shadow-gray-100/50 transition-colors focus:border-primary-400 focus:ring-primary-400 dark:border-dark-600 dark:bg-dark-800 dark:shadow-none;
+}
+
+.settings-page :deep(.btn) {
+  @apply rounded-xl;
+}
+
 /* ============ Settings Tab Navigation ============ */
 
 /* Scroll container: thin scrollbar on PC, auto-hide on mobile */
@@ -8025,11 +8043,11 @@ watch(
 }
 
 .settings-tabs {
-  @apply inline-flex min-w-full gap-0.5 rounded-2xl
-         border border-gray-100 bg-white/80 p-1 backdrop-blur-sm
-         dark:border-dark-700/50 dark:bg-dark-800/80;
+  @apply inline-flex min-w-full gap-1 rounded-2xl
+         border border-gray-100 bg-white/90 p-1.5 backdrop-blur-xl
+         dark:border-dark-700/50 dark:bg-dark-900/90;
   box-shadow:
-    0 1px 3px rgb(0 0 0 / 0.04),
+    0 16px 36px -28px rgb(15 23 42 / 0.45),
     0 1px 2px rgb(0 0 0 / 0.02);
 }
 
@@ -8041,8 +8059,8 @@ watch(
 
 .settings-tab {
   @apply relative flex flex-1 items-center justify-center gap-1.5
-         whitespace-nowrap rounded-xl px-2.5 py-2
-         text-sm font-medium
+         whitespace-nowrap rounded-xl px-3 py-2.5
+         text-sm font-semibold
          text-gray-500 dark:text-dark-400
          transition-all duration-200 ease-out;
 }
@@ -8057,22 +8075,15 @@ watch(
 }
 
 .settings-tab-active {
-  @apply text-primary-600 dark:text-primary-400;
-  background: linear-gradient(
-    135deg,
-    rgba(20, 184, 166, 0.08),
-    rgba(20, 184, 166, 0.03)
-  );
-  box-shadow: 0 1px 2px rgba(20, 184, 166, 0.1);
+  @apply text-white;
+  background: linear-gradient(135deg, #14b8a6, #10b981);
+  box-shadow: 0 12px 24px -18px rgba(20, 184, 166, 0.75);
 }
 
 :root.dark .settings-tab-active {
-  background: linear-gradient(
-    135deg,
-    rgba(45, 212, 191, 0.12),
-    rgba(45, 212, 191, 0.05)
-  );
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+  @apply text-white;
+  background: linear-gradient(135deg, #0f766e, #059669);
+  box-shadow: 0 12px 24px -18px rgb(0 0 0 / 0.75);
 }
 
 .settings-tab-icon {
@@ -8081,7 +8092,6 @@ watch(
 }
 
 .settings-tab-active .settings-tab-icon {
-  @apply bg-primary-500/15 text-primary-600
-         dark:bg-primary-400/15 dark:text-primary-400;
+  @apply bg-white/20 text-white;
 }
 </style>

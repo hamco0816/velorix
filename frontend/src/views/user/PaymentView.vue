@@ -1,16 +1,19 @@
 <template>
   <AppLayout>
-    <div class="mx-auto max-w-5xl space-y-6">
+    <div class="payment-page mx-auto max-w-6xl space-y-6">
       <div v-if="loading" class="flex items-center justify-center py-20">
         <div class="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
       </div>
       <template v-else>
         <!-- Tab Switcher (hide during payment and subscription confirm) -->
-        <div v-if="tabs.length > 1 && paymentPhase === 'select' && !selectedPlan" class="flex space-x-1 rounded-xl bg-gray-100 p-1 dark:bg-dark-800">
+        <div v-if="tabs.length > 1 && paymentPhase === 'select' && !selectedPlan" class="grid gap-2 rounded-2xl border border-gray-100 bg-white/80 p-1.5 shadow-sm shadow-gray-200/60 backdrop-blur dark:border-dark-700 dark:bg-dark-900/80 dark:shadow-none sm:grid-cols-2">
           <button v-for="tab in tabs" :key="tab.key"
-            class="flex-1 rounded-lg px-4 py-2.5 text-sm font-medium transition-all"
-            :class="activeTab === tab.key ? 'bg-white text-gray-900 shadow dark:bg-dark-700 dark:text-white' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'"
-            @click="activeTab = tab.key">{{ tab.label }}</button>
+            class="flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all"
+            :class="activeTab === tab.key ? 'bg-gradient-to-r from-primary-500 to-emerald-500 text-white shadow-lg shadow-primary-500/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-dark-800 dark:hover:text-gray-200'"
+            @click="activeTab = tab.key">
+            <Icon :name="tab.key === 'subscription' ? 'badge' : 'creditCard'" size="sm" :stroke-width="2" />
+            {{ tab.label }}
+          </button>
         </div>
         <!-- Payment in progress (shared by recharge and subscription) -->
         <template v-if="paymentPhase === 'paying'">
@@ -31,10 +34,20 @@
           <!-- Top-up Tab -->
           <template v-if="activeTab === 'recharge'">
             <!-- Recharge Account Card -->
-            <div class="card p-5">
-              <p class="text-xs font-medium text-gray-400 dark:text-gray-500">{{ t('payment.rechargeAccount') }}</p>
-              <p class="mt-1 text-base font-semibold text-gray-900 dark:text-white">{{ user?.username || '' }}</p>
-              <p class="mt-0.5 text-sm font-medium text-green-600 dark:text-green-400">{{ t('payment.currentBalance') }}: {{ user?.balance?.toFixed(2) || '0.00' }}</p>
+            <div class="overflow-hidden rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50 via-white to-sky-50 p-5 shadow-sm shadow-emerald-100/70 dark:border-emerald-900/40 dark:from-emerald-950/25 dark:via-dark-900 dark:to-sky-950/20 dark:shadow-none">
+              <div class="flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                  <p class="text-xs font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-300">{{ t('payment.rechargeAccount') }}</p>
+                  <p class="mt-1 truncate text-lg font-bold text-gray-900 dark:text-white">{{ user?.username || '' }}</p>
+                </div>
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-emerald-600 shadow-sm ring-1 ring-emerald-100 dark:bg-dark-800 dark:text-emerald-300 dark:ring-emerald-900/50">
+                  <Icon name="creditCard" size="lg" />
+                </div>
+              </div>
+              <div class="mt-4 rounded-2xl bg-white/75 px-4 py-3 ring-1 ring-white dark:bg-dark-800/70 dark:ring-dark-700">
+                <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('payment.currentBalance') }}</p>
+                <p class="mt-1 text-2xl font-extrabold tracking-tight text-emerald-600 dark:text-emerald-300">${{ user?.balance?.toFixed(2) || '0.00' }}</p>
+              </div>
             </div>
             <div v-if="enabledMethods.length === 0" class="card py-16 text-center">
               <p class="text-gray-500 dark:text-gray-400">{{ t('payment.notAvailable') }}</p>
@@ -493,7 +506,7 @@ const creditedAmount = computed(() => Math.round((validAmount.value * balanceRec
 // Adaptive grid: center single card, 2-col for 2 plans, 3-col for 3+
 const planGridClass = computed(() => {
   const n = checkout.value.plans.length
-  if (n === 1) return 'mx-auto grid w-full max-w-xl grid-cols-1 gap-5'
+  if (n === 1) return 'mx-auto grid w-full max-w-2xl grid-cols-1 gap-5'
   if (n <= 2) return 'grid grid-cols-1 gap-5 sm:grid-cols-2'
   return 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'
 })

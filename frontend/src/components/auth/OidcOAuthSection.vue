@@ -1,10 +1,13 @@
 <template>
   <div class="space-y-4">
-    <button type="button" :disabled="disabled" class="btn btn-secondary w-full" @click="startLogin">
-      <span
-        class="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary-100 text-xs font-semibold text-primary-700 dark:bg-primary-900/30 dark:text-primary-300"
-      >
-        {{ providerInitial }}
+    <button
+      type="button"
+      :disabled="disabled"
+      class="btn w-full border-orange-100 bg-orange-50/80 text-orange-700 shadow-sm shadow-orange-100/70 hover:border-orange-200 hover:bg-orange-100 dark:border-orange-900/40 dark:bg-orange-950/25 dark:text-orange-300 dark:shadow-none"
+      @click="startLogin"
+    >
+      <span class="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-orange-100 dark:bg-slate-900 dark:ring-orange-900/50">
+        <BrandIcon brand="oidc" size="18px" />
       </span>
       {{ t('auth.oidc.signIn', { providerName: normalizedProviderName }) }}
     </button>
@@ -23,6 +26,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import BrandIcon from '@/components/common/BrandIcon.vue'
 import { resolveAffiliateReferralCode, storeOAuthAffiliateCode } from '@/utils/oauthAffiliate'
 
 const props = withDefaults(defineProps<{
@@ -42,8 +46,6 @@ const normalizedProviderName = computed(() => {
   const name = props.providerName?.trim()
   return name || 'OIDC'
 })
-
-const providerInitial = computed(() => normalizedProviderName.value.charAt(0).toUpperCase() || 'O')
 
 function startLogin(): void {
   const redirectTo = (route.query.redirect as string) || '/dashboard'

@@ -14,7 +14,8 @@ export default {
     heroDescription: 'No need to manage multiple subscriptions. Access Claude, GPT, Gemini and more with a single API key',
     tags: {
       stickySession: 'Session Persistence',
-      realtimeBilling: 'Pay As You Go'
+      realtimeBilling: 'Pay As You Go',
+      subscriptionPayment: 'Subscription'
     },
     // Pain points section
     painPoints: {

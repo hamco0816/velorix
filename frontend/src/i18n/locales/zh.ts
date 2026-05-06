@@ -14,7 +14,8 @@ export default {
     heroDescription: '无需管理多个订阅账号，一站式接入 Claude、GPT、Gemini 等主流 AI 服务',
     tags: {
       stickySession: '会话保持',
-      realtimeBilling: '按量计费'
+      realtimeBilling: '按量计费',
+      subscriptionPayment: '订阅付费'
     },
     // 用户痛点区块
     painPoints: {

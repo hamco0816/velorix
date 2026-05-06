@@ -68,12 +68,12 @@ onBeforeUnmount(() => {
     <div
       v-for="(item, index) in allEndpoints"
       :key="index"
-      class="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs transition-colors hover:border-primary-200 dark:border-dark-600 dark:bg-dark-800 dark:hover:border-primary-700"
+      class="flex items-center gap-2 rounded-xl border border-primary-100 bg-white px-3 py-2 text-sm shadow-sm shadow-primary-100/50 transition-colors hover:border-primary-200 dark:border-primary-900/40 dark:bg-dark-800 dark:shadow-none dark:hover:border-primary-700"
     >
-      <span class="font-medium text-gray-600 dark:text-gray-300">{{ item.name }}</span>
+      <span class="font-semibold text-gray-700 dark:text-gray-200">{{ item.name }}</span>
       <span
         v-if="item.isDefault"
-        class="rounded bg-primary-50 px-1 py-px text-[10px] font-medium leading-tight text-primary-600 dark:bg-primary-900/30 dark:text-primary-400"
+        class="rounded-full bg-primary-50 px-2 py-0.5 text-[11px] font-semibold leading-tight text-primary-600 dark:bg-primary-900/30 dark:text-primary-400"
       >{{ t('keys.endpoints.default') }}</span>
 
       <span class="text-gray-300 dark:text-dark-500">|</span>
@@ -99,7 +99,7 @@ onBeforeUnmount(() => {
         </div>
 
         <code
-          class="cursor-pointer font-mono text-gray-500 decoration-gray-400 decoration-dashed underline-offset-2 hover:text-primary-600 hover:underline focus:text-primary-600 focus:underline focus:outline-none dark:text-gray-400 dark:decoration-gray-500 dark:hover:text-primary-400 dark:focus:text-primary-400"
+          class="cursor-pointer font-mono text-[15px] font-semibold text-slate-700 decoration-gray-400 decoration-dashed underline-offset-2 hover:text-primary-600 hover:underline focus:text-primary-600 focus:underline focus:outline-none dark:text-slate-200 dark:decoration-gray-500 dark:hover:text-primary-400 dark:focus:text-primary-400"
           role="button"
           tabindex="0"
           @click="copy(item.endpoint)"

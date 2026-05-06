@@ -39,7 +39,11 @@
                 size="sm"
                 class="text-current"
               />
-              <span v-else>{{ providerInitial(item.provider) }}</span>
+              <BrandIcon
+                v-else
+                :brand="providerBrand(item.provider)"
+                size="22px"
+              />
             </div>
 
             <div class="min-w-0 flex-1 space-y-3">
@@ -208,6 +212,7 @@ import {
   unbindAuthIdentity,
 } from '@/api/user'
 import Icon from '@/components/icons/Icon.vue'
+import BrandIcon from '@/components/common/BrandIcon.vue'
 import { useAppStore, useAuthStore } from '@/stores'
 import type { User, UserAuthBindingStatus, UserAuthProvider } from '@/types'
 
@@ -456,28 +461,25 @@ const providerItems = computed(() => [
   },
 ])
 
-function providerInitial(provider: UserAuthProvider): string {
+function providerBrand(provider: UserAuthProvider): 'linuxdo' | 'wechat' | 'oidc' {
   if (provider === 'linuxdo') {
-    return 'L'
+    return 'linuxdo'
   }
   if (provider === 'wechat') {
-    return 'W'
+    return 'wechat'
   }
-  if (provider === 'oidc') {
-    return 'O'
-  }
-  return 'E'
+  return 'oidc'
 }
 
 function providerIconClass(provider: UserAuthProvider): string {
   if (provider === 'linuxdo') {
-    return 'bg-orange-100 text-orange-600 dark:bg-orange-900/20 dark:text-orange-300'
+    return 'bg-amber-50 ring-1 ring-amber-100 dark:bg-amber-950/20 dark:ring-amber-900/40'
   }
   if (provider === 'wechat') {
-    return 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-300'
+    return 'bg-green-50 ring-1 ring-green-100 dark:bg-green-950/25 dark:ring-green-900/40'
   }
   if (provider === 'oidc') {
-    return 'bg-sky-100 text-sky-600 dark:bg-sky-900/20 dark:text-sky-300'
+    return 'bg-orange-50 ring-1 ring-orange-100 dark:bg-orange-950/25 dark:ring-orange-900/40'
   }
   return 'bg-primary-100 text-primary-600 dark:bg-primary-900/20 dark:text-primary-300'
 }

@@ -43,15 +43,26 @@
       <!-- Registration Disabled Message -->
       <div
         v-if="!registrationEnabled && settingsLoaded"
-        class="rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-800/50 dark:bg-amber-900/20"
+        class="overflow-hidden rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 via-white to-orange-50 p-5 shadow-sm shadow-amber-100/70 dark:border-amber-800/50 dark:from-amber-950/30 dark:via-dark-900 dark:to-dark-900 dark:shadow-none"
       >
-        <div class="flex items-start gap-3">
-          <div class="flex-shrink-0">
-            <Icon name="exclamationCircle" size="md" class="text-amber-500" />
+        <div class="flex items-start gap-4">
+          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-600 ring-1 ring-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-800/60">
+            <Icon name="exclamationCircle" size="md" />
           </div>
-          <p class="text-sm text-amber-700 dark:text-amber-400">
-            {{ t('auth.registrationDisabled') }}
-          </p>
+          <div class="min-w-0">
+            <p class="text-sm font-semibold text-amber-900 dark:text-amber-100">
+              {{ t('auth.registrationDisabled') }}
+            </p>
+            <p class="mt-1 text-xs leading-5 text-amber-700/80 dark:text-amber-200/80">
+              {{ t('auth.alreadyHaveAccount') }}
+              <router-link
+                to="/login"
+                class="font-semibold text-amber-700 underline-offset-2 hover:underline dark:text-amber-200"
+              >
+                {{ t('auth.signIn') }}
+              </router-link>
+            </p>
+          </div>
         </div>
       </div>
 
