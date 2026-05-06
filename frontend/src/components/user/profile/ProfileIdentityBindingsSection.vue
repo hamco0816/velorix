@@ -12,8 +12,8 @@
       </p>
     </div>
 
-    <div :class="props.embedded ? 'space-y-4' : 'divide-y divide-gray-100 dark:divide-dark-700'">
-      <div v-if="props.embedded">
+    <div :class="props.embedded ? compact ? 'grid gap-3 md:grid-cols-2' : 'space-y-4' : 'divide-y divide-gray-100 dark:divide-dark-700'">
+      <div v-if="props.embedded" :class="compact ? 'md:col-span-2' : ''">
         <p class="text-sm font-semibold text-gray-900 dark:text-white">
           {{ t('profile.authBindings.title') }}
         </p>
@@ -282,7 +282,7 @@ const compact = computed(() => props.compact)
 const rowClass = computed(() =>
   props.embedded
     ? compact.value
-      ? 'rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-dark-700 dark:bg-dark-900/40'
+      ? 'rounded-2xl border border-gray-100 bg-gray-50/80 p-4 shadow-sm dark:border-dark-700 dark:bg-dark-900/40'
       : 'rounded-2xl border border-gray-100 bg-gray-50/70 p-4 dark:border-dark-700 dark:bg-dark-900/30'
     : 'px-6 py-5'
 )

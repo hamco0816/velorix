@@ -2,7 +2,7 @@
   <AppLayout>
     <div
       data-testid="profile-shell"
-      class="mx-auto max-w-[1180px] space-y-6"
+      class="mx-auto max-w-[1120px] space-y-6 pb-10"
     >
       <ProfileInfoCard
         :user="user"
@@ -14,11 +14,11 @@
         :wechat-mp-enabled="wechatOAuthMPEnabled"
       />
 
-      <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div class="space-y-6">
           <section
             data-testid="profile-security-panel"
-            class="card border border-gray-100 bg-white/95 dark:border-dark-700 dark:bg-dark-900/60"
+            class="card border border-gray-100 bg-white/95 shadow-sm shadow-gray-200/50 dark:border-dark-700 dark:bg-dark-900/60 dark:shadow-none"
           >
             <div class="border-b border-gray-100 px-6 py-4 dark:border-dark-700">
               <h2 class="text-lg font-semibold text-gray-900 dark:text-white">

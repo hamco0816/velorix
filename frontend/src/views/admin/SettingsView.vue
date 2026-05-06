@@ -4563,20 +4563,32 @@
         <!-- Tab: Payment -->
         <div v-show="activeTab === 'payment'" class="space-y-6">
           <!-- Payment System Settings -->
-          <div class="card">
+          <div class="card overflow-hidden">
             <div
-              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
+              class="flex flex-col gap-4 border-b border-gray-100 bg-white px-6 py-5 dark:border-dark-700 dark:bg-dark-900 sm:flex-row sm:items-center sm:justify-between"
             >
-              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-                {{ t("admin.settings.payment.title") }}
-              </h2>
-              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                {{ t("admin.settings.payment.description") }}
-              </p>
+              <div>
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                  {{ t("admin.settings.payment.title") }}
+                </h2>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  {{ t("admin.settings.payment.description") }}
+                </p>
+              </div>
+              <span
+                :class="[
+                  'inline-flex w-fit rounded-full px-3 py-1 text-xs font-semibold',
+                  form.payment_enabled
+                    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
+                    : 'bg-gray-100 text-gray-500 dark:bg-dark-700 dark:text-gray-300',
+                ]"
+              >
+                {{ form.payment_enabled ? t("common.enabled") : t("common.disabled") }}
+              </span>
             </div>
-            <div class="space-y-4 p-6">
+            <div class="space-y-6 p-6">
               <!-- Enable toggle -->
-              <div class="flex items-center justify-between">
+              <div class="flex items-center justify-between rounded-2xl border border-gray-100 bg-gray-50/80 p-4 dark:border-dark-700 dark:bg-dark-800/50">
                 <div>
                   <label class="font-medium text-gray-900 dark:text-white">{{
                     t("admin.settings.payment.enabled")
@@ -4589,7 +4601,7 @@
               </div>
               <template v-if="form.payment_enabled">
                 <!-- Row 1: Product name -->
-                <div class="grid grid-cols-3 gap-3">
+                <div class="grid grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-dark-700 dark:bg-dark-900/60 md:grid-cols-3">
                   <div>
                     <label class="input-label">{{
                       t("admin.settings.payment.productNamePrefix")
@@ -4617,7 +4629,7 @@
                       t("admin.settings.payment.preview")
                     }}</label>
                     <div
-                      class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-600 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-300"
+                      class="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-700 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-200"
                     >
                       {{
                         (form.payment_product_name_prefix || "Sub2API") +
@@ -4628,7 +4640,7 @@
                   </div>
                 </div>
                 <!-- Row 2: Balance toggle + amounts -->
-                <div class="grid grid-cols-2 gap-3 sm:grid-cols-5">
+                <div class="grid grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-dark-700 dark:bg-dark-900/60 sm:grid-cols-2 xl:grid-cols-6">
                   <div>
                     <label class="input-label">{{
                       t("admin.settings.payment.minAmount")
@@ -4788,7 +4800,7 @@
                   </div>
                 </div>
                 <!-- Row 3: Pending orders + load balance + cancel rate limit (all in one row) -->
-                <div class="flex flex-wrap items-end gap-4">
+                <div class="flex flex-wrap items-end gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-dark-700 dark:bg-dark-900/60">
                   <div class="w-28">
                     <label class="input-label">{{
                       t("admin.settings.payment.maxPendingOrders")
@@ -4814,7 +4826,7 @@
                     <label class="input-label">{{
                       t("admin.settings.payment.cancelRateLimit")
                     }}</label>
-                    <div class="flex items-center gap-2">
+                    <div class="flex flex-wrap items-center gap-2 rounded-xl bg-gray-50 p-2 dark:bg-dark-800">
                       <button
                         type="button"
                         :class="[
@@ -4902,7 +4914,7 @@
                   </div>
                 </div>
                 <!-- Row 4: Enabled payment types (provider badges like sub2apipay) -->
-                <div>
+                <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-dark-700 dark:bg-dark-900/60">
                   <label class="input-label">{{
                     t("admin.settings.payment.enabledPaymentTypes")
                   }}</label>
@@ -4913,7 +4925,7 @@
                       type="button"
                       @click="togglePaymentType(pt.value)"
                       :class="[
-                        'rounded-lg border px-3 py-1.5 text-sm font-medium transition-all',
+                        'rounded-xl border px-3 py-2 text-sm font-medium transition-all',
                         isPaymentTypeEnabled(pt.value)
                           ? 'border-primary-500 bg-primary-500 text-white shadow-sm'
                           : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400 hover:bg-gray-50 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-300 dark:hover:border-dark-500',
@@ -4927,7 +4939,7 @@
                   </p>
                 </div>
                 <!-- Row 5: Help image + text -->
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-dark-700 dark:bg-dark-900/60 lg:grid-cols-2">
                   <div>
                     <label class="input-label">{{
                       t("admin.settings.payment.helpImage")
@@ -4947,7 +4959,7 @@
                     }}</label>
                     <textarea
                       v-model="form.payment_help_text"
-                      rows="3"
+                      rows="5"
                       class="input"
                       :placeholder="
                         t('admin.settings.payment.helpTextPlaceholder')

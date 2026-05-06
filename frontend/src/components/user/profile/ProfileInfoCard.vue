@@ -2,9 +2,9 @@
   <div class="space-y-6">
     <section
       data-testid="profile-overview-hero"
-      class="card overflow-hidden border border-primary-100/80 bg-gradient-to-br from-primary-50 via-white to-amber-50/70 dark:border-primary-900/40 dark:from-primary-950/40 dark:via-dark-900 dark:to-dark-950"
+      class="card overflow-hidden border border-gray-100 bg-white/95 shadow-sm shadow-gray-200/60 dark:border-dark-700 dark:bg-dark-900/70 dark:shadow-none"
     >
-      <div class="px-6 py-6 md:px-8">
+      <div class="bg-gradient-to-br from-white via-primary-50/45 to-slate-50 px-6 py-6 dark:from-dark-900 dark:via-primary-950/25 dark:to-dark-950 md:px-8">
         <div class="flex flex-col gap-6 lg:flex-row lg:items-start">
           <div
             class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-primary-500 to-primary-600 text-2xl font-bold text-white shadow-lg shadow-primary-500/20"
@@ -61,7 +61,7 @@
             <div class="grid gap-3 sm:grid-cols-3">
               <div
                 data-testid="profile-overview-metric-balance"
-                class="rounded-2xl bg-white/85 px-4 py-3 shadow-sm ring-1 ring-white/70 dark:bg-dark-900/60 dark:ring-dark-700"
+                class="rounded-2xl bg-white/90 px-4 py-3 shadow-sm ring-1 ring-gray-100 dark:bg-dark-900/70 dark:ring-dark-700"
               >
                 <p class="text-xs font-medium uppercase tracking-[0.16em] text-gray-400 dark:text-gray-500">
                   {{ t('profile.accountBalance') }}
@@ -72,7 +72,7 @@
               </div>
               <div
                 data-testid="profile-overview-metric-concurrency"
-                class="rounded-2xl bg-white/85 px-4 py-3 shadow-sm ring-1 ring-white/70 dark:bg-dark-900/60 dark:ring-dark-700"
+                class="rounded-2xl bg-white/90 px-4 py-3 shadow-sm ring-1 ring-gray-100 dark:bg-dark-900/70 dark:ring-dark-700"
               >
                 <p class="text-xs font-medium uppercase tracking-[0.16em] text-gray-400 dark:text-gray-500">
                   {{ t('profile.concurrencyLimit') }}
@@ -83,7 +83,7 @@
               </div>
               <div
                 data-testid="profile-overview-metric-member-since"
-                class="rounded-2xl bg-white/85 px-4 py-3 shadow-sm ring-1 ring-white/70 dark:bg-dark-900/60 dark:ring-dark-700"
+                class="rounded-2xl bg-white/90 px-4 py-3 shadow-sm ring-1 ring-gray-100 dark:bg-dark-900/70 dark:ring-dark-700"
               >
                 <p class="text-xs font-medium uppercase tracking-[0.16em] text-gray-400 dark:text-gray-500">
                   {{ t('profile.memberSince') }}
@@ -102,7 +102,7 @@
       <div data-testid="profile-main-column" class="space-y-6">
         <section
           data-testid="profile-basics-panel"
-          class="card border border-gray-100 bg-white/90 p-6 dark:border-dark-700 dark:bg-dark-900/50"
+          class="card border border-gray-100 bg-white/95 p-5 shadow-sm shadow-gray-200/50 dark:border-dark-700 dark:bg-dark-900/60 dark:shadow-none"
         >
           <div class="mb-5 flex items-start justify-between gap-4">
             <div>
@@ -115,15 +115,15 @@
             </div>
           </div>
 
-          <div class="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
-            <div class="rounded-3xl border border-gray-100 bg-gray-50/80 p-5 dark:border-dark-700 dark:bg-dark-900/30">
+          <div class="grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
+            <div class="rounded-2xl border border-gray-100 bg-gray-50/70 p-5 dark:border-dark-700 dark:bg-dark-900/30">
               <ProfileAvatarCard
                 :user="user"
                 embedded
               />
             </div>
 
-            <div class="rounded-3xl border border-gray-100 bg-gray-50/80 p-5 dark:border-dark-700 dark:bg-dark-900/30">
+            <div class="rounded-2xl border border-gray-100 bg-gray-50/70 p-5 dark:border-dark-700 dark:bg-dark-900/30">
               <ProfileEditForm
                 :initial-username="user?.username || ''"
                 embedded
@@ -134,7 +134,7 @@
 
         <section
           data-testid="profile-auth-bindings-panel"
-          class="card border border-gray-100 bg-white/90 p-6 dark:border-dark-700 dark:bg-dark-900/50"
+          class="card border border-gray-100 bg-white/95 p-5 shadow-sm shadow-gray-200/50 dark:border-dark-700 dark:bg-dark-900/60 dark:shadow-none"
         >
           <ProfileIdentityBindingsSection
             :user="user"
