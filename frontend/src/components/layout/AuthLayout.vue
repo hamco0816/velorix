@@ -18,15 +18,12 @@
     <!-- Content Container -->
     <div class="relative z-10 w-full max-w-[440px]">
       <!-- Logo/Brand -->
-      <div class="mb-7 text-center">
-        <!-- Custom Logo or Default Logo -->
-        <template v-if="settingsLoaded">
-          <div
-            class="inline-flex h-24 w-24 items-center justify-center overflow-hidden rounded-[1.75rem] bg-white p-1 shadow-xl shadow-slate-200/80 ring-1 ring-slate-200/80 dark:bg-dark-900 dark:shadow-black/30 dark:ring-dark-700"
-          >
-            <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
-          </div>
-        </template>
+      <div class="mb-7 flex justify-center">
+        <div
+          class="inline-flex h-24 w-24 items-center justify-center overflow-hidden rounded-[1.75rem] bg-white p-1 shadow-xl shadow-slate-200/80 ring-1 ring-slate-200/80 dark:bg-dark-900 dark:shadow-black/30 dark:ring-dark-700"
+        >
+          <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
+        </div>
       </div>
 
       <!-- Card Container -->
@@ -56,7 +53,6 @@ const appStore = useAppStore()
 
 const siteName = computed(() => appStore.siteName || 'Sub2API')
 const siteLogo = computed(() => sanitizeUrl(appStore.siteLogo || '', { allowRelative: true, allowDataUrl: true }))
-const settingsLoaded = computed(() => appStore.publicSettingsLoaded)
 
 const currentYear = computed(() => new Date().getFullYear())
 
@@ -65,8 +61,4 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
-.text-gradient {
-  @apply bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent;
-}
-</style>
+<style scoped></style>

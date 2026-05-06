@@ -11,38 +11,13 @@
         </p>
       </div>
 
-      <div v-if="linuxdoOAuthEnabled || wechatOAuthEnabled || oidcOAuthEnabled" class="space-y-4">
-        <LinuxDoOAuthSection
-          v-if="linuxdoOAuthEnabled"
-          :disabled="isLoading"
-          :aff-code="formData.aff_code"
-          :show-divider="false"
-        />
-        <WechatOAuthSection
-          v-if="wechatOAuthEnabled"
-          :disabled="isLoading"
-          :aff-code="formData.aff_code"
-          :show-divider="false"
-        />
-        <OidcOAuthSection
-          v-if="oidcOAuthEnabled"
-          :disabled="isLoading"
-          :provider-name="oidcOAuthProviderName"
-          :aff-code="formData.aff_code"
-          :show-divider="false"
-        />
-        <div class="flex items-center gap-3">
-          <div class="h-px flex-1 bg-gray-200 dark:bg-dark-700"></div>
-          <span class="text-xs text-gray-500 dark:text-dark-400">
-            {{ t('auth.oauthOrContinue') }}
-          </span>
-          <div class="h-px flex-1 bg-gray-200 dark:bg-dark-700"></div>
-        </div>
+      <div v-if="!settingsLoaded" class="flex items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 py-14 dark:border-dark-700 dark:bg-dark-800/60">
+        <div class="h-7 w-7 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
       </div>
 
       <!-- Registration Disabled Message -->
       <div
-        v-if="!registrationEnabled && settingsLoaded"
+        v-else-if="!registrationEnabled"
         class="overflow-hidden rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 via-white to-orange-50 p-5 shadow-sm shadow-amber-100/70 dark:border-amber-800/50 dark:from-amber-950/30 dark:via-dark-900 dark:to-dark-900 dark:shadow-none"
       >
         <div class="flex items-start gap-4">
@@ -66,8 +41,38 @@
         </div>
       </div>
 
-      <!-- Registration Form -->
-      <form v-else @submit.prevent="handleRegister" class="space-y-5">
+      <template v-else>
+        <div v-if="linuxdoOAuthEnabled || wechatOAuthEnabled || oidcOAuthEnabled" class="space-y-4">
+          <LinuxDoOAuthSection
+            v-if="linuxdoOAuthEnabled"
+            :disabled="isLoading"
+            :aff-code="formData.aff_code"
+            :show-divider="false"
+          />
+          <WechatOAuthSection
+            v-if="wechatOAuthEnabled"
+            :disabled="isLoading"
+            :aff-code="formData.aff_code"
+            :show-divider="false"
+          />
+          <OidcOAuthSection
+            v-if="oidcOAuthEnabled"
+            :disabled="isLoading"
+            :provider-name="oidcOAuthProviderName"
+            :aff-code="formData.aff_code"
+            :show-divider="false"
+          />
+          <div class="flex items-center gap-3">
+            <div class="h-px flex-1 bg-gray-200 dark:bg-dark-700"></div>
+            <span class="text-xs text-gray-500 dark:text-dark-400">
+              {{ t('auth.oauthOrContinue') }}
+            </span>
+            <div class="h-px flex-1 bg-gray-200 dark:bg-dark-700"></div>
+          </div>
+        </div>
+
+        <!-- Registration Form -->
+        <form @submit.prevent="handleRegister" class="space-y-5">
         <!-- Email Input -->
         <div>
           <label for="email" class="input-label">
@@ -267,7 +272,8 @@
                 : t('auth.createAccount')
           }}
         </button>
-      </form>
+        </form>
+      </template>
     </div>
 
     <!-- Footer -->
@@ -330,7 +336,7 @@ const errorMessage = ref<string>('')
 const showPassword = ref<boolean>(false)
 
 // Public settings
-const registrationEnabled = ref<boolean>(true)
+const registrationEnabled = ref<boolean>(false)
 const emailVerifyEnabled = ref<boolean>(false)
 const promoCodeEnabled = ref<boolean>(true)
 const invitationCodeEnabled = ref<boolean>(false)
@@ -686,6 +692,10 @@ function validateForm(): boolean {
 // ==================== Form Handlers ====================
 
 async function handleRegister(): Promise<void> {
+  if (!settingsLoaded.value || !registrationEnabled.value) {
+    return
+  }
+
   // Clear previous error
   errorMessage.value = ''
 

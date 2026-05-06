@@ -149,7 +149,8 @@
 
     <!-- Footer -->
     <template v-if="!backendModeEnabled" #footer>
-      <p class="text-gray-500 dark:text-dark-400">
+      <p v-if="!settingsLoaded" class="h-5 text-gray-400 dark:text-dark-500"></p>
+      <p v-else-if="registrationEnabled" class="text-gray-500 dark:text-dark-400">
         {{ t('auth.dontHaveAccount') }}
         <router-link
           to="/register"
@@ -157,6 +158,9 @@
         >
           {{ t('auth.signUp') }}
         </router-link>
+      </p>
+      <p v-else class="text-sm text-gray-400 dark:text-dark-500">
+        {{ t('auth.registrationDisabled') }}
       </p>
     </template>
   </AuthLayout>
@@ -201,8 +205,10 @@ const appStore = useAppStore()
 const isLoading = ref<boolean>(false)
 const errorMessage = ref<string>('')
 const showPassword = ref<boolean>(false)
+const settingsLoaded = ref<boolean>(false)
 
 // Public settings
+const registrationEnabled = ref<boolean>(false)
 const turnstileEnabled = ref<boolean>(false)
 const turnstileSiteKey = ref<string>('')
 const linuxdoOAuthEnabled = ref<boolean>(false)
@@ -265,8 +271,11 @@ onMounted(async () => {
     oidcOAuthProviderName.value = settings.oidc_oauth_provider_name || 'OIDC'
     backendModeEnabled.value = settings.backend_mode_enabled
     passwordResetEnabled.value = settings.password_reset_enabled
+    registrationEnabled.value = settings.registration_enabled
   } catch (error) {
     console.error('Failed to load public settings:', error)
+  } finally {
+    settingsLoaded.value = true
   }
 })
 

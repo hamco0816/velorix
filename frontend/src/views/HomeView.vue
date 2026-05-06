@@ -176,10 +176,10 @@
             }}</span>
           </div>
           <div
-            class="inline-flex items-center gap-2 rounded border border-emerald-200 bg-emerald-50 px-3 py-1.5 dark:border-emerald-900/50 dark:bg-emerald-950/25"
+            class="inline-flex items-center gap-2 rounded border border-gray-200 bg-white px-3 py-1.5 dark:border-dark-700 dark:bg-dark-800"
           >
-            <Icon name="creditCard" size="sm" class="text-emerald-600 dark:text-emerald-300" />
-            <span class="text-sm font-medium text-emerald-700 dark:text-emerald-200">{{
+            <Icon name="creditCard" size="sm" class="text-brand-700 dark:text-brand-400" />
+            <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
               t('home.tags.subscriptionPayment')
             }}</span>
           </div>

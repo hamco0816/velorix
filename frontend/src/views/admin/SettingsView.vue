@@ -4799,38 +4799,44 @@
                     </p>
                   </div>
                 </div>
-                <!-- Row 3: Pending orders + load balance + cancel rate limit (all in one row) -->
-                <div class="flex flex-wrap items-end gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-dark-700 dark:bg-dark-900/60">
-                  <div class="w-28">
+                <!-- Row 3: Pending orders + load balance + cancel rate limit -->
+                <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(420px,2fr)]">
+                  <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-dark-700 dark:bg-dark-900/60">
                     <label class="input-label">{{
                       t("admin.settings.payment.maxPendingOrders")
-                    }}</label
-                    ><input
+                    }}</label>
+                    <input
                       v-model.number="form.payment_max_pending_orders"
                       type="number"
                       min="1"
                       class="input"
                     />
                   </div>
-                  <div>
+                  <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-dark-700 dark:bg-dark-900/60">
                     <label class="input-label">{{
                       t("admin.settings.payment.loadBalanceStrategy")
                     }}</label>
                     <Select
                       v-model="form.payment_load_balance_strategy"
                       :options="loadBalanceOptions"
-                      class="w-40"
+                      class="w-full"
                     />
                   </div>
-                  <div>
-                    <label class="input-label">{{
-                      t("admin.settings.payment.cancelRateLimit")
-                    }}</label>
-                    <div class="flex flex-wrap items-center gap-2 rounded-xl bg-gray-50 p-2 dark:bg-dark-800">
+                  <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-dark-700 dark:bg-dark-900/60">
+                    <div class="flex items-start justify-between gap-4">
+                      <div class="min-w-0">
+                        <label class="input-label mb-1">{{
+                          t("admin.settings.payment.cancelRateLimit")
+                        }}</label>
+                        <p class="text-xs leading-5 text-gray-400 dark:text-gray-500">
+                          {{ t("admin.settings.payment.cancelRateLimitHint") }}
+                        </p>
+                      </div>
                       <button
                         type="button"
+                        :aria-pressed="form.payment_cancel_rate_limit_enabled"
                         :class="[
-                          'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                          'relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
                           form.payment_cancel_rate_limit_enabled
                             ? 'bg-primary-500'
                             : 'bg-gray-300 dark:bg-dark-600',
@@ -4842,74 +4848,71 @@
                       >
                         <span
                           :class="[
-                            'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                            'pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
                             form.payment_cancel_rate_limit_enabled
                               ? 'translate-x-5'
                               : 'translate-x-0',
                           ]"
                         />
                       </button>
-                      <Select
-                        v-model="form.payment_cancel_rate_limit_window_mode"
-                        :options="cancelRateLimitModeOptions"
-                        class="w-24"
-                        :disabled="!form.payment_cancel_rate_limit_enabled"
-                      />
-                      <span
-                        :class="[
-                          'text-sm whitespace-nowrap',
-                          form.payment_cancel_rate_limit_enabled
-                            ? 'text-gray-700 dark:text-gray-300'
-                            : 'text-gray-400 dark:text-gray-600',
-                        ]"
-                        >{{
-                          t("admin.settings.payment.cancelRateLimitEvery")
-                        }}</span
-                      >
-                      <input
-                        v-model.number="form.payment_cancel_rate_limit_window"
-                        type="number"
-                        min="1"
-                        required
-                        class="input w-14 text-center"
-                        :disabled="!form.payment_cancel_rate_limit_enabled"
-                      />
-                      <Select
-                        v-model="form.payment_cancel_rate_limit_unit"
-                        :options="cancelRateLimitUnitOptions"
-                        class="w-28"
-                        :disabled="!form.payment_cancel_rate_limit_enabled"
-                      />
-                      <span
-                        :class="[
-                          'text-sm whitespace-nowrap',
-                          form.payment_cancel_rate_limit_enabled
-                            ? 'text-gray-700 dark:text-gray-300'
-                            : 'text-gray-400 dark:text-gray-600',
-                        ]"
-                        >{{
-                          t("admin.settings.payment.cancelRateLimitAllowMax")
-                        }}</span
-                      >
-                      <input
-                        v-model.number="form.payment_cancel_rate_limit_max"
-                        type="number"
-                        min="1"
-                        required
-                        class="input w-14 text-center"
-                        :disabled="!form.payment_cancel_rate_limit_enabled"
-                      />
-                      <span
-                        :class="[
-                          'text-sm whitespace-nowrap',
-                          form.payment_cancel_rate_limit_enabled
-                            ? 'text-gray-700 dark:text-gray-300'
-                            : 'text-gray-400 dark:text-gray-600',
-                        ]"
-                        >{{
-                          t("admin.settings.payment.cancelRateLimitTimes")
-                        }}</span
-                      >
+                    </div>
+
+                    <div
+                      :class="[
+                        'mt-4 grid gap-3 transition-opacity sm:grid-cols-2 xl:grid-cols-4',
+                        form.payment_cancel_rate_limit_enabled ? 'opacity-100' : 'opacity-55',
+                      ]"
+                    >
+                      <div>
+                        <span class="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                          {{ t("admin.settings.payment.cancelRateLimitWindowMode") }}
+                        </span>
+                        <Select
+                          v-model="form.payment_cancel_rate_limit_window_mode"
+                          :options="cancelRateLimitModeOptions"
+                          class="w-full"
+                          :disabled="!form.payment_cancel_rate_limit_enabled"
+                        />
+                      </div>
+                      <div class="xl:col-span-2">
+                        <span class="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                          {{ t("admin.settings.payment.cancelRateLimitWindow") }}
+                        </span>
+                        <div class="grid grid-cols-[88px_minmax(0,1fr)] gap-2">
+                          <input
+                            v-model.number="form.payment_cancel_rate_limit_window"
+                            type="number"
+                            min="1"
+                            required
+                            class="input text-center"
+                            :disabled="!form.payment_cancel_rate_limit_enabled"
+                          />
+                          <Select
+                            v-model="form.payment_cancel_rate_limit_unit"
+                            :options="cancelRateLimitUnitOptions"
+                            class="w-full"
+                            :disabled="!form.payment_cancel_rate_limit_enabled"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <span class="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                          {{ t("admin.settings.payment.cancelRateLimitMax") }}
+                        </span>
+                        <div class="relative">
+                          <input
+                            v-model.number="form.payment_cancel_rate_limit_max"
+                            type="number"
+                            min="1"
+                            required
+                            class="input pr-10 text-center"
+                            :disabled="!form.payment_cancel_rate_limit_enabled"
+                          />
+                          <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-gray-400">
+                            {{ t("admin.settings.payment.cancelRateLimitTimes") }}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
