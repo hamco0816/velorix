@@ -27,21 +27,30 @@ import (
 
 // 虎皮椒接口地址、签名相关常量。
 const (
-	xunhupayDefaultAPIBase    = "https://api.xunhupay.com"
-	xunhupayPathPay           = "/payment/do.html"
-	xunhupayPathQuery         = "/payment/query.html"
-	xunhupayHTTPTimeout       = 10 * time.Second
-	xunhupayMaxResponseSize   = 1 << 20
-	xunhupayAPIVersion        = "1.1"
-	xunhupayWxPayChannel      = "wechat"
-	xunhupayAlipayChannel     = "alipay"
-	xunhupaySuccessACK        = "success"
-	xunhupayStatusPaid        = "OD"
-	xunhupayStatusRefunded    = "CD"
-	xunhupayStatusRefunding   = "RD"
-	xunhupayStatusRefundFail  = "UD"
-	xunhupayResponseSummaryMx = 512
+	xunhupayDefaultAPIBase       = "https://api.xunhupay.com"
+	xunhupayPathPay              = "/payment/do.html"
+	xunhupayPathQuery            = "/payment/query.html"
+	xunhupayHTTPTimeout          = 10 * time.Second
+	xunhupayMaxResponseSize      = 1 << 20
+	xunhupayAPIVersion           = "1.1"
+	xunhupayWxPayChannel         = "wechat"
+	xunhupayAlipayChannel        = "alipay"
+	xunhupaySuccessACK           = "success"
+	xunhupayNotifyStatusPaid     = "OD"
+	xunhupayNotifyStatusRefunded = "CD"
+	xunhupayQueryStatusPaid      = "OD"
+	xunhupayQueryStatusPending   = "WP"
+	xunhupayQueryStatusClosed    = "CD"
+	xunhupayStatusRefunding      = "RD"
+	xunhupayStatusRefundFail     = "UD"
+	xunhupayResponseSummaryMx    = 512
 )
+
+type xunhupayCredential struct {
+	AppID     string
+	AppSecret string
+	Scope     string
+}
 
 // Xunhupay 实现 payment.Provider，对接虎皮椒聚合支付平台。
 type Xunhupay struct {
@@ -54,10 +63,11 @@ type Xunhupay struct {
 // 必填 config：appid、appsecret、notifyUrl
 // 可选 config：returnUrl、callbackUrl、apiBase
 func NewXunhupay(instanceID string, config map[string]string) (*Xunhupay, error) {
-	for _, k := range []string{"appid", "appsecret", "notifyUrl"} {
-		if strings.TrimSpace(config[k]) == "" {
-			return nil, fmt.Errorf("xunhupay config missing required key: %s", k)
-		}
+	if strings.TrimSpace(config["notifyUrl"]) == "" {
+		return nil, fmt.Errorf("xunhupay config missing required key: notifyUrl")
+	}
+	if len(xunhupayCredentials(config, "")) == 0 {
+		return nil, fmt.Errorf("xunhupay config requires at least one appid/appsecret pair")
 	}
 	cfg := make(map[string]string, len(config))
 	for k, v := range config {
@@ -69,6 +79,127 @@ func NewXunhupay(instanceID string, config map[string]string) (*Xunhupay, error)
 		config:     cfg,
 		httpClient: &http.Client{Timeout: xunhupayHTTPTimeout},
 	}, nil
+}
+
+func xunhupayConfigValue(config map[string]string, keys ...string) string {
+	for _, key := range keys {
+		for actualKey, value := range config {
+			if strings.EqualFold(actualKey, key) {
+				if trimmed := strings.TrimSpace(value); trimmed != "" {
+					return trimmed
+				}
+			}
+		}
+	}
+	return ""
+}
+
+func xunhupayCredentialFrom(config map[string]string, scope string, appKeys []string, secretKeys []string) (xunhupayCredential, bool) {
+	cred := xunhupayCredential{
+		AppID:     xunhupayConfigValue(config, appKeys...),
+		AppSecret: xunhupayConfigValue(config, secretKeys...),
+		Scope:     scope,
+	}
+	return cred, cred.AppID != "" && cred.AppSecret != ""
+}
+
+func xunhupayCredentials(config map[string]string, paymentType string) []xunhupayCredential {
+	seen := map[string]struct{}{}
+	add := func(out *[]xunhupayCredential, cred xunhupayCredential) {
+		if cred.AppID == "" || cred.AppSecret == "" {
+			return
+		}
+		key := cred.Scope + "\x00" + cred.AppID
+		if _, ok := seen[key]; ok {
+			return
+		}
+		seen[key] = struct{}{}
+		*out = append(*out, cred)
+	}
+
+	var credentials []xunhupayCredential
+	baseType := payment.GetBasePaymentType(strings.TrimSpace(paymentType))
+	alipayCred, hasAlipay := xunhupayCredentialFrom(config, payment.TypeAlipay,
+		[]string{"alipayAppId", "alipayAppID", "alipayAppid", "appidAlipay", "appIdAlipay"},
+		[]string{"alipayAppSecret", "alipayAppsecret", "appsecretAlipay", "appSecretAlipay"},
+	)
+	wxpayCred, hasWxpay := xunhupayCredentialFrom(config, payment.TypeWxpay,
+		[]string{"wxpayAppId", "wxpayAppID", "wxpayAppid", "wechatAppId", "wechatAppID", "appidWxpay", "appIdWxpay"},
+		[]string{"wxpayAppSecret", "wxpayAppsecret", "wechatAppSecret", "appsecretWxpay", "appSecretWxpay"},
+	)
+	legacyCred, hasLegacy := xunhupayCredentialFrom(config, "legacy",
+		[]string{"appid", "appId", "appID"},
+		[]string{"appsecret", "appSecret", "appSECRET"},
+	)
+
+	switch baseType {
+	case payment.TypeAlipay:
+		if hasAlipay {
+			add(&credentials, alipayCred)
+		}
+		if hasLegacy {
+			add(&credentials, legacyCred)
+		}
+	case payment.TypeWxpay:
+		if hasWxpay {
+			add(&credentials, wxpayCred)
+		}
+		if hasLegacy {
+			add(&credentials, legacyCred)
+		}
+	default:
+		if hasLegacy {
+			add(&credentials, legacyCred)
+		}
+		if hasAlipay {
+			add(&credentials, alipayCred)
+		}
+		if hasWxpay {
+			add(&credentials, wxpayCred)
+		}
+	}
+	return credentials
+}
+
+func xunhupayCredentialForPayment(config map[string]string, paymentType string) (xunhupayCredential, error) {
+	credentials := xunhupayCredentials(config, paymentType)
+	if len(credentials) == 0 {
+		return xunhupayCredential{}, fmt.Errorf("xunhupay credentials missing for payment type: %s", paymentType)
+	}
+	return credentials[0], nil
+}
+
+func xunhupayCredentialsForAppID(config map[string]string, appID string) []xunhupayCredential {
+	appID = strings.TrimSpace(appID)
+	if appID == "" {
+		return nil
+	}
+	var out []xunhupayCredential
+	for _, cred := range xunhupayCredentials(config, "") {
+		if strings.EqualFold(cred.AppID, appID) {
+			out = append(out, cred)
+		}
+	}
+	return out
+}
+
+// ResolveXunhupayAppID returns the merchant appid used for a payment type.
+// It keeps old single-appid configs working while allowing separate Alipay and
+// WeChat credentials in one Xunhupay instance.
+func ResolveXunhupayAppID(config map[string]string, paymentType string) string {
+	cred, err := xunhupayCredentialForPayment(config, paymentType)
+	if err != nil {
+		return ""
+	}
+	return cred.AppID
+}
+
+func ValidateXunhupayPaymentTypeConfig(config map[string]string, paymentType string) error {
+	if xunhupayPaymentChannel(paymentType) == "" {
+		return nil
+	}
+	_, err := xunhupayCredentialForPayment(config, paymentType)
+	return err
 }
 
 func normalizeXunhupayAPIBase(apiBase string) string {
@@ -114,19 +245,22 @@ func (x *Xunhupay) MerchantIdentityMetadata() map[string]string {
 	if x == nil {
 		return nil
 	}
-	appid := strings.TrimSpace(x.config["appid"])
-	if appid == "" {
+	credentials := xunhupayCredentials(x.config, "")
+	if len(credentials) != 1 {
 		return nil
 	}
-	return map[string]string{"appid": appid}
+	return map[string]string{"appid": credentials[0].AppID}
 }
 
 // CreatePayment 调用虎皮椒下单接口，返回跳转链接或扫码地址。
 func (x *Xunhupay) CreatePayment(ctx context.Context, req payment.CreatePaymentRequest) (*payment.CreatePaymentResponse, error) {
 	notifyURL, returnURL := x.resolveURLs(req)
-	channel := xunhupayPaymentChannel(req.PaymentType)
-	if channel == "" {
+	if xunhupayPaymentChannel(req.PaymentType) == "" {
 		return nil, fmt.Errorf("xunhupay unsupported payment type: %s", req.PaymentType)
+	}
+	cred, err := xunhupayCredentialForPayment(x.config, req.PaymentType)
+	if err != nil {
+		return nil, err
 	}
 
 	nonceStr, err := xunhupayNonce()
@@ -136,15 +270,13 @@ func (x *Xunhupay) CreatePayment(ctx context.Context, req payment.CreatePaymentR
 
 	params := map[string]string{
 		"version":        xunhupayAPIVersion,
-		"appid":          x.config["appid"],
+		"appid":          cred.AppID,
 		"trade_order_id": req.OrderID,
 		"total_fee":      req.Amount,
 		"title":          req.Subject,
 		"time":           strconv.FormatInt(time.Now().Unix(), 10),
 		"notify_url":     notifyURL,
 		"nonce_str":      nonceStr,
-		"payment":        channel,
-		"type":           xunhupayDeviceType(req.IsMobile),
 	}
 	if returnURL != "" {
 		params["return_url"] = returnURL
@@ -152,13 +284,14 @@ func (x *Xunhupay) CreatePayment(ctx context.Context, req payment.CreatePaymentR
 	if cb := strings.TrimSpace(x.config["callbackUrl"]); cb != "" {
 		params["callback_url"] = cb
 	}
-	if req.ClientIP != "" {
-		params["wap_url"] = req.ClientIP
-	}
-	params["hash"] = xunhupaySign(params, x.config["appsecret"])
+	params["plugins"] = "sub2api"
+	params["hash"] = xunhupaySign(params, cred.AppSecret)
 
 	body, err := x.post(ctx, x.apiBase()+xunhupayPathPay, params)
 	if err != nil {
+		return nil, fmt.Errorf("xunhupay create: %w", err)
+	}
+	if err := xunhupayVerifyResponseHash(body, cred.AppSecret); err != nil {
 		return nil, fmt.Errorf("xunhupay create: %w", err)
 	}
 
@@ -192,20 +325,40 @@ func (x *Xunhupay) CreatePayment(ctx context.Context, req payment.CreatePaymentR
 
 // QueryOrder 通过 query.html 接口查询订单状态。
 func (x *Xunhupay) QueryOrder(ctx context.Context, tradeNo string) (*payment.QueryOrderResponse, error) {
+	var lastErr error
+	for _, cred := range xunhupayCredentials(x.config, "") {
+		for _, orderField := range []string{"out_trade_order", "trade_order_id"} {
+			resp, err := x.queryOrderWithCredential(ctx, tradeNo, cred, orderField)
+			if err == nil {
+				return resp, nil
+			}
+			lastErr = err
+		}
+	}
+	if lastErr != nil {
+		return nil, lastErr
+	}
+	return nil, fmt.Errorf("xunhupay query: no credentials configured")
+}
+
+func (x *Xunhupay) queryOrderWithCredential(ctx context.Context, tradeNo string, cred xunhupayCredential, orderField string) (*payment.QueryOrderResponse, error) {
 	nonceStr, err := xunhupayNonce()
 	if err != nil {
 		return nil, fmt.Errorf("xunhupay nonce: %w", err)
 	}
 	params := map[string]string{
-		"appid":          x.config["appid"],
-		"time":           strconv.FormatInt(time.Now().Unix(), 10),
-		"nonce_str":      nonceStr,
-		"trade_order_id": tradeNo,
+		"appid":     cred.AppID,
+		"time":      strconv.FormatInt(time.Now().Unix(), 10),
+		"nonce_str": nonceStr,
+		orderField:  tradeNo,
 	}
-	params["hash"] = xunhupaySign(params, x.config["appsecret"])
+	params["hash"] = xunhupaySign(params, cred.AppSecret)
 
 	body, err := x.post(ctx, x.apiBase()+xunhupayPathQuery, params)
 	if err != nil {
+		return nil, fmt.Errorf("xunhupay query: %w", err)
+	}
+	if err := xunhupayVerifyResponseHash(body, cred.AppSecret); err != nil {
 		return nil, fmt.Errorf("xunhupay query: %w", err)
 	}
 	var resp struct {
@@ -223,14 +376,14 @@ func (x *Xunhupay) QueryOrder(ctx context.Context, tradeNo string) (*payment.Que
 		return nil, fmt.Errorf("xunhupay parse query: %s", xunhupayResponseSummary(body))
 	}
 	if !xunhupayCodeIsSuccess(resp.ErrCode) {
-		return nil, fmt.Errorf("xunhupay query failed: %s", strings.TrimSpace(resp.ErrMsg))
+		return nil, fmt.Errorf("xunhupay query failed via %s/%s: %s", cred.Scope, orderField, strings.TrimSpace(resp.ErrMsg))
 	}
 	amount, _ := strconv.ParseFloat(resp.Data.TotalFee, 64)
 	return &payment.QueryOrderResponse{
 		TradeNo:  resp.Data.OpenOrderID,
 		Status:   xunhupayMapStatus(resp.Data.Status),
 		Amount:   amount,
-		Metadata: x.MerchantIdentityMetadata(),
+		Metadata: map[string]string{"appid": cred.AppID},
 	}, nil
 }
 
@@ -244,16 +397,26 @@ func (x *Xunhupay) VerifyNotification(_ context.Context, rawBody string, _ map[s
 	if sign == "" {
 		return nil, fmt.Errorf("xunhupay missing hash")
 	}
-	expected := xunhupaySign(params, x.config["appsecret"])
-	if !strings.EqualFold(sign, expected) {
+	credentials := xunhupayCredentialsForAppID(x.config, params["appid"])
+	if len(credentials) == 0 {
+		return nil, fmt.Errorf("xunhupay unknown appid")
+	}
+	valid := false
+	for _, cred := range credentials {
+		if strings.EqualFold(sign, xunhupaySign(params, cred.AppSecret)) {
+			valid = true
+			break
+		}
+	}
+	if !valid {
 		return nil, fmt.Errorf("xunhupay invalid signature")
 	}
 
 	status := payment.ProviderStatusFailed
 	switch params["status"] {
-	case xunhupayStatusPaid:
+	case xunhupayNotifyStatusPaid:
 		status = payment.ProviderStatusSuccess
-	case xunhupayStatusRefunded:
+	case xunhupayNotifyStatusRefunded:
 		status = payment.ProviderStatusRefunded
 	}
 
@@ -312,10 +475,12 @@ func xunhupayDeviceType(isMobile bool) string {
 
 func xunhupayMapStatus(raw string) string {
 	switch raw {
-	case xunhupayStatusPaid:
+	case xunhupayQueryStatusPaid:
 		return payment.ProviderStatusPaid
-	case xunhupayStatusRefunded:
-		return payment.ProviderStatusRefunded
+	case xunhupayQueryStatusClosed:
+		return payment.ProviderStatusFailed
+	case xunhupayQueryStatusPending:
+		return payment.ProviderStatusPending
 	case xunhupayStatusRefunding, xunhupayStatusRefundFail:
 		return payment.ProviderStatusPending
 	}
@@ -374,6 +539,56 @@ func xunhupayCodeIsSuccess(raw json.RawMessage) bool {
 		return true
 	}
 	return false
+}
+
+func xunhupayVerifyResponseHash(body []byte, appsecret string) error {
+	var raw map[string]any
+	if err := json.Unmarshal(body, &raw); err != nil {
+		return nil
+	}
+	hashValue, ok := raw["hash"]
+	if !ok {
+		return nil
+	}
+	hash := strings.TrimSpace(xunhupayStringify(hashValue))
+	if hash == "" {
+		return nil
+	}
+	for _, params := range []map[string]string{
+		xunhupayResponseSignParams(raw, false),
+		xunhupayResponseSignParams(raw, true),
+	} {
+		if strings.EqualFold(hash, xunhupaySign(params, appsecret)) {
+			return nil
+		}
+	}
+	return fmt.Errorf("invalid response signature")
+}
+
+func xunhupayResponseSignParams(raw map[string]any, includeScalarValues bool) map[string]string {
+	params := make(map[string]string, len(raw))
+	for k, v := range raw {
+		if k == "hash" {
+			continue
+		}
+		switch val := v.(type) {
+		case string:
+			params[k] = val
+		case json.Number:
+			if includeScalarValues {
+				params[k] = val.String()
+			}
+		case float64:
+			if includeScalarValues {
+				params[k] = strconv.FormatFloat(val, 'f', -1, 64)
+			}
+		case bool:
+			if includeScalarValues {
+				params[k] = xunhupayStringify(val)
+			}
+		}
+	}
+	return params
 }
 
 // xunhupayParseNotifyBody 同时兼容表单与 JSON 两种回调形式（虎皮椒后台可配置）。

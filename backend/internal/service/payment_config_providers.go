@@ -28,6 +28,18 @@ func (s *PaymentConfigService) validateProviderConfig(providerKey string, config
 	return err
 }
 
+func validateProviderConfigSupportedTypes(providerKey string, config map[string]string, supportedTypes []string) error {
+	if providerKey != payment.TypeXunhupay {
+		return nil
+	}
+	for _, paymentType := range supportedTypes {
+		if err := provider.ValidateXunhupayPaymentTypeConfig(config, paymentType); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // --- Provider Instance CRUD ---
 
 func (s *PaymentConfigService) ListProviderInstances(ctx context.Context) ([]*dbent.PaymentProviderInstance, error) {
@@ -110,11 +122,15 @@ var pendingOrderStatuses = []string{
 // Key matching is case-insensitive. Non-listed keys (e.g. appId, notifyUrl,
 // stripe publishableKey) are returned in plaintext by the admin GET API.
 var providerSensitiveConfigFields = map[string]map[string]struct{}{
-	payment.TypeEasyPay:  {"pkey": {}},
-	payment.TypeXunhupay: {"appsecret": {}},
-	payment.TypeAlipay:   {"privatekey": {}, "publickey": {}, "alipaypublickey": {}},
-	payment.TypeWxpay:    {"privatekey": {}, "apiv3key": {}, "publickey": {}},
-	payment.TypeStripe:   {"secretkey": {}, "webhooksecret": {}},
+	payment.TypeEasyPay: {"pkey": {}},
+	payment.TypeXunhupay: {
+		"appsecret": {}, "alipayappsecret": {}, "wxpayappsecret": {},
+		"wechatappsecret": {}, "appsecretalipay": {}, "appsecretwxpay": {},
+		"appsecretwechat": {},
+	},
+	payment.TypeAlipay: {"privatekey": {}, "publickey": {}, "alipaypublickey": {}},
+	payment.TypeWxpay:  {"privatekey": {}, "apiv3key": {}, "publickey": {}},
+	payment.TypeStripe: {"secretkey": {}, "webhooksecret": {}},
 }
 
 // providerPendingOrderProtectedConfigFields lists config keys that cannot be
@@ -122,11 +138,22 @@ var providerSensitiveConfigFields = map[string]map[string]struct{}{
 // all provider identity fields that are snapshotted into orders or used by
 // webhook/refund verification.
 var providerPendingOrderProtectedConfigFields = map[string]map[string]struct{}{
-	payment.TypeEasyPay:  {"pkey": {}, "pid": {}},
-	payment.TypeXunhupay: {"appsecret": {}, "appid": {}},
-	payment.TypeAlipay:   {"privatekey": {}, "publickey": {}, "alipaypublickey": {}, "appid": {}},
-	payment.TypeWxpay:    {"privatekey": {}, "apiv3key": {}, "publickey": {}, "appid": {}, "mpappid": {}, "mchid": {}, "publickeyid": {}, "certserial": {}},
-	payment.TypeStripe:   {"secretkey": {}, "webhooksecret": {}},
+	payment.TypeEasyPay: {"pkey": {}, "pid": {}},
+	payment.TypeXunhupay: {
+		"appsecret": {}, "appid": {},
+		"alipayappid": {}, "alipayappsecret": {},
+		"wxpayappid": {}, "wxpayappsecret": {},
+		"wechatappid": {}, "wechatappsecret": {},
+		"appidalipay": {}, "appsecretalipay": {},
+		"appidwxpay": {}, "appsecretwxpay": {},
+		"appidwechat": {}, "appsecretwechat": {},
+	},
+	payment.TypeAlipay: {"privatekey": {}, "publickey": {}, "alipaypublickey": {}, "appid": {}},
+	payment.TypeWxpay: {
+		"privatekey": {}, "apiv3key": {}, "publickey": {}, "appid": {},
+		"mpappid": {}, "mchid": {}, "publickeyid": {}, "certserial": {},
+	},
+	payment.TypeStripe: {"secretkey": {}, "webhooksecret": {}},
 }
 
 func isSensitiveProviderConfigField(providerKey, fieldName string) bool {
@@ -191,6 +218,9 @@ func (s *PaymentConfigService) CreateProviderInstance(ctx context.Context, req C
 	}
 	if req.Enabled {
 		if err := s.validateProviderConfig(req.ProviderKey, req.Config); err != nil {
+			return nil, err
+		}
+		if err := validateProviderConfigSupportedTypes(req.ProviderKey, req.Config, req.SupportedTypes); err != nil {
 			return nil, err
 		}
 	}
@@ -296,6 +326,9 @@ func (s *PaymentConfigService) UpdateProviderInstance(ctx context.Context, id in
 			}
 		}
 		if err := s.validateProviderConfig(current.ProviderKey, configToValidate); err != nil {
+			return nil, err
+		}
+		if err := validateProviderConfigSupportedTypes(current.ProviderKey, configToValidate, splitTypes(nextSupportedTypes)); err != nil {
 			return nil, err
 		}
 	}

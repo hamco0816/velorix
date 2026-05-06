@@ -270,7 +270,7 @@ func buildPaymentOrderProviderSnapshot(sel *payment.InstanceSelection, req Creat
 		}
 	}
 	if providerKey == payment.TypeXunhupay {
-		if appID := strings.TrimSpace(sel.Config["appid"]); appID != "" {
+		if appID := strings.TrimSpace(provider.ResolveXunhupayAppID(sel.Config, req.PaymentType)); appID != "" {
 			snapshot["merchant_app_id"] = appID
 		}
 	}

@@ -4,6 +4,9 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"sort"
 	"strings"
@@ -90,7 +93,7 @@ func TestXunhupayVerifyNotificationSuccess(t *testing.T) {
 	form.Set("total_fee", "9.99")
 	form.Set("time", "1700000000")
 	form.Set("nonce_str", "nonce")
-	form.Set("status", xunhupayStatusPaid)
+	form.Set("status", xunhupayNotifyStatusPaid)
 	plain := map[string]string{}
 	for k := range form {
 		plain[k] = form.Get(k)
@@ -112,6 +115,97 @@ func TestXunhupayVerifyNotificationSuccess(t *testing.T) {
 	}
 	if ntf.Metadata["appid"] != "abc" {
 		t.Fatalf("metadata appid mismatch: %+v", ntf.Metadata)
+	}
+}
+
+func TestXunhupayChannelSpecificCredentials(t *testing.T) {
+	x, err := NewXunhupay("inst-1", map[string]string{
+		"alipayAppId":     "ali-app",
+		"alipayAppSecret": "ali-secret",
+		"wxpayAppId":      "wx-app",
+		"wxpayAppSecret":  "wx-secret",
+		"notifyUrl":       "https://example.com/notify",
+	})
+	if err != nil {
+		t.Fatalf("create xunhupay: %v", err)
+	}
+	if got := ResolveXunhupayAppID(x.config, payment.TypeAlipay); got != "ali-app" {
+		t.Fatalf("alipay appid = %q", got)
+	}
+	if got := ResolveXunhupayAppID(x.config, payment.TypeWxpay); got != "wx-app" {
+		t.Fatalf("wxpay appid = %q", got)
+	}
+
+	form := url.Values{}
+	form.Set("appid", "wx-app")
+	form.Set("trade_order_id", "ord_4")
+	form.Set("transaction_id", "tx_4")
+	form.Set("total_fee", "8.80")
+	form.Set("time", "1700000000")
+	form.Set("nonce_str", "nonce")
+	form.Set("status", xunhupayNotifyStatusPaid)
+	plain := map[string]string{}
+	for k := range form {
+		plain[k] = form.Get(k)
+	}
+	form.Set("hash", xunhupaySign(plain, "wx-secret"))
+
+	ntf, err := x.VerifyNotification(context.Background(), form.Encode(), nil)
+	if err != nil {
+		t.Fatalf("verify notification with wx credential: %v", err)
+	}
+	if ntf.Metadata["appid"] != "wx-app" {
+		t.Fatalf("metadata appid mismatch: %+v", ntf.Metadata)
+	}
+}
+
+func TestXunhupayQueryUsesOfficialFieldAndResponseHash(t *testing.T) {
+	var sawOfficialField bool
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != xunhupayPathQuery {
+			t.Fatalf("unexpected path: %s", r.URL.Path)
+		}
+		if err := r.ParseForm(); err != nil {
+			t.Fatalf("parse form: %v", err)
+		}
+		if r.Form.Get("out_trade_order") == "ord_query" {
+			sawOfficialField = true
+		}
+		if r.Form.Get("appid") != "ali-app" {
+			t.Fatalf("appid = %q", r.Form.Get("appid"))
+		}
+		resp := map[string]any{
+			"errcode": 0,
+			"errmsg":  "",
+			"data": map[string]any{
+				"status":        xunhupayQueryStatusPaid,
+				"total_fee":     "12.30",
+				"open_order_id": "open-query",
+			},
+		}
+		resp["hash"] = xunhupaySign(map[string]string{}, "ali-secret")
+		_ = json.NewEncoder(w).Encode(resp)
+	}))
+	defer server.Close()
+
+	x, err := NewXunhupay("inst-1", map[string]string{
+		"alipayAppId":     "ali-app",
+		"alipayAppSecret": "ali-secret",
+		"notifyUrl":       "https://example.com/notify",
+		"apiBase":         server.URL,
+	})
+	if err != nil {
+		t.Fatalf("create xunhupay: %v", err)
+	}
+	resp, err := x.QueryOrder(context.Background(), "ord_query")
+	if err != nil {
+		t.Fatalf("query order: %v", err)
+	}
+	if !sawOfficialField {
+		t.Fatalf("expected query to use out_trade_order")
+	}
+	if resp.Status != payment.ProviderStatusPaid || resp.Amount != 12.30 {
+		t.Fatalf("unexpected response: %+v", resp)
 	}
 }
 
