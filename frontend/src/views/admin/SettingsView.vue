@@ -5388,11 +5388,11 @@
         </div>
 
         <!-- Save Button -->
-        <div v-show="activeTab !== 'backup'" class="flex justify-end">
+        <div v-show="activeTab !== 'backup'" class="settings-save-bar">
           <button
             type="submit"
             :disabled="saving || loadFailed"
-            class="btn btn-primary"
+            class="btn btn-primary min-w-[148px] justify-center px-7 py-3"
           >
             <svg
               v-if="saving"
@@ -8001,8 +8001,76 @@ watch(
   @apply overflow-hidden rounded-2xl border border-gray-100 bg-white/95 shadow-sm shadow-gray-200/60 dark:border-dark-700 dark:bg-dark-900/85 dark:shadow-none;
 }
 
+.settings-page form > .space-y-6 {
+  @apply rounded-[28px] bg-white/45 p-2 shadow-inner shadow-gray-100/70 dark:bg-dark-950/25 dark:shadow-none;
+  border: 1px solid rgb(243 244 246);
+}
+
+:root.dark .settings-page form > .space-y-6 {
+  border-color: rgb(55 65 81 / 0.7);
+}
+
+@media (min-width: 640px) {
+  .settings-page form > .space-y-6 {
+    @apply p-4;
+  }
+}
+
 .settings-page :deep(.card > div:first-child) {
-  @apply bg-gradient-to-r from-slate-50 to-white dark:from-dark-800 dark:to-dark-900;
+  @apply bg-gradient-to-r from-slate-50 to-white px-5 py-4 dark:from-dark-800 dark:to-dark-900 sm:px-6;
+}
+
+.settings-page :deep(.card > div:first-child h2) {
+  @apply text-base font-bold tracking-tight sm:text-lg;
+}
+
+.settings-page :deep(.card > div:first-child p) {
+  @apply max-w-3xl leading-relaxed;
+}
+
+.settings-page :deep(.card > div:nth-child(2)) {
+  @apply p-5 sm:p-6;
+}
+
+.settings-page :deep(.card .flex.items-center.justify-between) {
+  @apply gap-4 rounded-2xl bg-slate-50/70 px-4 py-3 dark:bg-dark-800/55;
+  border: 1px solid rgb(241 245 249);
+}
+
+:root.dark .settings-page :deep(.card .flex.items-center.justify-between) {
+  border-color: rgb(55 65 81);
+}
+
+.settings-page :deep(.card .flex.items-center.justify-between > div:first-child) {
+  @apply min-w-0;
+}
+
+.settings-page :deep(.card .flex.items-center.justify-between label) {
+  @apply block text-sm font-semibold text-gray-900 dark:text-white;
+}
+
+.settings-page :deep(.card .flex.items-center.justify-between p) {
+  @apply mt-1 leading-relaxed;
+}
+
+.settings-page :deep(.card .rounded-lg),
+.settings-page :deep(.card .rounded-xl) {
+  @apply rounded-2xl bg-slate-50/65 shadow-sm shadow-gray-100/60 dark:bg-dark-800/45 dark:shadow-none;
+  border-color: rgb(241 245 249);
+}
+
+:root.dark .settings-page :deep(.card .rounded-lg),
+:root.dark .settings-page :deep(.card .rounded-xl) {
+  border-color: rgb(55 65 81);
+}
+
+.settings-save-bar {
+  @apply sticky bottom-0 z-10 -mx-1 flex justify-end rounded-2xl bg-white/85 p-3 shadow-lg shadow-gray-200/60 backdrop-blur dark:bg-dark-900/85 dark:shadow-none;
+  border: 1px solid rgb(243 244 246);
+}
+
+:root.dark .settings-save-bar {
+  border-color: rgb(55 65 81);
 }
 
 .settings-page :deep(.input),

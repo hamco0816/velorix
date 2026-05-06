@@ -180,16 +180,23 @@
 
                   <aside class="border-t border-gray-100 bg-slate-50/80 p-5 dark:border-dark-700 dark:bg-dark-800/45 lg:border-l lg:border-t-0">
                     <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">{{ t('payment.amountLabel') }}</p>
-                    <div class="mt-3 flex flex-wrap items-end gap-x-2 gap-y-1">
-                      <span v-if="selectedPlan.original_price" class="pb-1 text-sm text-gray-400 line-through dark:text-gray-500">
-                        ¥{{ selectedPlan.original_price }}
-                      </span>
-                      <span :class="['text-4xl font-extrabold tracking-tight', planTextClass]">¥{{ selectedPlan.price }}</span>
-                      <span class="whitespace-nowrap pb-1 text-sm text-gray-500 dark:text-gray-400">/ {{ planValiditySuffix }}</span>
+                    <div class="mt-3 rounded-2xl bg-white px-4 py-4 ring-1 ring-gray-100 dark:bg-dark-900/70 dark:ring-dark-700">
+                      <div class="flex items-baseline gap-1 whitespace-nowrap">
+                        <span :class="['text-2xl font-extrabold leading-none', planTextClass]">¥</span>
+                        <span :class="['text-5xl font-extrabold leading-none tracking-tight', planTextClass]">{{ selectedPlan.price }}</span>
+                      </div>
+                      <div class="mt-3 flex flex-wrap items-center gap-2">
+                        <span class="inline-flex whitespace-nowrap rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-gray-500 ring-1 ring-slate-200 dark:bg-dark-800 dark:text-dark-300 dark:ring-dark-600">
+                          {{ planValiditySuffix }}
+                        </span>
+                        <span v-if="selectedPlan.original_price" class="text-sm text-gray-400 line-through dark:text-gray-500">
+                          ¥{{ selectedPlan.original_price }}
+                        </span>
+                        <span v-if="selectedPlanDiscountText" :class="['inline-flex rounded-full px-2 py-1 text-xs font-semibold', selectedPlanDiscountClass]">
+                          {{ selectedPlanDiscountText }}
+                        </span>
+                      </div>
                     </div>
-                    <span v-if="selectedPlanDiscountText" :class="['mt-3 inline-flex rounded-full px-2 py-1 text-xs font-semibold', selectedPlanDiscountClass]">
-                      {{ selectedPlanDiscountText }}
-                    </span>
 
                     <div class="mt-6 space-y-3 rounded-2xl bg-white p-4 text-sm ring-1 ring-gray-100 dark:bg-dark-900/70 dark:ring-dark-700">
                       <div class="flex justify-between gap-4">
@@ -217,15 +224,15 @@
                 />
               </div>
 
-              <div class="grid gap-3 sm:grid-cols-[minmax(0,1fr)_180px]">
-                <button :class="['btn w-full py-3 text-base font-semibold', paymentButtonClass]" :disabled="!canSubmitSubscription || submitting" @click="confirmSubscribe">
+              <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <button class="btn btn-secondary w-full sm:w-auto sm:min-w-[120px]" @click="selectedPlan = null">{{ t('common.cancel') }}</button>
+                <button :class="['btn w-full px-8 py-3 text-base font-semibold sm:w-auto sm:min-w-[220px]', paymentButtonClass]" :disabled="!canSubmitSubscription || submitting" @click="confirmSubscribe">
                   <span v-if="submitting" class="flex items-center justify-center gap-2">
                     <span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
                     {{ t('common.processing') }}
                   </span>
                   <span v-else>{{ t('payment.createOrder') }} ¥{{ (feeRate > 0 ? subTotalAmount : selectedPlan.price).toFixed(2) }}</span>
                 </button>
-                <button class="btn btn-secondary w-full" @click="selectedPlan = null">{{ t('common.cancel') }}</button>
               </div>
             </template>
             <!-- Plan list -->

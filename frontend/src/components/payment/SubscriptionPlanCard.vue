@@ -32,12 +32,16 @@
           </p>
         </div>
 
-        <div class="flex shrink-0 items-center justify-between gap-4 rounded-2xl bg-white/90 px-4 py-3 text-right shadow-sm ring-1 ring-gray-100 dark:bg-dark-700/70 dark:ring-dark-600 sm:min-w-[172px] sm:flex-col sm:items-end sm:justify-center sm:gap-1">
+        <div class="flex shrink-0 items-center justify-between gap-4 rounded-2xl bg-white/90 px-4 py-3 text-right shadow-sm ring-1 ring-gray-100 dark:bg-dark-700/70 dark:ring-dark-600 sm:min-w-[184px] sm:flex-col sm:items-end sm:justify-center sm:gap-1">
           <span class="text-xs font-medium text-gray-400 dark:text-dark-500 sm:hidden">{{ t('payment.admin.price') }}</span>
-          <div class="flex flex-wrap items-end justify-end gap-x-1.5 gap-y-0">
-            <span class="text-xs font-semibold text-gray-400 dark:text-dark-500">$</span>
-            <span :class="['text-3xl font-extrabold tracking-tight', textClass]">{{ plan.price }}</span>
-            <span class="whitespace-nowrap pb-1 text-xs text-gray-400 dark:text-dark-500">/ {{ validitySuffix }}</span>
+          <div class="flex flex-col items-end">
+            <div class="flex items-baseline justify-end gap-1 whitespace-nowrap">
+              <span :class="['text-xl font-extrabold leading-none', textClass]">$</span>
+              <span :class="['text-4xl font-extrabold leading-none tracking-tight', textClass]">{{ plan.price }}</span>
+            </div>
+            <span class="mt-1 inline-flex whitespace-nowrap rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-gray-500 ring-1 ring-slate-200 dark:bg-dark-800 dark:text-dark-300 dark:ring-dark-600">
+              {{ validitySuffix }}
+            </span>
           </div>
           <div v-if="plan.original_price" class="mt-0.5 flex items-center justify-end gap-1.5">
             <span class="text-xs text-gray-400 line-through dark:text-dark-500">${{ plan.original_price }}</span>
@@ -93,13 +97,15 @@
 
       <div class="flex-1" />
 
-      <button
-        type="button"
-        :class="['mt-2 w-full rounded-xl py-3 text-sm font-semibold transition-all active:scale-[0.98]', btnClass]"
-        @click="emit('select', plan)"
-      >
-        {{ isRenewal ? t('payment.renewNow') : t('payment.subscribeNow') }}
-      </button>
+      <div class="mt-4 flex justify-end">
+        <button
+          type="button"
+          :class="['inline-flex min-w-[136px] items-center justify-center rounded-xl px-6 py-2.5 text-sm font-semibold transition-all active:scale-[0.98]', btnClass]"
+          @click="emit('select', plan)"
+        >
+          {{ isRenewal ? t('payment.renewNow') : t('payment.subscribeNow') }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
