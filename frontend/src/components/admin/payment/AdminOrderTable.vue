@@ -64,7 +64,8 @@
       </template>
 
       <template #cell-payment_type="{ value }">
-        <span class="text-sm text-gray-700 dark:text-gray-300">
+        <span class="inline-flex items-center gap-1.5 text-sm text-gray-700 dark:text-gray-300">
+          <PaymentBrandIcon :type="value" size="18px" />
           {{ t('payment.methods.' + value, value) }}
         </span>
       </template>
@@ -143,6 +144,7 @@ import Pagination from '@/components/common/Pagination.vue'
 import Select from '@/components/common/Select.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { statusBadgeClass, canRefund, formatOrderDateTime } from '@/components/payment/orderUtils'
+import PaymentBrandIcon from '@/components/payment/PaymentBrandIcon.vue'
 
 const { t } = useI18n()
 

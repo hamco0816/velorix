@@ -24,7 +24,10 @@
       </div>
     </template>
     <template #cell-payment_type="{ value }">
-      <span class="text-sm text-gray-700 dark:text-gray-300">{{ t('payment.methods.' + value, value) }}</span>
+      <span class="inline-flex items-center gap-1.5 text-sm text-gray-700 dark:text-gray-300">
+        <PaymentBrandIcon :type="value" size="18px" />
+        {{ t('payment.methods.' + value, value) }}
+      </span>
     </template>
     <template #cell-status="{ value }">
       <OrderStatusBadge :status="value" />
@@ -45,6 +48,7 @@ import type { PaymentOrder } from '@/types/payment'
 import type { Column } from '@/components/common/types'
 import DataTable from '@/components/common/DataTable.vue'
 import OrderStatusBadge from '@/components/payment/OrderStatusBadge.vue'
+import PaymentBrandIcon from '@/components/payment/PaymentBrandIcon.vue'
 
 const { t } = useI18n()
 

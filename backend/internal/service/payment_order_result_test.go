@@ -11,6 +11,15 @@ import (
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 )
 
+func TestGenerateOutTradeNoUsesVelPrefix(t *testing.T) {
+	t.Parallel()
+
+	got := generateOutTradeNo()
+	if !strings.HasPrefix(got, "vel_") {
+		t.Fatalf("out_trade_no prefix = %q, want vel_", got)
+	}
+}
+
 func TestBuildCreateOrderResponseDefaultsToOrderCreated(t *testing.T) {
 	t.Parallel()
 

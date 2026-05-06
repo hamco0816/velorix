@@ -35,7 +35,8 @@
         </div>
         <div>
           <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('payment.orders.paymentMethod') }}</p>
-          <p class="text-sm text-gray-700 dark:text-gray-300">
+          <p class="inline-flex items-center gap-1.5 text-sm text-gray-700 dark:text-gray-300">
+            <PaymentBrandIcon :type="order.payment_type" size="18px" />
             {{ t('payment.methods.' + order.payment_type, order.payment_type) }}
           </p>
         </div>
@@ -119,6 +120,7 @@ import { useI18n } from 'vue-i18n'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import type { PaymentOrder } from '@/types/payment'
 import { statusBadgeClass, canRefund as canRefundStatus, formatOrderDateTime } from '@/components/payment/orderUtils'
+import PaymentBrandIcon from '@/components/payment/PaymentBrandIcon.vue'
 
 const { t } = useI18n()
 

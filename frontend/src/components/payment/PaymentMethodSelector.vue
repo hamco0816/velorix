@@ -20,7 +20,11 @@
         @click="method.available && emit('select', method.type)"
       >
         <span class="flex items-center gap-2">
-          <img :src="methodIcon(method.type)" :alt="t(`payment.methods.${method.type}`)" class="h-7 w-7" />
+          <PaymentBrandIcon
+            :type="method.type"
+            :alt="t(`payment.methods.${method.type}`)"
+            size="28px"
+          />
           <span class="flex flex-col items-start leading-none">
             <span class="text-base font-semibold">{{ t(`payment.methods.${method.type}`) }}</span>
             <span
@@ -40,9 +44,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { METHOD_ORDER } from './providerConfig'
-import alipayIcon from '@/assets/icons/alipay.svg'
-import wxpayIcon from '@/assets/icons/wxpay.svg'
-import stripeIcon from '@/assets/icons/stripe.svg'
+import PaymentBrandIcon from './PaymentBrandIcon.vue'
 
 export interface PaymentMethodOption {
   type: string
@@ -61,12 +63,6 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-const METHOD_ICONS: Record<string, string> = {
-  alipay: alipayIcon,
-  wxpay: wxpayIcon,
-  stripe: stripeIcon,
-}
-
 const sortedMethods = computed(() => {
   const order: readonly string[] = METHOD_ORDER
   return [...props.methods].sort((a, b) => {
@@ -75,12 +71,6 @@ const sortedMethods = computed(() => {
     return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi)
   })
 })
-
-function methodIcon(type: string): string {
-  if (type.includes('alipay')) return METHOD_ICONS.alipay
-  if (type.includes('wxpay')) return METHOD_ICONS.wxpay
-  return METHOD_ICONS[type] || alipayIcon
-}
 
 function methodSelectedClass(type: string): string {
   if (type.includes('alipay')) return 'border-[#02A9F1] bg-blue-50 text-gray-900 shadow-sm dark:bg-blue-950 dark:text-gray-100'

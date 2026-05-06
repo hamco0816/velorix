@@ -4928,12 +4928,23 @@
                       type="button"
                       @click="togglePaymentType(pt.value)"
                       :class="[
-                        'rounded-xl border px-3 py-2 text-sm font-medium transition-all',
+                        'inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-sm font-semibold transition-all',
                         isPaymentTypeEnabled(pt.value)
-                          ? 'border-primary-500 bg-primary-500 text-white shadow-sm'
+                          ? 'border-gray-950 bg-gray-950 text-white shadow-sm shadow-gray-900/10 ring-1 ring-gray-950/10 dark:border-white dark:bg-white dark:text-gray-950 dark:ring-white/20'
                           : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400 hover:bg-gray-50 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-300 dark:hover:border-dark-500',
                       ]"
                     >
+                      <Icon
+                        v-if="isPaymentTypeEnabled(pt.value)"
+                        name="check"
+                        size="xs"
+                        :stroke-width="2.5"
+                      />
+                      <PaymentBrandIcon
+                        v-if="hasPaymentBrandIcon(pt.value)"
+                        :type="pt.value"
+                        size="16px"
+                      />
                       {{ pt.label }}
                     </button>
                   </div>
@@ -5490,6 +5501,8 @@ import Select from "@/components/common/Select.vue";
 import ConfirmDialog from "@/components/common/ConfirmDialog.vue";
 import PaymentProviderList from "@/components/payment/PaymentProviderList.vue";
 import PaymentProviderDialog from "@/components/payment/PaymentProviderDialog.vue";
+import PaymentBrandIcon from "@/components/payment/PaymentBrandIcon.vue";
+import { hasPaymentBrandIcon } from "@/components/payment/paymentBrand";
 import GroupBadge from "@/components/common/GroupBadge.vue";
 import GroupOptionItem from "@/components/common/GroupOptionItem.vue";
 import Toggle from "@/components/common/Toggle.vue";

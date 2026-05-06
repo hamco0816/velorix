@@ -13,7 +13,7 @@
       <div v-for="method in methods" :key="method.type" class="space-y-1">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <span :class="['inline-block h-3 w-3 rounded-full', colorMap[method.type] || 'bg-gray-400']"></span>
+            <PaymentBrandIcon :type="method.type" size="18px" />
             <span class="text-sm text-gray-700 dark:text-gray-300">
               {{ t('payment.methods.' + method.type, method.type) }}
             </span>
@@ -41,20 +41,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import PaymentBrandIcon from '@/components/payment/PaymentBrandIcon.vue'
 
 const { t } = useI18n()
 
 const props = defineProps<{
   methods: { type: string; amount: number; count: number }[]
 }>()
-
-const colorMap: Record<string, string> = {
-  alipay: 'bg-blue-500',
-  wxpay: 'bg-green-500',
-  alipay_direct: 'bg-blue-400',
-  wxpay_direct: 'bg-green-400',
-  stripe: 'bg-purple-500',
-}
 
 const barColorMap: Record<string, string> = {
   alipay: 'bg-blue-500',
