@@ -32,13 +32,13 @@ func TestXunhupaySignMatchesDocSpec(t *testing.T) {
 	var buf strings.Builder
 	for i, k := range keys {
 		if i > 0 {
-			buf.WriteByte('&')
+			_ = buf.WriteByte('&')
 		}
-		buf.WriteString(k)
-		buf.WriteByte('=')
-		buf.WriteString(params[k])
+		_, _ = buf.WriteString(k)
+		_ = buf.WriteByte('=')
+		_, _ = buf.WriteString(params[k])
 	}
-	buf.WriteString("secret-x")
+	_, _ = buf.WriteString("secret-x")
 	expected := hex.EncodeToString(func() []byte {
 		h := md5.Sum([]byte(buf.String()))
 		return h[:]

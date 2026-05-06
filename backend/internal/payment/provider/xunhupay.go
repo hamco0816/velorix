@@ -324,11 +324,11 @@ func xunhupayMapStatus(raw string) string {
 
 // xunhupaySign 按虎皮椒规则生成签名：
 //
-//	1. 取出全部非空参数，剔除 hash 字段；
-//	2. 按 key 的 ASCII 升序排序；
-//	3. 用 "k1=v1&k2=v2" 形式拼接；
-//	4. 末尾直接拼接 appsecret；
-//	5. 取 32 位小写 MD5。
+//  1. 取出全部非空参数，剔除 hash 字段；
+//  2. 按 key 的 ASCII 升序排序；
+//  3. 用 "k1=v1&k2=v2" 形式拼接；
+//  4. 末尾直接拼接 appsecret；
+//  5. 取 32 位小写 MD5。
 func xunhupaySign(params map[string]string, appsecret string) string {
 	keys := make([]string, 0, len(params))
 	for k, v := range params {
