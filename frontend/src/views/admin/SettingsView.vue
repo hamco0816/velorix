@@ -3917,15 +3917,41 @@
                       <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
                         {{ t("admin.settings.site.contactMethodType") }}
                       </label>
-                      <select v-model="method.type" class="input text-sm">
-                        <option
-                          v-for="option in contactTypeOptions"
-                          :key="option.value"
-                          :value="option.value"
-                        >
-                          {{ option.label }}
-                        </option>
-                      </select>
+                      <Select
+                        :modelValue="method.type"
+                        :options="contactTypeOptions"
+                        class="contact-method-type-select"
+                        @update:modelValue="updateContactMethodType(index, $event)"
+                      >
+                        <template #selected="{ option }">
+                          <span class="flex min-w-0 items-center gap-2">
+                            <ContactMethodIcon
+                              :type="contactOptionType(option, method.type)"
+                              size="18px"
+                            />
+                            <span class="truncate">
+                              {{ contactOptionLabel(option, method.type) }}
+                            </span>
+                          </span>
+                        </template>
+                        <template #option="{ option, selected }">
+                          <div class="flex min-w-0 items-center gap-2">
+                            <ContactMethodIcon
+                              :type="contactOptionType(option, method.type)"
+                              size="18px"
+                            />
+                            <span class="truncate font-medium">
+                              {{ contactOptionLabel(option, method.type) }}
+                            </span>
+                          </div>
+                          <Icon
+                            v-if="selected"
+                            name="check"
+                            size="sm"
+                            class="text-primary-500"
+                          />
+                        </template>
+                      </Select>
                     </div>
                     <div>
                       <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
@@ -6497,12 +6523,38 @@ function addContactMethod(type: ContactMethodType = "custom") {
   });
 }
 
+function updateContactMethodType(index: number, value: string | number | boolean | null) {
+  const method = form.contact_methods[index];
+  if (!method) return;
+  const previousDefaultLabel = defaultContactMethodLabel(method.type, locale.value);
+  const nextType = normalizeContactMethodType(value);
+  method.type = nextType;
+  if (!method.label || method.label === previousDefaultLabel) {
+    method.label = defaultContactMethodLabel(nextType, locale.value);
+  }
+}
+
 function removeContactMethod(index: number) {
   form.contact_methods.splice(index, 1);
 }
 
 function defaultContactLabel(type: string) {
   return defaultContactMethodLabel(type, locale.value);
+}
+
+function contactOptionType(option: unknown, fallback: string) {
+  const optionValue =
+    option && typeof option === "object" && "value" in option
+      ? (option as { value?: unknown }).value
+      : fallback;
+  return normalizeContactMethodType(optionValue);
+}
+
+function contactOptionLabel(option: unknown, fallback: string) {
+  if (option && typeof option === "object" && "label" in option) {
+    return String((option as { label?: unknown }).label || "");
+  }
+  return defaultContactMethodLabel(fallback, locale.value);
 }
 
 function contactValuePlaceholder(type: string) {
@@ -8355,6 +8407,14 @@ watch(
 .settings-page :deep(textarea),
 .settings-page :deep(select) {
   @apply rounded-xl border-gray-200 bg-white shadow-sm shadow-gray-100/50 transition-colors focus:border-primary-400 focus:ring-primary-400 dark:border-dark-600 dark:bg-dark-800 dark:shadow-none;
+}
+
+.contact-method-type-select :deep(.select-trigger) {
+  @apply h-[42px] rounded-xl border-gray-200 bg-white px-3 text-sm shadow-sm shadow-gray-100/50 dark:border-dark-600 dark:bg-dark-800 dark:shadow-none;
+}
+
+.contact-method-type-select :deep(.select-trigger-open) {
+  @apply border-primary-400 ring-2 ring-primary-400/30;
 }
 
 .settings-page :deep(.btn) {

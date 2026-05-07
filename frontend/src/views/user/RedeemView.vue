@@ -1,10 +1,33 @@
 <template>
   <AppLayout>
-    <div class="mx-auto max-w-6xl space-y-6">
-      <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <main class="space-y-6">
-          <div class="grid gap-4 md:grid-cols-2">
-            <section class="rounded-lg border border-sky-100 bg-white p-6 shadow-sm dark:border-dark-700 dark:bg-dark-800">
+    <div class="mx-auto max-w-[1440px] space-y-5">
+      <section class="redeem-hero">
+        <div class="relative z-10 max-w-2xl">
+          <p class="text-sm font-semibold text-sky-700 dark:text-sky-200">
+            {{ t('redeem.title') }}
+          </p>
+          <h1 class="mt-3 text-3xl font-semibold tracking-normal text-gray-950 dark:text-white md:text-4xl">
+            Hi, {{ displayName }}
+          </h1>
+          <p class="mt-3 text-sm leading-6 text-gray-600 dark:text-dark-200 md:text-base">
+            {{ t('redeem.description') }}
+          </p>
+        </div>
+        <div class="redeem-hero-art" aria-hidden="true">
+          <div class="redeem-hero-gift">
+            <Icon name="gift" size="xl" class="text-sky-600" />
+          </div>
+          <div class="redeem-hero-chip redeem-hero-chip-left">
+            <Icon name="creditCard" size="md" />
+          </div>
+          <div class="redeem-hero-chip redeem-hero-chip-right">
+            <Icon name="terminal" size="md" />
+          </div>
+        </div>
+      </section>
+
+      <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div class="redeem-stat-card">
               <div class="mb-6 flex items-start justify-between gap-4">
                 <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-900/25 dark:text-sky-300">
                   <Icon name="creditCard" size="lg" />
@@ -20,9 +43,9 @@
               <p class="mt-2 text-4xl font-semibold text-gray-950 dark:text-white">
                 ${{ user?.balance?.toFixed(2) || '0.00' }}
               </p>
-            </section>
+            </div>
 
-            <section class="rounded-lg border border-emerald-100 bg-white p-6 shadow-sm dark:border-dark-700 dark:bg-dark-800">
+            <div class="redeem-stat-card">
               <div class="mb-6 flex items-start justify-between gap-4">
                 <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-900/25 dark:text-emerald-300">
                   <Icon name="bolt" size="lg" />
@@ -37,11 +60,54 @@
               <p class="mt-2 text-4xl font-semibold text-gray-950 dark:text-white">
                 {{ user?.concurrency || 0 }}
               </p>
-            </section>
-          </div>
+            </div>
+
+            <div class="redeem-stat-card">
+              <div class="mb-6 flex items-start justify-between gap-4">
+                <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-900/25 dark:text-amber-300">
+                  <Icon name="badge" size="lg" />
+                </div>
+                <span class="rounded-md bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 dark:bg-amber-900/25 dark:text-amber-300">
+                  套餐
+                </span>
+              </div>
+              <p class="text-sm font-medium text-gray-500 dark:text-dark-400">
+                当前套餐
+              </p>
+              <p class="mt-2 truncate text-4xl font-semibold text-gray-950 dark:text-white">
+                {{ activePlanLabel }}
+              </p>
+              <p class="mt-2 truncate text-xs text-gray-400 dark:text-dark-500">
+                {{ activePlanMeta }}
+              </p>
+            </div>
+
+            <div class="redeem-stat-card">
+              <div class="mb-6 flex items-start justify-between gap-4">
+                <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-teal-50 text-teal-600 dark:bg-teal-900/25 dark:text-teal-300">
+                  <Icon name="shield" size="lg" />
+                </div>
+                <span :class="['rounded-md px-2.5 py-1 text-xs font-medium', accountStatusBadgeClass]">
+                  {{ accountStatusLabel }}
+                </span>
+              </div>
+              <p class="text-sm font-medium text-gray-500 dark:text-dark-400">
+                账户状态
+              </p>
+              <p class="mt-2 text-4xl font-semibold text-gray-950 dark:text-white">
+                {{ accountStatusLabel }}
+              </p>
+              <p :class="['mt-2 text-xs font-medium', accountStatusClass]">
+                {{ accountStatusMeta }}
+              </p>
+            </div>
+          </section>
+
+      <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_430px]">
+        <main class="space-y-5">
 
           <!-- Redeem Form -->
-          <section class="overflow-hidden rounded-lg border border-sky-100 bg-white shadow-sm dark:border-dark-700 dark:bg-dark-800">
+          <section class="redeem-panel overflow-hidden">
             <div class="border-b border-sky-100 bg-sky-50/70 px-6 py-5 dark:border-dark-700 dark:bg-sky-900/10">
               <div class="flex items-center gap-3">
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-sky-600 shadow-sm dark:bg-dark-700 dark:text-sky-300">
@@ -75,10 +141,17 @@
                       required
                       :placeholder="t('redeem.redeemCodePlaceholder')"
                       :disabled="submitting"
-                      class="input py-3 pl-12 text-base font-medium"
+                      class="input h-14 rounded-xl border-gray-200 py-3 pl-12 pr-24 text-base font-medium shadow-sm shadow-gray-100/60 dark:border-dark-600 dark:shadow-none"
                     />
+                    <button
+                      type="button"
+                      class="absolute inset-y-2 right-2 rounded-lg border border-gray-200 px-3 text-sm font-semibold text-sky-600 transition-colors hover:border-sky-300 hover:bg-sky-50 dark:border-dark-600 dark:text-sky-300 dark:hover:bg-sky-900/20"
+                      @click="pasteRedeemCode"
+                    >
+                      粘贴
+                    </button>
                   </div>
-                  <p class="input-hint">
+                  <p class="input-hint mt-2">
                     {{ t('redeem.redeemCodeHint') }}
                   </p>
                 </div>
@@ -86,7 +159,7 @@
                 <button
                   type="submit"
                   :disabled="!redeemCode || submitting"
-                  class="btn w-full bg-sky-600 py-3 text-white shadow-sm hover:bg-sky-700 disabled:bg-gray-100 disabled:text-gray-400 disabled:shadow-none dark:disabled:bg-dark-700 dark:disabled:text-dark-400"
+                  class="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-sky-600 via-blue-600 to-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition hover:brightness-105 disabled:cursor-not-allowed disabled:bg-none disabled:bg-gray-100 disabled:text-gray-400 disabled:shadow-none dark:disabled:bg-dark-700 dark:disabled:text-dark-400"
                 >
                   <svg
                     v-if="submitting"
@@ -119,7 +192,7 @@
       <transition name="fade">
         <div
           v-if="redeemResult"
-          class="card border-emerald-200 bg-emerald-50 dark:border-emerald-800/50 dark:bg-emerald-900/20"
+          class="redeem-panel border-emerald-200 bg-emerald-50 dark:border-emerald-800/50 dark:bg-emerald-900/20"
         >
           <div class="p-6">
             <div class="flex items-start gap-4">
@@ -173,7 +246,7 @@
       <transition name="fade">
         <div
           v-if="errorMessage"
-          class="card border-red-200 bg-red-50 dark:border-red-800/50 dark:bg-red-900/20"
+          class="redeem-panel border-red-200 bg-red-50 dark:border-red-800/50 dark:bg-red-900/20"
         >
           <div class="p-6">
             <div class="flex items-start gap-4">
@@ -200,7 +273,7 @@
       </transition>
 
       <!-- Recent Activity -->
-      <section class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-dark-700 dark:bg-dark-800">
+      <section class="redeem-panel overflow-hidden">
         <div class="border-b border-gray-100 bg-gray-50/70 px-6 py-4 dark:border-dark-700 dark:bg-dark-800/60">
           <div class="flex items-center gap-3">
             <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-900/25 dark:text-amber-300">
@@ -236,7 +309,7 @@
             <div
               v-for="item in history"
               :key="item.id"
-              class="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50 p-4 dark:border-dark-700 dark:bg-dark-800"
+              class="flex items-center justify-between gap-4 rounded-lg border border-gray-100 bg-gray-50/70 p-4 dark:border-dark-700 dark:bg-dark-800"
             >
               <div class="flex items-center gap-4">
                 <div
@@ -346,44 +419,55 @@
         </main>
 
         <!-- Information Card -->
-        <aside class="space-y-6 lg:sticky lg:top-6 lg:self-start">
-          <section class="rounded-lg border border-sky-100 bg-sky-50/80 p-6 shadow-sm dark:border-sky-800/40 dark:bg-sky-900/15">
-            <div class="mb-5 flex h-11 w-11 items-center justify-center rounded-lg bg-white text-sky-600 shadow-sm dark:bg-dark-700 dark:text-sky-300">
-              <Icon name="infoCircle" size="md" />
+        <aside class="space-y-5 xl:sticky xl:top-6 xl:self-start">
+          <section class="redeem-panel p-6">
+            <div class="mb-5 flex items-center gap-3">
+              <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-900/25 dark:text-sky-300">
+                <Icon name="infoCircle" size="md" />
+              </div>
+              <div>
+                <h3 class="text-base font-semibold text-gray-950 dark:text-white">
+                  {{ t('redeem.aboutCodes') }}
+                </h3>
+                <p class="mt-0.5 text-sm text-gray-500 dark:text-dark-400">
+                  兑换后权益会自动同步
+                </p>
+              </div>
             </div>
-            <h3 class="text-sm font-semibold text-sky-950 dark:text-sky-100">
-              {{ t('redeem.aboutCodes') }}
-            </h3>
-            <ul class="mt-3 space-y-2 text-sm text-sky-900 dark:text-sky-200">
+            <ul class="space-y-3 text-sm text-gray-700 dark:text-dark-200">
               <li class="flex gap-2">
-                <span class="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-sky-500"></span>
+                <Icon name="check" size="sm" class="mt-0.5 flex-shrink-0 text-sky-500" />
                 <span>{{ t('redeem.codeRule1') }}</span>
               </li>
               <li class="flex gap-2">
-                <span class="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-emerald-500"></span>
+                <Icon name="check" size="sm" class="mt-0.5 flex-shrink-0 text-emerald-500" />
                 <span>{{ t('redeem.codeRule2') }}</span>
               </li>
               <li class="flex gap-2">
-                <span class="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-amber-500"></span>
-                <span>
-                  {{ t('redeem.codeRule3') }}
-                  <span
-                    v-if="hasContactMethods"
-                    class="ml-1 inline-flex align-middle"
-                  >
-                    <ContactMethodsDisplay
-                      :methods="contactMethods"
-                      :legacy-info="contactInfo"
-                      compact
-                    />
-                  </span>
-                </span>
+                <Icon name="check" size="sm" class="mt-0.5 flex-shrink-0 text-amber-500" />
+                <span>{{ t('redeem.codeRule3') }}</span>
               </li>
               <li class="flex gap-2">
-                <span class="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-indigo-500"></span>
+                <Icon name="check" size="sm" class="mt-0.5 flex-shrink-0 text-violet-500" />
                 <span>{{ t('redeem.codeRule4') }}</span>
               </li>
             </ul>
+
+            <div
+              v-if="hasContactMethods"
+              class="mt-5 flex items-center justify-between gap-3 rounded-xl border border-gray-100 bg-gray-50/80 px-4 py-3 dark:border-dark-700 dark:bg-dark-900/40"
+            >
+              <span class="text-sm font-semibold text-gray-800 dark:text-dark-100">
+                联系客服
+              </span>
+              <ContactMethodsDisplay
+                :methods="contactMethods"
+                :legacy-info="contactInfo"
+                compact
+                icon-only
+                :show-label="false"
+              />
+            </div>
           </section>
         </aside>
       </div>
@@ -397,7 +481,7 @@ import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { useAppStore } from '@/stores/app'
 import { useSubscriptionStore } from '@/stores/subscriptions'
-import { redeemAPI, authAPI, type RedeemHistoryItem } from '@/api'
+import { redeemAPI, type RedeemHistoryItem } from '@/api'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import ContactMethodsDisplay from '@/components/common/ContactMethodsDisplay.vue'
 import Icon from '@/components/icons/Icon.vue'
@@ -430,6 +514,37 @@ const loadingHistory = ref(false)
 const contactInfo = ref('')
 const contactMethods = ref<ContactMethod[]>([])
 const hasContactMethods = computed(() => contactMethods.value.length > 0 || !!contactInfo.value)
+
+const displayName = computed(() => user.value?.username || appStore.siteName || 'Velorix')
+
+const activeSubscription = computed(() =>
+  subscriptionStore.activeSubscriptions.find((item) => item.status === 'active') || null,
+)
+
+const activePlanLabel = computed(() =>
+  activeSubscription.value?.group?.name || (activeSubscription.value ? t('redeem.subscriptionAssigned') : '未开通'),
+)
+
+const activePlanMeta = computed(() => {
+  if (!activeSubscription.value) return '暂无订阅'
+  if (!activeSubscription.value.expires_at) return '长期有效'
+  return `有效期至 ${formatDateTime(activeSubscription.value.expires_at)}`
+})
+
+const accountStatusLabel = computed(() => (user.value?.status === 'active' ? '正常' : '已禁用'))
+const accountStatusMeta = computed(() =>
+  user.value?.status === 'active' ? '服务运行正常' : '账号暂不可用',
+)
+const accountStatusClass = computed(() =>
+  user.value?.status === 'active'
+    ? 'text-emerald-600 dark:text-emerald-400'
+    : 'text-red-600 dark:text-red-400',
+)
+const accountStatusBadgeClass = computed(() =>
+  user.value?.status === 'active'
+    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/25 dark:text-emerald-300'
+    : 'bg-red-50 text-red-700 dark:bg-red-900/25 dark:text-red-300',
+)
 
 // Helper functions for history display
 const isBalanceType = (type: string) => {
@@ -485,6 +600,17 @@ const fetchHistory = async () => {
   }
 }
 
+const pasteRedeemCode = async () => {
+  try {
+    const text = await navigator.clipboard?.readText()
+    if (text?.trim()) {
+      redeemCode.value = text.trim()
+    }
+  } catch {
+    appStore.showWarning('无法读取剪贴板')
+  }
+}
+
 const handleRedeem = async () => {
   if (!redeemCode.value.trim()) {
     appStore.showError(t('redeem.pleaseEnterCode'))
@@ -532,10 +658,13 @@ const handleRedeem = async () => {
 
 onMounted(async () => {
   fetchHistory()
+  subscriptionStore.fetchActiveSubscriptions().catch((error) => {
+    console.error('Failed to load active subscriptions:', error)
+  })
   try {
-    const settings = await authAPI.getPublicSettings()
-    contactInfo.value = settings.contact_info || ''
-    contactMethods.value = Array.isArray(settings.contact_methods) ? settings.contact_methods : []
+    const settings = await appStore.fetchPublicSettings()
+    contactInfo.value = settings?.contact_info || ''
+    contactMethods.value = Array.isArray(settings?.contact_methods) ? settings.contact_methods : []
   } catch (error) {
     console.error('Failed to load contact info:', error)
   }
@@ -543,6 +672,111 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.redeem-hero {
+  position: relative;
+  display: flex;
+  min-height: 10rem;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(219 234 254);
+  background:
+    radial-gradient(circle at 76% 22%, rgb(56 189 248 / 0.26), transparent 28%),
+    radial-gradient(circle at 94% 12%, rgb(168 85 247 / 0.18), transparent 24%),
+    linear-gradient(135deg, rgb(240 249 255), rgb(255 255 255) 48%, rgb(245 243 255));
+  padding: 2rem;
+  box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
+}
+
+.dark .redeem-hero {
+  border-color: rgb(55 65 81);
+  background:
+    radial-gradient(circle at 76% 22%, rgb(14 165 233 / 0.16), transparent 30%),
+    radial-gradient(circle at 94% 12%, rgb(139 92 246 / 0.14), transparent 24%),
+    linear-gradient(135deg, rgb(15 23 42), rgb(17 24 39));
+  box-shadow: none;
+}
+
+.redeem-hero-art {
+  position: absolute;
+  inset-block: 0;
+  right: 3rem;
+  display: none;
+  width: 26rem;
+}
+
+.redeem-hero-gift,
+.redeem-hero-chip {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(226 232 240 / 0.9);
+  background: rgb(255 255 255 / 0.82);
+  box-shadow: 0 22px 44px -30px rgb(37 99 235 / 0.65);
+  backdrop-filter: blur(14px);
+}
+
+.redeem-hero-gift {
+  right: 7rem;
+  top: 2.15rem;
+  height: 7rem;
+  width: 7rem;
+  border-radius: 1.75rem;
+}
+
+.redeem-hero-chip {
+  height: 3.25rem;
+  width: 3.25rem;
+  border-radius: 1rem;
+  color: rgb(37 99 235);
+}
+
+.redeem-hero-chip-left {
+  left: 4.5rem;
+  top: 4.5rem;
+  transform: rotate(-12deg);
+}
+
+.redeem-hero-chip-right {
+  right: 1.5rem;
+  top: 3.25rem;
+  transform: rotate(10deg);
+}
+
+.dark .redeem-hero-gift,
+.dark .redeem-hero-chip {
+  border-color: rgb(75 85 99 / 0.9);
+  background: rgb(31 41 55 / 0.78);
+  box-shadow: none;
+}
+
+.redeem-panel,
+.redeem-stat-card {
+  border-radius: 0.5rem;
+  border: 1px solid rgb(229 231 235);
+  background: rgb(255 255 255);
+  box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
+}
+
+.redeem-stat-card {
+  padding: 1.5rem;
+}
+
+.dark .redeem-panel,
+.dark .redeem-stat-card {
+  border-color: rgb(55 65 81);
+  background: rgb(31 41 55);
+  box-shadow: none;
+}
+
+@media (min-width: 1024px) {
+  .redeem-hero-art {
+    display: block;
+  }
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: all 0.3s ease;

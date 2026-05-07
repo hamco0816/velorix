@@ -12,17 +12,23 @@
       :href="method.url || undefined"
       :target="method.url ? '_blank' : undefined"
       :rel="method.url ? 'noopener noreferrer' : undefined"
+      :title="contactTitle(method)"
+      :aria-label="contactTitle(method)"
       :class="[
         'inline-flex min-w-0 items-center gap-2 rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm dark:border-dark-700 dark:bg-dark-800 dark:text-dark-100',
-        compact ? 'max-w-full px-2 py-1 text-xs' : 'w-full px-3 py-2 text-sm',
+        iconOnly
+          ? 'h-10 w-10 justify-center p-0'
+          : compact
+            ? 'max-w-full px-2 py-1 text-xs'
+            : 'w-full px-3 py-2 text-sm',
         method.url && 'transition-colors hover:border-primary-300 hover:text-primary-700 dark:hover:border-primary-700 dark:hover:text-primary-300',
       ]"
     >
-      <ContactMethodIcon :type="method.type" :size="compact ? '18px' : '24px'" />
-      <span v-if="showLabel" class="shrink-0 font-semibold">
+      <ContactMethodIcon :type="method.type" :size="iconOnly ? '24px' : compact ? '18px' : '24px'" />
+      <span v-if="!iconOnly && showLabel" class="shrink-0 font-semibold">
         {{ method.label || defaultContactMethodLabel(method.type, locale) }}
       </span>
-      <span class="min-w-0 truncate font-medium">
+      <span v-if="!iconOnly" class="min-w-0 truncate font-medium">
         {{ method.value || method.url }}
       </span>
     </component>
@@ -41,11 +47,13 @@ const props = withDefaults(defineProps<{
   legacyInfo?: string
   compact?: boolean
   showLabel?: boolean
+  iconOnly?: boolean
 }>(), {
   methods: () => [],
   legacyInfo: '',
   compact: false,
   showLabel: true,
+  iconOnly: false,
 })
 
 const { locale } = useI18n()
@@ -53,4 +61,10 @@ const { locale } = useI18n()
 const resolvedMethods = computed(() =>
   normalizeContactMethods(props.methods, props.legacyInfo, locale.value),
 )
+
+function contactTitle(method: ContactMethod): string {
+  const label = method.label || defaultContactMethodLabel(method.type, locale.value)
+  const value = method.value || method.url || ''
+  return value ? `${label}: ${value}` : label
+}
 </script>
