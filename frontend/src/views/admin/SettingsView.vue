@@ -3911,7 +3911,7 @@
                   <div
                     v-for="(method, index) in form.contact_methods"
                     :key="`contact-${index}`"
-                    class="grid grid-cols-1 gap-3 rounded-lg border border-gray-200 p-3 md:grid-cols-[160px_1fr_1fr_auto] dark:border-dark-600"
+                    class="grid grid-cols-1 gap-3 rounded-lg border border-gray-200 p-3 md:grid-cols-[160px_minmax(0,1fr)_auto] dark:border-dark-600"
                   >
                     <div>
                       <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
@@ -3955,17 +3955,6 @@
                     </div>
                     <div>
                       <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
-                        {{ t("admin.settings.site.contactMethodLabel") }}
-                      </label>
-                      <input
-                        v-model="method.label"
-                        type="text"
-                        class="input text-sm"
-                        :placeholder="defaultContactLabel(method.type)"
-                      />
-                    </div>
-                    <div>
-                      <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
                         {{ t("admin.settings.site.contactMethodValue") }}
                       </label>
                       <input
@@ -3982,7 +3971,7 @@
                     >
                       <Icon name="trash" size="sm" />
                     </button>
-                    <div class="md:col-span-3">
+                    <div class="md:col-span-2">
                       <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
                         {{ t("admin.settings.site.contactMethodUrl") }}
                       </label>
@@ -6526,20 +6515,13 @@ function addContactMethod(type: ContactMethodType = "custom") {
 function updateContactMethodType(index: number, value: string | number | boolean | null) {
   const method = form.contact_methods[index];
   if (!method) return;
-  const previousDefaultLabel = defaultContactMethodLabel(method.type, locale.value);
   const nextType = normalizeContactMethodType(value);
   method.type = nextType;
-  if (!method.label || method.label === previousDefaultLabel) {
-    method.label = defaultContactMethodLabel(nextType, locale.value);
-  }
+  method.label = defaultContactMethodLabel(nextType, locale.value);
 }
 
 function removeContactMethod(index: number) {
   form.contact_methods.splice(index, 1);
-}
-
-function defaultContactLabel(type: string) {
-  return defaultContactMethodLabel(type, locale.value);
 }
 
 function contactOptionType(option: unknown, fallback: string) {

@@ -2,7 +2,7 @@
   <div
     v-if="resolvedMethods.length"
     :class="[
-      compact ? 'flex flex-wrap items-center gap-1.5' : 'space-y-2',
+      compact ? 'flex flex-wrap items-center gap-2' : 'space-y-2',
     ]"
   >
     <component
@@ -19,7 +19,7 @@
         iconOnly
           ? 'h-10 w-10 justify-center p-0'
           : compact
-            ? 'max-w-full px-2 py-1 text-xs'
+            ? 'max-w-full px-2.5 py-1.5 text-xs'
             : 'w-full px-3 py-2 text-sm',
         method.url && 'transition-colors hover:border-primary-300 hover:text-primary-700 dark:hover:border-primary-700 dark:hover:text-primary-300',
       ]"

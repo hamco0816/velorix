@@ -455,16 +455,15 @@
 
             <div
               v-if="hasContactMethods"
-              class="mt-5 flex items-center justify-between gap-3 rounded-xl border border-gray-100 bg-gray-50/80 px-4 py-3 dark:border-dark-700 dark:bg-dark-900/40"
+              class="mt-5 rounded-xl border border-gray-100 bg-gray-50/80 p-3 dark:border-dark-700 dark:bg-dark-900/40"
             >
-              <span class="text-sm font-semibold text-gray-800 dark:text-dark-100">
+              <span class="mb-3 block text-sm font-semibold text-gray-800 dark:text-dark-100">
                 联系客服
               </span>
               <ContactMethodsDisplay
                 :methods="contactMethods"
                 :legacy-info="contactInfo"
                 compact
-                icon-only
                 :show-label="false"
               />
             </div>
