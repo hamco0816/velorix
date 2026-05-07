@@ -5117,7 +5117,7 @@
                       :class="[
                         'inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-sm font-semibold transition-all',
                         isPaymentTypeEnabled(pt.value)
-                          ? 'border-gray-950 bg-gray-950 text-white shadow-sm shadow-gray-900/10 ring-1 ring-gray-950/10 dark:border-white dark:bg-white dark:text-gray-950 dark:ring-white/20'
+                          ? 'border-primary-200 bg-primary-50 text-primary-700 shadow-sm shadow-primary-500/10 ring-1 ring-primary-100 hover:border-primary-300 hover:bg-primary-100 dark:border-primary-700 dark:bg-primary-950/40 dark:text-primary-200 dark:ring-primary-800/40 dark:hover:bg-primary-900/40'
                           : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400 hover:bg-gray-50 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-300 dark:hover:border-dark-500',
                       ]"
                     >
