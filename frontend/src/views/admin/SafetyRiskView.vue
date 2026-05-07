@@ -14,25 +14,20 @@
         <div class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(190px,1fr)_minmax(190px,1fr)_minmax(190px,1fr)_minmax(320px,1.25fr)_auto]">
           <label class="space-y-2">
             <span class="filter-label">状态</span>
-            <select v-model="filters.status" class="risk-filter-control risk-filter-select">
-              <option value="">全部</option>
-              <option value="pending">待复核</option>
-              <option value="reviewed">已复核</option>
-              <option value="cleared">已清空</option>
-            </select>
+            <Select
+              v-model="selectedStatus"
+              :options="statusFilterOptions"
+              class="risk-select"
+            />
           </label>
 
           <label class="space-y-2">
             <span class="filter-label">时间</span>
-            <select v-model="filters.time_range" class="risk-filter-control risk-filter-select">
-              <option value="5m">最近 5 分钟</option>
-              <option value="30m">最近 30 分钟</option>
-              <option value="1h">最近 1 小时</option>
-              <option value="6h">最近 6 小时</option>
-              <option value="24h">最近 24 小时</option>
-              <option value="7d">最近 7 天</option>
-              <option value="30d">最近 30 天</option>
-            </select>
+            <Select
+              v-model="selectedTimeRange"
+              :options="timeRangeOptions"
+              class="risk-select"
+            />
           </label>
 
           <label class="space-y-2">
@@ -216,6 +211,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Pagination from '@/components/common/Pagination.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import Select, { type SelectOption } from '@/components/common/Select.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { useAppStore } from '@/stores/app'
 import {
@@ -255,6 +251,38 @@ const pagination = reactive({
   page: 1,
   page_size: getPersistedPageSize(),
   total: 0,
+})
+
+const statusFilterOptions: SelectOption[] = [
+  { value: '', label: '全部' },
+  { value: 'pending', label: '待复核' },
+  { value: 'reviewed', label: '已复核' },
+  { value: 'cleared', label: '已清空' },
+]
+
+const timeRangeOptions: SelectOption[] = [
+  { value: '5m', label: '最近 5 分钟' },
+  { value: '30m', label: '最近 30 分钟' },
+  { value: '1h', label: '最近 1 小时' },
+  { value: '6h', label: '最近 6 小时' },
+  { value: '24h', label: '最近 24 小时' },
+  { value: '7d', label: '最近 7 天' },
+  { value: '30d', label: '最近 30 天' },
+]
+
+const selectedStatus = computed<string | number | boolean | null>({
+  get: () => filters.status ?? '',
+  set: (value) => {
+    filters.status = typeof value === 'string' ? value : ''
+  },
+})
+
+const selectedTimeRange = computed<string | number | boolean | null>({
+  get: () => filters.time_range ?? '24h',
+  set: (value) => {
+    const nextValue = typeof value === 'string' ? value : '24h'
+    filters.time_range = nextValue as SafetyRiskQueryParams['time_range']
+  },
 })
 
 const riskStats = computed<RiskStat[]>(() => [
@@ -528,6 +556,24 @@ onMounted(loadEvents)
   color: rgb(209 213 219);
 }
 
+.risk-select :deep(.select-trigger) {
+  height: 2.75rem;
+  border-color: rgb(209 213 219);
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+}
+
+.risk-select :deep(.select-trigger-open) {
+  border-color: rgb(59 130 246);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.14);
+}
+
+.dark .risk-select :deep(.select-trigger) {
+  border-color: rgb(75 85 99);
+  box-shadow: none;
+}
+
 .risk-filter-control {
   display: block;
   width: 100%;
@@ -553,15 +599,6 @@ onMounted(loadEvents)
   outline: none;
 }
 
-.risk-filter-select {
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
-  background-position: right 0.875rem center;
-  background-repeat: no-repeat;
-  background-size: 1rem;
-  padding-right: 2.5rem;
-}
-
 .dark .risk-filter-control {
   border-color: rgb(75 85 99);
   background-color: rgb(17 24 39);
@@ -571,10 +608,6 @@ onMounted(loadEvents)
 
 .dark .risk-filter-control::placeholder {
   color: rgb(107 114 128);
-}
-
-.dark .risk-filter-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239CA3AF' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
 }
 
 .risk-action-button,
