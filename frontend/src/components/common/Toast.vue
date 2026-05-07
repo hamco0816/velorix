@@ -17,9 +17,10 @@
           v-for="toast in toasts"
           :key="toast.id"
           :class="[
-            'pointer-events-auto min-w-[320px] max-w-md overflow-hidden rounded-lg shadow-lg',
+            'pointer-events-auto min-w-[320px] max-w-md overflow-hidden rounded-md shadow-md',
             'bg-white dark:bg-dark-800',
-            'border-l-4',
+            'border border-gray-200 dark:border-dark-700',
+            'border-l-2',
             getBorderColor(toast.type)
           ]"
         >
@@ -101,30 +102,30 @@ const getToastIconName = (type: string): 'checkCircle' | 'xCircle' | 'exclamatio
 
 const getIconColor = (type: string): string => {
   const colors: Record<string, string> = {
-    success: 'text-green-500',
-    error: 'text-red-500',
-    warning: 'text-yellow-500',
-    info: 'text-blue-500'
+    success: 'text-emerald-600',
+    error: 'text-red-600',
+    warning: 'text-amber-600',
+    info: 'text-brand-600'
   }
   return colors[type] || colors.info
 }
 
 const getBorderColor = (type: string): string => {
   const colors: Record<string, string> = {
-    success: 'border-green-500',
-    error: 'border-red-500',
-    warning: 'border-yellow-500',
-    info: 'border-blue-500'
+    success: 'border-l-emerald-500',
+    error: 'border-l-red-500',
+    warning: 'border-l-amber-500',
+    info: 'border-l-brand-500'
   }
   return colors[type] || colors.info
 }
 
 const getProgressBarColor = (type: string): string => {
   const colors: Record<string, string> = {
-    success: 'bg-green-500',
+    success: 'bg-emerald-500',
     error: 'bg-red-500',
-    warning: 'bg-yellow-500',
-    info: 'bg-blue-500'
+    warning: 'bg-amber-500',
+    info: 'bg-brand-500'
   }
   return colors[type] || colors.info
 }

@@ -565,6 +565,8 @@ export default {
   dashboard: {
     title: '仪表盘',
     welcomeMessage: '欢迎回来！这是您账户的概览。',
+    coreStats: '核心数据',
+    tokenStats: 'Token 与性能',
     balance: '余额',
     apiKeys: 'API 密钥',
     todayRequests: '今日请求',
@@ -1313,6 +1315,8 @@ export default {
     dashboard: {
       title: '管理控制台',
       description: '系统概览与统计数据',
+      coreStats: '核心数据',
+      tokenStats: 'Token 与性能',
       apiKeys: 'API 密钥',
       totalApiKeys: 'API 密钥总数',
       activeApiKeys: '活跃密钥',

@@ -32,7 +32,7 @@
           :href="docUrl"
           target="_blank"
           rel="noopener noreferrer"
-          class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-white"
+          class="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-white"
         >
           <Icon name="book" size="sm" />
           <span class="hidden sm:inline">{{ t('nav.docs') }}</span>
@@ -44,15 +44,15 @@
         <!-- Subscription Progress (for users with active subscriptions) -->
         <SubscriptionProgressMini v-if="user" />
 
-        <!-- Balance Display -->
+        <!-- Balance Display：品牌橙浅底点睛，是头部最具品牌识别度的视觉锚点 -->
         <router-link
           v-if="user"
           :to="{ path: '/purchase', query: { tab: 'recharge' } }"
-          class="hidden items-center gap-2 rounded-xl bg-primary-50 px-3 py-1.5 transition-colors hover:bg-primary-100 dark:bg-primary-900/20 dark:hover:bg-primary-900/35 sm:flex"
+          class="hidden items-center gap-2 rounded-md bg-brand-50 px-3 py-1.5 ring-1 ring-inset ring-brand-200/60 transition-colors hover:bg-brand-100 dark:bg-brand-500/10 dark:ring-brand-500/20 dark:hover:bg-brand-500/15 sm:flex"
           :title="t('nav.buySubscription')"
         >
           <svg
-            class="h-4 w-4 text-primary-600 dark:text-primary-400"
+            class="h-4 w-4 text-brand-700 dark:text-brand-300"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -64,7 +64,7 @@
               d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"
             />
           </svg>
-          <span class="text-sm font-semibold text-primary-700 dark:text-primary-300">
+          <span class="text-sm font-semibold text-brand-800 dark:text-brand-200">
             ${{ user.balance?.toFixed(2) || '0.00' }}
           </span>
         </router-link>
@@ -73,10 +73,11 @@
         <div v-if="user" class="relative" ref="dropdownRef">
           <button
             @click="toggleDropdown"
-            class="flex items-center gap-2 rounded-xl p-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-dark-800"
+            class="flex items-center gap-2 rounded-md p-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-dark-800"
             aria-label="User Menu"
           >
-            <div class="flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 text-sm font-medium text-white shadow-sm">
+            <!-- 头像：纯黑底白字（Linear / GitHub 风），不渐变避免阴沉 AI 感 -->
+            <div class="flex h-8 w-8 items-center justify-center overflow-hidden rounded-md bg-primary-900 text-sm font-semibold text-white dark:bg-white dark:text-primary-900">
               <img
                 v-if="avatarUrl"
                 :src="avatarUrl"

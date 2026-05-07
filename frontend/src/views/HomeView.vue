@@ -25,11 +25,11 @@
     </div>
 
     <!-- Header -->
-    <header class="relative z-20 px-6 py-4">
-      <nav class="mx-auto flex max-w-6xl items-center justify-between">
+    <header class="relative z-20 px-6 py-5">
+      <nav class="mx-auto flex max-w-7xl items-center justify-between">
         <!-- Logo -->
         <div class="flex items-center">
-          <div class="h-10 w-10 overflow-hidden rounded-xl shadow-md">
+          <div class="h-10 w-10 overflow-hidden rounded-md shadow-card ring-1 ring-gray-200 dark:ring-dark-700">
             <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
           </div>
         </div>
@@ -45,7 +45,7 @@
             :href="docUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-white"
+            class="rounded-md p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-white"
             :title="t('home.viewDocs')"
           >
             <Icon name="book" size="md" />
@@ -54,7 +54,7 @@
           <!-- Theme Toggle -->
           <button
             @click="toggleTheme"
-            class="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-white"
+            class="rounded-md p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-white"
             :title="isDark ? t('home.switchToLight') : t('home.switchToDark')"
           >
             <Icon v-if="isDark" name="sun" size="md" />
@@ -86,24 +86,24 @@
       </nav>
     </header>
 
-    <!-- Main Content -->
-    <main class="relative z-10 flex-1 px-6 py-16">
-      <div class="mx-auto max-w-6xl">
+    <!-- Main Content：节奏统一为 16 倍数（h-section = py-16），区块间留白一致 -->
+    <main class="relative z-10 flex-1 px-6 py-12 sm:py-16">
+      <div class="mx-auto max-w-7xl space-y-16">
         <!-- Hero Section - Left/Right Layout -->
-        <div class="mb-12 flex flex-col items-center justify-between gap-12 lg:flex-row lg:gap-16">
+        <div class="flex flex-col items-center justify-between gap-12 lg:flex-row lg:gap-20">
           <!-- Left: Text Content -->
           <div class="flex-1 text-center lg:text-left">
             <h1
-              class="mb-4 text-4xl font-bold text-gray-900 dark:text-white md:text-5xl lg:text-6xl"
+              class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white md:text-5xl lg:text-6xl"
             >
               {{ siteName }}
             </h1>
-            <p class="mb-8 text-lg text-gray-600 dark:text-dark-300 md:text-xl">
+            <p class="mt-5 text-lg text-gray-600 dark:text-dark-300 md:text-xl">
               {{ siteSubtitle }}
             </p>
 
             <!-- CTA Button -->
-            <div>
+            <div class="mt-8">
               <router-link
                 :to="isAuthenticated ? dashboardPath : '/login'"
                 class="btn btn-primary btn-lg group tracking-wide"
@@ -158,9 +158,9 @@
         </div>
 
         <!-- Feature Tags - Centered -->
-        <div class="mb-12 flex flex-wrap items-center justify-center gap-3">
+        <div class="flex flex-wrap items-center justify-center gap-3">
           <div
-            class="inline-flex items-center gap-2 rounded border border-gray-200 bg-white px-3 py-1.5 dark:border-dark-700 dark:bg-dark-800"
+            class="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-1.5 dark:border-dark-700 dark:bg-dark-800"
           >
             <Icon name="shield" size="sm" class="text-brand-700 dark:text-brand-400" />
             <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
@@ -168,7 +168,7 @@
             }}</span>
           </div>
           <div
-            class="inline-flex items-center gap-2 rounded border border-gray-200 bg-white px-3 py-1.5 dark:border-dark-700 dark:bg-dark-800"
+            class="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-1.5 dark:border-dark-700 dark:bg-dark-800"
           >
             <Icon name="chart" size="sm" class="text-brand-700 dark:text-brand-400" />
             <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
@@ -176,7 +176,7 @@
             }}</span>
           </div>
           <div
-            class="inline-flex items-center gap-2 rounded border border-gray-200 bg-white px-3 py-1.5 dark:border-dark-700 dark:bg-dark-800"
+            class="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-1.5 dark:border-dark-700 dark:bg-dark-800"
           >
             <Icon name="creditCard" size="sm" class="text-brand-700 dark:text-brand-400" />
             <span class="text-sm font-medium text-gray-700 dark:text-dark-200">{{
@@ -186,7 +186,7 @@
         </div>
 
         <!-- Features Grid -->
-        <div class="mb-12 grid gap-4 md:grid-cols-3">
+        <div class="grid gap-4 md:grid-cols-3">
           <!-- Feature 1: Unified Gateway -->
           <div
             class="rounded-md border border-gray-200 bg-white p-6 transition-colors hover:border-brand-400 hover:bg-brand-50/30 dark:border-dark-700 dark:bg-dark-800 dark:hover:border-brand-500/60"
@@ -240,16 +240,17 @@
         </div>
 
         <!-- Supported Providers -->
-        <div class="mb-8 text-center">
-          <h2 class="mb-3 text-2xl font-bold text-gray-900 dark:text-white">
-            {{ t('home.providers.title') }}
-          </h2>
-          <p class="text-sm text-gray-600 dark:text-dark-400">
-            {{ t('home.providers.description') }}
-          </p>
-        </div>
+        <div class="space-y-6">
+          <div class="text-center">
+            <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+              {{ t('home.providers.title') }}
+            </h2>
+            <p class="mt-2 text-sm text-gray-600 dark:text-dark-400">
+              {{ t('home.providers.description') }}
+            </p>
+          </div>
 
-        <div class="mb-16 flex flex-wrap items-center justify-center gap-3">
+          <div class="flex flex-wrap items-center justify-center gap-3">
           <!-- Claude - Supported -->
           <div
             class="flex items-center gap-2 rounded-md border border-gray-200 bg-white px-4 py-2.5 dark:border-dark-700 dark:bg-dark-800"
@@ -310,6 +311,7 @@
               >{{ t('home.providers.soon') }}</span
             >
           </div>
+          </div>
         </div>
       </div>
     </main>
@@ -317,7 +319,7 @@
     <!-- Footer -->
     <footer class="relative z-10 border-t border-gray-200 px-6 py-8 dark:border-dark-800">
       <div
-        class="mx-auto flex max-w-6xl flex-col items-center justify-center gap-4 text-center sm:flex-row sm:text-left"
+        class="mx-auto flex max-w-7xl flex-col items-center justify-center gap-4 text-center sm:flex-row sm:text-left"
       >
         <p class="text-sm text-gray-500 dark:text-dark-400">
           &copy; {{ currentYear }} {{ siteName }}. {{ t('home.footer.allRightsReserved') }}

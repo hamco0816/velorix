@@ -566,6 +566,8 @@ export default {
   dashboard: {
     title: 'Dashboard',
     welcomeMessage: "Welcome back! Here's an overview of your account.",
+    coreStats: 'Core Stats',
+    tokenStats: 'Token & Performance',
     balance: 'Balance',
     apiKeys: 'API Keys',
     todayRequests: 'Today Requests',
@@ -1309,6 +1311,8 @@ export default {
     dashboard: {
       title: 'Admin Dashboard',
       description: 'System overview and real-time statistics',
+      coreStats: 'Core Stats',
+      tokenStats: 'Token & Performance',
       apiKeys: 'API Keys',
       accounts: 'Accounts',
       users: 'Users',

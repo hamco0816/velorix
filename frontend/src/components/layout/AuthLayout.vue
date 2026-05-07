@@ -11,7 +11,8 @@
       <div
         class="absolute inset-0 bg-[linear-gradient(rgba(15,23,42,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.045)_1px,transparent_1px)] bg-[size:64px_64px] dark:bg-[linear-gradient(rgba(148,163,184,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.05)_1px,transparent_1px)]"
       ></div>
-      <div class="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-primary-100/60 to-transparent dark:from-primary-950/25"></div>
+      <!-- 顶部暖色微光：用 brand 系，给登录页一点品牌温度，避免冷灰沉闷 -->
+      <div class="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-brand-100/40 to-transparent dark:from-brand-500/8"></div>
       <div class="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-white to-transparent dark:from-dark-950"></div>
     </div>
 
@@ -20,14 +21,14 @@
       <!-- Logo/Brand -->
       <div class="mb-7 flex justify-center">
         <div
-          class="inline-flex h-24 w-24 items-center justify-center overflow-hidden rounded-[1.75rem] bg-white p-1 shadow-xl shadow-slate-200/80 ring-1 ring-slate-200/80 dark:bg-dark-900 dark:shadow-black/30 dark:ring-dark-700"
+          class="inline-flex h-20 w-20 items-center justify-center overflow-hidden rounded-lg bg-white p-1 shadow-card ring-1 ring-slate-200 dark:bg-dark-900 dark:ring-dark-700"
         >
           <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
         </div>
       </div>
 
-      <!-- Card Container -->
-      <div class="rounded-2xl border border-white/80 bg-white/90 p-7 shadow-2xl shadow-slate-200/70 backdrop-blur-xl dark:border-dark-700/80 dark:bg-dark-900/85 dark:shadow-black/25">
+      <!-- Card Container：扁平卡片节奏，与主应用 .card 一致 -->
+      <div class="rounded-lg border border-gray-200 bg-white p-7 shadow-card-hover dark:border-dark-700 dark:bg-dark-900">
         <slot />
       </div>
 

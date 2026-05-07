@@ -14,9 +14,11 @@
       <!-- Header -->
       <AppHeader />
 
-      <!-- Main Content -->
-      <main class="p-4 md:p-6 lg:p-8">
-        <slot />
+      <!-- Main Content：超宽屏内容居中收口（1536px），避免铺满产生空旷感 -->
+      <main class="px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
+        <div class="mx-auto w-full max-w-screen-2xl">
+          <slot />
+        </div>
       </main>
     </div>
   </div>
