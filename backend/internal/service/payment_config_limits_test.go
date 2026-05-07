@@ -459,3 +459,36 @@ func TestGetAvailableMethodLimitsPreservesLegacyCrossProviderBehaviorWhenVisible
 	require.Equal(t, 10.0, resp.GlobalMin)
 	require.Equal(t, 400.0, resp.GlobalMax)
 }
+
+func TestGetAvailableMethodLimitsIncludesXunhupayVisibleMethods(t *testing.T) {
+	ctx := context.Background()
+	client := newPaymentConfigServiceTestClient(t)
+
+	_, err := client.PaymentProviderInstance.Create().
+		SetProviderKey(payment.TypeXunhupay).
+		SetName("Xunhupay Mixed").
+		SetConfig("{}").
+		SetSupportedTypes("alipay,wxpay").
+		SetLimits(`{"alipay":{"singleMin":1,"singleMax":100},"wxpay":{"singleMin":2,"singleMax":200}}`).
+		SetEnabled(true).
+		Save(ctx)
+	require.NoError(t, err)
+
+	svc := &PaymentConfigService{
+		entClient:   client,
+		settingRepo: &paymentConfigSettingRepoStub{values: map[string]string{}},
+	}
+
+	resp, err := svc.GetAvailableMethodLimits(ctx)
+	require.NoError(t, err)
+
+	alipayLimits, ok := resp.Methods[payment.TypeAlipay]
+	require.True(t, ok, "expected xunhupay alipay to be visible")
+	require.Equal(t, 1.0, alipayLimits.SingleMin)
+	require.Equal(t, 100.0, alipayLimits.SingleMax)
+
+	wxpayLimits, ok := resp.Methods[payment.TypeWxpay]
+	require.True(t, ok, "expected xunhupay wxpay to be visible")
+	require.Equal(t, 2.0, wxpayLimits.SingleMin)
+	require.Equal(t, 200.0, wxpayLimits.SingleMax)
+}
