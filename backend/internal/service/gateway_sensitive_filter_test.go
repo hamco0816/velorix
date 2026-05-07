@@ -1,6 +1,9 @@
 package service
 
-import "testing"
+import (
+	"context"
+	"testing"
+)
 
 func TestParseGatewaySensitiveWords(t *testing.T) {
 	got := ParseGatewaySensitiveWords(" badword\nBadWord, another\uFF1B spaced word ")
@@ -95,7 +98,7 @@ func TestCheckGatewaySensitiveJSONAllowsNormalPrompt(t *testing.T) {
 
 func TestGatewaySensitiveFilterSettingsNilServiceFailSafe(t *testing.T) {
 	var settingService *SettingService
-	settings := settingService.GetGatewaySensitiveFilterSettings(nil)
+	settings := settingService.GetGatewaySensitiveFilterSettings(context.Background())
 	if settings == nil || !settings.Enabled {
 		t.Fatalf("expected fail-safe enabled settings, got %#v", settings)
 	}

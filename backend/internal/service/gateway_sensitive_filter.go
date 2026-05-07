@@ -335,7 +335,7 @@ func compactGatewaySensitiveText(value string) string {
 		if unicode.IsSpace(r) || unicode.IsPunct(r) || unicode.IsSymbol(r) || isGatewaySensitiveIgnoredRune(r) {
 			continue
 		}
-		builder.WriteRune(r)
+		_, _ = builder.WriteRune(r)
 	}
 	return builder.String()
 }
