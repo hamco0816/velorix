@@ -4986,6 +4986,45 @@
                     </p>
                   </div>
                 </div>
+                <!-- Row 3: Quick recharge amounts -->
+                <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-dark-700 dark:bg-dark-900/60">
+                  <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,420px)] lg:items-start">
+                    <div>
+                      <label class="input-label">{{
+                        t("admin.settings.payment.quickAmounts")
+                      }}</label>
+                      <input
+                        v-model="paymentQuickAmountsInput"
+                        type="text"
+                        class="input"
+                        :placeholder="
+                          t('admin.settings.payment.quickAmountsPlaceholder')
+                        "
+                      />
+                      <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                        {{
+                          t("admin.settings.payment.quickAmountsHint", {
+                            max: paymentQuickAmountsMaxCount,
+                          })
+                        }}
+                      </p>
+                    </div>
+                    <div>
+                      <p class="mb-2 text-xs font-medium text-gray-400 dark:text-gray-500">
+                        {{ t("admin.settings.payment.quickAmountsPreview") }}
+                      </p>
+                      <div class="flex min-h-[42px] flex-wrap gap-2 rounded-xl border border-gray-100 bg-slate-50 p-2 dark:border-dark-700 dark:bg-dark-800/60">
+                        <span
+                          v-for="amountItem in paymentQuickAmountsPreview"
+                          :key="amountItem"
+                          class="inline-flex items-center rounded-lg bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 ring-1 ring-gray-200 dark:bg-dark-900 dark:text-gray-200 dark:ring-dark-600"
+                        >
+                          {{ amountItem }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <!-- Row 3: Pending orders + load balance + cancel rate limit -->
                 <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(420px,2fr)]">
                   <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-dark-700 dark:bg-dark-900/60">
@@ -5762,7 +5801,10 @@ const smtpPasswordManuallyEdited = ref(false);
 const testEmailAddress = ref("");
 const registrationEmailSuffixWhitelistTags = ref<string[]>([]);
 const registrationEmailSuffixWhitelistDraft = ref("");
+const paymentQuickAmountsDefault = [10, 20, 50, 100, 200, 500, 1000, 2000, 5000];
+const paymentQuickAmountsMaxCount = 12;
 const tablePageSizeOptionsInput = ref("10, 20, 50, 100");
+const paymentQuickAmountsInput = ref(paymentQuickAmountsDefault.join(", "));
 
 // Admin API Key 状态
 const adminApiKeyLoading = ref(true);
@@ -5897,6 +5939,7 @@ const form = reactive<SettingsForm>({
   payment_balance_disabled: false,
   payment_balance_recharge_multiplier: 1,
   payment_recharge_fee_rate: 0,
+  payment_quick_amounts: [...paymentQuickAmountsDefault],
   payment_enabled_types: [],
   payment_help_image_url: "",
   payment_help_text: "",
@@ -6581,6 +6624,58 @@ function parseTablePageSizeOptionsInput(raw: string): number[] | null {
   return deduped;
 }
 
+function formatPaymentQuickAmounts(amounts: number[]): string {
+  return amounts.join(", ");
+}
+
+function normalizePaymentQuickAmounts(amounts: unknown): number[] {
+  if (!Array.isArray(amounts) || amounts.length === 0) {
+    return [...paymentQuickAmountsDefault];
+  }
+  const normalized = Array.from(
+    new Set(
+      amounts
+        .map((amount) => Number(amount))
+        .filter((amount) => Number.isFinite(amount) && amount > 0)
+        .map((amount) => Math.round(amount * 100) / 100),
+    ),
+  ).sort((a, b) => a - b);
+  return normalized.length > 0 ? normalized.slice(0, paymentQuickAmountsMaxCount) : [...paymentQuickAmountsDefault];
+}
+
+function parsePaymentQuickAmountsInput(raw: string): number[] | null {
+  const tokens = raw
+    .split(",")
+    .map((token) => token.trim())
+    .filter((token) => token.length > 0);
+  if (tokens.length === 0) {
+    return [];
+  }
+  if (tokens.length > paymentQuickAmountsMaxCount) {
+    return null;
+  }
+  const parsed = tokens.map((token) => Number(token));
+  if (
+    parsed.some(
+      (amount) =>
+        !Number.isFinite(amount) ||
+        amount <= 0 ||
+        Math.abs(Math.round(amount * 100) - amount * 100) > 1e-8,
+    )
+  ) {
+    return null;
+  }
+  return Array.from(new Set(parsed)).sort((a, b) => a - b);
+}
+
+const paymentQuickAmountsPreview = computed(() => {
+  const parsed = parsePaymentQuickAmountsInput(paymentQuickAmountsInput.value);
+  if (parsed === null) {
+    return [];
+  }
+  return parsed.length > 0 ? parsed : [...paymentQuickAmountsDefault];
+});
+
 async function loadSettings() {
   loading.value = true;
   loadFailed.value = false;
@@ -6616,6 +6711,12 @@ async function loadSettings() {
       Array.isArray(settings.table_page_size_options)
         ? settings.table_page_size_options
         : [10, 20, 50, 100],
+    );
+    form.payment_quick_amounts = normalizePaymentQuickAmounts(
+      settings.payment_quick_amounts,
+    );
+    paymentQuickAmountsInput.value = formatPaymentQuickAmounts(
+      form.payment_quick_amounts,
     );
     registrationEmailSuffixWhitelistDraft.value = "";
     form.smtp_password = "";
@@ -6811,6 +6912,22 @@ async function saveSettings() {
 
     form.table_default_page_size = normalizedTableDefaultPageSize;
     form.table_page_size_options = normalizedTablePageSizeOptions;
+
+    const normalizedPaymentQuickAmounts = parsePaymentQuickAmountsInput(
+      paymentQuickAmountsInput.value,
+    );
+    if (normalizedPaymentQuickAmounts === null) {
+      appStore.showError(
+        t("admin.settings.payment.quickAmountsFormatError", {
+          max: paymentQuickAmountsMaxCount,
+        }),
+      );
+      return;
+    }
+    form.payment_quick_amounts =
+      normalizedPaymentQuickAmounts.length > 0
+        ? normalizedPaymentQuickAmounts
+        : [...paymentQuickAmountsDefault];
 
     const normalizedDefaultSubscriptions = normalizeDefaultSubscriptionSettings(
       form.default_subscriptions,
@@ -7022,6 +7139,7 @@ async function saveSettings() {
       payment_balance_recharge_multiplier:
         Number(form.payment_balance_recharge_multiplier) || 1,
       payment_recharge_fee_rate: Number(form.payment_recharge_fee_rate) || 0,
+      payment_quick_amounts: form.payment_quick_amounts,
       payment_enabled_types: form.payment_enabled_types,
       payment_load_balance_strategy: form.payment_load_balance_strategy,
       payment_product_name_prefix: form.payment_product_name_prefix,
@@ -7112,6 +7230,12 @@ async function saveSettings() {
       Array.isArray(updated.table_page_size_options)
         ? updated.table_page_size_options
         : [10, 20, 50, 100],
+    );
+    form.payment_quick_amounts = normalizePaymentQuickAmounts(
+      updated.payment_quick_amounts,
+    );
+    paymentQuickAmountsInput.value = formatPaymentQuickAmounts(
+      form.payment_quick_amounts,
     );
     registrationEmailSuffixWhitelistDraft.value = "";
     form.smtp_password = "";

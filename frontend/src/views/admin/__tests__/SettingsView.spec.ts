@@ -372,6 +372,7 @@ const baseSettingsResponse = {
   payment_balance_disabled: false,
   payment_balance_recharge_multiplier: 1,
   payment_recharge_fee_rate: 0,
+  payment_quick_amounts: [10, 20, 50, 100, 200, 500, 1000, 2000, 5000],
   payment_load_balance_strategy: "round-robin",
   payment_product_name_prefix: "",
   payment_product_name_suffix: "",

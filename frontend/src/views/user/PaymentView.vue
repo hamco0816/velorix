@@ -52,7 +52,7 @@
 
                   <AmountInput
                     v-model="amount"
-                    :amounts="[10, 20, 50, 100, 200, 500, 1000, 2000, 5000]"
+                    :amounts="quickAmounts"
                     :min="globalMinAmount"
                     :max="globalMaxAmount"
                   />
@@ -564,9 +564,10 @@ function onPaymentSettled() {
 }
 
 // All checkout data from single API call
+const defaultQuickAmounts = [10, 20, 50, 100, 200, 500, 1000, 2000, 5000]
 const checkout = ref<CheckoutInfoResponse>({
   methods: {}, global_min: 0, global_max: 0,
-  plans: [], balance_disabled: false, balance_recharge_multiplier: 1, recharge_fee_rate: 0, help_text: '', help_image_url: '', stripe_publishable_key: '',
+  plans: [], balance_disabled: false, balance_recharge_multiplier: 1, recharge_fee_rate: 0, quick_amounts: [], help_text: '', help_image_url: '', stripe_publishable_key: '',
 })
 
 const tabs = computed(() => {
@@ -579,6 +580,14 @@ const tabs = computed(() => {
 const visibleMethods = computed(() => getVisibleMethods(checkout.value.methods))
 const enabledMethods = computed(() => Object.keys(visibleMethods.value))
 const validAmount = computed(() => amount.value ?? 0)
+const quickAmounts = computed(() => {
+  const values = Array.isArray(checkout.value.quick_amounts)
+    ? checkout.value.quick_amounts
+        .map((item) => Number(item))
+        .filter((item) => Number.isFinite(item) && item > 0)
+    : []
+  return values.length > 0 ? values : defaultQuickAmounts
+})
 const balanceRechargeMultiplier = computed(() => {
   const multiplier = checkout.value.balance_recharge_multiplier
   return multiplier > 0 ? multiplier : 1

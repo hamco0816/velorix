@@ -96,6 +96,7 @@ func TestParsePaymentConfig(t *testing.T) {
 		if cfg.MaxPendingOrders != 3 {
 			t.Fatalf("expected MaxPendingOrders=3, got %v", cfg.MaxPendingOrders)
 		}
+		assertFloatSliceEqual(t, cfg.QuickAmounts, []float64{10, 20, 50, 100, 200, 500, 1000, 2000, 5000})
 		if cfg.LoadBalanceStrategy != payment.DefaultLoadBalanceStrategy {
 			t.Fatalf("expected LoadBalanceStrategy=%s, got %q", payment.DefaultLoadBalanceStrategy, cfg.LoadBalanceStrategy)
 		}
@@ -115,6 +116,7 @@ func TestParsePaymentConfig(t *testing.T) {
 			SettingMaxPendingOrders:    "5",
 			SettingEnabledPaymentTypes: "alipay,wxpay,stripe",
 			SettingBalancePayDisabled:  "true",
+			SettingQuickAmounts:        "100,20,20,10.5",
 			SettingLoadBalanceStrategy: "least_amount",
 			SettingProductNamePrefix:   "PRE",
 			SettingProductNameSuffix:   "SUF",
@@ -157,6 +159,7 @@ func TestParsePaymentConfig(t *testing.T) {
 		if cfg.ProductNameSuffix != "SUF" {
 			t.Fatalf("ProductNameSuffix = %q, want %q", cfg.ProductNameSuffix, "SUF")
 		}
+		assertFloatSliceEqual(t, cfg.QuickAmounts, []float64{10.5, 20, 100})
 	})
 
 	t.Run("enabled types with spaces are trimmed", func(t *testing.T) {
@@ -197,6 +200,34 @@ func TestParsePaymentConfig(t *testing.T) {
 			t.Fatalf("expected empty EnabledTypes for empty string, got %v", cfg.EnabledTypes)
 		}
 	})
+}
+
+func TestUpdatePaymentConfig_PersistsQuickAmounts(t *testing.T) {
+	repo := &paymentConfigSettingRepoStub{values: map[string]string{}}
+	svc := &PaymentConfigService{settingRepo: repo}
+
+	err := svc.UpdatePaymentConfig(context.Background(), UpdatePaymentConfigRequest{
+		QuickAmounts: []float64{100, 10, 20, 20},
+	})
+	if err != nil {
+		t.Fatalf("UpdatePaymentConfig returned error: %v", err)
+	}
+
+	if got := repo.values[SettingQuickAmounts]; got != "10,20,100" {
+		t.Fatalf("quick amounts = %q, want %q", got, "10,20,100")
+	}
+}
+
+func TestUpdatePaymentConfig_RejectsInvalidQuickAmounts(t *testing.T) {
+	repo := &paymentConfigSettingRepoStub{values: map[string]string{}}
+	svc := &PaymentConfigService{settingRepo: repo}
+
+	err := svc.UpdatePaymentConfig(context.Background(), UpdatePaymentConfigRequest{
+		QuickAmounts: []float64{10.001},
+	})
+	if err == nil {
+		t.Fatal("expected invalid quick amounts error")
+	}
 }
 
 func TestGetBasePaymentType(t *testing.T) {
@@ -434,4 +465,16 @@ func TestUpdatePaymentConfig_PersistsVisibleMethodRouting(t *testing.T) {
 
 func paymentConfigStrPtr(value string) *string {
 	return &value
+}
+
+func assertFloatSliceEqual(t *testing.T, got, want []float64) {
+	t.Helper()
+	if len(got) != len(want) {
+		t.Fatalf("slice len = %d, want %d (%v)", len(got), len(want), got)
+	}
+	for i := range want {
+		if got[i] != want[i] {
+			t.Fatalf("slice[%d] = %v, want %v (full=%v)", i, got[i], want[i], got)
+		}
+	}
 }
