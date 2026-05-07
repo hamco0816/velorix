@@ -355,6 +355,7 @@ export default {
     proxies: 'IP管理',
     redeemCodes: '兑换码',
     ops: '运维监控',
+    safetyRisk: '风控日志',
     promoCodes: '优惠码',
     settings: '系统设置',
     myAccount: '我的账户',
@@ -374,6 +375,8 @@ export default {
     channelManagement: '渠道管理',
     channelPricing: '渠道定价',
     channelMonitor: '渠道监控',
+    adminDocs: '管理员文档',
+    modelIntegrationDocs: '接入文档',
     channelStatus: '渠道状态',
   },
 
@@ -1290,8 +1293,22 @@ export default {
     selectDateRange: '选择日期范围'
   },
 
+  userDocs: {
+    title: 'API 接入文档',
+    description: 'Claude Code、Codex、OpenAI SDK 和兼容客户端接入教程'
+  },
+
   // Admin
   admin: {
+    adminDocs: {
+      title: '管理员文档',
+      description: '后台配置词典、上线教程、风控、支付和用户接入说明'
+    },
+    modelIntegrationDocs: {
+      title: '模型接入文档',
+      description: '模型平台、账号代理、分组渠道、模型映射、定价、状态监控和风控配置说明'
+    },
+
     // Dashboard
     dashboard: {
       title: '管理控制台',

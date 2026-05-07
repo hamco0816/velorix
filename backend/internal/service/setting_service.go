@@ -1247,6 +1247,9 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	updates[SettingKeyEnableMetadataPassthrough] = strconv.FormatBool(settings.EnableMetadataPassthrough)
 	updates[SettingKeyEnableCCHSigning] = strconv.FormatBool(settings.EnableCCHSigning)
 	updates[SettingKeyEnableAnthropicCacheTTL1hInjection] = strconv.FormatBool(settings.EnableAnthropicCacheTTL1hInjection)
+	settings.GatewaySensitiveFilterWords = NormalizeGatewaySensitiveWordsText(settings.GatewaySensitiveFilterWords)
+	updates[SettingKeyGatewaySensitiveFilterEnabled] = strconv.FormatBool(settings.GatewaySensitiveFilterEnabled)
+	updates[SettingKeyGatewaySensitiveFilterWords] = settings.GatewaySensitiveFilterWords
 	updates[SettingPaymentVisibleMethodAlipaySource] = settings.PaymentVisibleMethodAlipaySource
 	updates[SettingPaymentVisibleMethodWxpaySource] = settings.PaymentVisibleMethodWxpaySource
 	updates[SettingPaymentVisibleMethodAlipayEnabled] = strconv.FormatBool(settings.PaymentVisibleMethodAlipayEnabled)
@@ -1313,6 +1316,7 @@ func (s *SettingService) refreshCachedSettings(settings *SystemSettings) {
 		anthropicCacheTTL1hInjection: settings.EnableAnthropicCacheTTL1hInjection,
 		expiresAt:                    time.Now().Add(gatewayForwardingCacheTTL).UnixNano(),
 	})
+	storeGatewaySensitiveFilterSettings(settings)
 	openAIAdvancedSchedulerSettingSF.Forget(openAIAdvancedSchedulerSettingKey)
 	openAIAdvancedSchedulerSettingCache.Store(&cachedOpenAIAdvancedSchedulerSetting{
 		enabled:   settings.OpenAIAdvancedSchedulerEnabled,
@@ -1910,6 +1914,8 @@ func (s *SettingService) InitializeDefaultSettings(ctx context.Context) error {
 		// 分组隔离（默认不允许未分组 Key 调度）
 		SettingKeyAllowUngroupedKeyScheduling:        "false",
 		SettingKeyEnableAnthropicCacheTTL1hInjection: "false",
+		SettingKeyGatewaySensitiveFilterEnabled:      "true",
+		SettingKeyGatewaySensitiveFilterWords:        "",
 		SettingPaymentVisibleMethodAlipaySource:      "",
 		SettingPaymentVisibleMethodWxpaySource:       "",
 		SettingPaymentVisibleMethodAlipayEnabled:     "false",
@@ -2258,6 +2264,8 @@ func (s *SettingService) parseSettings(settings map[string]string) *SystemSettin
 	result.EnableMetadataPassthrough = settings[SettingKeyEnableMetadataPassthrough] == "true"
 	result.EnableCCHSigning = settings[SettingKeyEnableCCHSigning] == "true"
 	result.EnableAnthropicCacheTTL1hInjection = settings[SettingKeyEnableAnthropicCacheTTL1hInjection] == "true"
+	result.GatewaySensitiveFilterEnabled = !strings.EqualFold(strings.TrimSpace(settings[SettingKeyGatewaySensitiveFilterEnabled]), "false")
+	result.GatewaySensitiveFilterWords = NormalizeGatewaySensitiveWordsText(settings[SettingKeyGatewaySensitiveFilterWords])
 
 	// Web search emulation: quick enabled check from the JSON config
 	if raw := settings[SettingKeyWebSearchEmulationConfig]; raw != "" {

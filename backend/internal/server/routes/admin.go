@@ -175,6 +175,11 @@ func registerOpsRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 		// Request drilldown (success + error)
 		ops.GET("/requests", h.Admin.Ops.ListRequestDetails)
 
+		// Safety risk logs
+		ops.GET("/safety-risk-events", h.Admin.Ops.ListSafetyRiskEvents)
+		ops.PUT("/safety-risk-events/:id/review", h.Admin.Ops.ReviewSafetyRiskEvent)
+		ops.POST("/safety-risk-events/clear-user", h.Admin.Ops.ClearSafetyRiskEventsForUser)
+
 		// Indexed system logs
 		ops.GET("/system-logs", h.Admin.Ops.ListSystemLogs)
 		ops.POST("/system-logs/cleanup", h.Admin.Ops.CleanupSystemLogs)

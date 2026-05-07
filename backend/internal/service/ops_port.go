@@ -15,6 +15,10 @@ type OpsRepository interface {
 	ListSystemLogs(ctx context.Context, filter *OpsSystemLogFilter) (*OpsSystemLogList, error)
 	DeleteSystemLogs(ctx context.Context, filter *OpsSystemLogCleanupFilter) (int64, error)
 	InsertSystemLogCleanupAudit(ctx context.Context, input *OpsSystemLogCleanupAudit) error
+	InsertSafetyRiskEvent(ctx context.Context, input *SafetyRiskEventInput) (int64, error)
+	ListSafetyRiskEvents(ctx context.Context, filter *SafetyRiskEventFilter) (*SafetyRiskEventList, error)
+	UpdateSafetyRiskEventStatus(ctx context.Context, id int64, status string, reviewedByUserID *int64, reviewNote string) error
+	ClearSafetyRiskEventsForUser(ctx context.Context, userID int64, reviewedByUserID int64, reviewNote string) (int64, error)
 
 	InsertRetryAttempt(ctx context.Context, input *OpsInsertRetryAttemptInput) (int64, error)
 	UpdateRetryAttempt(ctx context.Context, input *OpsUpdateRetryAttemptInput) error

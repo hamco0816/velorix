@@ -210,6 +210,8 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 		EnableMetadataPassthrough:              settings.EnableMetadataPassthrough,
 		EnableCCHSigning:                       settings.EnableCCHSigning,
 		EnableAnthropicCacheTTL1hInjection:     settings.EnableAnthropicCacheTTL1hInjection,
+		GatewaySensitiveFilterEnabled:          settings.GatewaySensitiveFilterEnabled,
+		GatewaySensitiveFilterWords:            settings.GatewaySensitiveFilterWords,
 		WebSearchEmulationEnabled:              settings.WebSearchEmulationEnabled,
 		PaymentVisibleMethodAlipaySource:       settings.PaymentVisibleMethodAlipaySource,
 		PaymentVisibleMethodWxpaySource:        settings.PaymentVisibleMethodWxpaySource,
@@ -442,10 +444,12 @@ type UpdateSettingsRequest struct {
 	BackendModeEnabled bool `json:"backend_mode_enabled"`
 
 	// Gateway forwarding behavior
-	EnableFingerprintUnification       *bool `json:"enable_fingerprint_unification"`
-	EnableMetadataPassthrough          *bool `json:"enable_metadata_passthrough"`
-	EnableCCHSigning                   *bool `json:"enable_cch_signing"`
-	EnableAnthropicCacheTTL1hInjection *bool `json:"enable_anthropic_cache_ttl_1h_injection"`
+	EnableFingerprintUnification       *bool   `json:"enable_fingerprint_unification"`
+	EnableMetadataPassthrough          *bool   `json:"enable_metadata_passthrough"`
+	EnableCCHSigning                   *bool   `json:"enable_cch_signing"`
+	EnableAnthropicCacheTTL1hInjection *bool   `json:"enable_anthropic_cache_ttl_1h_injection"`
+	GatewaySensitiveFilterEnabled      *bool   `json:"gateway_sensitive_filter_enabled"`
+	GatewaySensitiveFilterWords        *string `json:"gateway_sensitive_filter_words"`
 
 	// Payment visible method routing
 	PaymentVisibleMethodAlipaySource  *string `json:"payment_visible_method_alipay_source"`
@@ -1281,6 +1285,18 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 			}
 			return previousSettings.EnableAnthropicCacheTTL1hInjection
 		}(),
+		GatewaySensitiveFilterEnabled: func() bool {
+			if req.GatewaySensitiveFilterEnabled != nil {
+				return *req.GatewaySensitiveFilterEnabled
+			}
+			return previousSettings.GatewaySensitiveFilterEnabled
+		}(),
+		GatewaySensitiveFilterWords: func() string {
+			if req.GatewaySensitiveFilterWords != nil {
+				return strings.TrimSpace(*req.GatewaySensitiveFilterWords)
+			}
+			return previousSettings.GatewaySensitiveFilterWords
+		}(),
 		PaymentVisibleMethodAlipaySource: func() string {
 			if req.PaymentVisibleMethodAlipaySource != nil {
 				return strings.TrimSpace(*req.PaymentVisibleMethodAlipaySource)
@@ -1579,6 +1595,8 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		EnableMetadataPassthrough:              updatedSettings.EnableMetadataPassthrough,
 		EnableCCHSigning:                       updatedSettings.EnableCCHSigning,
 		EnableAnthropicCacheTTL1hInjection:     updatedSettings.EnableAnthropicCacheTTL1hInjection,
+		GatewaySensitiveFilterEnabled:          updatedSettings.GatewaySensitiveFilterEnabled,
+		GatewaySensitiveFilterWords:            updatedSettings.GatewaySensitiveFilterWords,
 		PaymentVisibleMethodAlipaySource:       updatedSettings.PaymentVisibleMethodAlipaySource,
 		PaymentVisibleMethodWxpaySource:        updatedSettings.PaymentVisibleMethodWxpaySource,
 		PaymentVisibleMethodAlipayEnabled:      updatedSettings.PaymentVisibleMethodAlipayEnabled,
@@ -1960,6 +1978,12 @@ func diffSettings(before *service.SystemSettings, after *service.SystemSettings,
 	}
 	if before.EnableAnthropicCacheTTL1hInjection != after.EnableAnthropicCacheTTL1hInjection {
 		changed = append(changed, "enable_anthropic_cache_ttl_1h_injection")
+	}
+	if before.GatewaySensitiveFilterEnabled != after.GatewaySensitiveFilterEnabled {
+		changed = append(changed, "gateway_sensitive_filter_enabled")
+	}
+	if before.GatewaySensitiveFilterWords != after.GatewaySensitiveFilterWords {
+		changed = append(changed, "gateway_sensitive_filter_words")
 	}
 	if before.PaymentVisibleMethodAlipaySource != after.PaymentVisibleMethodAlipaySource {
 		changed = append(changed, "payment_visible_method_alipay_source")

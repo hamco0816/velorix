@@ -97,6 +97,9 @@ func (s *PaymentService) validateOrderInput(ctx context.Context, req CreateOrder
 	if math.IsNaN(req.Amount) || math.IsInf(req.Amount, 0) || req.Amount <= 0 {
 		return nil, infraerrors.BadRequest("INVALID_AMOUNT", "amount must be a positive number")
 	}
+	if !payment.HasAtMostCents(req.Amount) {
+		return nil, infraerrors.BadRequest("INVALID_AMOUNT", "amount supports at most 2 decimal places")
+	}
 	if (cfg.MinAmount > 0 && req.Amount < cfg.MinAmount) || (cfg.MaxAmount > 0 && req.Amount > cfg.MaxAmount) {
 		return nil, infraerrors.BadRequest("INVALID_AMOUNT", "amount out of range").
 			WithMetadata(map[string]string{"min": fmt.Sprintf("%.2f", cfg.MinAmount), "max": fmt.Sprintf("%.2f", cfg.MaxAmount)})
@@ -111,6 +114,9 @@ func (s *PaymentService) validateSubOrder(ctx context.Context, req CreateOrderRe
 	plan, err := s.configService.GetPlan(ctx, req.PlanID)
 	if err != nil || !plan.ForSale {
 		return nil, infraerrors.NotFound("PLAN_NOT_AVAILABLE", "plan not found or not for sale")
+	}
+	if math.IsNaN(plan.Price) || math.IsInf(plan.Price, 0) || plan.Price <= 0 || !payment.HasAtMostCents(plan.Price) {
+		return nil, infraerrors.BadRequest("INVALID_PLAN_PRICE", "subscription plan price must be a positive amount with at most 2 decimal places")
 	}
 	group, err := s.groupRepo.GetByID(ctx, plan.GroupID)
 	if err != nil || group.Status != payment.EntityStatusActive {

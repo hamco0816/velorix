@@ -13,6 +13,8 @@ type opsRepoMock struct {
 	ListSystemLogsFn              func(ctx context.Context, filter *OpsSystemLogFilter) (*OpsSystemLogList, error)
 	DeleteSystemLogsFn            func(ctx context.Context, filter *OpsSystemLogCleanupFilter) (int64, error)
 	InsertSystemLogCleanupAuditFn func(ctx context.Context, input *OpsSystemLogCleanupAudit) error
+	InsertSafetyRiskEventFn       func(ctx context.Context, input *SafetyRiskEventInput) (int64, error)
+	ListSafetyRiskEventsFn        func(ctx context.Context, filter *SafetyRiskEventFilter) (*SafetyRiskEventList, error)
 }
 
 func (m *opsRepoMock) InsertErrorLog(ctx context.Context, input *OpsInsertErrorLogInput) (int64, error) {
@@ -67,6 +69,28 @@ func (m *opsRepoMock) InsertSystemLogCleanupAudit(ctx context.Context, input *Op
 		return m.InsertSystemLogCleanupAuditFn(ctx, input)
 	}
 	return nil
+}
+
+func (m *opsRepoMock) InsertSafetyRiskEvent(ctx context.Context, input *SafetyRiskEventInput) (int64, error) {
+	if m.InsertSafetyRiskEventFn != nil {
+		return m.InsertSafetyRiskEventFn(ctx, input)
+	}
+	return 0, nil
+}
+
+func (m *opsRepoMock) ListSafetyRiskEvents(ctx context.Context, filter *SafetyRiskEventFilter) (*SafetyRiskEventList, error) {
+	if m.ListSafetyRiskEventsFn != nil {
+		return m.ListSafetyRiskEventsFn(ctx, filter)
+	}
+	return &SafetyRiskEventList{Events: []*SafetyRiskEvent{}, Total: 0, Page: 1, PageSize: 20}, nil
+}
+
+func (m *opsRepoMock) UpdateSafetyRiskEventStatus(ctx context.Context, id int64, status string, reviewedByUserID *int64, reviewNote string) error {
+	return nil
+}
+
+func (m *opsRepoMock) ClearSafetyRiskEventsForUser(ctx context.Context, userID int64, reviewedByUserID int64, reviewNote string) (int64, error) {
+	return 0, nil
 }
 
 func (m *opsRepoMock) InsertRetryAttempt(ctx context.Context, input *OpsInsertRetryAttemptInput) (int64, error) {

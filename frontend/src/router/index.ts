@@ -222,6 +222,18 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/docs',
+    name: 'UserDocs',
+    component: () => import('@/views/user/UserDocsView.vue'),
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: false,
+      title: 'API Docs',
+      titleKey: 'userDocs.title',
+      descriptionKey: 'userDocs.description'
+    }
+  },
+  {
     path: '/profile',
     name: 'Profile',
     component: () => import('@/views/user/ProfileView.vue'),
@@ -359,6 +371,28 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/admin/safety-risk',
+    name: 'AdminSafetyRisk',
+    component: () => import('@/views/admin/SafetyRiskView.vue'),
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: true,
+      title: 'Safety Risk Logs'
+    }
+  },
+  {
+    path: '/admin/docs',
+    name: 'AdminDocs',
+    component: () => import('@/views/admin/ModelIntegrationDocsView.vue'),
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: true,
+      title: 'Admin Docs',
+      titleKey: 'admin.adminDocs.title',
+      descriptionKey: 'admin.adminDocs.description'
+    }
+  },
+  {
     path: '/admin/users',
     name: 'AdminUsers',
     component: () => import('@/views/admin/UsersView.vue'),
@@ -409,6 +443,10 @@ const routes: RouteRecordRaw[] = [
       titleKey: 'admin.channelMonitor.title',
       descriptionKey: 'admin.channelMonitor.description'
     }
+  },
+  {
+    path: '/admin/channels/docs',
+    redirect: '/admin/docs'
   },
   {
     path: '/monitor',

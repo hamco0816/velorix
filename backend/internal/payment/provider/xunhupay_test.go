@@ -224,6 +224,33 @@ func TestXunhupayVerifyNotificationBadSignRejected(t *testing.T) {
 	}
 }
 
+func TestXunhupayVerifyNotificationInvalidAmountRejected(t *testing.T) {
+	x, err := NewXunhupay("inst-1", map[string]string{
+		"appid":     "abc",
+		"appsecret": "secret-x",
+		"notifyUrl": "https://example.com/notify",
+	})
+	if err != nil {
+		t.Fatalf("create xunhupay: %v", err)
+	}
+
+	form := url.Values{}
+	form.Set("appid", "abc")
+	form.Set("trade_order_id", "ord_bad_amount")
+	form.Set("transaction_id", "tx_bad_amount")
+	form.Set("total_fee", "not-a-number")
+	form.Set("status", xunhupayNotifyStatusPaid)
+	plain := map[string]string{}
+	for k := range form {
+		plain[k] = form.Get(k)
+	}
+	form.Set("hash", xunhupaySign(plain, "secret-x"))
+
+	if _, err := x.VerifyNotification(context.Background(), form.Encode(), nil); err == nil {
+		t.Fatalf("expected invalid amount error, got nil")
+	}
+}
+
 func TestXunhupayPaymentChannelRouting(t *testing.T) {
 	cases := map[string]string{
 		payment.TypeAlipay:       xunhupayAlipayChannel,

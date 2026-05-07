@@ -3084,6 +3084,86 @@
               </div>
             </div>
           </div>
+          <!-- Gateway Safety Filter -->
+          <div class="card">
+            <div
+              class="border-b border-gray-100 px-6 py-4 dark:border-dark-700"
+            >
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                {{ localText("内容安全拦截", "Content Safety Filter") }}
+              </h2>
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                {{
+                  localText(
+                    "在请求转发到上游前拦截越狱、逆向和高风险 cyber 提示，降低账号风控和封禁风险。",
+                    "Block jailbreak, reverse-engineering, and high-risk cyber prompts before forwarding upstream.",
+                  )
+                }}
+              </p>
+            </div>
+            <div class="space-y-5 p-6">
+              <div class="flex items-center justify-between gap-4">
+                <div>
+                  <label
+                    class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >
+                    {{ localText("启用过滤", "Enable filter") }}
+                  </label>
+                  <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                    {{
+                      localText(
+                        "开启后默认启用内置风控规则；下方词库用于追加业务自定义拦截词。",
+                        "Built-in safety rules are enabled by default; the word list below adds custom business rules.",
+                      )
+                    }}
+                  </p>
+                </div>
+                <Toggle v-model="form.gateway_sensitive_filter_enabled" />
+              </div>
+
+              <div
+                v-if="form.gateway_sensitive_filter_enabled"
+                class="space-y-3 border-t border-gray-100 pt-4 dark:border-dark-700"
+              >
+                <div class="flex items-center justify-between gap-3">
+                  <label
+                    class="text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >
+                    {{ localText("追加拦截词", "Additional blocked words") }}
+                  </label>
+                  <span
+                    class="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500 dark:bg-dark-700 dark:text-dark-300"
+                  >
+                    {{
+                      localText(
+                        `${sensitiveFilterWordCount} 个`,
+                        `${sensitiveFilterWordCount} words`,
+                      )
+                    }}
+                  </span>
+                </div>
+                <textarea
+                  v-model="form.gateway_sensitive_filter_words"
+                  rows="8"
+                  class="input w-full resize-y font-mono text-sm leading-6"
+                  :placeholder="
+                    localText(
+                      '每行一个，也支持逗号或分号分隔',
+                      'One per line; comma and semicolon are also supported',
+                    )
+                  "
+                ></textarea>
+                <p class="text-xs leading-relaxed text-gray-500 dark:text-gray-400">
+                  {{
+                    localText(
+                      "内置规则覆盖常见越狱、提示词注入、恶意 cyber 和破解逆向请求；自定义词也会识别大小写、空格、标点和零宽字符绕过。",
+                      "Built-in rules cover common jailbreak, prompt-injection, malicious cyber, and cracking/reverse-engineering requests. Custom words also normalize case, spacing, punctuation, and zero-width bypasses.",
+                    )
+                  }}
+                </p>
+              </div>
+            </div>
+          </div>
           <!-- Web Search Emulation -->
           <div class="card">
             <div
@@ -5810,6 +5890,8 @@ const form = reactive<SettingsForm>({
   enable_metadata_passthrough: false,
   enable_cch_signing: false,
   enable_anthropic_cache_ttl_1h_injection: false,
+  gateway_sensitive_filter_enabled: true,
+  gateway_sensitive_filter_words: "",
   // Balance & quota notification
   balance_low_notify_enabled: false,
   balance_low_notify_threshold: 0,
@@ -5824,6 +5906,13 @@ const form = reactive<SettingsForm>({
   // Affiliate (邀请返利) feature switch
   affiliate_enabled: false,
 });
+
+const sensitiveFilterWordCount = computed(() =>
+  form.gateway_sensitive_filter_words
+    .split(/[\n\r,;，；]+/)
+    .map((word) => word.trim())
+    .filter(Boolean).length,
+);
 
 const authSourceDefaults = reactive<AuthSourceDefaultsState>(
   buildAuthSourceDefaultsState({}),
@@ -6720,6 +6809,9 @@ async function saveSettings() {
       enable_cch_signing: form.enable_cch_signing,
       enable_anthropic_cache_ttl_1h_injection:
         form.enable_anthropic_cache_ttl_1h_injection,
+      gateway_sensitive_filter_enabled:
+        form.gateway_sensitive_filter_enabled,
+      gateway_sensitive_filter_words: form.gateway_sensitive_filter_words,
       // Payment configuration
       payment_enabled: form.payment_enabled,
       payment_min_amount: Number(form.payment_min_amount) || 0,

@@ -378,7 +378,10 @@ func (x *Xunhupay) queryOrderWithCredential(ctx context.Context, tradeNo string,
 	if !xunhupayCodeIsSuccess(resp.ErrCode) {
 		return nil, fmt.Errorf("xunhupay query failed via %s/%s: %s", cred.Scope, orderField, strings.TrimSpace(resp.ErrMsg))
 	}
-	amount, _ := strconv.ParseFloat(resp.Data.TotalFee, 64)
+	amount, err := strconv.ParseFloat(resp.Data.TotalFee, 64)
+	if err != nil || amount <= 0 {
+		return nil, fmt.Errorf("xunhupay query invalid total_fee: %q", resp.Data.TotalFee)
+	}
 	return &payment.QueryOrderResponse{
 		TradeNo:  resp.Data.OpenOrderID,
 		Status:   xunhupayMapStatus(resp.Data.Status),
@@ -420,7 +423,10 @@ func (x *Xunhupay) VerifyNotification(_ context.Context, rawBody string, _ map[s
 		status = payment.ProviderStatusRefunded
 	}
 
-	amount, _ := strconv.ParseFloat(params["total_fee"], 64)
+	amount, err := strconv.ParseFloat(params["total_fee"], 64)
+	if err != nil || amount <= 0 {
+		return nil, fmt.Errorf("xunhupay invalid total_fee: %q", params["total_fee"])
+	}
 	metadata := x.MerchantIdentityMetadata()
 	if appid := strings.TrimSpace(params["appid"]); appid != "" {
 		if metadata == nil {

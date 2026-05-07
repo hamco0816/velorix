@@ -329,6 +329,10 @@ const (
 	// SettingKeyBackendModeEnabled Backend 模式：禁用用户注册和自助服务，仅管理员可登录
 	SettingKeyBackendModeEnabled = "backend_mode_enabled"
 
+	// Gateway sensitive filtering
+	SettingKeyGatewaySensitiveFilterEnabled = "gateway_sensitive_filter_enabled"
+	SettingKeyGatewaySensitiveFilterWords   = "gateway_sensitive_filter_words"
+
 	// Gateway Forwarding Behavior
 	// SettingKeyEnableFingerprintUnification 是否统一 OAuth 账号的 X-Stainless-* 指纹头（默认 true）
 	SettingKeyEnableFingerprintUnification = "enable_fingerprint_unification"

@@ -355,6 +355,7 @@ export default {
     proxies: 'Proxies',
     redeemCodes: 'Redeem Codes',
     ops: 'Ops',
+    safetyRisk: 'Risk Logs',
     promoCodes: 'Promo Codes',
     settings: 'Settings',
     myAccount: 'My Account',
@@ -374,6 +375,8 @@ export default {
     channelManagement: 'Channels',
     channelPricing: 'Channel Pricing',
     channelMonitor: 'Channel Monitor',
+    adminDocs: 'Admin Docs',
+    modelIntegrationDocs: 'Integration Docs',
     channelStatus: 'Channel Status',
   },
 
@@ -1286,8 +1289,22 @@ export default {
     selectDateRange: 'Select date range'
   },
 
+  userDocs: {
+    title: 'API Integration Docs',
+    description: 'Claude Code, Codex, OpenAI SDK, and compatible client integration guide'
+  },
+
   // Admin
   admin: {
+    adminDocs: {
+      title: 'Admin Docs',
+      description: 'Configuration glossary, setup guide, risk controls, payments, and user integration notes'
+    },
+    modelIntegrationDocs: {
+      title: 'Model Integration Docs',
+      description: 'Guide for model platforms, accounts, proxies, groups, channels, mapping, pricing, monitoring, and risk controls'
+    },
+
     // Dashboard
     dashboard: {
       title: 'Admin Dashboard',
