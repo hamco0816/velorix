@@ -368,10 +368,14 @@
                 <span>
                   {{ t('redeem.codeRule3') }}
                   <span
-                    v-if="contactInfo"
-                    class="ml-1 inline-flex items-center rounded-md bg-white px-2 py-0.5 text-xs font-medium text-sky-950 shadow-sm dark:bg-dark-700 dark:text-sky-100"
+                    v-if="hasContactMethods"
+                    class="ml-1 inline-flex align-middle"
                   >
-                    {{ contactInfo }}
+                    <ContactMethodsDisplay
+                      :methods="contactMethods"
+                      :legacy-info="contactInfo"
+                      compact
+                    />
                   </span>
                 </span>
               </li>
@@ -395,8 +399,10 @@ import { useAppStore } from '@/stores/app'
 import { useSubscriptionStore } from '@/stores/subscriptions'
 import { redeemAPI, authAPI, type RedeemHistoryItem } from '@/api'
 import AppLayout from '@/components/layout/AppLayout.vue'
+import ContactMethodsDisplay from '@/components/common/ContactMethodsDisplay.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { formatDateTime } from '@/utils/format'
+import type { ContactMethod } from '@/types'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
@@ -422,6 +428,8 @@ const errorMessage = ref('')
 const history = ref<RedeemHistoryItem[]>([])
 const loadingHistory = ref(false)
 const contactInfo = ref('')
+const contactMethods = ref<ContactMethod[]>([])
+const hasContactMethods = computed(() => contactMethods.value.length > 0 || !!contactInfo.value)
 
 // Helper functions for history display
 const isBalanceType = (type: string) => {
@@ -527,6 +535,7 @@ onMounted(async () => {
   try {
     const settings = await authAPI.getPublicSettings()
     contactInfo.value = settings.contact_info || ''
+    contactMethods.value = Array.isArray(settings.contact_methods) ? settings.contact_methods : []
   } catch (error) {
     console.error('Failed to load contact info:', error)
   }

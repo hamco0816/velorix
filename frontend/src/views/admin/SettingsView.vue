@@ -3866,19 +3866,111 @@
                 </button>
               </div>
 
-              <!-- Contact Info -->
+              <!-- Contact Methods -->
               <div>
-                <label
-                  class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {{ t("admin.settings.site.contactInfo") }}
+                  </label>
+                  <div class="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:border-sky-300 hover:text-sky-700 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-100"
+                      @click="addContactMethod('qq')"
+                    >
+                      <ContactMethodIcon type="qq" size="18px" />
+                      {{ t("admin.settings.site.addQQContact") }}
+                    </button>
+                    <button
+                      type="button"
+                      class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:border-emerald-300 hover:text-emerald-700 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-100"
+                      @click="addContactMethod('wechat')"
+                    >
+                      <ContactMethodIcon type="wechat" size="18px" />
+                      {{ t("admin.settings.site.addWeChatContact") }}
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-ghost btn-xs"
+                      @click="addContactMethod('custom')"
+                    >
+                      <Icon name="plus" size="xs" />
+                      {{ t("common.add") }}
+                    </button>
+                  </div>
+                </div>
+
+                <div
+                  v-if="form.contact_methods.length === 0"
+                  class="rounded-lg border border-dashed border-gray-300 px-4 py-3 text-sm text-gray-500 dark:border-dark-600 dark:text-gray-400"
                 >
-                  {{ t("admin.settings.site.contactInfo") }}
-                </label>
-                <input
-                  v-model="form.contact_info"
-                  type="text"
-                  class="input"
-                  :placeholder="t('admin.settings.site.contactInfoPlaceholder')"
-                />
+                  {{ t("admin.settings.site.contactMethodsEmpty") }}
+                </div>
+
+                <div v-else class="space-y-3">
+                  <div
+                    v-for="(method, index) in form.contact_methods"
+                    :key="`contact-${index}`"
+                    class="grid grid-cols-1 gap-3 rounded-lg border border-gray-200 p-3 md:grid-cols-[160px_1fr_1fr_auto] dark:border-dark-600"
+                  >
+                    <div>
+                      <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                        {{ t("admin.settings.site.contactMethodType") }}
+                      </label>
+                      <select v-model="method.type" class="input text-sm">
+                        <option
+                          v-for="option in contactTypeOptions"
+                          :key="option.value"
+                          :value="option.value"
+                        >
+                          {{ option.label }}
+                        </option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                        {{ t("admin.settings.site.contactMethodLabel") }}
+                      </label>
+                      <input
+                        v-model="method.label"
+                        type="text"
+                        class="input text-sm"
+                        :placeholder="defaultContactLabel(method.type)"
+                      />
+                    </div>
+                    <div>
+                      <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                        {{ t("admin.settings.site.contactMethodValue") }}
+                      </label>
+                      <input
+                        v-model="method.value"
+                        type="text"
+                        class="input text-sm"
+                        :placeholder="contactValuePlaceholder(method.type)"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      class="self-end rounded p-2 text-red-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                      @click="removeContactMethod(index)"
+                    >
+                      <Icon name="trash" size="sm" />
+                    </button>
+                    <div class="md:col-span-3">
+                      <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                        {{ t("admin.settings.site.contactMethodUrl") }}
+                      </label>
+                      <input
+                        v-model="method.url"
+                        type="url"
+                        class="input text-sm"
+                        :placeholder="t('admin.settings.site.contactMethodUrlPlaceholder')"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <input v-model="form.contact_info" type="hidden" />
                 <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
                   {{ t("admin.settings.site.contactInfoHint") }}
                 </p>
@@ -5573,7 +5665,13 @@ import type {
   WebSearchProviderConfig,
   WebSearchTestResult,
 } from "@/api/admin/settings";
-import type { AdminGroup, Proxy, NotifyEmailEntry } from "@/types";
+import type {
+  AdminGroup,
+  Proxy,
+  NotifyEmailEntry,
+  ContactMethod,
+  ContactMethodType,
+} from "@/types";
 import type { ProviderInstance } from "@/types/payment";
 import AppLayout from "@/components/layout/AppLayout.vue";
 import Icon from "@/components/icons/Icon.vue";
@@ -5588,6 +5686,7 @@ import GroupOptionItem from "@/components/common/GroupOptionItem.vue";
 import Toggle from "@/components/common/Toggle.vue";
 import ProxySelector from "@/components/common/ProxySelector.vue";
 import ImageUpload from "@/components/common/ImageUpload.vue";
+import ContactMethodIcon from "@/components/common/ContactMethodIcon.vue";
 import BackupSettings from "@/views/admin/BackupView.vue";
 import { useClipboard } from "@/composables/useClipboard";
 import { affiliatesAPI, type AffiliateAdminEntry, type SimpleUser as AffiliateSimpleUser } from "@/api/admin/affiliates";
@@ -5601,6 +5700,13 @@ import {
   normalizeRegistrationEmailSuffixDomains,
   parseRegistrationEmailSuffixWhitelistInput,
 } from "@/utils/registrationEmailPolicy";
+import {
+  CONTACT_METHOD_TYPES,
+  defaultContactMethodLabel,
+  normalizeContactMethodType,
+  normalizeContactMethods,
+  summarizeContactMethods,
+} from "@/utils/contactMethods";
 
 const { t, locale } = useI18n();
 const appStore = useAppStore();
@@ -5762,6 +5868,7 @@ const form = reactive<SettingsForm>({
   site_subtitle: "Subscription to API Conversion Platform",
   api_base_url: "",
   contact_info: "",
+  contact_methods: [] as ContactMethod[],
   doc_url: "",
   home_content: "",
   backend_mode_enabled: false,
@@ -6373,6 +6480,42 @@ function removeEndpoint(index: number) {
   form.custom_endpoints.splice(index, 1);
 }
 
+const contactTypeOptions = computed(() =>
+  CONTACT_METHOD_TYPES.map((item) => ({
+    value: item.value,
+    label: locale.value.startsWith("zh") ? item.labelZh : item.labelEn,
+  })),
+);
+
+function addContactMethod(type: ContactMethodType = "custom") {
+  const normalizedType = normalizeContactMethodType(type);
+  form.contact_methods.push({
+    type: normalizedType,
+    label: defaultContactMethodLabel(normalizedType, locale.value),
+    value: "",
+    url: "",
+  });
+}
+
+function removeContactMethod(index: number) {
+  form.contact_methods.splice(index, 1);
+}
+
+function defaultContactLabel(type: string) {
+  return defaultContactMethodLabel(type, locale.value);
+}
+
+function contactValuePlaceholder(type: string) {
+  switch (normalizeContactMethodType(type)) {
+    case "qq":
+      return t("admin.settings.site.contactValueQQPlaceholder");
+    case "wechat":
+      return t("admin.settings.site.contactValueWeChatPlaceholder");
+    default:
+      return t("admin.settings.site.contactValueCustomPlaceholder");
+  }
+}
+
 function formatTablePageSizeOptions(options: number[]): string {
   return options.join(", ");
 }
@@ -6417,6 +6560,15 @@ async function loadSettings() {
         (form as Record<string, unknown>)[key] = value;
       }
     }
+    form.contact_methods = normalizeContactMethods(
+      settings.contact_methods,
+      settings.contact_info || "",
+      locale.value,
+    );
+    form.contact_info = summarizeContactMethods(
+      form.contact_methods,
+      settings.contact_info || "",
+    );
     Object.assign(authSourceDefaults, buildAuthSourceDefaultsState(settings));
     form.backend_mode_enabled = settings.backend_mode_enabled;
     form.default_subscriptions = normalizeDefaultSubscriptionSettings(
@@ -6691,6 +6843,17 @@ async function saveSettings() {
       form.wechat_connect_mobile_enabled,
       form.wechat_connect_mode,
     );
+    const normalizedContactMethods = normalizeContactMethods(
+      form.contact_methods,
+      "",
+      locale.value,
+    );
+    const contactInfoSummary = summarizeContactMethods(
+      normalizedContactMethods,
+      "",
+    );
+    form.contact_methods = normalizedContactMethods;
+    form.contact_info = contactInfoSummary;
 
     const payload: UpdateSettingsRequest = {
       registration_enabled: form.registration_enabled,
@@ -6719,7 +6882,8 @@ async function saveSettings() {
       site_logo: form.site_logo,
       site_subtitle: form.site_subtitle,
       api_base_url: form.api_base_url,
-      contact_info: form.contact_info,
+      contact_info: contactInfoSummary,
+      contact_methods: normalizedContactMethods,
       doc_url: form.doc_url,
       home_content: form.home_content,
       backend_mode_enabled: form.backend_mode_enabled,
@@ -6896,6 +7060,15 @@ async function saveSettings() {
         (form as Record<string, unknown>)[key] = value;
       }
     }
+    form.contact_methods = normalizeContactMethods(
+      updated.contact_methods,
+      updated.contact_info || "",
+      locale.value,
+    );
+    form.contact_info = summarizeContactMethods(
+      form.contact_methods,
+      updated.contact_info || "",
+    );
     Object.assign(authSourceDefaults, buildAuthSourceDefaultsState(updated));
     registrationEmailSuffixWhitelistTags.value =
       normalizeRegistrationEmailSuffixDomains(

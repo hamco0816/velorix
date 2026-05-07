@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"reflect"
 	"regexp"
 	"strings"
 
@@ -32,6 +33,39 @@ func generateMenuItemID() (string, error) {
 		return "", fmt.Errorf("generate menu item ID: %w", err)
 	}
 	return hex.EncodeToString(b), nil
+}
+
+func contactMethodsToDTO(methods []service.ContactMethod) []dto.ContactMethod {
+	normalized := service.NormalizeContactMethods(methods, "")
+	if len(normalized) == 0 {
+		return []dto.ContactMethod{}
+	}
+	out := make([]dto.ContactMethod, 0, len(normalized))
+	for _, method := range normalized {
+		out = append(out, dto.ContactMethod{
+			Type:  method.Type,
+			Label: method.Label,
+			Value: method.Value,
+			URL:   method.URL,
+		})
+	}
+	return out
+}
+
+func contactMethodsFromRequest(methods *[]dto.ContactMethod, fallback string) []service.ContactMethod {
+	if methods == nil {
+		return service.NormalizeContactMethods(nil, fallback)
+	}
+	out := make([]service.ContactMethod, 0, len(*methods))
+	for _, method := range *methods {
+		out = append(out, service.ContactMethod{
+			Type:  method.Type,
+			Label: method.Label,
+			Value: method.Value,
+			URL:   method.URL,
+		})
+	}
+	return service.NormalizeContactMethods(out, fallback)
 }
 
 func scopesContainOpenID(scopes string) bool {
@@ -174,6 +208,7 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 		SiteSubtitle:                           settings.SiteSubtitle,
 		APIBaseURL:                             settings.APIBaseURL,
 		ContactInfo:                            settings.ContactInfo,
+		ContactMethods:                         contactMethodsToDTO(settings.ContactMethods),
 		DocURL:                                 settings.DocURL,
 		HomeContent:                            settings.HomeContent,
 		HideCcsImportButton:                    settings.HideCcsImportButton,
@@ -376,6 +411,7 @@ type UpdateSettingsRequest struct {
 	SiteSubtitle                string                `json:"site_subtitle"`
 	APIBaseURL                  string                `json:"api_base_url"`
 	ContactInfo                 string                `json:"contact_info"`
+	ContactMethods              *[]dto.ContactMethod  `json:"contact_methods"`
 	DocURL                      string                `json:"doc_url"`
 	HomeContent                 string                `json:"home_content"`
 	HideCcsImportButton         bool                  `json:"hide_ccs_import_button"`
@@ -1209,6 +1245,7 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		SiteSubtitle:                     req.SiteSubtitle,
 		APIBaseURL:                       req.APIBaseURL,
 		ContactInfo:                      req.ContactInfo,
+		ContactMethods:                   contactMethodsFromRequest(req.ContactMethods, req.ContactInfo),
 		DocURL:                           req.DocURL,
 		HomeContent:                      req.HomeContent,
 		HideCcsImportButton:              req.HideCcsImportButton,
@@ -1559,6 +1596,7 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		SiteSubtitle:                           updatedSettings.SiteSubtitle,
 		APIBaseURL:                             updatedSettings.APIBaseURL,
 		ContactInfo:                            updatedSettings.ContactInfo,
+		ContactMethods:                         contactMethodsToDTO(updatedSettings.ContactMethods),
 		DocURL:                                 updatedSettings.DocURL,
 		HomeContent:                            updatedSettings.HomeContent,
 		HideCcsImportButton:                    updatedSettings.HideCcsImportButton,
@@ -1873,6 +1911,9 @@ func diffSettings(before *service.SystemSettings, after *service.SystemSettings,
 	}
 	if before.ContactInfo != after.ContactInfo {
 		changed = append(changed, "contact_info")
+	}
+	if !reflect.DeepEqual(before.ContactMethods, after.ContactMethods) {
+		changed = append(changed, "contact_methods")
 	}
 	if before.DocURL != after.DocURL {
 		changed = append(changed, "doc_url")

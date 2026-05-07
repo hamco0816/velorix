@@ -22,6 +22,14 @@ type CustomEndpoint struct {
 	Description string `json:"description"`
 }
 
+// ContactMethod represents one public customer-service contact channel.
+type ContactMethod struct {
+	Type  string `json:"type"`
+	Label string `json:"label"`
+	Value string `json:"value"`
+	URL   string `json:"url,omitempty"`
+}
+
 // SystemSettings represents the admin settings API response payload.
 type SystemSettings struct {
 	RegistrationEnabled              bool     `json:"registration_enabled"`
@@ -96,6 +104,7 @@ type SystemSettings struct {
 	SiteSubtitle                string           `json:"site_subtitle"`
 	APIBaseURL                  string           `json:"api_base_url"`
 	ContactInfo                 string           `json:"contact_info"`
+	ContactMethods              []ContactMethod  `json:"contact_methods"`
 	DocURL                      string           `json:"doc_url"`
 	HomeContent                 string           `json:"home_content"`
 	HideCcsImportButton         bool             `json:"hide_ccs_import_button"`
@@ -227,6 +236,7 @@ type PublicSettings struct {
 	SiteSubtitle                     string           `json:"site_subtitle"`
 	APIBaseURL                       string           `json:"api_base_url"`
 	ContactInfo                      string           `json:"contact_info"`
+	ContactMethods                   []ContactMethod  `json:"contact_methods"`
 	DocURL                           string           `json:"doc_url"`
 	HomeContent                      string           `json:"home_content"`
 	HideCcsImportButton              bool             `json:"hide_ccs_import_button"`

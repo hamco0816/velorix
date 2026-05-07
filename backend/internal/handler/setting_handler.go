@@ -14,6 +14,23 @@ type SettingHandler struct {
 	version        string
 }
 
+func serviceContactMethodsToDTO(methods []service.ContactMethod) []dto.ContactMethod {
+	normalized := service.NormalizeContactMethods(methods, "")
+	if len(normalized) == 0 {
+		return []dto.ContactMethod{}
+	}
+	out := make([]dto.ContactMethod, 0, len(normalized))
+	for _, method := range normalized {
+		out = append(out, dto.ContactMethod{
+			Type:  method.Type,
+			Label: method.Label,
+			Value: method.Value,
+			URL:   method.URL,
+		})
+	}
+	return out
+}
+
 // NewSettingHandler 创建公开设置处理器
 func NewSettingHandler(settingService *service.SettingService, version string) *SettingHandler {
 	return &SettingHandler{
@@ -47,6 +64,7 @@ func (h *SettingHandler) GetPublicSettings(c *gin.Context) {
 		SiteSubtitle:                     settings.SiteSubtitle,
 		APIBaseURL:                       settings.APIBaseURL,
 		ContactInfo:                      settings.ContactInfo,
+		ContactMethods:                   serviceContactMethodsToDTO(settings.ContactMethods),
 		DocURL:                           settings.DocURL,
 		HomeContent:                      settings.HomeContent,
 		HideCcsImportButton:              settings.HideCcsImportButton,

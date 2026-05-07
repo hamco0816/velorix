@@ -178,6 +178,15 @@ export interface CustomEndpoint {
   description: string
 }
 
+export type ContactMethodType = 'qq' | 'wechat' | 'custom'
+
+export interface ContactMethod {
+  type: ContactMethodType | string
+  label: string
+  value: string
+  url?: string
+}
+
 export interface PublicSettings {
   registration_enabled: boolean
   email_verify_enabled: boolean
@@ -193,6 +202,7 @@ export interface PublicSettings {
   site_subtitle: string
   api_base_url: string
   contact_info: string
+  contact_methods: ContactMethod[]
   doc_url: string
   home_content: string
   hide_ccs_import_button: boolean

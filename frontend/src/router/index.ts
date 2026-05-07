@@ -377,7 +377,8 @@ const routes: RouteRecordRaw[] = [
     meta: {
       requiresAuth: true,
       requiresAdmin: true,
-      title: 'Safety Risk Logs'
+      title: '风控日志',
+      titleKey: 'nav.safetyRisk'
     }
   },
   {

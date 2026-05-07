@@ -608,12 +608,13 @@ func TestAPIContracts(t *testing.T) {
 					service.SettingKeyOIDCConnectUserInfoIDPath:       "",
 					service.SettingKeyOIDCConnectUserInfoUsernamePath: "",
 
-					service.SettingKeySiteName:     "Sub2API",
-					service.SettingKeySiteLogo:     "",
-					service.SettingKeySiteSubtitle: "Subtitle",
-					service.SettingKeyAPIBaseURL:   "https://api.example.com",
-					service.SettingKeyContactInfo:  "support",
-					service.SettingKeyDocURL:       "https://docs.example.com",
+					service.SettingKeySiteName:       "Sub2API",
+					service.SettingKeySiteLogo:       "",
+					service.SettingKeySiteSubtitle:   "Subtitle",
+					service.SettingKeyAPIBaseURL:     "https://api.example.com",
+					service.SettingKeyContactInfo:    "support",
+					service.SettingKeyContactMethods: `[{"type":"qq","label":"QQ","value":"123456"},{"type":"wechat","label":"WeChat","value":"velorix"}]`,
+					service.SettingKeyDocURL:         "https://docs.example.com",
 
 					service.SettingKeyDefaultConcurrency:   "5",
 					service.SettingKeyDefaultBalance:       "1.25",
@@ -693,6 +694,10 @@ func TestAPIContracts(t *testing.T) {
 						"site_subtitle": "Subtitle",
 						"api_base_url": "https://api.example.com",
 					"contact_info": "support",
+					"contact_methods": [
+						{"type": "qq", "label": "QQ", "value": "123456"},
+						{"type": "wechat", "label": "WeChat", "value": "velorix"}
+					],
 					"doc_url": "https://docs.example.com",
 					"auth_source_default_email_balance": 0,
 					"auth_source_default_email_concurrency": 5,
@@ -904,6 +909,7 @@ func TestAPIContracts(t *testing.T) {
 					"site_subtitle": "Subscription to API Conversion Platform",
 					"api_base_url": "",
 					"contact_info": "",
+					"contact_methods": [],
 					"doc_url": "",
 					"home_content": "",
 					"hide_ccs_import_button": false,

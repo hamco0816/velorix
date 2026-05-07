@@ -94,6 +94,7 @@ type SystemSettings struct {
 	SiteSubtitle                string
 	APIBaseURL                  string
 	ContactInfo                 string
+	ContactMethods              []ContactMethod
 	DocURL                      string
 	HomeContent                 string
 	HideCcsImportButton         bool
@@ -200,6 +201,7 @@ type PublicSettings struct {
 	SiteSubtitle                     string
 	APIBaseURL                       string
 	ContactInfo                      string
+	ContactMethods                   []ContactMethod
 	DocURL                           string
 	HomeContent                      string
 	HideCcsImportButton              bool

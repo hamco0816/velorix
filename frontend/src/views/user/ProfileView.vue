@@ -53,7 +53,7 @@
         />
 
         <div
-          v-if="contactInfo"
+          v-if="hasContactMethods"
           class="card overflow-hidden border border-primary-100 bg-white dark:border-primary-900/40 dark:bg-dark-900/70"
         >
           <div class="border-b border-primary-100 bg-primary-50/80 px-5 py-4 dark:border-primary-900/40 dark:bg-primary-950/20">
@@ -67,9 +67,10 @@
             </div>
           </div>
           <div class="px-5 py-4">
-            <p class="break-words text-sm font-medium text-gray-700 dark:text-gray-200">
-              {{ contactInfo }}
-            </p>
+            <ContactMethodsDisplay
+              :methods="contactMethods"
+              :legacy-info="contactInfo"
+            />
           </div>
         </div>
       </div>
@@ -86,9 +87,11 @@ import ProfileBalanceNotifyCard from '@/components/user/profile/ProfileBalanceNo
 import ProfileInfoCard from '@/components/user/profile/ProfileInfoCard.vue'
 import ProfilePasswordForm from '@/components/user/profile/ProfilePasswordForm.vue'
 import ProfileTotpCard from '@/components/user/profile/ProfileTotpCard.vue'
+import ContactMethodsDisplay from '@/components/common/ContactMethodsDisplay.vue'
 import { isWeChatWebOAuthEnabled } from '@/api/auth'
 import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
+import type { ContactMethod } from '@/types'
 
 const { t } = useI18n()
 const appStore = useAppStore()
@@ -96,6 +99,8 @@ const authStore = useAuthStore()
 const user = computed(() => authStore.user)
 
 const contactInfo = ref('')
+const contactMethods = ref<ContactMethod[]>([])
+const hasContactMethods = computed(() => contactMethods.value.length > 0 || !!contactInfo.value)
 const balanceLowNotifyEnabled = ref(false)
 const systemDefaultThreshold = ref(0)
 const linuxdoOAuthEnabled = ref(false)
@@ -116,6 +121,7 @@ onMounted(async () => {
         return
       }
       contactInfo.value = settings.contact_info || ''
+      contactMethods.value = Array.isArray(settings.contact_methods) ? settings.contact_methods : []
       balanceLowNotifyEnabled.value = settings.balance_low_notify_enabled ?? false
       systemDefaultThreshold.value = settings.balance_low_notify_threshold ?? 0
       linuxdoOAuthEnabled.value = settings.linuxdo_oauth_enabled ?? false
