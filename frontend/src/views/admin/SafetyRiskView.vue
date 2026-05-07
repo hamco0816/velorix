@@ -14,7 +14,7 @@
         <div class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(190px,1fr)_minmax(190px,1fr)_minmax(190px,1fr)_minmax(320px,1.25fr)_auto]">
           <label class="space-y-2">
             <span class="filter-label">状态</span>
-            <select v-model="filters.status" class="form-input">
+            <select v-model="filters.status" class="risk-filter-control risk-filter-select">
               <option value="">全部</option>
               <option value="pending">待复核</option>
               <option value="reviewed">已复核</option>
@@ -24,7 +24,7 @@
 
           <label class="space-y-2">
             <span class="filter-label">时间</span>
-            <select v-model="filters.time_range" class="form-input">
+            <select v-model="filters.time_range" class="risk-filter-control risk-filter-select">
               <option value="5m">最近 5 分钟</option>
               <option value="30m">最近 30 分钟</option>
               <option value="1h">最近 1 小时</option>
@@ -41,7 +41,7 @@
               v-model.trim="userIdInput"
               type="number"
               min="1"
-              class="form-input"
+              class="risk-filter-control"
               placeholder="请输入用户 ID"
             />
           </label>
@@ -51,7 +51,7 @@
             <span class="relative block">
               <input
                 v-model.trim="filters.q"
-                class="form-input pr-10"
+                class="risk-filter-control pr-10"
                 placeholder="请输入关键词"
                 @keyup.enter="applyFilters"
               />
@@ -60,7 +60,7 @@
           </label>
 
           <div class="flex items-end">
-            <button class="btn btn-secondary h-10 w-full justify-center xl:w-auto" :disabled="loading" @click="loadEvents">
+            <button class="risk-icon-button h-10 w-full justify-center xl:w-auto" :disabled="loading" @click="loadEvents">
               <Icon name="refresh" size="sm" />
               <span>刷新</span>
             </button>
@@ -68,8 +68,8 @@
         </div>
 
         <div class="mt-5 flex flex-wrap items-center gap-3">
-          <button class="btn btn-primary min-w-[88px]" :disabled="loading" @click="applyFilters">查询</button>
-          <button class="btn btn-secondary min-w-[88px]" :disabled="loading" @click="resetFilters">重置</button>
+          <button class="risk-action-button risk-action-primary min-w-[88px]" :disabled="loading" @click="applyFilters">查询</button>
+          <button class="risk-action-button risk-action-secondary min-w-[88px]" :disabled="loading" @click="resetFilters">重置</button>
         </div>
       </section>
 
@@ -526,6 +526,125 @@ onMounted(loadEvents)
 
 .dark .filter-label {
   color: rgb(209 213 219);
+}
+
+.risk-filter-control {
+  display: block;
+  width: 100%;
+  height: 2.75rem;
+  border: 1px solid rgb(209 213 219);
+  border-radius: 0.5rem;
+  background-color: rgb(255 255 255);
+  padding: 0.625rem 0.875rem;
+  color: rgb(17 24 39);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.risk-filter-control::placeholder {
+  color: rgb(156 163 175);
+}
+
+.risk-filter-control:focus {
+  border-color: rgb(59 130 246);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.14);
+  outline: none;
+}
+
+.risk-filter-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  background-position: right 0.875rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem;
+  padding-right: 2.5rem;
+}
+
+.dark .risk-filter-control {
+  border-color: rgb(75 85 99);
+  background-color: rgb(17 24 39);
+  color: rgb(243 244 246);
+  box-shadow: none;
+}
+
+.dark .risk-filter-control::placeholder {
+  color: rgb(107 114 128);
+}
+
+.dark .risk-filter-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239CA3AF' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+}
+
+.risk-action-button,
+.risk-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25rem;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.risk-action-button {
+  height: 2.5rem;
+  padding: 0 1.25rem;
+}
+
+.risk-action-primary {
+  border: 1px solid rgb(37 99 235);
+  background: linear-gradient(180deg, rgb(37 99 235), rgb(29 78 216));
+  color: white;
+  box-shadow: 0 8px 18px rgb(37 99 235 / 0.18);
+}
+
+.risk-action-primary:hover:not(:disabled) {
+  border-color: rgb(29 78 216);
+  background: linear-gradient(180deg, rgb(29 78 216), rgb(30 64 175));
+}
+
+.risk-action-secondary,
+.risk-icon-button {
+  border: 1px solid rgb(209 213 219);
+  background: rgb(255 255 255);
+  color: rgb(55 65 81);
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+}
+
+.risk-icon-button {
+  padding: 0 1rem;
+}
+
+.risk-action-secondary:hover:not(:disabled),
+.risk-icon-button:hover:not(:disabled) {
+  border-color: rgb(156 163 175);
+  background: rgb(249 250 251);
+  color: rgb(17 24 39);
+}
+
+.risk-action-button:disabled,
+.risk-icon-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.dark .risk-action-secondary,
+.dark .risk-icon-button {
+  border-color: rgb(75 85 99);
+  background: rgb(17 24 39);
+  color: rgb(229 231 235);
+  box-shadow: none;
+}
+
+.dark .risk-action-secondary:hover:not(:disabled),
+.dark .risk-icon-button:hover:not(:disabled) {
+  border-color: rgb(107 114 128);
+  background: rgb(31 41 55);
+  color: white;
 }
 
 .risk-stat {
