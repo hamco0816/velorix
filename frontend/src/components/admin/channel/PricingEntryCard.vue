@@ -51,11 +51,11 @@
         {{ t('admin.channels.form.pricingEntry', '定价配置') }}
       </div>
 
-      <!-- Remove button (always visible, stop propagation) -->
+      <!-- Remove button：固定 7×7 尺寸 + hover 变红，与全站 icon-only 按钮规格统一 -->
       <button
         type="button"
         @click.stop="emit('remove')"
-        class="flex-shrink-0 rounded p-1 text-gray-400 hover:text-red-500"
+        class="inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400"
       >
         <Icon name="trash" size="sm" />
       </button>

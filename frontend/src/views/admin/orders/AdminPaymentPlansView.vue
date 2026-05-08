@@ -1,13 +1,29 @@
 <template>
   <AppLayout>
-    <div class="space-y-4">
-      <!-- Actions -->
-      <div class="flex items-center justify-end gap-2">
-        <button @click="loadPlans" :disabled="plansLoading" class="btn btn-secondary" :title="t('common.refresh')">
-          <Icon name="refresh" size="md" :class="plansLoading ? 'animate-spin' : ''" />
-        </button>
-        <button @click="openPlanEdit(null)" class="btn btn-primary">{{ t('payment.admin.createPlan') }}</button>
-      </div>
+    <div class="mx-auto max-w-7xl space-y-5">
+      <!-- Hero：teal 渐变标题区，标识订阅套餐业务色（与订阅管理同色系） -->
+      <header class="page-hero page-hero-teal">
+        <div class="relative z-10 flex flex-wrap items-end justify-between gap-4">
+          <div class="max-w-3xl">
+            <span class="page-hero-tag page-hero-tag-teal">
+              <Icon name="badge" size="sm" />
+              {{ t('payment.admin.plansTitle') }}
+            </span>
+            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
+              {{ t('payment.admin.plansTitle') }}
+            </h1>
+            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
+              管理订阅套餐的价格、有效期、分组绑定与模型范围。
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button @click="loadPlans" :disabled="plansLoading" class="btn btn-secondary" :title="t('common.refresh')">
+              <Icon name="refresh" size="md" :class="plansLoading ? 'animate-spin' : ''" />
+            </button>
+            <button @click="openPlanEdit(null)" class="btn btn-primary">{{ t('payment.admin.createPlan') }}</button>
+          </div>
+        </div>
+      </header>
 
       <!-- Plans Table -->
       <DataTable :columns="planColumns" :data="plans" :loading="plansLoading">

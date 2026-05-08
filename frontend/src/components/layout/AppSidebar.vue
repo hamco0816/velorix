@@ -41,7 +41,7 @@
                 :title="sidebarCollapsed ? item.label : undefined"
                 @click="handleGroupClick(item)"
               >
-                <component :is="item.icon" class="h-5 w-5 flex-shrink-0" />
+                <component :is="item.icon" class="h-5 w-5 flex-shrink-0" :class="item.iconColor" />
                 <span
                   class="sidebar-label sidebar-label-flex"
                   :class="{ 'sidebar-label-collapsed': sidebarCollapsed }"
@@ -64,7 +64,7 @@
                   :class="{ 'sidebar-link-active': route.path === child.path }"
                   @click="handleMenuItemClick(child.path)"
                 >
-                  <component :is="child.icon" class="h-4 w-4 flex-shrink-0" />
+                  <component :is="child.icon" class="h-4 w-4 flex-shrink-0" :class="child.iconColor" />
                   <span>{{ child.label }}</span>
                 </router-link>
               </div>
@@ -88,7 +88,7 @@
               @click="handleMenuItemClick(item.path)"
             >
               <span v-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
-              <component v-else :is="item.icon" class="h-5 w-5 flex-shrink-0" />
+              <component v-else :is="item.icon" class="h-5 w-5 flex-shrink-0" :class="item.iconColor" />
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </router-link>
           </template>
@@ -193,6 +193,11 @@ interface NavItem {
   label: string
   icon: unknown
   iconSvg?: string
+  /**
+   * 非激活态下 icon 的颜色 class（与业务对应的 Tailwind 色）。
+   * 激活态下 icon 跟随 sidebar-link-active 的统一 sky 高亮，不再使用此色。
+   */
+  iconColor?: string
   hideInSimpleMode?: boolean
   children?: NavItem[]
   /**
@@ -681,20 +686,20 @@ const flagAdminPayment = () => adminSettingsStore.paymentEnabled
 function buildSelfNavItems(withDashboard: boolean): NavItem[] {
   const items: NavItem[] = []
   if (withDashboard) {
-    items.push({ path: '/dashboard', label: t('nav.dashboard'), icon: DashboardIcon })
+    items.push({ path: '/dashboard', label: t('nav.dashboard'), icon: DashboardIcon, iconColor: 'text-sky-500 dark:text-sky-400' })
   }
   items.push(
-    { path: '/keys', label: t('nav.apiKeys'), icon: KeyIcon },
-    { path: '/usage', label: t('nav.usage'), icon: ChartIcon, hideInSimpleMode: true },
-    { path: '/available-channels', label: t('nav.availableChannels'), icon: ChannelIcon, hideInSimpleMode: true, featureFlag: flagAvailableChannels },
-    { path: '/docs', label: t('nav.docs'), icon: BookIcon, hideInSimpleMode: true },
-    { path: '/monitor', label: t('nav.channelStatus'), icon: SignalIcon, featureFlag: flagChannelMonitor },
-    { path: '/subscriptions', label: t('nav.mySubscriptions'), icon: CreditCardIcon, hideInSimpleMode: true },
-    { path: '/purchase', label: t('nav.buySubscription'), icon: RechargeSubscriptionIcon, hideInSimpleMode: true, featureFlag: flagPayment },
-    { path: '/orders', label: t('nav.myOrders'), icon: OrderListIcon, hideInSimpleMode: true, featureFlag: flagPayment },
-    { path: '/redeem', label: t('nav.redeem'), icon: GiftIcon, hideInSimpleMode: true },
-    { path: '/affiliate', label: t('nav.affiliate'), icon: UsersIcon, hideInSimpleMode: true, featureFlag: flagAffiliate },
-    { path: '/profile', label: t('nav.profile'), icon: UserIcon },
+    { path: '/keys', label: t('nav.apiKeys'), icon: KeyIcon, iconColor: 'text-sky-500 dark:text-sky-400' },
+    { path: '/usage', label: t('nav.usage'), icon: ChartIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true },
+    { path: '/available-channels', label: t('nav.availableChannels'), icon: ChannelIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true, featureFlag: flagAvailableChannels },
+    { path: '/docs', label: t('nav.docs'), icon: BookIcon, iconColor: 'text-indigo-500 dark:text-indigo-400', hideInSimpleMode: true },
+    { path: '/monitor', label: t('nav.channelStatus'), icon: SignalIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', featureFlag: flagChannelMonitor },
+    { path: '/subscriptions', label: t('nav.mySubscriptions'), icon: CreditCardIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true },
+    { path: '/purchase', label: t('nav.buySubscription'), icon: RechargeSubscriptionIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true, featureFlag: flagPayment },
+    { path: '/orders', label: t('nav.myOrders'), icon: OrderListIcon, iconColor: 'text-amber-500 dark:text-amber-400', hideInSimpleMode: true, featureFlag: flagPayment },
+    { path: '/redeem', label: t('nav.redeem'), icon: GiftIcon, iconColor: 'text-rose-500 dark:text-rose-400', hideInSimpleMode: true },
+    { path: '/affiliate', label: t('nav.affiliate'), icon: UsersIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true, featureFlag: flagAffiliate },
+    { path: '/profile', label: t('nav.profile'), icon: UserIcon, iconColor: 'text-sky-500 dark:text-sky-400' },
     ...customMenuItemsForUser.value.map((item): NavItem => ({
       path: `/custom/${item.id}`,
       label: item.label,
@@ -736,43 +741,45 @@ const customMenuItemsForAdmin = computed(() => {
 // Admin navigation items
 const adminNavItems = computed((): NavItem[] => {
   const baseItems: NavItem[] = [
-    { path: '/admin/dashboard', label: t('nav.dashboard'), icon: DashboardIcon },
-    { path: '/admin/ops', label: t('nav.ops'), icon: ChartIcon, featureFlag: flagOpsMonitoring },
-    { path: '/admin/safety-risk', label: t('nav.safetyRisk'), icon: ShieldIcon },
-    { path: '/admin/docs', label: t('nav.adminDocs'), icon: BookIcon, hideInSimpleMode: true },
-    { path: '/admin/users', label: t('nav.users'), icon: UsersIcon, hideInSimpleMode: true },
-    { path: '/admin/groups', label: t('nav.groups'), icon: FolderIcon, hideInSimpleMode: true },
+    { path: '/admin/dashboard', label: t('nav.dashboard'), icon: DashboardIcon, iconColor: 'text-sky-500 dark:text-sky-400' },
+    { path: '/admin/ops', label: t('nav.ops'), icon: ChartIcon, iconColor: 'text-violet-500 dark:text-violet-400', featureFlag: flagOpsMonitoring },
+    { path: '/admin/safety-risk', label: t('nav.safetyRisk'), icon: ShieldIcon, iconColor: 'text-amber-500 dark:text-amber-400' },
+    { path: '/admin/docs', label: t('nav.adminDocs'), icon: BookIcon, iconColor: 'text-indigo-500 dark:text-indigo-400', hideInSimpleMode: true },
+    { path: '/admin/users', label: t('nav.users'), icon: UsersIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true },
+    { path: '/admin/groups', label: t('nav.groups'), icon: FolderIcon, iconColor: 'text-indigo-500 dark:text-indigo-400', hideInSimpleMode: true },
     {
       path: '/admin/channels',
       label: t('nav.channelManagement'),
       icon: ChannelIcon,
+      iconColor: 'text-teal-500 dark:text-teal-400',
       hideInSimpleMode: true,
       expandOnly: true,
       children: [
-        { path: '/admin/channels/pricing', label: t('nav.channelPricing'), icon: PriceTagIcon },
-        { path: '/admin/channels/monitor', label: t('nav.channelMonitor'), icon: SignalIcon, featureFlag: flagChannelMonitor },
+        { path: '/admin/channels/pricing', label: t('nav.channelPricing'), icon: PriceTagIcon, iconColor: 'text-teal-500 dark:text-teal-400' },
+        { path: '/admin/channels/monitor', label: t('nav.channelMonitor'), icon: SignalIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', featureFlag: flagChannelMonitor },
       ],
     },
-    { path: '/admin/subscriptions', label: t('nav.subscriptions'), icon: CreditCardIcon, hideInSimpleMode: true },
-    { path: '/admin/accounts', label: t('nav.accounts'), icon: GlobeIcon },
-    { path: '/admin/announcements', label: t('nav.announcements'), icon: BellIcon },
-    { path: '/admin/proxies', label: t('nav.proxies'), icon: ServerIcon },
-    { path: '/admin/redeem', label: t('nav.redeemCodes'), icon: TicketIcon, hideInSimpleMode: true },
-    { path: '/admin/promo-codes', label: t('nav.promoCodes'), icon: GiftIcon, hideInSimpleMode: true },
+    { path: '/admin/subscriptions', label: t('nav.subscriptions'), icon: CreditCardIcon, iconColor: 'text-teal-500 dark:text-teal-400', hideInSimpleMode: true },
+    { path: '/admin/accounts', label: t('nav.accounts'), icon: GlobeIcon, iconColor: 'text-violet-500 dark:text-violet-400' },
+    { path: '/admin/announcements', label: t('nav.announcements'), icon: BellIcon, iconColor: 'text-rose-500 dark:text-rose-400' },
+    { path: '/admin/proxies', label: t('nav.proxies'), icon: ServerIcon, iconColor: 'text-rose-500 dark:text-rose-400' },
+    { path: '/admin/redeem', label: t('nav.redeemCodes'), icon: TicketIcon, iconColor: 'text-sky-500 dark:text-sky-400', hideInSimpleMode: true },
+    { path: '/admin/promo-codes', label: t('nav.promoCodes'), icon: GiftIcon, iconColor: 'text-rose-500 dark:text-rose-400', hideInSimpleMode: true },
     {
       path: '/admin/orders',
       label: t('nav.orderManagement'),
       icon: OrderIcon,
+      iconColor: 'text-amber-500 dark:text-amber-400',
       hideInSimpleMode: true,
       expandOnly: true,
       featureFlag: flagAdminPayment,
       children: [
-        { path: '/admin/orders/dashboard', label: t('nav.paymentDashboard'), icon: ChartIcon },
-        { path: '/admin/orders', label: t('nav.orderManagement'), icon: OrderIcon },
-        { path: '/admin/orders/plans', label: t('nav.paymentPlans'), icon: CreditCardIcon },
+        { path: '/admin/orders/dashboard', label: t('nav.paymentDashboard'), icon: ChartIcon, iconColor: 'text-violet-500 dark:text-violet-400' },
+        { path: '/admin/orders', label: t('nav.orderManagement'), icon: OrderIcon, iconColor: 'text-amber-500 dark:text-amber-400' },
+        { path: '/admin/orders/plans', label: t('nav.paymentPlans'), icon: CreditCardIcon, iconColor: 'text-teal-500 dark:text-teal-400' },
       ],
     },
-    { path: '/admin/usage', label: t('nav.usage'), icon: ChartIcon }
+    { path: '/admin/usage', label: t('nav.usage'), icon: ChartIcon, iconColor: 'text-violet-500 dark:text-violet-400' }
   ]
 
   const visible = applyFeatureFlags(baseItems)

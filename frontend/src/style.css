@@ -65,12 +65,14 @@
 
 @layer components {
   /* ============ 按钮样式：纯色填充、低圆角、内嵌高光，不靠彩色光晕 ============ */
+  /* min-height 保证不论字数多少，同尺寸按钮严格等高（修按钮组对齐问题） */
   .btn {
     @apply inline-flex items-center justify-center gap-2;
     @apply rounded-md px-3.5 py-2 text-sm font-medium;
     @apply transition-colors duration-150 ease-out;
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:focus-visible:ring-brand-400/40;
     @apply disabled:cursor-not-allowed disabled:opacity-50;
+    min-height: 2.25rem;
   }
 
   /* 主行动按钮：纯黑 + 白字（Vercel / Apple 高级感锚点），暗模式反相为白底黑字 */
@@ -131,23 +133,30 @@
   }
 
   /* 尺寸节奏：sm 28px、md 36px、lg 40px，圆角统一 md，避免不同尺寸圆角变化 */
+  /* 各尺寸 min-height 严格固定，即便字数不同也保证按钮组对齐 */
   .btn-sm {
     @apply rounded-md px-2.5 py-1 text-xs;
+    min-height: 1.75rem;
   }
 
   .btn-md {
     @apply rounded-md px-3.5 py-2 text-sm;
+    min-height: 2.25rem;
   }
 
   .btn-lg {
     @apply rounded-md px-5 py-2.5 text-[15px];
+    min-height: 2.5rem;
   }
 
   .btn-icon {
     @apply rounded-md p-2;
+    min-height: 2.25rem;
+    min-width: 2.25rem;
   }
 
   /* ============ 输入框：低圆角、细边、focus 单色 ring ============ */
+  /* min-height 与 .btn 严格同高（36px），保证 input + button 同行视觉对齐 */
   .input {
     @apply w-full rounded-md px-3 py-2 text-sm;
     @apply bg-white dark:bg-dark-800;
@@ -157,6 +166,7 @@
     @apply transition-colors duration-150;
     @apply focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600/40;
     @apply dark:focus:border-brand-400 dark:focus:ring-brand-400/30;
+    min-height: 2.25rem;
     @apply disabled:cursor-not-allowed disabled:bg-gray-50 dark:disabled:bg-dark-900;
   }
 

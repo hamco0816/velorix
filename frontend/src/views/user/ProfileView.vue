@@ -2,7 +2,7 @@
   <AppLayout>
     <div
       data-testid="profile-shell"
-      class="mx-auto max-w-[1120px] space-y-5 pb-10"
+      class="mx-auto max-w-7xl space-y-5 pb-10"
     >
       <!-- Hero：sky 渐变标题区，作为个人中心入口 -->
       <header class="page-hero page-hero-sky">

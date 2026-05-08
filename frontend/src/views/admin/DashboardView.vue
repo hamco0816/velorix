@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <div class="space-y-6">
+    <div class="mx-auto max-w-7xl space-y-6">
       <!-- Hero：sky 渐变标题区，作为管理员仪表盘门面 -->
       <header class="page-hero page-hero-sky">
         <div class="relative z-10 max-w-3xl">

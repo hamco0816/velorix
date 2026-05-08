@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <div class="payment-page mx-auto max-w-6xl space-y-5">
+    <div class="payment-page mx-auto max-w-7xl space-y-5">
       <!-- Hero：violet 渐变标题区，标识充值业务色 -->
       <header class="page-hero page-hero-violet">
         <div class="relative z-10 max-w-3xl">

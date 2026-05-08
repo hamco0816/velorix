@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <div class="mx-auto max-w-6xl space-y-5">
+    <div class="mx-auto max-w-7xl space-y-5">
       <!-- Hero：与兑换码 hero 同款渐变 + 标签 + 大标题 + 描述 -->
       <header class="docs-hero">
         <div class="relative z-10 max-w-3xl">

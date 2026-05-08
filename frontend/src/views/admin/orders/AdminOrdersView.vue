@@ -1,6 +1,22 @@
 <template>
   <AppLayout>
-    <div class="space-y-4">
+    <div class="mx-auto max-w-7xl space-y-5">
+      <!-- Hero：amber 渐变标题区，标识订单业务色 -->
+      <header class="page-hero page-hero-amber">
+        <div class="relative z-10 max-w-3xl">
+          <span class="page-hero-tag page-hero-tag-amber">
+            <Icon name="document" size="sm" />
+            {{ t('payment.admin.title') }}
+          </span>
+          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
+            {{ t('payment.admin.title') }}
+          </h1>
+          <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
+            管理所有用户订单，查询支付状态、订单类型与金额详情。
+          </p>
+        </div>
+      </header>
+
       <!-- Filters -->
       <div class="card p-4">
         <div class="flex flex-wrap items-center gap-3">
