@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <div class="settings-page mx-auto max-w-6xl space-y-6">
+    <div class="settings-page mx-auto max-w-5xl">
       <!-- Loading State -->
       <div v-if="loading" class="flex items-center justify-center py-12">
         <div
@@ -10,8 +10,18 @@
 
       <!-- Settings Form -->
       <form v-else @submit.prevent="saveSettings" class="space-y-6" novalidate>
-        <!-- Tab Navigation -->
-        <div class="sticky top-0 z-10 -mx-1 overflow-x-auto px-1 py-1 settings-tabs-scroll">
+        <!-- Page Header：页面顶部统一标题区 -->
+        <header class="settings-header">
+          <h1 class="settings-header-title">
+            {{ t("admin.settings.title") }}
+          </h1>
+          <p class="settings-header-desc">
+            {{ t("admin.settings.description") }}
+          </p>
+        </header>
+
+        <!-- Tab Navigation：sticky 顶部分类切换 -->
+        <div class="settings-tabs-bar sticky top-0 z-10 overflow-x-auto settings-tabs-scroll">
           <nav class="settings-tabs">
             <button
               v-for="tab in settingsTabs"
@@ -8433,48 +8443,61 @@ watch(
   @apply h-[42px];
 }
 
+/* ============================================================================
+ * 设置页极简视觉风格
+ * 设计原则：去除多层卡片嵌套、去除阴影/渐变、tab 用下划线指示活动态、
+ *           表单字段直接铺陈不再"卡片化"。所有规则都限定在 .settings-page 作用域内，
+ *           不影响其他 .card / .input 的全局表现。
+ * ========================================================================= */
+
+/* 页面 Header：大标题 + 副描述，统一信息层级 */
+.settings-header {
+  @apply px-1 pt-1 pb-2;
+}
+
+.settings-header-title {
+  @apply text-[22px] font-bold tracking-tight text-gray-900 dark:text-white;
+}
+
+.settings-header-desc {
+  @apply mt-1 text-sm text-gray-500 dark:text-dark-400;
+}
+
+/* 卡片：弱边框 + 微妙 1px 阴影，让卡片在浅色页面上"浮"出来 */
 .settings-page :deep(.card) {
-  @apply overflow-hidden rounded-2xl border border-gray-100 bg-white/95 shadow-sm shadow-gray-200/60 dark:border-dark-700 dark:bg-dark-900/85 dark:shadow-none;
+  @apply overflow-hidden rounded-lg border border-gray-200/70 bg-white;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
 }
 
-.settings-page form > .space-y-6 {
-  @apply rounded-[28px] bg-white/45 p-2 shadow-inner shadow-gray-100/70 dark:bg-dark-950/25 dark:shadow-none;
-  border: 1px solid rgb(243 244 246);
+:root.dark .settings-page :deep(.card) {
+  @apply border-dark-700/80 bg-dark-900;
+  box-shadow: none;
 }
 
-:root.dark .settings-page form > .space-y-6 {
-  border-color: rgb(55 65 81 / 0.7);
-}
-
-@media (min-width: 640px) {
-  .settings-page form > .space-y-6 {
-    @apply p-4;
-  }
-}
-
+/* 卡片头部：纯色背景 + 单边线分隔，标题克制 */
 .settings-page :deep(.card > div:first-child) {
-  @apply bg-gradient-to-r from-slate-50 to-white px-5 py-4 dark:from-dark-800 dark:to-dark-900 sm:px-6;
+  @apply bg-transparent border-b border-gray-100 dark:border-dark-700/70;
+  @apply px-6 py-5;
 }
 
 .settings-page :deep(.card > div:first-child h2) {
-  @apply text-base font-bold tracking-tight sm:text-lg;
+  @apply text-[15px] font-semibold tracking-tight text-gray-900 dark:text-white;
 }
 
 .settings-page :deep(.card > div:first-child p) {
-  @apply max-w-3xl leading-relaxed;
+  @apply mt-1 max-w-3xl text-[13px] leading-relaxed text-gray-500 dark:text-dark-400;
 }
 
+/* 卡片内容区：统一 padding，桌面端略宽 */
 .settings-page :deep(.card > div:nth-child(2)) {
-  @apply p-5 sm:p-6;
+  @apply p-6;
 }
 
+/* 表单行：仅补一个左右 gap，不强行覆盖原 utility class
+ * （像 amber 警告条这种自带 p-4 / border / bg 的字段保持原装饰；
+ *   裸 flex 行得到一个间隔 4 的横向分隔以避免内容贴在一起） */
 .settings-page :deep(.card .flex.items-center.justify-between) {
-  @apply gap-4 rounded-2xl bg-slate-50/70 px-4 py-3 dark:bg-dark-800/55;
-  border: 1px solid rgb(241 245 249);
-}
-
-:root.dark .settings-page :deep(.card .flex.items-center.justify-between) {
-  border-color: rgb(55 65 81);
+  @apply gap-4;
 }
 
 .settings-page :deep(.card .flex.items-center.justify-between > div:first-child) {
@@ -8482,54 +8505,62 @@ watch(
 }
 
 .settings-page :deep(.card .flex.items-center.justify-between label) {
-  @apply block text-sm font-semibold text-gray-900 dark:text-white;
+  @apply block text-sm font-medium text-gray-900 dark:text-white;
 }
 
 .settings-page :deep(.card .flex.items-center.justify-between p) {
-  @apply mt-1 leading-relaxed;
+  @apply mt-0.5 text-xs leading-relaxed text-gray-500 dark:text-dark-400;
 }
 
-.settings-page :deep(.card .rounded-lg),
-.settings-page :deep(.card .rounded-xl) {
-  @apply rounded-2xl bg-slate-50/65 shadow-sm shadow-gray-100/60 dark:bg-dark-800/45 dark:shadow-none;
-  border-color: rgb(241 245 249);
-}
-
-:root.dark .settings-page :deep(.card .rounded-lg),
-:root.dark .settings-page :deep(.card .rounded-xl) {
-  border-color: rgb(55 65 81);
-}
-
+/* save bar：贴底的 sticky 条，弱边框 + 微 shadow 让保存按钮的位置感更稳 */
 .settings-save-bar {
-  @apply sticky bottom-0 z-10 -mx-1 flex justify-end rounded-2xl bg-white/85 p-3 shadow-lg shadow-gray-200/60 backdrop-blur dark:bg-dark-900/85 dark:shadow-none;
-  border: 1px solid rgb(243 244 246);
+  @apply sticky bottom-0 z-10 flex justify-end gap-3;
+  @apply rounded-lg border border-gray-200/70 dark:border-dark-700/80;
+  @apply bg-white/95 backdrop-blur-sm dark:bg-dark-900/95;
+  @apply px-5 py-3.5;
+  box-shadow: 0 -1px 2px rgb(0 0 0 / 0.04), 0 1px 2px rgb(0 0 0 / 0.04);
 }
 
 :root.dark .settings-save-bar {
-  border-color: rgb(55 65 81);
+  box-shadow: none;
 }
 
+/* 输入控件：圆角与按钮统一为 md，focus 用近黑色描边而非品牌色 */
 .settings-page :deep(.input),
 .settings-page :deep(textarea),
 .settings-page :deep(select) {
-  @apply rounded-xl border-gray-200 bg-white shadow-sm shadow-gray-100/50 transition-colors focus:border-primary-400 focus:ring-primary-400 dark:border-dark-600 dark:bg-dark-800 dark:shadow-none;
+  @apply rounded-md border-gray-200 bg-white shadow-none transition-colors;
+  @apply focus:border-gray-900 focus:ring-1 focus:ring-gray-900/15;
+  @apply dark:border-dark-600 dark:bg-dark-800;
+  @apply dark:focus:border-white dark:focus:ring-white/15;
 }
 
 .contact-method-type-select :deep(.select-trigger) {
-  @apply h-[42px] rounded-xl border-gray-200 bg-white px-3 text-sm shadow-sm shadow-gray-100/50 dark:border-dark-600 dark:bg-dark-800 dark:shadow-none;
+  @apply h-[42px] rounded-md border-gray-200 bg-white px-3 text-sm shadow-none;
+  @apply dark:border-dark-600 dark:bg-dark-800;
 }
 
 .contact-method-type-select :deep(.select-trigger-open) {
-  @apply border-primary-400 ring-2 ring-primary-400/30;
+  @apply border-gray-900 ring-1 ring-gray-900/15 dark:border-white dark:ring-white/15;
 }
 
 .settings-page :deep(.btn) {
-  @apply rounded-xl;
+  @apply rounded-md;
 }
 
-/* ============ Settings Tab Navigation ============ */
+/* ============ Tab 导航：下划线式 ============ */
 
-/* Scroll container: thin scrollbar on PC, auto-hide on mobile */
+/* sticky tab 容器：磨砂背景 + 与 page header 留白；滚动时不透底，遮挡内容 */
+.settings-tabs-bar {
+  @apply pt-1;
+  @apply bg-white/85 backdrop-blur-sm;
+}
+
+:root.dark .settings-tabs-bar {
+  @apply bg-dark-950/85;
+}
+
+/* 横向滚动容器：滚动条仅在 hover 时显示，避免视觉干扰 */
 .settings-tabs-scroll {
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
@@ -8557,13 +8588,14 @@ watch(
   background: rgb(255 255 255 / 0.2);
 }
 
+/* tab 列表：底边线作为基线，活动 tab 用 2px 黑色下划线指示 */
 .settings-tabs {
-  @apply inline-flex min-w-full gap-1 rounded-2xl
-         border border-gray-100 bg-white/90 p-1.5 backdrop-blur-xl
-         dark:border-dark-700/50 dark:bg-dark-900/90;
-  box-shadow:
-    0 16px 36px -28px rgb(15 23 42 / 0.45),
-    0 1px 2px rgb(0 0 0 / 0.02);
+  @apply inline-flex min-w-full gap-0;
+  @apply border-b border-gray-200 dark:border-dark-700;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
 }
 
 @media (min-width: 640px) {
@@ -8573,40 +8605,46 @@ watch(
 }
 
 .settings-tab {
-  @apply relative flex flex-1 items-center justify-center gap-1.5
-         whitespace-nowrap rounded-xl px-3 py-2.5
-         text-sm font-semibold
-         text-gray-500 dark:text-dark-400
-         transition-all duration-200 ease-out;
+  @apply relative flex items-center justify-center gap-1.5;
+  @apply whitespace-nowrap px-4 py-2.5 -mb-px;
+  @apply text-[13px] font-medium text-gray-500 dark:text-dark-400;
+  @apply border-b-2 border-transparent;
+  @apply transition-colors duration-150;
+  border-radius: 0;
+  background: transparent;
 }
 
 .settings-tab:hover:not(.settings-tab-active) {
-  @apply text-gray-700 dark:text-gray-300;
-  background: rgb(0 0 0 / 0.03);
+  @apply text-gray-900 dark:text-white;
+  background: transparent;
 }
 
 :root.dark .settings-tab:hover:not(.settings-tab-active) {
-  background: rgb(255 255 255 / 0.04);
+  background: transparent;
 }
 
 .settings-tab-active {
-  @apply text-white;
-  background: linear-gradient(135deg, #14b8a6, #10b981);
-  box-shadow: 0 12px 24px -18px rgba(20, 184, 166, 0.75);
+  @apply text-gray-900 dark:text-white;
+  background: transparent;
+  border-bottom-color: rgb(17 24 39);
+  box-shadow: none;
 }
 
 :root.dark .settings-tab-active {
-  @apply text-white;
-  background: linear-gradient(135deg, #0f766e, #059669);
-  box-shadow: 0 12px 24px -18px rgb(0 0 0 / 0.75);
+  background: transparent;
+  border-bottom-color: rgb(255 255 255);
+  box-shadow: none;
 }
 
+/* tab 图标：缩小到与文字对齐尺寸，去掉胶囊背景 */
 .settings-tab-icon {
-  @apply flex h-6 w-6 items-center justify-center rounded-lg
-         transition-all duration-200;
+  @apply inline-flex h-4 w-4 items-center justify-center;
+  background: transparent;
+  border-radius: 0;
 }
 
 .settings-tab-active .settings-tab-icon {
-  @apply bg-white/20 text-white;
+  background: transparent;
+  @apply text-gray-900 dark:text-white;
 }
 </style>
