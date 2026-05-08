@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <div class="mx-auto max-w-7xl space-y-5">
+    <div class="space-y-5">
       <!-- Hero：teal 渐变标题区，标识订阅套餐业务色（与订阅管理同色系） -->
       <header class="page-hero page-hero-teal">
         <div class="relative z-10 flex flex-wrap items-end justify-between gap-4">

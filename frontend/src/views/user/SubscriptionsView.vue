@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <div class="mx-auto max-w-7xl space-y-5">
+    <div class="space-y-5">
       <!-- Hero：emerald 渐变标题区，标识订阅业务色 -->
       <header class="page-hero page-hero-emerald">
         <div class="relative z-10 max-w-3xl">

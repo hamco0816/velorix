@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <div class="settings-page mx-auto max-w-7xl">
+    <div class="settings-page">
       <!-- Loading State -->
       <div v-if="loading" class="flex items-center justify-center py-12">
         <div

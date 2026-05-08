@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <div class="risk-page mx-auto max-w-7xl space-y-5">
+    <div class="risk-page space-y-5">
       <!-- Hero：amber 渐变标题区，标识风险告警业务色调 -->
       <header class="page-hero page-hero-amber">
         <div class="relative z-10 max-w-3xl">
