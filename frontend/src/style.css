@@ -217,25 +217,65 @@
     @apply dark:text-white dark:decoration-dark-500 dark:hover:decoration-white;
   }
 
-  /* 品牌图标盒：与场景色调匹配（登录用 sky、注册用 emerald），带浅色 ring 与浅底 */
-  .auth-brand-icon {
-    @apply inline-flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl ring-1;
-  }
-  .auth-brand-icon-sky {
-    @apply bg-sky-50 ring-sky-200/60;
-    @apply dark:bg-sky-900/25 dark:ring-sky-700/40;
-  }
-  .auth-brand-icon-emerald {
-    @apply bg-emerald-50 ring-emerald-200/60;
-    @apply dark:bg-emerald-900/25 dark:ring-emerald-700/40;
-  }
-
   /* 品牌区合并标题中的分隔点：用场景色让"siteName · 动作"出现一抹颜色锚点 */
   .auth-brand-dot-sky {
     @apply mx-2 font-medium text-sky-500 dark:text-sky-400;
   }
   .auth-brand-dot-emerald {
     @apply mx-2 font-medium text-emerald-500 dark:text-emerald-400;
+  }
+
+  /* ============ Hero 容器：与兑换码页一致的 mini 渐变区 ============
+   * 登录用 sky-violet，注册用 emerald-teal；包裹 logo + 合并标题。 */
+  .auth-hero {
+    @apply relative flex flex-col items-center overflow-hidden rounded-lg border px-6 py-8;
+    box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
+  }
+
+  .auth-hero-sky {
+    border-color: rgb(219 234 254);
+    background:
+      radial-gradient(circle at 76% 22%, rgb(56 189 248 / 0.22), transparent 35%),
+      radial-gradient(circle at 94% 12%, rgb(168 85 247 / 0.16), transparent 30%),
+      linear-gradient(135deg, rgb(240 249 255), rgb(255 255 255) 48%, rgb(245 243 255));
+  }
+
+  .auth-hero-emerald {
+    border-color: rgb(187 247 208);
+    background:
+      radial-gradient(circle at 76% 22%, rgb(52 211 153 / 0.22), transparent 35%),
+      radial-gradient(circle at 94% 12%, rgb(20 184 166 / 0.16), transparent 30%),
+      linear-gradient(135deg, rgb(236 253 245), rgb(255 255 255) 48%, rgb(240 253 250));
+  }
+
+  /* ============ 通用彩色 panel：与兑换码 redeem-panel 一致 ============
+   * 给 SettingsView 等卡片化页面统一外观（白底 + 微阴影 + 浅色头部）。 */
+  .colored-panel {
+    @apply overflow-hidden rounded-lg border border-gray-200 bg-white;
+    box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
+  }
+
+  /* 浅色卡片头部（按色调供选择） */
+  .colored-header-sky {
+    @apply border-b border-sky-100/70 bg-sky-50/60;
+  }
+  .colored-header-emerald {
+    @apply border-b border-emerald-100/70 bg-emerald-50/60;
+  }
+  .colored-header-amber {
+    @apply border-b border-amber-100/70 bg-amber-50/60;
+  }
+  .colored-header-violet {
+    @apply border-b border-violet-100/70 bg-violet-50/60;
+  }
+  .colored-header-teal {
+    @apply border-b border-teal-100/70 bg-teal-50/60;
+  }
+  .colored-header-rose {
+    @apply border-b border-rose-100/70 bg-rose-50/60;
+  }
+  .colored-header-indigo {
+    @apply border-b border-indigo-100/70 bg-indigo-50/60;
   }
 
   /* 主按钮：纯黑底 + 白字 + 细微阴影（暗色模式反相） */
@@ -844,4 +884,61 @@
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom);
   }
+}
+
+/* ============================================================================
+ * 暗色模式覆盖：原生 CSS 渐变与 shadow 不能用 Tailwind 的 dark: 前缀，
+ * 这里用 :root.dark 选择器手动适配。
+ * ========================================================================= */
+:root.dark .auth-hero {
+  box-shadow: none;
+}
+:root.dark .auth-hero-sky {
+  border-color: rgb(55 65 81);
+  background:
+    radial-gradient(circle at 76% 22%, rgb(14 165 233 / 0.15), transparent 35%),
+    radial-gradient(circle at 94% 12%, rgb(139 92 246 / 0.12), transparent 30%),
+    linear-gradient(135deg, rgb(15 23 42), rgb(17 24 39));
+}
+:root.dark .auth-hero-emerald {
+  border-color: rgb(55 65 81);
+  background:
+    radial-gradient(circle at 76% 22%, rgb(16 185 129 / 0.15), transparent 35%),
+    radial-gradient(circle at 94% 12%, rgb(13 148 136 / 0.12), transparent 30%),
+    linear-gradient(135deg, rgb(15 23 42), rgb(17 24 39));
+}
+
+:root.dark .colored-panel {
+  border-color: rgb(55 65 81);
+  background-color: rgb(31 41 55);
+  box-shadow: none;
+}
+
+:root.dark .colored-header-sky {
+  border-color: rgb(55 65 81);
+  background-color: rgb(14 165 233 / 0.08);
+}
+:root.dark .colored-header-emerald {
+  border-color: rgb(55 65 81);
+  background-color: rgb(16 185 129 / 0.08);
+}
+:root.dark .colored-header-amber {
+  border-color: rgb(55 65 81);
+  background-color: rgb(245 158 11 / 0.08);
+}
+:root.dark .colored-header-violet {
+  border-color: rgb(55 65 81);
+  background-color: rgb(139 92 246 / 0.08);
+}
+:root.dark .colored-header-teal {
+  border-color: rgb(55 65 81);
+  background-color: rgb(20 184 166 / 0.08);
+}
+:root.dark .colored-header-rose {
+  border-color: rgb(55 65 81);
+  background-color: rgb(244 63 94 / 0.08);
+}
+:root.dark .colored-header-indigo {
+  border-color: rgb(55 65 81);
+  background-color: rgb(99 102 241 / 0.08);
 }

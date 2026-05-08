@@ -8465,19 +8465,24 @@ watch(
 
 /* 卡片：弱边框 + 微妙 1px 阴影，让卡片在浅色页面上"浮"出来 */
 .settings-page :deep(.card) {
-  @apply overflow-hidden rounded-lg border border-gray-200/70 bg-white;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+  @apply overflow-hidden rounded-lg border border-gray-200 bg-white;
+  box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
 }
 
 :root.dark .settings-page :deep(.card) {
-  @apply border-dark-700/80 bg-dark-900;
+  @apply border-dark-700 bg-dark-800;
   box-shadow: none;
 }
 
 /* 卡片头部：纯色背景 + 单边线分隔，标题克制 */
 .settings-page :deep(.card > div:first-child) {
-  @apply bg-transparent border-b border-gray-100 dark:border-dark-700/70;
+  @apply border-b border-sky-100/70 bg-sky-50/60;
   @apply px-6 py-5;
+}
+
+:root.dark .settings-page :deep(.card > div:first-child) {
+  border-color: rgb(55 65 81);
+  background-color: rgb(14 165 233 / 0.08);
 }
 
 .settings-page :deep(.card > div:first-child h2) {
