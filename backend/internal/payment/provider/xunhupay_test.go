@@ -165,14 +165,18 @@ func TestXunhupayQueryUsesOfficialFieldAndResponseHash(t *testing.T) {
 		if r.URL.Path != xunhupayPathQuery {
 			t.Fatalf("unexpected path: %s", r.URL.Path)
 		}
-		if err := r.ParseForm(); err != nil {
-			t.Fatalf("parse form: %v", err)
+		if got := r.Header.Get("Content-Type"); !strings.Contains(got, "application/json") {
+			t.Fatalf("Content-Type = %q, want application/json", got)
 		}
-		if r.Form.Get("out_trade_order") == "ord_query" {
+		var requestParams map[string]string
+		if err := json.NewDecoder(r.Body).Decode(&requestParams); err != nil {
+			t.Fatalf("decode json request: %v", err)
+		}
+		if requestParams["out_trade_order"] == "ord_query" {
 			sawOfficialField = true
 		}
-		if r.Form.Get("appid") != "ali-app" {
-			t.Fatalf("appid = %q", r.Form.Get("appid"))
+		if requestParams["appid"] != "ali-app" {
+			t.Fatalf("appid = %q", requestParams["appid"])
 		}
 		resp := map[string]any{
 			"errcode": 0,

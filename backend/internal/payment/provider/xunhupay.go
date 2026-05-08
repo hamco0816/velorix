@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"bytes"
 	"context"
 	"crypto/md5"
 	"crypto/rand"
@@ -641,17 +642,18 @@ func xunhupayStringify(v any) string {
 	}
 }
 
-// post 以 application/x-www-form-urlencoded 提交参数。
+// post 以 JSON 提交参数，匹配虎皮椒当前支付/查询接口文档。
 func (x *Xunhupay) post(ctx context.Context, endpoint string, params map[string]string) ([]byte, error) {
-	form := url.Values{}
-	for k, v := range params {
-		form.Set(k, v)
-	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, strings.NewReader(form.Encode()))
+	payload, err := json.Marshal(params)
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, bytes.NewReader(payload))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
 	client := x.httpClient
 	if client == nil {
 		client = &http.Client{Timeout: xunhupayHTTPTimeout}
