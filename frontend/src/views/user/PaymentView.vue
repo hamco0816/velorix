@@ -1,6 +1,22 @@
 <template>
   <AppLayout>
-    <div class="payment-page mx-auto max-w-6xl space-y-6">
+    <div class="payment-page mx-auto max-w-6xl space-y-5">
+      <!-- Hero：violet 渐变标题区，标识充值业务色 -->
+      <header class="page-hero page-hero-violet">
+        <div class="relative z-10 max-w-3xl">
+          <span class="page-hero-tag page-hero-tag-violet">
+            <Icon name="creditCard" size="sm" />
+            账户充值
+          </span>
+          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
+            {{ t('payment.title') }}
+          </h1>
+          <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
+            选择充值方式或订阅套餐，支持多种支付渠道，到账即时生效。
+          </p>
+        </div>
+      </header>
+
       <div v-if="loading" class="flex items-center justify-center py-20">
         <div class="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
       </div>

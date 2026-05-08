@@ -3,14 +3,14 @@
     <!-- 品牌区：emerald 色 hero 渐变容器 + 直接展示的 logo + 合并标题 -->
     <template #brand>
       <div class="auth-hero auth-hero-emerald mb-8 text-center">
-        <div class="mb-3 h-12 w-12 overflow-hidden">
+        <div class="mb-4 h-20 w-20 overflow-hidden">
           <img
             :src="siteLogo || '/logo.png'"
             alt="Logo"
             class="h-full w-full object-contain"
           />
         </div>
-        <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+        <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
           {{ siteName }}<span class="auth-brand-dot-emerald">·</span>{{ t('auth.createAccount') }}
         </h1>
       </div>

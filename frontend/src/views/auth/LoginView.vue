@@ -3,14 +3,14 @@
     <!-- 品牌区：与兑换码页一致的 hero 渐变容器 + 直接展示的 logo + 合并标题 -->
     <template #brand>
       <div class="auth-hero auth-hero-sky mb-8 text-center">
-        <div class="mb-3 h-12 w-12 overflow-hidden">
+        <div class="mb-4 h-20 w-20 overflow-hidden">
           <img
             :src="siteLogo || '/logo.png'"
             alt="Logo"
             class="h-full w-full object-contain"
           />
         </div>
-        <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+        <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
           {{ siteName }}<span class="auth-brand-dot-sky">·</span>{{ t('auth.signIn') }}
         </h1>
       </div>

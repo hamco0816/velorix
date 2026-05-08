@@ -10,14 +10,20 @@
 
       <!-- Settings Form -->
       <form v-else @submit.prevent="saveSettings" class="space-y-6" novalidate>
-        <!-- Page Header：页面顶部统一标题区 -->
-        <header class="settings-header">
-          <h1 class="settings-header-title">
-            {{ t("admin.settings.title") }}
-          </h1>
-          <p class="settings-header-desc">
-            {{ t("admin.settings.description") }}
-          </p>
+        <!-- Page Hero：与兑换码 / 文档同款渐变标题区 -->
+        <header class="page-hero page-hero-sky">
+          <div class="relative z-10 max-w-3xl">
+            <span class="page-hero-tag page-hero-tag-sky">
+              <Icon name="shield" size="sm" />
+              系统管理
+            </span>
+            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
+              {{ t("admin.settings.title") }}
+            </h1>
+            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
+              {{ t("admin.settings.description") }}
+            </p>
+          </div>
         </header>
 
         <!-- Tab Navigation：sticky 顶部分类切换 -->
@@ -8465,6 +8471,7 @@ watch(
 
 /* 卡片：弱边框 + 微妙 1px 阴影，让卡片在浅色页面上"浮"出来 */
 .settings-page :deep(.card) {
+  position: relative;
   @apply overflow-hidden rounded-lg border border-gray-200 bg-white;
   box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
 }
@@ -8472,6 +8479,19 @@ watch(
 :root.dark .settings-page :deep(.card) {
   @apply border-dark-700 bg-dark-800;
   box-shadow: none;
+}
+
+/* 卡片左侧渐变色条：sky→violet 视觉锚点，与全站 hero 主调统一 */
+.settings-page :deep(.card)::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background: linear-gradient(to bottom, rgb(56 189 248), rgb(168 85 247));
+  pointer-events: none;
+  z-index: 1;
 }
 
 /* 卡片头部：纯色背景 + 单边线分隔，标题克制 */

@@ -1,6 +1,22 @@
 <template>
   <AppLayout>
-    <div class="space-y-6">
+    <div class="mx-auto max-w-6xl space-y-5">
+      <!-- Hero：emerald 渐变标题区，标识订阅业务色 -->
+      <header class="page-hero page-hero-emerald">
+        <div class="relative z-10 max-w-3xl">
+          <span class="page-hero-tag page-hero-tag-emerald">
+            <Icon name="badge" size="sm" />
+            订阅管理
+          </span>
+          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
+            {{ t('userSubscriptions.title') }}
+          </h1>
+          <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
+            {{ t('userSubscriptions.description') }}
+          </p>
+        </div>
+      </header>
+
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center py-12">
         <div

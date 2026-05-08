@@ -104,10 +104,11 @@
 
       <div class="flex-1" />
 
-      <div class="mt-4">
+      <!-- 按钮：居中显示、内容自适应宽度，避免在卡片中被拉得太宽显得空 -->
+      <div class="mt-4 flex justify-center">
         <button
           type="button"
-          :class="['inline-flex w-full items-center justify-center rounded-xl px-6 py-2.5 text-sm font-semibold transition-colors active:scale-[0.99]', btnClass]"
+          :class="['inline-flex items-center justify-center rounded-md px-10 py-2.5 text-sm font-semibold transition-colors active:scale-[0.99]', btnClass]"
           @click="emit('select', plan)"
         >
           {{ isRenewal ? t('payment.renewNow') : t('payment.subscribeNow') }}
