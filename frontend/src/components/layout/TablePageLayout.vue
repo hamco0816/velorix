@@ -1,13 +1,20 @@
 <template>
   <div class="table-page-layout" :class="{ 'mobile-mode': isMobile }">
+    <!-- 顶部 Hero 插槽：列表页可在此放彩色标题区，与全站调性统一 -->
+    <div v-if="$slots.hero" class="layout-section-fixed">
+      <slot name="hero" />
+    </div>
+
     <!-- 固定区域：操作按钮 -->
     <div v-if="$slots.actions" class="layout-section-fixed">
       <slot name="actions" />
     </div>
 
-    <!-- 固定区域：搜索和过滤器 -->
+    <!-- 固定区域：搜索和过滤器，包成白底 panel 让筛选条与表格视觉成组 -->
     <div v-if="$slots.filters" class="layout-section-fixed">
-      <slot name="filters" />
+      <div class="filters-panel">
+        <slot name="filters" />
+      </div>
     </div>
 
     <!-- 滚动区域：表格 -->
@@ -58,9 +65,24 @@ onUnmounted(() => {
   @apply flex-1 min-h-0 flex flex-col;
 }
 
-/* 表格滚动容器 - 增强版表体滚动方案 */
+/* 筛选条 panel：与兑换码 / 文档 panel 同款外观 */
+.filters-panel {
+  @apply rounded-lg border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-900 sm:p-5;
+  box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
+}
+
+:global(:root.dark) .filters-panel {
+  box-shadow: none;
+}
+
+/* 表格滚动容器 - 与全站 panel 统一的"远距离淡阴影" */
 .table-scroll-container {
-  @apply flex flex-col overflow-hidden h-full bg-white dark:bg-dark-800 rounded-lg border border-gray-200 dark:border-dark-700 shadow-card;
+  @apply flex flex-col overflow-hidden h-full bg-white dark:bg-dark-800 rounded-lg border border-gray-200 dark:border-dark-700;
+  box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
+}
+
+:global(:root.dark) .table-scroll-container {
+  box-shadow: none;
 }
 
 .table-scroll-container :deep(.table-wrapper) {
@@ -75,8 +97,13 @@ onUnmounted(() => {
   display: table; /* 使用标准 table 布局以支持 sticky 列 */
 }
 
+/* 表头：浅 sky 背景 + 弱化分隔线，与全站浅色头部 panel 风格统一 */
 .table-scroll-container :deep(thead) {
-  @apply bg-gray-50/80 dark:bg-dark-800/80 backdrop-blur-sm;
+  @apply bg-sky-50/50 backdrop-blur-sm;
+}
+
+:global(:root.dark) .table-scroll-container :deep(thead) {
+  background-color: rgb(14 165 233 / 0.08);
 }
 
 .table-scroll-container :deep(tbody) {
@@ -94,6 +121,12 @@ onUnmounted(() => {
 /* 移动端：恢复正常滚动 */
 .table-page-layout.mobile-mode .table-scroll-container {
   @apply h-auto overflow-visible border-none shadow-none bg-transparent;
+  box-shadow: none;
+}
+
+.table-page-layout.mobile-mode .filters-panel {
+  @apply border-none p-0 bg-transparent;
+  box-shadow: none;
 }
 
 .table-page-layout.mobile-mode .layout-section-scrollable {

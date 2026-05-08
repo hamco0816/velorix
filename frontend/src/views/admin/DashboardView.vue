@@ -1,6 +1,22 @@
 <template>
   <AppLayout>
-    <div class="space-y-8">
+    <div class="space-y-6">
+      <!-- Hero：sky 渐变标题区，作为管理员仪表盘门面 -->
+      <header class="page-hero page-hero-sky">
+        <div class="relative z-10 max-w-3xl">
+          <span class="page-hero-tag page-hero-tag-sky">
+            <Icon name="home" size="sm" />
+            {{ t('admin.dashboard.title') }}
+          </span>
+          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
+            {{ t('admin.dashboard.title') }}
+          </h1>
+          <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
+            {{ t('admin.dashboard.description') }}
+          </p>
+        </div>
+      </header>
+
       <!-- Loading State -->
       <div v-if="loading" class="flex items-center justify-center py-12">
         <LoadingSpinner />

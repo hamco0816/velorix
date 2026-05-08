@@ -1,6 +1,24 @@
 <template>
   <AppLayout>
     <TablePageLayout>
+      <!-- Hero：emerald 渐变标题区，标识用户业务色 -->
+      <template #hero>
+        <header class="page-hero page-hero-emerald">
+          <div class="relative z-10 max-w-3xl">
+            <span class="page-hero-tag page-hero-tag-emerald">
+              <Icon name="user" size="sm" />
+              用户管理
+            </span>
+            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
+              {{ t('admin.users.title') }}
+            </h1>
+            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
+              {{ t('admin.users.description') }}
+            </p>
+          </div>
+        </header>
+      </template>
+
       <!-- Single Row: Search, Filters, and Actions -->
       <template #filters>
         <div class="flex flex-wrap items-center gap-3">

@@ -1,6 +1,24 @@
 <template>
   <AppLayout>
     <TablePageLayout>
+      <!-- Hero：teal 渐变标题区，标识渠道管理业务色调 -->
+      <template #hero>
+        <header class="page-hero page-hero-teal">
+          <div class="relative z-10 max-w-3xl">
+            <span class="page-hero-tag page-hero-tag-teal">
+              <Icon name="server" size="sm" />
+              {{ t('admin.channels.title') }}
+            </span>
+            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
+              {{ t('admin.channels.title') }}
+            </h1>
+            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
+              {{ t('admin.channels.description') }}
+            </p>
+          </div>
+        </header>
+      </template>
+
       <template #filters>
         <div class="flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
           <!-- Left: Search + Filters -->

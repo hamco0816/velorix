@@ -1,6 +1,24 @@
 <template>
   <AppLayout>
     <TablePageLayout>
+      <!-- Hero：rose 渐变标题区，标识 IP/代理业务色调 -->
+      <template #hero>
+        <header class="page-hero page-hero-rose">
+          <div class="relative z-10 max-w-3xl">
+            <span class="page-hero-tag page-hero-tag-rose">
+              <Icon name="shield" size="sm" />
+              {{ t('admin.proxies.title') }}
+            </span>
+            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
+              {{ t('admin.proxies.title') }}
+            </h1>
+            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
+              {{ t('admin.proxies.description') }}
+            </p>
+          </div>
+        </header>
+      </template>
+
       <template #filters>
         <div class="flex flex-wrap items-center gap-3">
           <!-- Left: Search + Filters -->

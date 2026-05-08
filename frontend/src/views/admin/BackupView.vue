@@ -1,5 +1,21 @@
 <template>
-    <div class="space-y-6">
+    <div class="space-y-5">
+      <!-- Hero：sky 渐变标题区，标识备份业务色调 -->
+      <header class="page-hero page-hero-sky">
+        <div class="relative z-10 max-w-3xl">
+          <span class="page-hero-tag page-hero-tag-sky">
+            <Icon name="database" size="sm" />
+            {{ t('admin.backup.title') }}
+          </span>
+          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
+            {{ t('admin.backup.title') }}
+          </h1>
+          <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
+            {{ t('admin.backup.description') }}
+          </p>
+        </div>
+      </header>
+
       <!-- S3 Storage Config -->
       <div class="card p-6">
         <div class="mb-4 flex flex-wrap items-center justify-between gap-3">

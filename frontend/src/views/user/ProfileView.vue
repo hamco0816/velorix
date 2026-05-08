@@ -2,8 +2,24 @@
   <AppLayout>
     <div
       data-testid="profile-shell"
-      class="mx-auto max-w-[1120px] space-y-6 pb-10"
+      class="mx-auto max-w-[1120px] space-y-5 pb-10"
     >
+      <!-- Hero：sky 渐变标题区，作为个人中心入口 -->
+      <header class="page-hero page-hero-sky">
+        <div class="relative z-10 max-w-3xl">
+          <span class="page-hero-tag page-hero-tag-sky">
+            <Icon name="user" size="sm" />
+            {{ t('profile.title') }}
+          </span>
+          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
+            {{ t('profile.title') }}
+          </h1>
+          <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
+            {{ t('profile.description') }}
+          </p>
+        </div>
+      </header>
+
       <ProfileInfoCard
         :user="user"
         :linuxdo-enabled="linuxdoOAuthEnabled"

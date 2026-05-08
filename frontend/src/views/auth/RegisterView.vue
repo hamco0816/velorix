@@ -11,7 +11,10 @@
           />
         </div>
         <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-          {{ siteName }}<span class="auth-brand-dot-emerald">·</span>{{ t('auth.createAccount') }}
+          <template v-if="siteName">
+            {{ siteName }}<span class="auth-brand-dot-emerald">·</span>
+          </template>
+          {{ t('auth.createAccount') }}
         </h1>
       </div>
     </template>
@@ -346,7 +349,8 @@ const promoCodeEnabled = ref<boolean>(true)
 const invitationCodeEnabled = ref<boolean>(false)
 const turnstileEnabled = ref<boolean>(false)
 const turnstileSiteKey = ref<string>('')
-const siteName = ref<string>('Sub2API')
+// settings 未加载完成时为空，标题区只显示动作（避免首屏闪默认名 'Sub2API'）
+const siteName = ref<string>('')
 const linuxdoOAuthEnabled = ref<boolean>(false)
 const wechatOAuthEnabled = ref<boolean>(false)
 const oidcOAuthEnabled = ref<boolean>(false)

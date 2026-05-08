@@ -97,35 +97,59 @@
         </div>
       </section>
 
-      <!-- 接入示例：每个 snippet 一个 emerald 头部卡片 + 深色代码区 -->
+      <!-- 接入示例：单个大 panel + 顶部 tab 切换，代码区占满宽度，避免每个 snippet 被压成小卡片 -->
       <section class="space-y-3">
         <div class="flex items-center gap-2 px-1">
           <Icon name="terminal" size="md" class="text-emerald-600 dark:text-emerald-300" />
           <h2 class="text-lg font-semibold text-gray-950 dark:text-white">复制即可改的接入示例</h2>
         </div>
-        <div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
-          <article
-            v-for="snippet in snippets"
-            :key="snippet.title"
-            class="docs-panel overflow-hidden"
-          >
-            <div class="docs-panel-header docs-panel-header-emerald">
-              <div class="docs-panel-icon docs-panel-icon-emerald">
-                <Icon name="terminal" size="md" />
+
+        <article class="docs-panel overflow-hidden">
+          <!-- Tab 导航：emerald 浅色背景，下划线指示活动 tab -->
+          <div class="snippet-tabs">
+            <button
+              v-for="(snippet, idx) in snippets"
+              :key="snippet.title"
+              type="button"
+              :class="[
+                'snippet-tab',
+                activeSnippetIdx === idx && 'snippet-tab-active',
+              ]"
+              @click="activeSnippetIdx = idx"
+            >
+              <Icon name="terminal" size="xs" class="opacity-70" />
+              {{ snippet.title }}
+            </button>
+          </div>
+
+          <!-- 当前 snippet 的标题/描述 + 代码 -->
+          <template v-if="activeSnippet">
+            <div class="px-5 pt-4 pb-3 sm:px-6">
+              <div class="flex flex-wrap items-center gap-2">
+                <h3 class="text-sm font-semibold text-gray-950 dark:text-white">{{ activeSnippet.title }}</h3>
+                <span class="rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:ring-emerald-800/60">
+                  {{ activeSnippet.tag }}
+                </span>
               </div>
-              <div class="min-w-0">
-                <div class="flex flex-wrap items-center gap-2">
-                  <h3 class="text-sm font-semibold text-gray-950 dark:text-white">{{ snippet.title }}</h3>
-                  <span class="rounded-md bg-white/80 px-2 py-0.5 text-[11px] font-medium text-emerald-700 ring-1 ring-emerald-200 dark:bg-dark-700 dark:text-emerald-300 dark:ring-emerald-800">
-                    {{ snippet.tag }}
-                  </span>
-                </div>
-                <p class="mt-0.5 text-xs leading-5 text-gray-500 dark:text-dark-400">{{ snippet.desc }}</p>
-              </div>
+              <p class="mt-1 text-xs leading-5 text-gray-500 dark:text-dark-400">{{ activeSnippet.desc }}</p>
             </div>
-            <pre class="overflow-x-auto bg-slate-950 p-4 text-xs leading-5 text-slate-100"><code>{{ snippet.code }}</code></pre>
-          </article>
-        </div>
+            <div class="relative">
+              <!-- 一键复制按钮：固定在代码区右上角 -->
+              <button
+                type="button"
+                class="absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-md bg-slate-800/80 px-2.5 py-1.5 text-xs font-medium text-slate-100 backdrop-blur transition-colors hover:bg-slate-700/90"
+                @click="copySnippet(activeSnippet)"
+              >
+                <Icon
+                  :name="copiedSnippetTitle === activeSnippet.title ? 'check' : 'copy'"
+                  size="xs"
+                />
+                {{ copiedSnippetTitle === activeSnippet.title ? '已复制' : '复制' }}
+              </button>
+              <pre class="overflow-x-auto bg-slate-950 p-5 text-xs leading-6 text-slate-100 sm:p-6"><code>{{ activeSnippet.code }}</code></pre>
+            </div>
+          </template>
+        </article>
       </section>
 
       <!-- 常见错误 / 使用安全提醒：amber + rose 双色卡片 -->
@@ -207,12 +231,31 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { useAppStore } from '@/stores'
 
 const appStore = useAppStore()
+
+// 接入示例当前激活的 tab 与"已复制"反馈状态
+const activeSnippetIdx = ref(0)
+const copiedSnippetTitle = ref<string | null>(null)
+let copyResetTimer: ReturnType<typeof setTimeout> | null = null
+
+// 把当前 snippet 的代码复制到剪贴板，2 秒后还原"已复制"提示
+async function copySnippet(snippet: { title: string; code: string }): Promise<void> {
+  try {
+    await navigator.clipboard.writeText(snippet.code)
+    copiedSnippetTitle.value = snippet.title
+    if (copyResetTimer) clearTimeout(copyResetTimer)
+    copyResetTimer = setTimeout(() => {
+      copiedSnippetTitle.value = null
+    }, 2000)
+  } catch (error) {
+    console.error('Failed to copy snippet:', error)
+  }
+}
 
 onMounted(() => {
   if (!appStore.publicSettingsLoaded) {
@@ -326,6 +369,9 @@ const snippets = computed(() => [
     ].join('\n'),
   },
 ])
+
+// 当前激活的 snippet（响应 activeSnippetIdx 切换）
+const activeSnippet = computed(() => snippets.value[activeSnippetIdx.value])
 
 const commonErrors = [
   { code: '401', title: '密钥无效', desc: '检查 API Key 是否复制完整，Header 是否使用 Bearer 或 x-api-key，密钥是否被禁用。' },
@@ -565,4 +611,61 @@ const sources = [
 :global(:root.dark) .docs-panel-icon-amber { color: rgb(252 211 77); }
 :global(:root.dark) .docs-panel-icon-rose { color: rgb(253 164 175); }
 :global(:root.dark) .docs-panel-icon-indigo { color: rgb(165 180 252); }
+
+/* ============ 接入示例 Tab 切换 ============ */
+.snippet-tabs {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  border-bottom: 1px solid rgb(209 250 229 / 0.7);
+  background: rgb(236 253 245 / 0.6);
+  padding: 0 0.75rem;
+  scrollbar-width: none;
+}
+
+.snippet-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+:global(:root.dark) .snippet-tabs {
+  border-bottom-color: rgb(55 65 81);
+  background: rgb(16 185 129 / 0.08);
+}
+
+.snippet-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  white-space: nowrap;
+  padding: 0.875rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: rgb(107 114 128);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.snippet-tab:hover:not(.snippet-tab-active) {
+  color: rgb(17 24 39);
+}
+
+.snippet-tab-active {
+  color: rgb(4 120 87);
+  border-bottom-color: rgb(16 185 129);
+}
+
+:global(:root.dark) .snippet-tab {
+  color: rgb(156 163 175);
+}
+
+:global(:root.dark) .snippet-tab:hover:not(.snippet-tab-active) {
+  color: rgb(255 255 255);
+}
+
+:global(:root.dark) .snippet-tab-active {
+  color: rgb(167 243 208);
+  border-bottom-color: rgb(52 211 153);
+}
 </style>

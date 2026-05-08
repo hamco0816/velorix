@@ -11,7 +11,10 @@
           />
         </div>
         <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-          {{ siteName }}<span class="auth-brand-dot-sky">·</span>{{ t('auth.signIn') }}
+          <template v-if="siteName">
+            {{ siteName }}<span class="auth-brand-dot-sky">·</span>
+          </template>
+          {{ t('auth.signIn') }}
         </h1>
       </div>
     </template>
@@ -246,8 +249,9 @@ const router = useRouter()
 const authStore = useAuthStore()
 const appStore = useAppStore()
 
-// 站点品牌信息（用于品牌区标题与 logo），随后端配置自动同步
-const siteName = computed(() => appStore.siteName || 'Sub2API')
+// 站点品牌信息（用于品牌区标题与 logo），随后端配置自动同步。
+// settings 未加载完成时返回空串，标题区只显示动作（避免首屏闪默认名 'Sub2API'）
+const siteName = computed(() => appStore.siteName || '')
 const siteLogo = computed(() => sanitizeUrl(appStore.siteLogo || '', { allowRelative: true, allowDataUrl: true }))
 
 // ==================== State ====================

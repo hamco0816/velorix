@@ -1,6 +1,22 @@
 <template>
   <AppLayout>
-    <div class="space-y-6">
+    <div class="mx-auto max-w-7xl space-y-5">
+      <!-- Hero：emerald 渐变标题区，标识推广返利业务色 -->
+      <header class="page-hero page-hero-emerald">
+        <div class="relative z-10 max-w-3xl">
+          <span class="page-hero-tag page-hero-tag-emerald">
+            <Icon name="gift" size="sm" />
+            {{ t('affiliate.title') }}
+          </span>
+          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
+            {{ t('affiliate.title') }}
+          </h1>
+          <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
+            {{ t('affiliate.description') }}
+          </p>
+        </div>
+      </header>
+
       <div v-if="loading" class="flex justify-center py-12">
         <div
           class="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent"

@@ -1,6 +1,24 @@
 <template>
   <AppLayout>
     <TablePageLayout>
+      <!-- Hero：indigo 渐变标题区，标识分组业务色调 -->
+      <template #hero>
+        <header class="page-hero page-hero-indigo">
+          <div class="relative z-10 max-w-3xl">
+            <span class="page-hero-tag page-hero-tag-indigo">
+              <Icon name="users" size="sm" />
+              {{ t('admin.groups.title') }}
+            </span>
+            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
+              {{ t('admin.groups.title') }}
+            </h1>
+            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
+              {{ t('admin.groups.description') }}
+            </p>
+          </div>
+        </header>
+      </template>
+
       <template #filters>
         <div
           class="flex flex-col justify-between gap-4 lg:flex-row lg:items-start"

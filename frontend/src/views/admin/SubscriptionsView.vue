@@ -1,6 +1,24 @@
 <template>
   <AppLayout>
     <TablePageLayout>
+      <!-- Hero：teal 渐变标题区，标识订阅管理业务色 -->
+      <template #hero>
+        <header class="page-hero page-hero-teal">
+          <div class="relative z-10 max-w-3xl">
+            <span class="page-hero-tag page-hero-tag-teal">
+              <Icon name="badge" size="sm" />
+              {{ t('admin.subscriptions.title') }}
+            </span>
+            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
+              {{ t('admin.subscriptions.title') }}
+            </h1>
+            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
+              {{ t('admin.subscriptions.description') }}
+            </p>
+          </div>
+        </header>
+      </template>
+
       <template #filters>
         <!-- Top Toolbar: Left (search + filters) / Right (actions) -->
         <div class="flex flex-wrap items-start justify-between gap-4">

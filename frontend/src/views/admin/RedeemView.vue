@@ -1,6 +1,24 @@
 <template>
   <AppLayout>
     <TablePageLayout>
+      <!-- Hero：sky 渐变标题区，与全站 page-hero 系列统一 -->
+      <template #hero>
+        <header class="page-hero page-hero-sky">
+          <div class="relative z-10 max-w-3xl">
+            <span class="page-hero-tag page-hero-tag-sky">
+              <Icon name="gift" size="sm" />
+              {{ t('admin.redeem.title') }}
+            </span>
+            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
+              {{ t('admin.redeem.title') }}
+            </h1>
+            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
+              {{ t('admin.redeem.description') }}
+            </p>
+          </div>
+        </header>
+      </template>
+
       <template #filters>
         <div class="flex flex-wrap items-center gap-3">
           <!-- Left: Search + Filters -->

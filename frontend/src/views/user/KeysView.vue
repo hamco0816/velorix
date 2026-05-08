@@ -1,6 +1,24 @@
 <template>
   <AppLayout>
     <TablePageLayout>
+      <!-- Hero：sky 渐变标题区，标识 API 密钥业务色调 -->
+      <template #hero>
+        <header class="page-hero page-hero-sky">
+          <div class="relative z-10 max-w-3xl">
+            <span class="page-hero-tag page-hero-tag-sky">
+              <Icon name="key" size="sm" />
+              {{ t('keys.title') }}
+            </span>
+            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
+              {{ t('keys.title') }}
+            </h1>
+            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
+              {{ t('keys.description') }}
+            </p>
+          </div>
+        </header>
+      </template>
+
       <template #filters>
         <div class="flex flex-col gap-3">
           <div class="flex flex-wrap items-center gap-3">

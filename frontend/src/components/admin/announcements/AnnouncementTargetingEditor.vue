@@ -1,38 +1,42 @@
 <template>
-  <div class="rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-dark-700 dark:bg-dark-800/50">
-    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+  <!-- 外层容器：克制圆角 + 浅色背景，与全站 panel 风格统一 -->
+  <div class="rounded-lg border border-gray-200 bg-gray-50/60 p-4 dark:border-dark-700 dark:bg-dark-800/40 sm:p-5">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <div class="text-sm font-medium text-gray-900 dark:text-white">
+        <div class="text-sm font-semibold text-gray-900 dark:text-white">
           {{ t('admin.announcements.form.targetingMode') }}
         </div>
-        <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
+        <div class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">
           {{ mode === 'all' ? t('admin.announcements.form.targetingAll') : t('admin.announcements.form.targetingCustom') }}
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
-        <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-          <input
-            type="radio"
-            name="announcement-targeting-mode"
-            value="all"
-            :checked="mode === 'all'"
-            @change="setMode('all')"
-            class="h-4 w-4"
-          />
+      <!-- Segmented control：替代裸 radio，视觉更清晰 -->
+      <div class="inline-flex rounded-md border border-gray-200 bg-white p-0.5 text-sm dark:border-dark-700 dark:bg-dark-900">
+        <button
+          type="button"
+          :class="[
+            'rounded px-3.5 py-1.5 text-xs font-medium transition-colors',
+            mode === 'all'
+              ? 'bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300'
+              : 'text-gray-500 hover:text-gray-900 dark:text-dark-400 dark:hover:text-white'
+          ]"
+          @click="setMode('all')"
+        >
           {{ t('admin.announcements.form.targetingAll') }}
-        </label>
-        <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-          <input
-            type="radio"
-            name="announcement-targeting-mode"
-            value="custom"
-            :checked="mode === 'custom'"
-            @change="setMode('custom')"
-            class="h-4 w-4"
-          />
+        </button>
+        <button
+          type="button"
+          :class="[
+            'rounded px-3.5 py-1.5 text-xs font-medium transition-colors',
+            mode === 'custom'
+              ? 'bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300'
+              : 'text-gray-500 hover:text-gray-900 dark:text-dark-400 dark:hover:text-white'
+          ]"
+          @click="setMode('custom')"
+        >
           {{ t('admin.announcements.form.targetingCustom') }}
-        </label>
+        </button>
       </div>
     </div>
 
@@ -55,41 +59,44 @@
         </button>
       </div>
 
-      <div v-if="anyOf.length === 0" class="rounded-xl border border-dashed border-gray-300 p-4 text-sm text-gray-500 dark:border-dark-600 dark:text-dark-400">
+      <!-- 空态占位：虚线边框，与全站空态风格统一 -->
+      <div v-if="anyOf.length === 0" class="rounded-lg border border-dashed border-gray-300 px-4 py-6 text-center text-sm text-gray-500 dark:border-dark-600 dark:text-dark-400">
         {{ t('admin.announcements.form.targetingCustom') }}: {{ t('admin.announcements.form.addOrGroup') }}
       </div>
 
+      <!-- OR 条件组：白底卡片 + 弱边框，删除按钮改 icon-only -->
       <div
         v-for="(group, groupIndex) in anyOf"
         :key="groupIndex"
-        class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-dark-700 dark:bg-dark-800"
+        class="rounded-lg border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-800"
       >
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
-            <div class="text-sm font-medium text-gray-900 dark:text-white">
+            <div class="text-sm font-semibold text-gray-900 dark:text-white">
               {{ t('admin.announcements.form.targetingCustom') }} #{{ groupIndex + 1 }}
               <span class="ml-2 text-xs font-normal text-gray-500 dark:text-dark-400">AND ({{ (group.all_of?.length || 0) }}/50)</span>
             </div>
-            <div class="mt-1 text-xs text-gray-500 dark:text-dark-400">
+            <div class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">
               {{ t('admin.announcements.form.addAndCondition') }}
             </div>
           </div>
 
           <button
             type="button"
-            class="btn btn-secondary"
+            class="inline-flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+            :title="t('common.delete')"
             @click="removeOrGroup(groupIndex)"
           >
-            <Icon name="trash" size="sm" class="mr-1" />
-            {{ t('common.delete') }}
+            <Icon name="trash" size="sm" />
           </button>
         </div>
 
-        <div class="mt-4 space-y-3">
+        <div class="mt-3 space-y-2.5">
+          <!-- AND 条件项：浅灰底 + 中性圆角，与外层 OR 组形成清晰层次 -->
           <div
             v-for="(cond, condIndex) in (group.all_of || [])"
             :key="condIndex"
-            class="rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-dark-700 dark:bg-dark-900/30"
+            class="rounded-md border border-gray-100 bg-gray-50/70 p-3 dark:border-dark-700 dark:bg-dark-900/40"
           >
             <div class="flex flex-col gap-3 md:flex-row md:items-end">
               <div class="w-full md:w-52">
@@ -130,14 +137,15 @@
                 </div>
               </div>
 
-              <div class="flex justify-end">
+              <!-- AND 条件项删除：icon-only 让条件行视觉更紧凑 -->
+              <div class="flex items-end justify-end">
                 <button
                   type="button"
-                  class="btn btn-secondary"
+                  class="inline-flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                  :title="t('common.delete')"
                   @click="removeAndCondition(groupIndex, condIndex)"
                 >
-                  <Icon name="trash" size="sm" class="mr-1" />
-                  {{ t('common.delete') }}
+                  <Icon name="trash" size="sm" />
                 </button>
               </div>
             </div>
@@ -157,8 +165,10 @@
         </div>
       </div>
 
-      <div v-if="validationError" class="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/30 dark:bg-red-900/10 dark:text-red-300">
-        {{ validationError }}
+      <!-- 校验失败提示：克制的 amber 提示行（替代之前的红色块） -->
+      <div v-if="validationError" class="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50/70 px-3 py-2.5 text-xs text-amber-800 dark:border-amber-800/60 dark:bg-amber-900/15 dark:text-amber-200">
+        <Icon name="exclamationTriangle" size="sm" class="mt-0.5 flex-shrink-0 text-amber-500" />
+        <span class="leading-relaxed">{{ validationError }}</span>
       </div>
     </div>
   </div>
