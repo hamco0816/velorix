@@ -1,33 +1,47 @@
 <template>
   <AppLayout>
-    <div class="mx-auto max-w-6xl space-y-6">
-      <header class="space-y-4">
-        <div>
-          <div class="inline-flex items-center gap-2 rounded-md border border-primary-200 bg-primary-50 px-2.5 py-1 text-xs font-medium text-primary-700 dark:border-primary-800 dark:bg-primary-950/40 dark:text-primary-300">
+    <div class="mx-auto max-w-6xl space-y-5">
+      <!-- Hero：与兑换码 hero 同款渐变 + 标签 + 大标题 + 描述 -->
+      <header class="docs-hero">
+        <div class="relative z-10 max-w-3xl">
+          <div class="docs-hero-tag">
             <Icon name="book" size="sm" />
             用户接入文档
           </div>
-          <h1 class="mt-3 text-2xl font-semibold text-gray-950 dark:text-white">API 接入教程</h1>
-          <p class="mt-2 max-w-3xl text-sm leading-6 text-gray-600 dark:text-gray-300">
+          <h1 class="mt-3 text-3xl font-semibold tracking-normal text-gray-950 dark:text-white md:text-[34px]">
+            API 接入教程
+          </h1>
+          <p class="mt-3 text-sm leading-6 text-gray-600 dark:text-dark-200 md:text-base">
             按这里准备密钥、选择模型和填写 Base URL，即可把本站 API 接入 Claude Code、Codex、OpenAI SDK、Gemini 兼容客户端或普通 HTTP 请求。
           </p>
         </div>
-
-        <div class="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm leading-6 text-blue-900 dark:border-blue-800/70 dark:bg-blue-950/30 dark:text-blue-100">
-          如果客户端会自动拼接 `/v1/messages`，Claude Code 这类客户端通常填写站点根地址；OpenAI 兼容 SDK 和大多数中转客户端通常填写 `/v1`。
-        </div>
       </header>
 
+      <!-- 客户端拼接路径提示（信息提示条） -->
+      <div class="docs-hint">
+        <Icon name="infoCircle" size="sm" class="mt-0.5 flex-shrink-0 text-sky-600 dark:text-sky-300" />
+        <p class="text-sm leading-6 text-sky-900 dark:text-sky-100">
+          如果客户端会自动拼接 <code class="docs-hint-code">/v1/messages</code>，Claude Code 这类客户端通常填写站点根地址；OpenAI 兼容 SDK 和大多数中转客户端通常填写 <code class="docs-hint-code">/v1</code>。
+        </p>
+      </div>
+
+      <!-- 快速开始三步 -->
       <section class="grid grid-cols-1 gap-3 md:grid-cols-3">
-        <article v-for="item in quickStart" :key="item.title" class="rounded-lg border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-900">
+        <article
+          v-for="item in quickStart"
+          :key="item.title"
+          class="docs-step-card"
+        >
           <div class="flex items-start gap-3">
-            <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md bg-primary-600 text-sm font-semibold text-white">
-              {{ item.no }}
-            </span>
-            <div>
+            <span class="docs-step-no">{{ item.no }}</span>
+            <div class="min-w-0">
               <h2 class="text-sm font-semibold text-gray-950 dark:text-white">{{ item.title }}</h2>
-              <p class="mt-1 text-xs leading-5 text-gray-600 dark:text-gray-300">{{ item.desc }}</p>
-              <router-link v-if="item.to" :to="item.to" class="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400">
+              <p class="mt-1 text-xs leading-5 text-gray-600 dark:text-dark-300">{{ item.desc }}</p>
+              <router-link
+                v-if="item.to"
+                :to="item.to"
+                class="mt-2 inline-flex items-center gap-1 text-xs font-medium text-sky-600 transition-colors hover:text-sky-700 dark:text-sky-300 dark:hover:text-sky-200"
+              >
                 前往配置
                 <Icon name="arrowRight" size="xs" />
               </router-link>
@@ -36,77 +50,124 @@
         </article>
       </section>
 
-      <section class="card p-5">
-        <div class="flex items-center gap-2">
-          <Icon name="link" size="md" class="text-primary-600 dark:text-primary-400" />
-          <h2 class="text-lg font-semibold text-gray-950 dark:text-white">本站可用地址</h2>
-        </div>
-        <div class="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-2">
-          <div v-for="endpoint in endpoints" :key="endpoint.label" class="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-dark-700 dark:bg-dark-800/70">
-            <div class="text-sm font-semibold text-gray-950 dark:text-white">{{ endpoint.label }}</div>
-            <code class="mt-2 block break-all rounded-md bg-white px-3 py-2 font-mono text-xs text-gray-800 ring-1 ring-gray-200 dark:bg-dark-900 dark:text-gray-100 dark:ring-dark-700">
-              {{ endpoint.url }}
-            </code>
-            <p class="mt-2 text-xs leading-5 text-gray-600 dark:text-gray-300">{{ endpoint.desc }}</p>
+      <!-- 本站可用地址（violet 头部） -->
+      <section class="docs-panel">
+        <div class="docs-panel-header docs-panel-header-violet">
+          <div class="docs-panel-icon docs-panel-icon-violet">
+            <Icon name="link" size="md" />
+          </div>
+          <div class="min-w-0">
+            <h2 class="text-base font-semibold text-gray-950 dark:text-white">本站可用地址</h2>
+            <p class="mt-0.5 text-sm text-gray-500 dark:text-dark-400">
+              不同客户端使用不同的 Base URL，按下方说明选择
+            </p>
           </div>
         </div>
+        <div class="p-5 sm:p-6">
+          <div class="grid grid-cols-1 gap-3 lg:grid-cols-2">
+            <div
+              v-for="endpoint in endpoints"
+              :key="endpoint.label"
+              class="rounded-lg border border-gray-200 bg-gray-50/60 p-3 dark:border-dark-700 dark:bg-dark-800/40"
+            >
+              <div class="text-sm font-semibold text-gray-950 dark:text-white">{{ endpoint.label }}</div>
+              <code class="mt-2 block break-all rounded-md bg-white px-3 py-2 font-mono text-xs text-gray-800 ring-1 ring-gray-200 dark:bg-dark-900 dark:text-gray-100 dark:ring-dark-700">
+                {{ endpoint.url }}
+              </code>
+              <p class="mt-2 text-xs leading-5 text-gray-600 dark:text-dark-300">{{ endpoint.desc }}</p>
+            </div>
+          </div>
 
-        <div v-if="customEndpoints.length" class="mt-4">
-          <div class="text-sm font-semibold text-gray-950 dark:text-white">管理员公开的自定义端点</div>
-          <div class="mt-2 grid grid-cols-1 gap-2 lg:grid-cols-2">
-            <div v-for="endpoint in customEndpoints" :key="endpoint.endpoint" class="rounded-md border border-gray-200 bg-white p-3 dark:border-dark-700 dark:bg-dark-900">
-              <div class="text-xs font-medium text-gray-700 dark:text-gray-200">{{ endpoint.name || '自定义端点' }}</div>
-              <code class="mt-1 block break-all font-mono text-xs text-primary-700 dark:text-primary-300">{{ endpoint.endpoint }}</code>
-              <p v-if="endpoint.description" class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">{{ endpoint.description }}</p>
+          <div v-if="customEndpoints.length" class="mt-5">
+            <div class="text-sm font-semibold text-gray-950 dark:text-white">管理员公开的自定义端点</div>
+            <div class="mt-2 grid grid-cols-1 gap-2 lg:grid-cols-2">
+              <div
+                v-for="endpoint in customEndpoints"
+                :key="endpoint.endpoint"
+                class="rounded-md border border-gray-200 bg-white p-3 dark:border-dark-700 dark:bg-dark-900"
+              >
+                <div class="text-xs font-medium text-gray-700 dark:text-dark-200">{{ endpoint.name || '自定义端点' }}</div>
+                <code class="mt-1 block break-all font-mono text-xs text-violet-700 dark:text-violet-300">{{ endpoint.endpoint }}</code>
+                <p v-if="endpoint.description" class="mt-1 text-xs leading-5 text-gray-500 dark:text-dark-400">
+                  {{ endpoint.description }}
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
+      <!-- 接入示例：每个 snippet 一个 emerald 头部卡片 + 深色代码区 -->
       <section class="space-y-3">
-        <div class="flex items-center gap-2">
-          <Icon name="terminal" size="md" class="text-emerald-600 dark:text-emerald-400" />
+        <div class="flex items-center gap-2 px-1">
+          <Icon name="terminal" size="md" class="text-emerald-600 dark:text-emerald-300" />
           <h2 class="text-lg font-semibold text-gray-950 dark:text-white">复制即可改的接入示例</h2>
         </div>
         <div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
-          <article v-for="snippet in snippets" :key="snippet.title" class="card overflow-hidden">
-            <div class="border-b border-gray-100 px-5 py-4 dark:border-dark-700">
-              <div class="flex flex-wrap items-center gap-2">
-                <h3 class="text-sm font-semibold text-gray-950 dark:text-white">{{ snippet.title }}</h3>
-                <span class="rounded-md bg-gray-100 px-2 py-0.5 text-[11px] text-gray-600 dark:bg-dark-700 dark:text-gray-300">
-                  {{ snippet.tag }}
-                </span>
+          <article
+            v-for="snippet in snippets"
+            :key="snippet.title"
+            class="docs-panel overflow-hidden"
+          >
+            <div class="docs-panel-header docs-panel-header-emerald">
+              <div class="docs-panel-icon docs-panel-icon-emerald">
+                <Icon name="terminal" size="md" />
               </div>
-              <p class="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">{{ snippet.desc }}</p>
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h3 class="text-sm font-semibold text-gray-950 dark:text-white">{{ snippet.title }}</h3>
+                  <span class="rounded-md bg-white/80 px-2 py-0.5 text-[11px] font-medium text-emerald-700 ring-1 ring-emerald-200 dark:bg-dark-700 dark:text-emerald-300 dark:ring-emerald-800">
+                    {{ snippet.tag }}
+                  </span>
+                </div>
+                <p class="mt-0.5 text-xs leading-5 text-gray-500 dark:text-dark-400">{{ snippet.desc }}</p>
+              </div>
             </div>
             <pre class="overflow-x-auto bg-slate-950 p-4 text-xs leading-5 text-slate-100"><code>{{ snippet.code }}</code></pre>
           </article>
         </div>
       </section>
 
+      <!-- 常见错误 / 使用安全提醒：amber + rose 双色卡片 -->
       <section class="grid grid-cols-1 gap-4 xl:grid-cols-2">
-        <article class="card p-5">
-          <div class="flex items-center gap-2">
-            <Icon name="exclamationCircle" size="md" class="text-amber-600 dark:text-amber-400" />
-            <h2 class="text-lg font-semibold text-gray-950 dark:text-white">常见错误</h2>
+        <article class="docs-panel">
+          <div class="docs-panel-header docs-panel-header-amber">
+            <div class="docs-panel-icon docs-panel-icon-amber">
+              <Icon name="exclamationCircle" size="md" />
+            </div>
+            <div class="min-w-0">
+              <h2 class="text-base font-semibold text-gray-950 dark:text-white">常见错误</h2>
+              <p class="mt-0.5 text-sm text-gray-500 dark:text-dark-400">遇到这些状态码时的排查方向</p>
+            </div>
           </div>
-          <div class="mt-4 divide-y divide-gray-100 dark:divide-dark-700">
-            <div v-for="error in commonErrors" :key="error.code" class="py-3 first:pt-0 last:pb-0">
-              <div class="flex flex-wrap items-center gap-2">
-                <code class="rounded-md bg-gray-100 px-2 py-0.5 font-mono text-xs text-gray-700 dark:bg-dark-700 dark:text-gray-200">{{ error.code }}</code>
-                <span class="text-sm font-semibold text-gray-950 dark:text-white">{{ error.title }}</span>
+          <div class="p-5 sm:p-6">
+            <div class="divide-y divide-gray-100 dark:divide-dark-700">
+              <div
+                v-for="error in commonErrors"
+                :key="error.code"
+                class="py-3 first:pt-0 last:pb-0"
+              >
+                <div class="flex flex-wrap items-center gap-2">
+                  <code class="rounded-md bg-amber-50 px-2 py-0.5 font-mono text-xs text-amber-700 ring-1 ring-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:ring-amber-800/60">{{ error.code }}</code>
+                  <span class="text-sm font-semibold text-gray-950 dark:text-white">{{ error.title }}</span>
+                </div>
+                <p class="mt-1 text-xs leading-5 text-gray-600 dark:text-dark-300">{{ error.desc }}</p>
               </div>
-              <p class="mt-1 text-xs leading-5 text-gray-600 dark:text-gray-300">{{ error.desc }}</p>
             </div>
           </div>
         </article>
 
-        <article class="card p-5">
-          <div class="flex items-center gap-2">
-            <Icon name="shield" size="md" class="text-red-600 dark:text-red-400" />
-            <h2 class="text-lg font-semibold text-gray-950 dark:text-white">使用安全提醒</h2>
+        <article class="docs-panel">
+          <div class="docs-panel-header docs-panel-header-rose">
+            <div class="docs-panel-icon docs-panel-icon-rose">
+              <Icon name="shield" size="md" />
+            </div>
+            <div class="min-w-0">
+              <h2 class="text-base font-semibold text-gray-950 dark:text-white">使用安全提醒</h2>
+              <p class="mt-0.5 text-sm text-gray-500 dark:text-dark-400">保护密钥，避免触发风控</p>
+            </div>
           </div>
-          <div class="mt-4 space-y-3 text-sm leading-6 text-gray-700 dark:text-gray-300">
+          <div class="space-y-3 p-5 text-sm leading-6 text-gray-700 dark:text-dark-200 sm:p-6">
             <p>请不要把 API 密钥发给他人，也不要放到公开仓库、前端网页或截图里。密钥泄露后，别人可以直接消耗你的额度。</p>
             <p>如果页面提示内容可能触发安全限制，请调整问题再发送。系统会保护上游账号稳定，明显违规或重复命中可能会被管理员复核。</p>
             <p>Claude Code、Codex 或 SDK 修改环境变量后，建议重启终端或应用，确认新配置已经生效。</p>
@@ -114,15 +175,31 @@
         </article>
       </section>
 
-      <section class="card p-5">
-        <div class="flex items-center gap-2">
-          <Icon name="externalLink" size="md" class="text-gray-600 dark:text-gray-300" />
-          <h2 class="text-lg font-semibold text-gray-950 dark:text-white">官方参考</h2>
+      <!-- 官方参考：indigo 头部 -->
+      <section class="docs-panel">
+        <div class="docs-panel-header docs-panel-header-indigo">
+          <div class="docs-panel-icon docs-panel-icon-indigo">
+            <Icon name="externalLink" size="md" />
+          </div>
+          <div class="min-w-0">
+            <h2 class="text-base font-semibold text-gray-950 dark:text-white">官方参考</h2>
+            <p class="mt-0.5 text-sm text-gray-500 dark:text-dark-400">遇到细节问题可查阅各家官方文档</p>
+          </div>
         </div>
-        <div class="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2">
-          <a v-for="source in sources" :key="source.href" :href="source.href" target="_blank" rel="noopener noreferrer" class="rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-700 transition-colors hover:border-primary-300 hover:text-primary-700 dark:border-dark-700 dark:text-gray-300 dark:hover:border-primary-700 dark:hover:text-primary-300">
-            {{ source.label }}
-          </a>
+        <div class="p-5 sm:p-6">
+          <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
+            <a
+              v-for="source in sources"
+              :key="source.href"
+              :href="source.href"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center justify-between rounded-md border border-gray-200 px-3 py-2 text-sm text-gray-700 transition-colors hover:border-indigo-300 hover:text-indigo-700 dark:border-dark-700 dark:text-dark-200 dark:hover:border-indigo-700 dark:hover:text-indigo-300"
+            >
+              <span>{{ source.label }}</span>
+              <Icon name="externalLink" size="xs" class="opacity-60" />
+            </a>
+          </div>
         </div>
       </section>
     </div>
@@ -143,10 +220,12 @@ onMounted(() => {
   }
 })
 
+// 移除尾部斜杠，避免拼接 URL 时出现重复 /
 function normalizeUrl(url: string): string {
   return url.replace(/\/+$/, '')
 }
 
+// 把后台配置的 api_base_url 还原为站点根地址（去掉 /v1、/v1beta、/backend-api/codex 后缀）
 function rootFromConfiguredUrl(url: string): string {
   const normalized = normalizeUrl(url)
   if (!normalized) {
@@ -264,3 +343,226 @@ const sources = [
   { label: 'OpenAI API reference', href: 'https://platform.openai.com/docs/api-reference' },
 ]
 </script>
+
+<style scoped>
+/* ============================================================================
+ * 文档页彩色风格：与兑换码页保持视觉一致（hero 渐变 + 浅色头部 panel）
+ * 设计原则：每个 section 用一个色调标识信息维度，呼应兑换码的彩色 stat 卡
+ * ========================================================================= */
+
+/* Hero：与 redeem-hero 同款渐变 */
+.docs-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(219 234 254);
+  background:
+    radial-gradient(circle at 76% 22%, rgb(56 189 248 / 0.26), transparent 28%),
+    radial-gradient(circle at 94% 12%, rgb(168 85 247 / 0.18), transparent 24%),
+    linear-gradient(135deg, rgb(240 249 255), rgb(255 255 255) 48%, rgb(245 243 255));
+  padding: 2rem;
+  box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
+}
+
+:global(:root.dark) .docs-hero {
+  border-color: rgb(55 65 81);
+  background:
+    radial-gradient(circle at 76% 22%, rgb(14 165 233 / 0.16), transparent 30%),
+    radial-gradient(circle at 94% 12%, rgb(139 92 246 / 0.14), transparent 24%),
+    linear-gradient(135deg, rgb(15 23 42), rgb(17 24 39));
+  box-shadow: none;
+}
+
+@media (min-width: 640px) {
+  .docs-hero {
+    padding: 2.25rem 2.5rem;
+  }
+}
+
+.docs-hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  background: rgb(255 255 255 / 0.7);
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgb(2 132 199);
+  backdrop-filter: blur(8px);
+}
+
+:global(:root.dark) .docs-hero-tag {
+  background: rgb(31 41 55 / 0.7);
+  color: rgb(125 211 252);
+}
+
+/* 信息提示条：sky 色 */
+.docs-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(186 230 253);
+  background: rgb(240 249 255);
+  padding: 0.875rem 1rem;
+}
+
+:global(:root.dark) .docs-hint {
+  border-color: rgb(7 89 133 / 0.5);
+  background: rgb(8 47 73 / 0.3);
+}
+
+.docs-hint-code {
+  display: inline-block;
+  background: rgb(255 255 255 / 0.7);
+  border-radius: 0.25rem;
+  padding: 0.05rem 0.35rem;
+  font-family: ui-monospace, monospace;
+  font-size: 0.75rem;
+  color: rgb(2 132 199);
+}
+
+:global(:root.dark) .docs-hint-code {
+  background: rgb(31 41 55 / 0.7);
+  color: rgb(125 211 252);
+}
+
+/* 步骤卡片：白底 + 微阴影 + 数字色块 */
+.docs-step-card {
+  position: relative;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(229 231 235);
+  background: rgb(255 255 255);
+  padding: 1rem 1.125rem;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.docs-step-card:hover {
+  border-color: rgb(186 230 253);
+  box-shadow: 0 4px 16px -8px rgb(15 23 42 / 0.08);
+}
+
+:global(:root.dark) .docs-step-card {
+  border-color: rgb(55 65 81);
+  background: rgb(31 41 55);
+  box-shadow: none;
+}
+
+.docs-step-no {
+  display: inline-flex;
+  flex-shrink: 0;
+  height: 2rem;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, rgb(56 189 248), rgb(99 102 241));
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgb(255 255 255);
+  box-shadow: 0 4px 12px -4px rgb(56 189 248 / 0.5);
+}
+
+/* 通用 panel：与兑换码 redeem-panel 一致 */
+.docs-panel {
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(229 231 235);
+  background: rgb(255 255 255);
+  box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
+}
+
+:global(:root.dark) .docs-panel {
+  border-color: rgb(55 65 81);
+  background: rgb(31 41 55);
+  box-shadow: none;
+}
+
+/* Panel 头部：浅色背景 + 圆角 icon 盒 + 标题描述 */
+.docs-panel-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1.125rem 1.25rem;
+  border-bottom: 1px solid;
+}
+
+@media (min-width: 640px) {
+  .docs-panel-header {
+    padding: 1.125rem 1.5rem;
+  }
+}
+
+.docs-panel-header-violet {
+  border-color: rgb(237 233 254 / 0.7);
+  background: rgb(245 243 255 / 0.6);
+}
+.docs-panel-header-emerald {
+  border-color: rgb(209 250 229 / 0.7);
+  background: rgb(236 253 245 / 0.6);
+}
+.docs-panel-header-amber {
+  border-color: rgb(254 243 199 / 0.7);
+  background: rgb(255 251 235 / 0.6);
+}
+.docs-panel-header-rose {
+  border-color: rgb(255 228 230 / 0.7);
+  background: rgb(255 241 242 / 0.6);
+}
+.docs-panel-header-indigo {
+  border-color: rgb(224 231 255 / 0.7);
+  background: rgb(238 242 255 / 0.6);
+}
+
+:global(:root.dark) .docs-panel-header-violet {
+  border-color: rgb(55 65 81);
+  background: rgb(139 92 246 / 0.08);
+}
+:global(:root.dark) .docs-panel-header-emerald {
+  border-color: rgb(55 65 81);
+  background: rgb(16 185 129 / 0.08);
+}
+:global(:root.dark) .docs-panel-header-amber {
+  border-color: rgb(55 65 81);
+  background: rgb(245 158 11 / 0.08);
+}
+:global(:root.dark) .docs-panel-header-rose {
+  border-color: rgb(55 65 81);
+  background: rgb(244 63 94 / 0.08);
+}
+:global(:root.dark) .docs-panel-header-indigo {
+  border-color: rgb(55 65 81);
+  background: rgb(99 102 241 / 0.08);
+}
+
+/* 圆角 icon 盒：白底 + 色图标，参考兑换码 panel header 内 icon */
+.docs-panel-icon {
+  display: flex;
+  flex-shrink: 0;
+  height: 2.5rem;
+  width: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background: rgb(255 255 255);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+}
+
+:global(:root.dark) .docs-panel-icon {
+  background: rgb(55 65 81);
+}
+
+.docs-panel-icon-violet { color: rgb(124 58 237); }
+.docs-panel-icon-emerald { color: rgb(5 150 105); }
+.docs-panel-icon-amber { color: rgb(217 119 6); }
+.docs-panel-icon-rose { color: rgb(225 29 72); }
+.docs-panel-icon-indigo { color: rgb(79 70 229); }
+
+:global(:root.dark) .docs-panel-icon-violet { color: rgb(196 181 253); }
+:global(:root.dark) .docs-panel-icon-emerald { color: rgb(110 231 183); }
+:global(:root.dark) .docs-panel-icon-amber { color: rgb(252 211 77); }
+:global(:root.dark) .docs-panel-icon-rose { color: rgb(253 164 175); }
+:global(:root.dark) .docs-panel-icon-indigo { color: rgb(165 180 252); }
+</style>
