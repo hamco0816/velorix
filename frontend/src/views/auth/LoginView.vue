@@ -14,7 +14,7 @@
     </div>
 
     <template v-else>
-      <form @submit.prevent="handleLogin" class="space-y-7">
+      <form @submit.prevent="handleLogin" class="space-y-5">
         <!-- 邮箱 -->
         <div>
           <label for="email" class="auth-input-label">{{ t('auth.emailLabel') }}</label>
@@ -28,10 +28,11 @@
             :disabled="isLoading"
             class="auth-input"
             :class="{ 'auth-input-error': errors.email }"
+            :placeholder="t('auth.emailPlaceholder')"
           />
         </div>
 
-        <!-- 密码 -->
+        <!-- 密码（眼睛图标在输入框内部右侧居中） -->
         <div>
           <label for="password" class="auth-input-label">{{ t('auth.passwordLabel') }}</label>
           <div class="relative">
@@ -42,15 +43,16 @@
               required
               autocomplete="current-password"
               :disabled="isLoading"
-              class="auth-input pr-7"
+              class="auth-input pr-10"
               :class="{ 'auth-input-error': errors.password }"
+              :placeholder="t('auth.passwordPlaceholder')"
             />
             <button
               type="button"
               tabindex="-1"
               :aria-label="showPassword ? t('common.hide') : t('common.show')"
               @click="showPassword = !showPassword"
-              class="absolute bottom-2.5 right-0 text-gray-400 transition-colors hover:text-gray-700 dark:hover:text-dark-200"
+              class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 transition-colors hover:text-gray-700 dark:hover:text-dark-200"
             >
               <Icon v-if="showPassword" name="eyeOff" size="sm" />
               <Icon v-else name="eye" size="sm" />
@@ -58,10 +60,10 @@
           </div>
         </div>
 
-        <!-- 忘记密码（右对齐弱化） -->
+        <!-- 忘记密码（右对齐弱化，紧贴密码框） -->
         <div
           v-if="passwordResetEnabled && !backendModeEnabled"
-          class="-mt-3 flex justify-end"
+          class="flex justify-end"
         >
           <router-link
             to="/forgot-password"
@@ -144,10 +146,7 @@
       <p v-if="!settingsLoaded" class="h-5"></p>
       <p v-else-if="registrationEnabled" class="text-gray-500 dark:text-dark-400">
         {{ t('auth.dontHaveAccount') }}
-        <router-link
-          to="/register"
-          class="font-medium text-gray-900 transition-colors hover:underline dark:text-white"
-        >
+        <router-link to="/register" class="auth-link ml-1">
           {{ t('auth.signUp') }}
         </router-link>
       </p>

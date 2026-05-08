@@ -30,7 +30,7 @@
     </div>
 
     <template v-else>
-      <form @submit.prevent="handleRegister" class="space-y-7">
+      <form @submit.prevent="handleRegister" class="space-y-5">
         <!-- 邮箱 -->
         <div>
           <label for="email" class="auth-input-label">{{ t('auth.emailLabel') }}</label>
@@ -44,6 +44,7 @@
             :disabled="isLoading"
             class="auth-input"
             :class="{ 'auth-input-error': errors.email }"
+            :placeholder="t('auth.emailPlaceholder')"
           />
         </div>
 
@@ -58,26 +59,27 @@
               required
               autocomplete="new-password"
               :disabled="isLoading"
-              class="auth-input pr-7"
+              class="auth-input pr-10"
               :class="{ 'auth-input-error': errors.password }"
+              :placeholder="t('auth.createPasswordPlaceholder')"
             />
             <button
               type="button"
               tabindex="-1"
               :aria-label="showPassword ? t('common.hide') : t('common.show')"
               @click="showPassword = !showPassword"
-              class="absolute bottom-2.5 right-0 text-gray-400 transition-colors hover:text-gray-700 dark:hover:text-dark-200"
+              class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 transition-colors hover:text-gray-700 dark:hover:text-dark-200"
             >
               <Icon v-if="showPassword" name="eyeOff" size="sm" />
               <Icon v-else name="eye" size="sm" />
             </button>
           </div>
-          <p class="mt-1.5 text-xs text-gray-400 dark:text-dark-500">
+          <p class="auth-input-hint">
             {{ t('auth.passwordHint') }}
           </p>
         </div>
 
-        <!-- 邀请码：异步校验，下划线颜色随状态变化 -->
+        <!-- 邀请码：异步校验，边框颜色随状态变化 -->
         <div v-if="invitationCodeEnabled">
           <label for="invitation_code" class="auth-input-label">
             {{ t('auth.invitationCodeLabel') }}
@@ -88,15 +90,16 @@
               v-model="formData.invitation_code"
               type="text"
               :disabled="isLoading"
-              class="auth-input pr-7"
+              class="auth-input pr-10"
               :class="{
                 'auth-input-valid': invitationValidation.valid,
                 'auth-input-error': invitationValidation.invalid || errors.invitation_code
               }"
+              :placeholder="t('auth.invitationCodePlaceholder')"
               @input="handleInvitationCodeInput"
             />
-            <!-- 校验状态指示：spin / 对号 / 叉号 -->
-            <div class="pointer-events-none absolute bottom-2.5 right-0">
+            <!-- 校验状态指示：spin / 对号 / 叉号（输入框内部右侧居中） -->
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
               <svg
                 v-if="invitationValidating"
                 class="h-4 w-4 animate-spin text-gray-400"
@@ -129,14 +132,15 @@
               v-model="formData.promo_code"
               type="text"
               :disabled="isLoading"
-              class="auth-input pr-7"
+              class="auth-input pr-10"
               :class="{
                 'auth-input-valid': promoValidation.valid,
                 'auth-input-error': promoValidation.invalid
               }"
+              :placeholder="t('auth.promoCodePlaceholder')"
               @input="handlePromoCodeInput"
             />
-            <div class="pointer-events-none absolute bottom-2.5 right-0">
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
               <svg
                 v-if="promoValidating"
                 class="h-4 w-4 animate-spin text-gray-400"
@@ -229,10 +233,7 @@
     <template #footer>
       <p class="text-gray-500 dark:text-dark-400">
         {{ t('auth.alreadyHaveAccount') }}
-        <router-link
-          to="/login"
-          class="font-medium text-gray-900 transition-colors hover:underline dark:text-white"
-        >
+        <router-link to="/login" class="auth-link ml-1">
           {{ t('auth.signIn') }}
         </router-link>
       </p>
