@@ -14,9 +14,9 @@
       <!-- Header -->
       <AppHeader />
 
-      <!-- Main Content：超宽屏内容居中收口（1536px），避免铺满产生空旷感 -->
+      <!-- Main Content：超宽屏内容居中收口（1760px），1920px 屏幕几乎贴边，2K/4K 仍保留版心 -->
       <main class="px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
-        <div class="mx-auto w-full max-w-screen-2xl">
+        <div class="mx-auto w-full max-w-[1760px]">
           <slot />
         </div>
       </main>
