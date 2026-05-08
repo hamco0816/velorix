@@ -1,7 +1,6 @@
 package provider
 
 import (
-	"bytes"
 	"context"
 	"crypto/md5"
 	"crypto/rand"
@@ -256,7 +255,8 @@ func (x *Xunhupay) MerchantIdentityMetadata() map[string]string {
 // CreatePayment 调用虎皮椒下单接口，返回跳转链接或扫码地址。
 func (x *Xunhupay) CreatePayment(ctx context.Context, req payment.CreatePaymentRequest) (*payment.CreatePaymentResponse, error) {
 	notifyURL, returnURL := x.resolveURLs(req)
-	if xunhupayPaymentChannel(req.PaymentType) == "" {
+	channel := xunhupayPaymentChannel(req.PaymentType)
+	if channel == "" {
 		return nil, fmt.Errorf("xunhupay unsupported payment type: %s", req.PaymentType)
 	}
 	cred, err := xunhupayCredentialForPayment(x.config, req.PaymentType)
@@ -273,6 +273,7 @@ func (x *Xunhupay) CreatePayment(ctx context.Context, req payment.CreatePaymentR
 		"version":        xunhupayAPIVersion,
 		"appid":          cred.AppID,
 		"trade_order_id": req.OrderID,
+		"payment":        channel,
 		"total_fee":      req.Amount,
 		"title":          req.Subject,
 		"time":           strconv.FormatInt(time.Now().Unix(), 10),
@@ -284,6 +285,14 @@ func (x *Xunhupay) CreatePayment(ctx context.Context, req payment.CreatePaymentR
 	}
 	if cb := strings.TrimSpace(x.config["callbackUrl"]); cb != "" {
 		params["callback_url"] = cb
+	}
+	// 移动端 H5 支付需要补充 wap_url / wap_name，否则虎皮椒会拒绝下单。
+	if req.IsMobile {
+		params["type"] = "WAP"
+		if wapURL := xunhupayWapURL(returnURL, x.config); wapURL != "" {
+			params["wap_url"] = wapURL
+		}
+		params["wap_name"] = xunhupayWapName(req.Subject, x.config)
 	}
 	params["plugins"] = "sub2api"
 	params["hash"] = xunhupaySign(params, cred.AppSecret)
@@ -460,6 +469,35 @@ func (x *Xunhupay) resolveURLs(req payment.CreatePaymentRequest) (string, string
 		returnURL = x.config["returnUrl"]
 	}
 	return notifyURL, returnURL
+}
+
+// xunhupayWapURL 推导虎皮椒 H5 支付所需的 wap_url（商户网站访问地址）。
+// 优先使用 config 显式配置，其次从 return_url 取 scheme://host。
+func xunhupayWapURL(returnURL string, config map[string]string) string {
+	if v := xunhupayConfigValue(config, "wapUrl", "wap_url"); v != "" {
+		return v
+	}
+	if returnURL == "" {
+		return ""
+	}
+	parsed, err := url.Parse(returnURL)
+	if err != nil || parsed.Scheme == "" || parsed.Host == "" {
+		return ""
+	}
+	return parsed.Scheme + "://" + parsed.Host
+}
+
+// xunhupayWapName 推导虎皮椒 H5 支付所需的 wap_name（商户网站名称）。
+// 优先使用 config 显式配置，其次回退到订单标题。
+func xunhupayWapName(subject string, config map[string]string) string {
+	if v := xunhupayConfigValue(config, "wapName", "wap_name"); v != "" {
+		return v
+	}
+	subject = strings.TrimSpace(subject)
+	if subject == "" {
+		return "Sub2API"
+	}
+	return subject
 }
 
 // xunhupayPaymentChannel 把内部支付类型映射为虎皮椒支持的支付通道。
@@ -642,17 +680,18 @@ func xunhupayStringify(v any) string {
 	}
 }
 
-// post 以 JSON 提交参数，匹配虎皮椒当前支付/查询接口文档。
+// post 以 application/x-www-form-urlencoded 形式提交参数，匹配虎皮椒
+// /payment/do.html 与 /payment/query.html 接口文档要求。
 func (x *Xunhupay) post(ctx context.Context, endpoint string, params map[string]string) ([]byte, error) {
-	payload, err := json.Marshal(params)
+	form := url.Values{}
+	for k, v := range params {
+		form.Set(k, v)
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, strings.NewReader(form.Encode()))
 	if err != nil {
 		return nil, err
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, bytes.NewReader(payload))
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Accept", "application/json")
 	client := x.httpClient
 	if client == nil {

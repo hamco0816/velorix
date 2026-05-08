@@ -165,18 +165,17 @@ func TestXunhupayQueryUsesOfficialFieldAndResponseHash(t *testing.T) {
 		if r.URL.Path != xunhupayPathQuery {
 			t.Fatalf("unexpected path: %s", r.URL.Path)
 		}
-		if got := r.Header.Get("Content-Type"); !strings.Contains(got, "application/json") {
-			t.Fatalf("Content-Type = %q, want application/json", got)
+		if got := r.Header.Get("Content-Type"); !strings.Contains(got, "application/x-www-form-urlencoded") {
+			t.Fatalf("Content-Type = %q, want application/x-www-form-urlencoded", got)
 		}
-		var requestParams map[string]string
-		if err := json.NewDecoder(r.Body).Decode(&requestParams); err != nil {
-			t.Fatalf("decode json request: %v", err)
+		if err := r.ParseForm(); err != nil {
+			t.Fatalf("parse form request: %v", err)
 		}
-		if requestParams["out_trade_order"] == "ord_query" {
+		if r.PostForm.Get("out_trade_order") == "ord_query" {
 			sawOfficialField = true
 		}
-		if requestParams["appid"] != "ali-app" {
-			t.Fatalf("appid = %q", requestParams["appid"])
+		if got := r.PostForm.Get("appid"); got != "ali-app" {
+			t.Fatalf("appid = %q", got)
 		}
 		resp := map[string]any{
 			"errcode": 0,
@@ -252,6 +251,126 @@ func TestXunhupayVerifyNotificationInvalidAmountRejected(t *testing.T) {
 
 	if _, err := x.VerifyNotification(context.Background(), form.Encode(), nil); err == nil {
 		t.Fatalf("expected invalid amount error, got nil")
+	}
+}
+
+// 桌面端支付宝下单：必须显式带 payment=alipay，不带 wap_*；返回 url_qrcode。
+func TestXunhupayCreatePaymentDesktopAlipay(t *testing.T) {
+	var captured url.Values
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != xunhupayPathPay {
+			t.Fatalf("unexpected path: %s", r.URL.Path)
+		}
+		if got := r.Header.Get("Content-Type"); !strings.Contains(got, "application/x-www-form-urlencoded") {
+			t.Fatalf("Content-Type = %q, want application/x-www-form-urlencoded", got)
+		}
+		if err := r.ParseForm(); err != nil {
+			t.Fatalf("parse form: %v", err)
+		}
+		captured = r.PostForm
+		resp := map[string]any{
+			"errcode":    0,
+			"errmsg":     "",
+			"url":        "https://pay.example.com/cashier/abc",
+			"url_qrcode": "https://qr.example.com/abc",
+			"openid":     "open-1",
+		}
+		_ = json.NewEncoder(w).Encode(resp)
+	}))
+	defer server.Close()
+
+	x, err := NewXunhupay("inst-1", map[string]string{
+		"alipayAppId":     "ali-app",
+		"alipayAppSecret": "ali-secret",
+		"notifyUrl":       "https://example.com/notify",
+		"apiBase":         server.URL,
+	})
+	if err != nil {
+		t.Fatalf("create xunhupay: %v", err)
+	}
+
+	resp, err := x.CreatePayment(context.Background(), payment.CreatePaymentRequest{
+		OrderID:     "ord-desktop",
+		Amount:      "9.90",
+		PaymentType: payment.TypeAlipay,
+		Subject:     "VIP plan",
+		ReturnURL:   "https://shop.example.com/return?order=1",
+		IsMobile:    false,
+	})
+	if err != nil {
+		t.Fatalf("create payment: %v", err)
+	}
+	if captured.Get("payment") != xunhupayAlipayChannel {
+		t.Fatalf("payment field = %q, want %q", captured.Get("payment"), xunhupayAlipayChannel)
+	}
+	if captured.Get("appid") != "ali-app" {
+		t.Fatalf("appid = %q", captured.Get("appid"))
+	}
+	if captured.Get("trade_order_id") != "ord-desktop" {
+		t.Fatalf("trade_order_id = %q", captured.Get("trade_order_id"))
+	}
+	if captured.Get("type") != "" || captured.Get("wap_url") != "" || captured.Get("wap_name") != "" {
+		t.Fatalf("desktop request should not carry wap_* params, got type=%q wap_url=%q wap_name=%q",
+			captured.Get("type"), captured.Get("wap_url"), captured.Get("wap_name"))
+	}
+	if resp.QRCode != "https://qr.example.com/abc" {
+		t.Fatalf("qr code = %q", resp.QRCode)
+	}
+	if resp.PayURL != "https://pay.example.com/cashier/abc" {
+		t.Fatalf("pay url = %q", resp.PayURL)
+	}
+}
+
+// 移动端支付宝下单：必须带 type=WAP / wap_url / wap_name。
+func TestXunhupayCreatePaymentMobileAlipayCarriesWapParams(t *testing.T) {
+	var captured url.Values
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if err := r.ParseForm(); err != nil {
+			t.Fatalf("parse form: %v", err)
+		}
+		captured = r.PostForm
+		resp := map[string]any{
+			"errcode":    0,
+			"errmsg":     "",
+			"url":        "https://pay.example.com/wap/abc",
+			"url_qrcode": "",
+			"openid":     "open-2",
+		}
+		_ = json.NewEncoder(w).Encode(resp)
+	}))
+	defer server.Close()
+
+	x, err := NewXunhupay("inst-1", map[string]string{
+		"alipayAppId":     "ali-app",
+		"alipayAppSecret": "ali-secret",
+		"notifyUrl":       "https://example.com/notify",
+		"apiBase":         server.URL,
+	})
+	if err != nil {
+		t.Fatalf("create xunhupay: %v", err)
+	}
+
+	if _, err := x.CreatePayment(context.Background(), payment.CreatePaymentRequest{
+		OrderID:     "ord-mobile",
+		Amount:      "1.00",
+		PaymentType: payment.TypeAlipay,
+		Subject:     "VIP plan",
+		ReturnURL:   "https://shop.example.com/return?order=2",
+		IsMobile:    true,
+	}); err != nil {
+		t.Fatalf("create payment: %v", err)
+	}
+	if captured.Get("type") != "WAP" {
+		t.Fatalf("type = %q, want WAP", captured.Get("type"))
+	}
+	if captured.Get("wap_url") != "https://shop.example.com" {
+		t.Fatalf("wap_url = %q", captured.Get("wap_url"))
+	}
+	if captured.Get("wap_name") != "VIP plan" {
+		t.Fatalf("wap_name = %q", captured.Get("wap_name"))
+	}
+	if captured.Get("payment") != xunhupayAlipayChannel {
+		t.Fatalf("payment = %q", captured.Get("payment"))
 	}
 }
 
