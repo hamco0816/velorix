@@ -1,9 +1,9 @@
 <template>
   <AuthLayout>
-    <!-- 品牌区：与兑换码页一致的 hero 渐变容器 + 直接展示的 logo + 合并标题 -->
+    <!-- 品牌区：logo + 合并标题居中直接展示，不再包渐变容器（避免登录页"卡片化"的视觉冗余） -->
     <template #brand>
-      <div class="auth-hero auth-hero-sky mb-8 text-center">
-        <div class="mb-4 h-20 w-20 overflow-hidden">
+      <div class="mb-10 flex flex-col items-center text-center">
+        <div class="mb-5 h-16 w-16 overflow-hidden">
           <img
             :src="siteLogo || '/logo.png'"
             alt="Logo"

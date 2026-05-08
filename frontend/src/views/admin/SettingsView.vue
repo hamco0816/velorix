@@ -8518,6 +8518,88 @@ watch(
   @apply p-6;
 }
 
+/* ============ 卡片内字段排版优化 ============ */
+
+/* 字段块间距加大，给每组字段更多呼吸 */
+.settings-page :deep(.card .space-y-6 > * + *) {
+  margin-top: 1.75rem;
+}
+
+/* label 字号加大 + 字重加重，与 input 形成更清晰的信息层级 */
+.settings-page :deep(.card label),
+.settings-page :deep(.card .input-label) {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+/* hint 文字：弱化但仍可读，与 label 拉开层级 */
+.settings-page :deep(.card .input-hint),
+.settings-page :deep(.card label + p) {
+  font-size: 0.75rem;
+  color: rgb(107 114 128);
+  margin-top: 0.5rem;
+  line-height: 1.5;
+}
+
+:root.dark .settings-page :deep(.card .input-hint),
+:root.dark .settings-page :deep(.card label + p) {
+  color: rgb(156 163 175);
+}
+
+/* 输入控件高度统一为 40px，左右 padding 一致，跟其他页面输入控件视觉一致 */
+.settings-page :deep(.card .input),
+.settings-page :deep(.card input[type='text']),
+.settings-page :deep(.card input[type='email']),
+.settings-page :deep(.card input[type='url']),
+.settings-page :deep(.card input[type='number']),
+.settings-page :deep(.card input[type='password']),
+.settings-page :deep(.card select) {
+  min-height: 2.5rem;
+  padding-left: 0.875rem;
+  padding-right: 0.875rem;
+}
+
+.settings-page :deep(.card textarea) {
+  padding: 0.625rem 0.875rem;
+  line-height: 1.6;
+}
+
+/* 字段网格：横向 gap 加大让两列字段不挤在一起 */
+.settings-page :deep(.card .grid) {
+  column-gap: 1.5rem;
+  row-gap: 1.5rem;
+}
+
+/* 裸开关行加底部 hairline，让字段成"行"分组（amber 警告条等带装饰的不受影响） */
+.settings-page :deep(.card .space-y-6 > .flex.items-center.justify-between:not(.rounded-lg):not(.rounded-xl)) {
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid rgb(243 244 246);
+}
+
+.settings-page :deep(.card .space-y-6 > .flex.items-center.justify-between:not(.rounded-lg):not(.rounded-xl):last-child) {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+:root.dark .settings-page :deep(.card .space-y-6 > .flex.items-center.justify-between:not(.rounded-lg):not(.rounded-xl)) {
+  border-bottom-color: rgb(55 65 81 / 0.5);
+}
+
+/* 字段子分组小标题（h3）：作为视觉锚点 */
+.settings-page :deep(.card h3) {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgb(17 24 39);
+  letter-spacing: 0.005em;
+}
+
+:root.dark .settings-page :deep(.card h3) {
+  color: rgb(255 255 255);
+}
+
 /* 表单行：仅补一个左右 gap，不强行覆盖原 utility class
  * （像 amber 警告条这种自带 p-4 / border / bg 的字段保持原装饰；
  *   裸 flex 行得到一个间隔 4 的横向分隔以避免内容贴在一起） */

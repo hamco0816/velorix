@@ -1,12 +1,9 @@
 <template>
+  <!-- 卡片：用中性边框 + 兑换码同款"远距离浮起阴影"，平台色仅在 badge / 价格 / 按钮处点缀，
+       避免整张卡片被绿/橙色边框包围造成视觉冲击 -->
   <div
-    :class="[
-      'group relative flex min-h-[250px] flex-col overflow-hidden rounded-xl border transition-colors',
-      'bg-white shadow-sm hover:border-gray-300 hover:shadow-md dark:bg-dark-900 dark:shadow-none dark:hover:border-dark-500',
-      borderClass,
-    ]"
+    class="plan-card group relative flex min-h-[250px] flex-col overflow-hidden rounded-lg border border-gray-200 bg-white transition-colors hover:border-gray-300 dark:border-dark-700 dark:bg-dark-900 dark:hover:border-dark-500"
   >
-    <div :class="['h-1.5', accentClass]" />
 
     <div class="flex flex-1 flex-col p-5">
       <div class="mb-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -104,11 +101,11 @@
 
       <div class="flex-1" />
 
-      <!-- 按钮：居中显示、内容自适应宽度，避免在卡片中被拉得太宽显得空 -->
+      <!-- 按钮：统一黑色 CTA（platform 色已在 badge/价格/headline 处体现，避免再用饱和按钮造成视觉重复） -->
       <div class="mt-4 flex justify-center">
         <button
           type="button"
-          :class="['inline-flex items-center justify-center rounded-md px-10 py-2.5 text-sm font-semibold transition-colors active:scale-[0.99]', btnClass]"
+          class="inline-flex items-center justify-center rounded-md bg-gray-900 px-10 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:scale-[0.99] dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
           @click="emit('select', plan)"
         >
           {{ isRenewal ? t('payment.renewNow') : t('payment.subscribeNow') }}
@@ -127,12 +124,9 @@ import BrandIcon from '@/components/common/BrandIcon.vue'
 import ModelIcon from '@/components/common/ModelIcon.vue'
 import Icon from '@/components/icons/Icon.vue'
 import {
-  platformAccentBarClass,
   platformBadgeLightClass,
-  platformBorderClass,
   platformTextClass,
   platformIconClass,
-  platformButtonClass,
   platformDiscountClass,
   platformLabel,
 } from '@/utils/platformColors'
@@ -146,13 +140,10 @@ const isRenewal = computed(() =>
   props.activeSubscriptions?.some(s => s.group_id === props.plan.group_id && s.status === 'active') ?? false
 )
 
-// Derived color classes from central config
-const accentClass = computed(() => platformAccentBarClass(platform.value))
-const borderClass = computed(() => platformBorderClass(platform.value))
+// Derived color classes from central config（accent bar / border / 主按钮已统一为中性色，platform 色仅用在 badge / 价格 / 折扣 / 模型对勾）
 const badgeLightClass = computed(() => platformBadgeLightClass(platform.value))
 const textClass = computed(() => platformTextClass(platform.value))
 const iconClass = computed(() => platformIconClass(platform.value))
-const btnClass = computed(() => platformButtonClass(platform.value))
 const discountClass = computed(() => platformDiscountClass(platform.value))
 const pLabel = computed(() => platformLabel(platform.value))
 const platformBrand = computed<'claude' | 'openai' | 'gemini' | null>(() => {
@@ -197,3 +188,17 @@ const validitySuffix = computed(() => {
   return `${props.plan.validity_days}${t('payment.days')}`
 })
 </script>
+
+<style scoped>
+/* 卡片浮起：与兑换码 redeem-panel / 文档 docs-panel 一致的远距离淡阴影 */
+.plan-card {
+  box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
+}
+.plan-card:hover {
+  box-shadow: 0 22px 48px -28px rgb(15 23 42 / 0.6);
+}
+:global(:root.dark) .plan-card,
+:global(:root.dark) .plan-card:hover {
+  box-shadow: none;
+}
+</style>

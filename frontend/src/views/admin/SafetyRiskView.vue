@@ -1,6 +1,22 @@
 <template>
   <AppLayout>
-    <div class="space-y-5">
+    <div class="risk-page mx-auto max-w-7xl space-y-5">
+      <!-- Hero：amber 渐变标题区，标识风险告警业务色调 -->
+      <header class="page-hero page-hero-amber">
+        <div class="relative z-10 max-w-3xl">
+          <span class="page-hero-tag page-hero-tag-amber">
+            <Icon name="shield" size="sm" />
+            风险与合规
+          </span>
+          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
+            风控日志
+          </h1>
+          <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
+            记录请求被拦截的命中规则、AI 审核结果与管理员复核状态，用于排查风险和清空用户管控记录。
+          </p>
+        </div>
+      </header>
+
       <div class="risk-info-banner">
         <span class="risk-info-icon">
           <Icon name="infoCircle" size="sm" />
@@ -521,23 +537,33 @@ onMounted(loadEvents)
 </script>
 
 <style scoped>
+/* 风控页全局：所有 .card 用兑换码同款远距离阴影，与全站视觉调性统一 */
+.risk-page :deep(.card) {
+  box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
+}
+
+:global(:root.dark) .risk-page :deep(.card) {
+  box-shadow: none;
+}
+
+/* 信息提示条：sky 调，与登录注册的辅助提示一致 */
 .risk-info-banner {
   display: flex;
   align-items: center;
   gap: 0.625rem;
-  border: 1px solid rgb(147 197 253);
+  border: 1px solid rgb(186 230 253);
   border-radius: 0.5rem;
-  background: rgb(239 246 255 / 0.72);
+  background: rgb(240 249 255 / 0.7);
   padding: 0.875rem 1rem;
-  color: rgb(37 99 235);
+  color: rgb(2 132 199);
   font-size: 0.875rem;
   line-height: 1.6;
 }
 
-.dark .risk-info-banner {
-  border-color: rgb(30 64 175 / 0.75);
-  background: rgb(30 58 138 / 0.18);
-  color: rgb(147 197 253);
+:global(:root.dark) .risk-info-banner {
+  border-color: rgb(7 89 133 / 0.6);
+  background: rgb(8 47 73 / 0.25);
+  color: rgb(125 211 252);
 }
 
 .risk-info-icon {

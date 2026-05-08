@@ -21,15 +21,20 @@
         <div class="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
       </div>
       <template v-else>
-        <!-- Tab Switcher (hide during payment and subscription confirm) -->
-        <div v-if="tabs.length > 1 && paymentPhase === 'select' && !selectedPlan" class="mx-auto grid max-w-xl gap-1 rounded-xl border border-gray-200 bg-white p-1 shadow-sm dark:border-dark-700 dark:bg-dark-900 sm:grid-cols-2">
-          <button v-for="tab in tabs" :key="tab.key"
-            class="flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors"
-            :class="activeTab === tab.key ? 'bg-gray-900 text-white shadow-sm dark:bg-white dark:text-gray-950' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-dark-800 dark:hover:text-gray-200'"
-            @click="activeTab = tab.key">
-            <Icon :name="tab.key === 'subscription' ? 'badge' : 'creditCard'" size="sm" :stroke-width="2" />
-            {{ tab.label }}
-          </button>
+        <!-- Tab Switcher：克制的下划线分段，移除黑底白字的强对比，与全站调性一致 -->
+        <div v-if="tabs.length > 1 && paymentPhase === 'select' && !selectedPlan" class="border-b border-gray-200 dark:border-dark-700">
+          <div class="mx-auto flex max-w-xl items-center gap-1">
+            <button v-for="tab in tabs" :key="tab.key"
+              type="button"
+              class="relative flex items-center justify-center gap-2 px-5 py-3 text-sm font-medium transition-colors -mb-px border-b-2"
+              :class="activeTab === tab.key
+                ? 'border-violet-500 text-gray-900 dark:border-violet-400 dark:text-white'
+                : 'border-transparent text-gray-500 hover:text-gray-900 dark:text-dark-400 dark:hover:text-white'"
+              @click="activeTab = tab.key">
+              <Icon :name="tab.key === 'subscription' ? 'badge' : 'creditCard'" size="sm" :stroke-width="2" />
+              {{ tab.label }}
+            </button>
+          </div>
         </div>
         <!-- Payment in progress (shared by recharge and subscription) -->
         <template v-if="paymentPhase === 'paying'">
