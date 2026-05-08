@@ -41,7 +41,9 @@
                 :title="sidebarCollapsed ? item.label : undefined"
                 @click="handleGroupClick(item)"
               >
-                <component :is="item.icon" class="h-5 w-5 flex-shrink-0" :class="item.iconColor" />
+                <span :class="item.iconColor" class="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center">
+                  <component :is="item.icon" class="h-5 w-5" />
+                </span>
                 <span
                   class="sidebar-label sidebar-label-flex"
                   :class="{ 'sidebar-label-collapsed': sidebarCollapsed }"
@@ -64,7 +66,9 @@
                   :class="{ 'sidebar-link-active': route.path === child.path }"
                   @click="handleMenuItemClick(child.path)"
                 >
-                  <component :is="child.icon" class="h-4 w-4 flex-shrink-0" :class="child.iconColor" />
+                  <span :class="child.iconColor" class="inline-flex h-4 w-4 flex-shrink-0 items-center justify-center">
+                    <component :is="child.icon" class="h-4 w-4" />
+                  </span>
                   <span>{{ child.label }}</span>
                 </router-link>
               </div>
@@ -88,7 +92,9 @@
               @click="handleMenuItemClick(item.path)"
             >
               <span v-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
-              <component v-else :is="item.icon" class="h-5 w-5 flex-shrink-0" :class="item.iconColor" />
+              <span v-else :class="item.iconColor" class="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center">
+                <component :is="item.icon" class="h-5 w-5" />
+              </span>
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
             </router-link>
           </template>
@@ -113,7 +119,9 @@
             @click="handleMenuItemClick(item.path)"
           >
             <span v-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
-            <component v-else :is="item.icon" class="h-5 w-5 flex-shrink-0" />
+            <span v-else :class="item.iconColor" class="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center">
+              <component :is="item.icon" class="h-5 w-5" />
+            </span>
             <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
           </router-link>
         </div>
@@ -133,7 +141,9 @@
             @click="handleMenuItemClick(item.path)"
           >
             <span v-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
-            <component v-else :is="item.icon" class="h-5 w-5 flex-shrink-0" />
+            <span v-else :class="item.iconColor" class="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center">
+              <component :is="item.icon" class="h-5 w-5" />
+            </span>
             <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
           </router-link>
         </div>

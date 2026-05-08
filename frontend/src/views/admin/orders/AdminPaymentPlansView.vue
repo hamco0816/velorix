@@ -7,13 +7,13 @@
           <div class="max-w-3xl">
             <span class="page-hero-tag page-hero-tag-teal">
               <Icon name="badge" size="sm" />
-              {{ t('payment.admin.plansTitle') }}
+              {{ t('payment.admin.plansPageTitle') }}
             </span>
             <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-              {{ t('payment.admin.plansTitle') }}
+              {{ t('payment.admin.plansPageTitle') }}
             </h1>
             <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-              管理订阅套餐的价格、有效期、分组绑定与模型范围。
+              {{ t('payment.admin.plansPageDesc') }}
             </p>
           </div>
           <div class="flex items-center gap-2">
