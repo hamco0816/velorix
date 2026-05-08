@@ -217,6 +217,27 @@
     @apply dark:text-white dark:decoration-dark-500 dark:hover:decoration-white;
   }
 
+  /* 品牌图标盒：与场景色调匹配（登录用 sky、注册用 emerald），带浅色 ring 与浅底 */
+  .auth-brand-icon {
+    @apply inline-flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl ring-1;
+  }
+  .auth-brand-icon-sky {
+    @apply bg-sky-50 ring-sky-200/60;
+    @apply dark:bg-sky-900/25 dark:ring-sky-700/40;
+  }
+  .auth-brand-icon-emerald {
+    @apply bg-emerald-50 ring-emerald-200/60;
+    @apply dark:bg-emerald-900/25 dark:ring-emerald-700/40;
+  }
+
+  /* 品牌区合并标题中的分隔点：用场景色让"siteName · 动作"出现一抹颜色锚点 */
+  .auth-brand-dot-sky {
+    @apply mx-2 font-medium text-sky-500 dark:text-sky-400;
+  }
+  .auth-brand-dot-emerald {
+    @apply mx-2 font-medium text-emerald-500 dark:text-emerald-400;
+  }
+
   /* 主按钮：纯黑底 + 白字 + 细微阴影（暗色模式反相） */
   .auth-primary-btn {
     @apply inline-flex w-full items-center justify-center gap-2 h-11 rounded-md;

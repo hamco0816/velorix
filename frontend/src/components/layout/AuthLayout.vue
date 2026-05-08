@@ -4,15 +4,18 @@
     <!-- 中部：logo + 表单插槽 整体居中（最大宽 380，移动端自适应） -->
     <main class="flex flex-1 flex-col items-center justify-center px-5 py-10 sm:py-14">
       <div class="w-full max-w-[380px]">
-        <!-- 站点品牌（紧贴表单上方，视觉与表单连成一体） -->
-        <div class="mb-12 flex justify-center">
-          <div class="flex items-center gap-2.5">
-            <div class="h-8 w-8 overflow-hidden rounded-md ring-1 ring-gray-200 dark:ring-dark-700">
-              <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
+        <!-- 品牌区：view 可通过 #brand 插槽自定义（如登录页彩色 logo + 合并标题）；
+             不提供时显示默认的小型 logo + 站点名 -->
+        <slot name="brand">
+          <div class="mb-12 flex justify-center">
+            <div class="flex items-center gap-2.5">
+              <div class="h-8 w-8 overflow-hidden rounded-md ring-1 ring-gray-200 dark:ring-dark-700">
+                <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
+              </div>
+              <span class="text-base font-semibold tracking-tight text-gray-900 dark:text-white">{{ siteName }}</span>
             </div>
-            <span class="text-base font-semibold tracking-tight text-gray-900 dark:text-white">{{ siteName }}</span>
           </div>
-        </div>
+        </slot>
 
         <slot />
 
