@@ -1,6 +1,17 @@
 <template>
   <div class="space-y-4">
     <button
+      v-if="minimal"
+      type="button"
+      :disabled="disabled"
+      class="oauth-btn-minimal"
+      @click="startLogin"
+    >
+      <BrandIcon brand="oidc" size="18px" />
+      {{ t('auth.oidc.signIn', { providerName: normalizedProviderName }) }}
+    </button>
+    <button
+      v-else
       type="button"
       :disabled="disabled"
       class="btn w-full border-orange-100 bg-orange-50/80 text-orange-700 shadow-sm shadow-orange-100/70 hover:border-orange-200 hover:bg-orange-100 dark:border-orange-900/40 dark:bg-orange-950/25 dark:text-orange-300 dark:shadow-none"
@@ -34,9 +45,11 @@ const props = withDefaults(defineProps<{
   affCode?: string
   providerName?: string
   showDivider?: boolean
+  minimal?: boolean
 }>(), {
   providerName: 'OIDC',
-  showDivider: true
+  showDivider: true,
+  minimal: false
 })
 
 const route = useRoute()

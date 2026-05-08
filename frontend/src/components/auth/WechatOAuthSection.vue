@@ -1,6 +1,17 @@
 <template>
   <div class="space-y-4">
     <button
+      v-if="minimal"
+      type="button"
+      :disabled="buttonDisabled"
+      class="oauth-btn-minimal"
+      @click="startLogin"
+    >
+      <BrandIcon brand="wechat" size="18px" />
+      {{ t('auth.oidc.signIn', { providerName }) }}
+    </button>
+    <button
+      v-else
       type="button"
       :disabled="buttonDisabled"
       class="btn w-full border-green-100 bg-green-50/80 text-green-700 shadow-sm shadow-green-100/70 hover:border-green-200 hover:bg-green-100 dark:border-green-900/40 dark:bg-green-950/30 dark:text-green-300 dark:shadow-none"
@@ -43,8 +54,10 @@ const props = withDefaults(defineProps<{
   disabled?: boolean
   affCode?: string
   showDivider?: boolean
+  minimal?: boolean
 }>(), {
   showDivider: true,
+  minimal: false,
 })
 
 const appStore = useAppStore()

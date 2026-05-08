@@ -1,85 +1,40 @@
 <template>
   <AuthLayout>
-    <div class="min-h-[326px] space-y-6">
-      <!-- Title -->
-      <div class="text-center">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-          {{ t('auth.welcomeBack') }}
-        </h2>
-        <p class="mt-2 text-sm text-gray-500 dark:text-dark-400">
-          {{ t('auth.signInToAccount') }}
-        </p>
-      </div>
+    <!-- 大标题 -->
+    <h1 class="mb-10 text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+      {{ t('auth.signIn') }}
+    </h1>
 
-      <div
-        v-if="!settingsLoaded"
-        class="flex min-h-[214px] items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 dark:border-dark-700 dark:bg-dark-800/60"
-      >
-        <div class="h-7 w-7 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
-      </div>
+    <!-- 设置未加载占位 -->
+    <div
+      v-if="!settingsLoaded"
+      class="flex h-64 items-center justify-center"
+    >
+      <div class="h-6 w-6 animate-spin rounded-full border-2 border-gray-900 border-t-transparent dark:border-white dark:border-t-transparent"></div>
+    </div>
 
-      <template v-else>
-        <div v-if="!backendModeEnabled && (linuxdoOAuthEnabled || wechatOAuthEnabled || oidcOAuthEnabled)" class="space-y-4">
-          <LinuxDoOAuthSection
-            v-if="linuxdoOAuthEnabled"
+    <template v-else>
+      <form @submit.prevent="handleLogin" class="space-y-7">
+        <!-- 邮箱 -->
+        <div>
+          <label for="email" class="auth-input-label">{{ t('auth.emailLabel') }}</label>
+          <input
+            id="email"
+            v-model="formData.email"
+            type="email"
+            required
+            autofocus
+            autocomplete="email"
             :disabled="isLoading"
-            :show-divider="false"
+            class="auth-input"
+            :class="{ 'auth-input-error': errors.email }"
           />
-          <WechatOAuthSection
-            v-if="wechatOAuthEnabled"
-            :disabled="isLoading"
-            :show-divider="false"
-          />
-          <OidcOAuthSection
-            v-if="oidcOAuthEnabled"
-            :disabled="isLoading"
-            :provider-name="oidcOAuthProviderName"
-            :show-divider="false"
-          />
-          <div class="flex items-center gap-3">
-            <div class="h-px flex-1 bg-gray-200 dark:bg-dark-700"></div>
-            <span class="text-xs text-gray-500 dark:text-dark-400">
-              {{ t('auth.oauthOrContinue') }}
-            </span>
-            <div class="h-px flex-1 bg-gray-200 dark:bg-dark-700"></div>
-          </div>
         </div>
 
-        <!-- Login Form -->
-        <form @submit.prevent="handleLogin" class="space-y-5">
-        <!-- Email Input -->
+        <!-- 密码 -->
         <div>
-          <label for="email" class="input-label">
-            {{ t('auth.emailLabel') }}
-          </label>
+          <label for="password" class="auth-input-label">{{ t('auth.passwordLabel') }}</label>
           <div class="relative">
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-              <Icon name="mail" size="md" class="text-gray-400 dark:text-dark-500" />
-            </div>
-            <input
-              id="email"
-              v-model="formData.email"
-              type="email"
-              required
-              autofocus
-              autocomplete="email"
-              :disabled="isLoading"
-              class="input pl-11"
-              :class="{ 'input-error': errors.email }"
-              :placeholder="t('auth.emailPlaceholder')"
-            />
-          </div>
-        </div>
-
-        <!-- Password Input -->
-        <div>
-          <label for="password" class="input-label">
-            {{ t('auth.passwordLabel') }}
-          </label>
-          <div class="relative">
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-              <Icon name="lock" size="md" class="text-gray-400 dark:text-dark-500" />
-            </div>
             <input
               id="password"
               v-model="formData.password"
@@ -87,32 +42,36 @@
               required
               autocomplete="current-password"
               :disabled="isLoading"
-              class="input pl-11 pr-11"
-              :class="{ 'input-error': errors.password }"
-              :placeholder="t('auth.passwordPlaceholder')"
+              class="auth-input pr-7"
+              :class="{ 'auth-input-error': errors.password }"
             />
             <button
               type="button"
+              tabindex="-1"
+              :aria-label="showPassword ? t('common.hide') : t('common.show')"
               @click="showPassword = !showPassword"
-              class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-dark-300"
+              class="absolute bottom-2.5 right-0 text-gray-400 transition-colors hover:text-gray-700 dark:hover:text-dark-200"
             >
-              <Icon v-if="showPassword" name="eyeOff" size="md" />
-              <Icon v-else name="eye" size="md" />
+              <Icon v-if="showPassword" name="eyeOff" size="sm" />
+              <Icon v-else name="eye" size="sm" />
             </button>
-          </div>
-          <div class="mt-1 flex items-center justify-between">
-            <span></span>
-            <router-link
-              v-if="passwordResetEnabled && !backendModeEnabled"
-              to="/forgot-password"
-              class="text-sm font-medium text-primary-600 transition-colors hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
-            >
-              {{ t('auth.forgotPassword') }}
-            </router-link>
           </div>
         </div>
 
-        <!-- Turnstile Widget -->
+        <!-- 忘记密码（右对齐弱化） -->
+        <div
+          v-if="passwordResetEnabled && !backendModeEnabled"
+          class="-mt-3 flex justify-end"
+        >
+          <router-link
+            to="/forgot-password"
+            class="text-xs text-gray-500 transition-colors hover:text-gray-900 dark:text-dark-400 dark:hover:text-white"
+          >
+            {{ t('auth.forgotPassword') }}
+          </router-link>
+        </div>
+
+        <!-- Turnstile（如开启） -->
         <div v-if="turnstileEnabled && turnstileSiteKey">
           <TurnstileWidget
             ref="turnstileRef"
@@ -123,15 +82,15 @@
           />
         </div>
 
-        <!-- Submit Button -->
+        <!-- 主按钮 -->
         <button
           type="submit"
           :disabled="isLoading || (turnstileEnabled && !turnstileToken)"
-          class="btn btn-primary w-full"
+          class="auth-primary-btn"
         >
           <svg
             v-if="isLoading"
-            class="-ml-1 mr-2 h-4 w-4 animate-spin text-white"
+            class="-ml-1 mr-2 h-4 w-4 animate-spin"
             fill="none"
             viewBox="0 0 24 24"
           >
@@ -149,26 +108,50 @@
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             ></path>
           </svg>
-          <Icon v-else name="login" size="md" class="mr-2" />
           {{ isLoading ? t('auth.signingIn') : t('auth.signIn') }}
         </button>
-        </form>
-      </template>
-    </div>
+      </form>
 
-    <!-- Footer -->
+      <!-- 第三方登录：仅在后端启用对应模式时显示，不显示则整段不渲染 -->
+      <div
+        v-if="!backendModeEnabled && (linuxdoOAuthEnabled || wechatOAuthEnabled || oidcOAuthEnabled)"
+        class="mt-3 space-y-3"
+      >
+        <LinuxDoOAuthSection
+          v-if="linuxdoOAuthEnabled"
+          :disabled="isLoading"
+          :show-divider="false"
+          minimal
+        />
+        <WechatOAuthSection
+          v-if="wechatOAuthEnabled"
+          :disabled="isLoading"
+          :show-divider="false"
+          minimal
+        />
+        <OidcOAuthSection
+          v-if="oidcOAuthEnabled"
+          :disabled="isLoading"
+          :provider-name="oidcOAuthProviderName"
+          :show-divider="false"
+          minimal
+        />
+      </div>
+    </template>
+
+    <!-- 底部：注册入口（后端模式下整段不渲染） -->
     <template v-if="!backendModeEnabled" #footer>
-      <p v-if="!settingsLoaded" class="h-5 text-gray-400 dark:text-dark-500"></p>
+      <p v-if="!settingsLoaded" class="h-5"></p>
       <p v-else-if="registrationEnabled" class="text-gray-500 dark:text-dark-400">
         {{ t('auth.dontHaveAccount') }}
         <router-link
           to="/register"
-          class="font-medium text-primary-600 transition-colors hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+          class="font-medium text-gray-900 transition-colors hover:underline dark:text-white"
         >
           {{ t('auth.signUp') }}
         </router-link>
       </p>
-      <p v-else class="text-sm text-gray-400 dark:text-dark-500">
+      <p v-else class="text-gray-400 dark:text-dark-500">
         {{ t('auth.registrationDisabled') }}
       </p>
     </template>
@@ -216,7 +199,7 @@ const errorMessage = ref<string>('')
 const showPassword = ref<boolean>(false)
 const settingsLoaded = ref<boolean>(false)
 
-// Public settings
+// 后端公开设置（决定渲染哪些 OAuth / 注册 / 验证码 / 找回密码 入口）
 const registrationEnabled = ref<boolean>(false)
 const turnstileEnabled = ref<boolean>(false)
 const turnstileSiteKey = ref<string>('')
@@ -248,6 +231,7 @@ const errors = reactive({
   turnstile: ''
 })
 
+// 校验失败统一通过 toast 提示，避免在表单里挤额外文字
 const validationToastMessage = computed(
   () => errors.email || errors.password || errors.turnstile || ''
 )
@@ -260,6 +244,7 @@ watch(validationToastMessage, (value, previousValue) => {
 
 // ==================== Lifecycle ====================
 
+// 把后端返回的公开设置映射到本地 ref，登录页据此决定渲染哪些区块
 function applyPublicSettings(settings: PublicSettings): void {
   turnstileEnabled.value = settings.turnstile_enabled
   turnstileSiteKey.value = settings.turnstile_site_key || ''
@@ -278,6 +263,7 @@ if (appStore.cachedPublicSettings) {
 }
 
 onMounted(async () => {
+  // 会话过期跳转回登录时给一次性提示
   const expiredFlag = sessionStorage.getItem('auth_expired')
   if (expiredFlag) {
     sessionStorage.removeItem('auth_expired')
@@ -317,15 +303,14 @@ function onTurnstileError(): void {
 
 // ==================== Validation ====================
 
+// 校验邮箱、密码、Turnstile token，命中错误的字段会被打上红色下边框
 function validateForm(): boolean {
-  // Reset errors
   errors.email = ''
   errors.password = ''
   errors.turnstile = ''
 
   let isValid = true
 
-  // Email validation
   if (!formData.email.trim()) {
     errors.email = t('auth.emailRequired')
     isValid = false
@@ -334,7 +319,6 @@ function validateForm(): boolean {
     isValid = false
   }
 
-  // Password validation
   if (!formData.password) {
     errors.password = t('auth.passwordRequired')
     isValid = false
@@ -343,7 +327,6 @@ function validateForm(): boolean {
     isValid = false
   }
 
-  // Turnstile validation
   if (turnstileEnabled.value && !turnstileToken.value) {
     errors.turnstile = t('auth.completeVerification')
     isValid = false
@@ -354,11 +337,10 @@ function validateForm(): boolean {
 
 // ==================== Form Handlers ====================
 
+// 提交登录：调用 store 完成认证，必要时弹出 2FA 弹窗，最后跳回 redirect 或 dashboard
 async function handleLogin(): Promise<void> {
-  // Clear previous error
   errorMessage.value = ''
 
-  // Validate form
   if (!validateForm()) {
     return
   }
@@ -366,14 +348,12 @@ async function handleLogin(): Promise<void> {
   isLoading.value = true
 
   try {
-    // Call auth store login
     const response = await authStore.login({
       email: formData.email,
       password: formData.password,
       turnstile_token: turnstileEnabled.value ? turnstileToken.value : undefined
     })
 
-    // Check if 2FA is required
     if (isTotp2FARequired(response)) {
       const totpResponse = response as TotpLoginResponse
       totpTempToken.value = totpResponse.temp_token || ''
@@ -383,21 +363,17 @@ async function handleLogin(): Promise<void> {
       return
     }
 
-    // Show success toast
     clearAllAffiliateReferralCodes()
     appStore.showSuccess(t('auth.loginSuccess'))
 
-    // Redirect to dashboard or intended route
     const redirectTo = (router.currentRoute.value.query.redirect as string) || '/dashboard'
     await router.push(redirectTo)
   } catch (error: unknown) {
-    // Reset Turnstile on error
     if (turnstileRef.value) {
       turnstileRef.value.reset()
       turnstileToken.value = ''
     }
 
-    // Handle login error
     const err = error as { message?: string; response?: { data?: { detail?: string } } }
 
     if (err.response?.data?.detail) {
@@ -408,7 +384,6 @@ async function handleLogin(): Promise<void> {
       errorMessage.value = t('auth.loginFailed')
     }
 
-    // Also show error toast
     appStore.showError(errorMessage.value)
   } finally {
     isLoading.value = false
@@ -417,6 +392,7 @@ async function handleLogin(): Promise<void> {
 
 // ==================== 2FA Handlers ====================
 
+// 提交 TOTP 二次验证码：成功后清掉临时 token 并跳转
 async function handle2FAVerify(code: string): Promise<void> {
   if (totpModalRef.value) {
     totpModalRef.value.setVerifying(true)
@@ -425,12 +401,10 @@ async function handle2FAVerify(code: string): Promise<void> {
   try {
     await authStore.login2FA(totpTempToken.value, code)
 
-    // Close modal and show success
     show2FAModal.value = false
     clearAllAffiliateReferralCodes()
     appStore.showSuccess(t('auth.loginSuccess'))
 
-    // Redirect to dashboard or intended route
     const redirectTo = (router.currentRoute.value.query.redirect as string) || '/dashboard'
     await router.push(redirectTo)
   } catch (error: unknown) {
@@ -450,16 +424,3 @@ function handle2FACancel(): void {
   totpUserEmailMasked.value = ''
 }
 </script>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: all 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: translateY(-8px);
-}
-</style>

@@ -44,6 +44,39 @@ func (h *PaymentHandler) GetPaymentConfig(c *gin.Context) {
 	response.Success(c, cfg)
 }
 
+// GetPlansPublic 返回所有 forSale=true 的订阅套餐，供未登录的落地页展示。
+// 与 GetPlans 的区别：不暴露 GroupID 等内部字段，仅返回前端展示需要的安全字段。
+// GET /api/v1/payment/public/plans
+func (h *PaymentHandler) GetPlansPublic(c *gin.Context) {
+	plans, err := h.configService.ListPlansForSale(c.Request.Context())
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+	type publicPlan struct {
+		ID            int64    `json:"id"`
+		Name          string   `json:"name"`
+		Description   string   `json:"description"`
+		Price         float64  `json:"price"`
+		OriginalPrice *float64 `json:"original_price,omitempty"`
+		ValidityDays  int      `json:"validity_days"`
+		ValidityUnit  string   `json:"validity_unit"`
+		Features      string   `json:"features"`
+		ProductName   string   `json:"product_name"`
+		SortOrder     int      `json:"sort_order"`
+	}
+	result := make([]publicPlan, 0, len(plans))
+	for _, p := range plans {
+		result = append(result, publicPlan{
+			ID: int64(p.ID), Name: p.Name, Description: p.Description,
+			Price: p.Price, OriginalPrice: p.OriginalPrice,
+			ValidityDays: p.ValidityDays, ValidityUnit: p.ValidityUnit,
+			Features: p.Features, ProductName: p.ProductName, SortOrder: p.SortOrder,
+		})
+	}
+	response.Success(c, result)
+}
+
 // GetPlans returns subscription plans available for sale.
 // GET /api/v1/payment/plans
 func (h *PaymentHandler) GetPlans(c *gin.Context) {

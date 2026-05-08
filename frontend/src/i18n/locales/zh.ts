@@ -12,6 +12,111 @@ export default {
     // 新增：面向用户的价值主张
     heroSubtitle: '一个密钥，畅用多个 AI 模型',
     heroDescription: '无需管理多个订阅账号，一站式接入 Claude、GPT、Gemini 等主流 AI 服务',
+    // Hero 大字编辑级排版（参考图风格：主色 + 橙色高亮关键词）
+    heroDisplayPrimary: '一个平台，',
+    heroDisplayLine2: '统一接入全球',
+    heroDisplayHighlight: 'AI 模型',
+    heroLead: '兼容 OpenAI API，支持 Claude、GPT、Gemini 等主流模型。按量计费，多账号自动调度，稳定高可用，助力你的 AI 应用落地。',
+    heroSecondaryCta: '查看价格',
+    heroEyebrowFull: '简单三步，开始你的 AI 之旅',
+    stats: {
+      compatible: '100% 兼容',
+      compatibleSub: 'OpenAI API',
+      payAsYouGo: '按量计费',
+      payAsYouGoSub: '用多少付多少',
+      stable: '稳定可靠',
+      stableSub: '多节点智能调度'
+    },
+    nav: {
+      product: '产品',
+      pricing: '价格',
+      docs: '文档',
+      status: '状态',
+      support: '支持',
+      register: '立即注册'
+    },
+    // Dashboard 预览卡片（Hero 右侧）
+    dashPreview: {
+      title: '控制台',
+      overview: '概览',
+      tokenManage: '令牌管理',
+      usageStats: '使用统计',
+      billing: '账单计费',
+      team: '团队管理',
+      settings: '设置',
+      modelStatus: '模型状态',
+      todayUsage: '今日使用',
+      change: '较上月',
+      totalRequests: '总请求数',
+      successRate: '成功率',
+      apiKey: 'API Key',
+      recent7d: '近 7 日消耗趋势',
+      stateAvailable: '可用'
+    },
+    // 3 步流程
+    steps: {
+      eyebrow: '简单三步',
+      title: '我们帮你解决',
+      items: {
+        register: { num: '01', title: '创建账户', desc: '注册账号，完成实名认证，立即可用' },
+        getKey: { num: '02', title: '获取 API Key', desc: '在控制台生成专属 API Key' },
+        replace: { num: '03', title: '替换接口地址', desc: '兼容 OpenAI 的接口，快速接入' }
+      },
+      codeTitle: '示例代码 (OpenAI 兼容)'
+    },
+    // 灵活定价
+    pricing: {
+      title: '灵活的定价方案',
+      subtitle: '按量计费，阶梯优惠，无隐藏费用',
+      recommended: '推荐',
+      perMonth: '/ 起',
+      plans: {
+        free: {
+          name: '体验版',
+          target: '适合个人体验与测试',
+          price: '¥ 0',
+          priceNote: '注册即可获得免费额度',
+          features: ['免费额度', '支持主流模型', '单账号使用'],
+          cta: '免费注册'
+        },
+        developer: {
+          name: '开发者版',
+          target: '适合个人开发者 / 小团队',
+          priceLabel: '按量计费',
+          priceNote: '阶梯折扣，越用越便宜',
+          features: ['多模型自由切换', '高并发支持', '用量统计与明细'],
+          cta: '立即使用'
+        },
+        team: {
+          name: '团队版',
+          target: '适合团队协作 / 企业应用',
+          priceLabel: '按量计费',
+          priceNote: '专属用量包，可用可保留',
+          features: ['团队成员管理', '专属账号支持', '高可用多节点'],
+          cta: '联系客服'
+        }
+      },
+      benefits: {
+        payAsYouGo: { title: '按量计费', desc: '用多少付多少，无月费压力' },
+        tieredDiscount: { title: '阶梯折扣', desc: '用量越大，价格越优' },
+        secure: { title: '安全可靠', desc: '数据加密，多重保障' },
+        support247: { title: '7×24 支持', desc: '专业团队，及时响应' }
+      }
+    },
+    // 扩展的 Providers
+    providersExt: {
+      deepseek: 'DeepSeek',
+      grok: 'Grok',
+      llama: 'Llama',
+      qwen: 'Qwen'
+    },
+    // Footer 订阅
+    footerSub: {
+      title: '订阅更新',
+      desc: '获取产品新动态和优惠信息',
+      placeholder: '输入你的邮箱',
+      submit: '订阅'
+    },
     tags: {
       stickySession: '会话保持',
       realtimeBilling: '按量计费',
@@ -64,7 +169,12 @@ export default {
         pricing: {
           feature: '付费方式',
           official: '固定月费，用不完也付',
-          us: '按量付费，用多少付多少'
+          us: '按量付费 + 订阅制，灵活组合'
+        },
+        ban: {
+          feature: '账号风险',
+          official: '官方易触发风控、封号',
+          us: '账号池托管，无封号风险'
         },
         models: {
           feature: '模型选择',
@@ -275,6 +385,8 @@ export default {
     noData: '暂无数据',
     expand: '展开',
     collapse: '收起',
+    show: '显示',
+    hide: '隐藏',
     success: '成功',
     error: '错误',
     critical: '严重',
@@ -382,6 +494,34 @@ export default {
 
   // Auth
   auth: {
+    backToHome: '返回首页',
+    apiDocs: 'API 文档',
+    brand: {
+      eyebrow: 'AI API 聚合平台',
+      headlineMain: '一个密钥，',
+      headlineSub: '畅用所有 AI 模型',
+      description: '整合 Claude、GPT、Gemini 等主流 AI 服务，统一接口调用，按量计费，多账号自动调度，稳定高可用。',
+      features: {
+        unifiedTitle: '多模型聚合',
+        unifiedDesc: '主流模型全接入',
+        stableTitle: '稳定可靠',
+        stableDesc: '多线路智能调度',
+        payTitle: '按量计费',
+        payDesc: '用多少付多少'
+      },
+      stats: {
+        uptime: '99.9%',
+        uptimeLabel: '服务可用性',
+        requests: '1000M+',
+        requestsLabel: '每日请求量',
+        models: '3+',
+        modelsLabel: '支持主流模型'
+      }
+    },
+    welcomeSubtitle: '登录你的 {siteName} 账户',
+    loginSubtitle: '登录你的 {siteName} 账户',
+    rememberMeLabel: '记住我',
+    otherLoginMethods: '其他登录方式',
     welcomeBack: '欢迎回来',
     signInToAccount: '登录您的账户以继续',
     signIn: '登录',

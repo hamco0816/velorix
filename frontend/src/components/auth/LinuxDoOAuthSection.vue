@@ -1,6 +1,17 @@
 <template>
   <div class="space-y-4">
     <button
+      v-if="minimal"
+      type="button"
+      :disabled="disabled"
+      class="oauth-btn-minimal"
+      @click="startLogin"
+    >
+      <BrandIcon brand="linuxdo" size="18px" />
+      {{ t('auth.linuxdo.signIn') }}
+    </button>
+    <button
+      v-else
       type="button"
       :disabled="disabled"
       class="btn w-full border-amber-100 bg-amber-50/80 text-slate-900 shadow-sm shadow-amber-100/70 hover:border-amber-200 hover:bg-amber-100 dark:border-amber-900/40 dark:bg-amber-950/25 dark:text-amber-100 dark:shadow-none"
@@ -32,8 +43,10 @@ const props = withDefaults(defineProps<{
   disabled?: boolean
   affCode?: string
   showDivider?: boolean
+  minimal?: boolean
 }>(), {
-  showDivider: true
+  showDivider: true,
+  minimal: false
 })
 
 const route = useRoute()

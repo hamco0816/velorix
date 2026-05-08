@@ -16,6 +16,20 @@ import type {
 } from '@/types/payment'
 import type { BasePaginationResponse } from '@/types'
 
+/** Public-facing 订阅套餐：精简字段供未登录场景使用 */
+export interface PublicPlan {
+  id: number
+  name: string
+  description: string
+  price: number
+  original_price?: number
+  validity_days: number
+  validity_unit: string
+  features: string
+  product_name: string
+  sort_order: number
+}
+
 export const paymentAPI = {
   /** Get payment configuration (enabled types, limits, etc.) */
   getConfig() {
@@ -25,6 +39,11 @@ export const paymentAPI = {
   /** Get available subscription plans */
   getPlans() {
     return apiClient.get<SubscriptionPlan[]>('/payment/plans')
+  },
+
+  /** Public：未登录的落地页用真实订阅套餐展示定价 */
+  getPlansPublic() {
+    return apiClient.get<PublicPlan[]>('/payment/public/plans')
   },
 
   /** Get available payment channels */

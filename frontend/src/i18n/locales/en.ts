@@ -12,6 +12,106 @@ export default {
     // User-focused value proposition
     heroSubtitle: 'One Key, All AI Models',
     heroDescription: 'No need to manage multiple subscriptions. Access Claude, GPT, Gemini and more with a single API key',
+    // Hero display headline（reference design style）
+    heroDisplayPrimary: 'One platform,',
+    heroDisplayLine2: 'unified access to',
+    heroDisplayHighlight: 'every AI model',
+    heroLead: 'OpenAI-compatible. Claude, GPT, Gemini and more. Pay as you go, smart routing, high availability — built for production.',
+    heroSecondaryCta: 'View pricing',
+    heroEyebrowFull: 'Three simple steps to your AI journey',
+    stats: {
+      compatible: '100% compatible',
+      compatibleSub: 'OpenAI API',
+      payAsYouGo: 'Pay as you go',
+      payAsYouGoSub: 'Only pay for what you use',
+      stable: 'Reliable',
+      stableSub: 'Smart multi-node routing'
+    },
+    nav: {
+      product: 'Product',
+      pricing: 'Pricing',
+      docs: 'Docs',
+      status: 'Status',
+      support: 'Support',
+      register: 'Sign up'
+    },
+    dashPreview: {
+      title: 'Console',
+      overview: 'Overview',
+      tokenManage: 'Tokens',
+      usageStats: 'Usage',
+      billing: 'Billing',
+      team: 'Team',
+      settings: 'Settings',
+      modelStatus: 'Model Status',
+      todayUsage: "Today's spend",
+      change: 'vs last month',
+      totalRequests: 'Total requests',
+      successRate: 'Success rate',
+      apiKey: 'API Key',
+      recent7d: 'Last 7 days',
+      stateAvailable: 'Available'
+    },
+    steps: {
+      eyebrow: 'Three steps',
+      title: 'How it works',
+      items: {
+        register: { num: '01', title: 'Create account', desc: 'Sign up, verify, ready to go' },
+        getKey: { num: '02', title: 'Get API Key', desc: 'Generate your key in the console' },
+        replace: { num: '03', title: 'Replace endpoint', desc: 'OpenAI-compatible, drop-in ready' }
+      },
+      codeTitle: 'Sample code (OpenAI compatible)'
+    },
+    pricing: {
+      title: 'Flexible pricing',
+      subtitle: 'Pay-as-you-go with volume discounts, no hidden fees',
+      recommended: 'Recommended',
+      perMonth: '/ from',
+      plans: {
+        free: {
+          name: 'Free',
+          target: 'For individuals & testing',
+          price: '¥ 0',
+          priceNote: 'Free credits on signup',
+          features: ['Free credits', 'Major models', 'Single account'],
+          cta: 'Sign up free'
+        },
+        developer: {
+          name: 'Developer',
+          target: 'For developers & small teams',
+          priceLabel: 'Pay as you go',
+          priceNote: 'Volume discounts apply',
+          features: ['Switch models freely', 'High concurrency', 'Usage analytics'],
+          cta: 'Get started'
+        },
+        team: {
+          name: 'Team',
+          target: 'For teams & enterprises',
+          priceLabel: 'Pay as you go',
+          priceNote: 'Reserved usage packages',
+          features: ['Team management', 'Dedicated accounts', 'Multi-node HA'],
+          cta: 'Contact us'
+        }
+      },
+      benefits: {
+        payAsYouGo: { title: 'Pay as you go', desc: 'No monthly commitment' },
+        tieredDiscount: { title: 'Volume discount', desc: 'Better rates as you scale' },
+        secure: { title: 'Secure', desc: 'Encrypted, multi-layer protection' },
+        support247: { title: '24×7 support', desc: 'Expert team, fast response' }
+      }
+    },
+    providersExt: {
+      deepseek: 'DeepSeek',
+      grok: 'Grok',
+      llama: 'Llama',
+      qwen: 'Qwen'
+    },
+    footerSub: {
+      title: 'Subscribe',
+      desc: 'Get product updates and offers',
+      placeholder: 'Enter your email',
+      submit: 'Subscribe'
+    },
     tags: {
       stickySession: 'Session Persistence',
       realtimeBilling: 'Pay As You Go',
@@ -64,7 +164,12 @@ export default {
         pricing: {
           feature: 'Pricing',
           official: 'Fixed monthly fee, pay even if unused',
-          us: 'Pay only for what you use'
+          us: 'Pay-as-you-go + subscription, your choice'
+        },
+        ban: {
+          feature: 'Account risk',
+          official: 'High risk of bans and rate limits',
+          us: 'Managed account pool, no ban risk'
         },
         models: {
           feature: 'Model Selection',
@@ -275,6 +380,8 @@ export default {
     noData: 'No data',
     expand: 'Expand',
     collapse: 'Collapse',
+    show: 'Show',
+    hide: 'Hide',
     success: 'Success',
     error: 'Error',
     critical: 'Critical',
@@ -382,6 +489,34 @@ export default {
 
   // Auth
   auth: {
+    backToHome: 'Back to home',
+    apiDocs: 'API Docs',
+    brand: {
+      eyebrow: 'AI API Gateway',
+      headlineMain: 'One key,',
+      headlineSub: 'all AI models',
+      description: 'Unified access to Claude, GPT, Gemini and more. Pay-as-you-go, smart account routing, high availability.',
+      features: {
+        unifiedTitle: 'Multi-model',
+        unifiedDesc: 'All major models supported',
+        stableTitle: 'Reliable',
+        stableDesc: 'Smart multi-route routing',
+        payTitle: 'Pay-as-you-go',
+        payDesc: 'Only pay for what you use'
+      },
+      stats: {
+        uptime: '99.9%',
+        uptimeLabel: 'Uptime',
+        requests: '1000M+',
+        requestsLabel: 'Daily requests',
+        models: '3+',
+        modelsLabel: 'Major models'
+      }
+    },
+    welcomeSubtitle: 'Sign in to your {siteName} account',
+    loginSubtitle: 'Sign in to your {siteName} account',
+    rememberMeLabel: 'Remember me',
+    otherLoginMethods: 'Or continue with',
     welcomeBack: 'Welcome Back',
     signInToAccount: 'Sign in to your account to continue',
     signIn: 'Sign In',

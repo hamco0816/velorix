@@ -51,6 +51,8 @@ func RegisterPaymentRoutes(
 	{
 		public.POST("/orders/verify", paymentHandler.VerifyOrderPublic)
 		public.POST("/orders/resolve", paymentHandler.ResolveOrderPublicByResumeToken)
+		// 公开订阅套餐列表，供未登录的首页/落地页展示真实定价（不暴露任何敏感字段）
+		public.GET("/plans", paymentHandler.GetPlansPublic)
 	}
 
 	// --- Webhook endpoints (no auth) ---
