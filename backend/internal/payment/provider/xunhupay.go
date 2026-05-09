@@ -43,7 +43,7 @@ const (
 	xunhupayQueryStatusClosed    = "CD"
 	xunhupayStatusRefunding      = "RD"
 	xunhupayStatusRefundFail     = "UD"
-	xunhupayResponseSummaryMx    = 512
+	xunhupayResponseSummaryMx    = 4096
 )
 
 type xunhupayCredential struct {
@@ -314,10 +314,10 @@ func (x *Xunhupay) CreatePayment(ctx context.Context, req payment.CreatePaymentR
 		ErrMsg    string          `json:"errmsg"`
 	}
 	if err := json.Unmarshal(body, &resp); err != nil {
-		return nil, fmt.Errorf("xunhupay parse: %s", xunhupayResponseSummary(body))
+		return nil, fmt.Errorf("xunhupay parse: %w (body=%s)", err, xunhupayResponseSummary(body))
 	}
 	if !xunhupayCodeIsSuccess(resp.ErrCode) {
-		return nil, fmt.Errorf("xunhupay error: %s", strings.TrimSpace(resp.ErrMsg))
+		return nil, fmt.Errorf("xunhupay error: %s (body=%s)", strings.TrimSpace(resp.ErrMsg), xunhupayResponseSummary(body))
 	}
 
 	payURL := resp.URL
@@ -383,7 +383,7 @@ func (x *Xunhupay) queryOrderWithCredential(ctx context.Context, tradeNo string,
 		ErrMsg  string          `json:"errmsg"`
 	}
 	if err := json.Unmarshal(body, &resp); err != nil {
-		return nil, fmt.Errorf("xunhupay parse query: %s", xunhupayResponseSummary(body))
+		return nil, fmt.Errorf("xunhupay parse query: %w (body=%s)", err, xunhupayResponseSummary(body))
 	}
 	if !xunhupayCodeIsSuccess(resp.ErrCode) {
 		return nil, fmt.Errorf("xunhupay query failed via %s/%s: %s", cred.Scope, orderField, strings.TrimSpace(resp.ErrMsg))
