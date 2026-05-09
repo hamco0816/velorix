@@ -6471,6 +6471,7 @@ export default {
       paymentMethod: '支付方式',
       createdAt: '创建时间',
       cancel: '取消订单',
+      resume: '继续支付',
       userId: '用户 ID',
       orderType: '订单类型',
       actions: '操作',
@@ -6579,6 +6580,8 @@ export default {
     perMonth: '月',
     perYear: '年',
     admin: {
+      title: '订单管理',
+      subtitle: '管理所有用户订单，查询支付状态、订单类型与金额详情。',
       tabs: {
         overview: '概览',
         orders: '订单管理',

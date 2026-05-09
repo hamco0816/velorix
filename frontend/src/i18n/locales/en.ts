@@ -6281,6 +6281,7 @@ export default {
       paymentMethod: 'Payment Method',
       createdAt: 'Created',
       cancel: 'Cancel Order',
+      resume: 'Continue Payment',
       userId: 'User ID',
       orderType: 'Order Type',
       actions: 'Actions',
@@ -6389,6 +6390,8 @@ export default {
     perMonth: 'month',
     perYear: 'year',
     admin: {
+      title: 'Order Management',
+      subtitle: 'Manage all user orders, view payment status, order type and amount details.',
       tabs: {
         overview: 'Overview',
         orders: 'Orders',

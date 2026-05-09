@@ -253,11 +253,12 @@
                       <PaymentMethodSelector
                         :methods="subMethodOptions"
                         :selected="selectedMethod"
+                        layout="list"
                         @select="selectedMethod = $event"
                       />
                     </div>
 
-                    <div class="mt-5 grid gap-3">
+                    <div class="mt-5 space-y-2">
                       <button :class="['btn w-full py-3 text-base font-semibold', paymentButtonClass]" :disabled="!canSubmitSubscription || submitting" @click="confirmSubscribe">
                         <span v-if="submitting" class="flex items-center justify-center gap-2">
                           <span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
@@ -265,7 +266,11 @@
                         </span>
                         <span v-else>{{ t('payment.createOrder') }} ¥{{ (feeRate > 0 ? subTotalAmount : selectedPlan.price).toFixed(2) }}</span>
                       </button>
-                      <button class="btn btn-secondary w-full" @click="selectedPlan = null">{{ t('common.cancel') }}</button>
+                      <button
+                        class="block w-full py-2 text-center text-sm text-gray-500 transition-colors hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+                        @click="selectedPlan = null">
+                        {{ t('common.cancel') }}
+                      </button>
                     </div>
                   </aside>
                 </div>

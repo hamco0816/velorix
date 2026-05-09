@@ -12,7 +12,7 @@
             {{ t('payment.admin.title') }}
           </h1>
           <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-            管理所有用户订单，查询支付状态、订单类型与金额详情。
+            {{ t('payment.admin.subtitle') }}
           </p>
         </div>
       </header>

@@ -3,14 +3,14 @@
     <label class="mb-3 block text-sm font-semibold text-gray-800 dark:text-gray-100">
       {{ t('payment.paymentMethod') }}
     </label>
-    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <div :class="['grid gap-3', layout === 'list' ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2']">
       <button
         v-for="method in sortedMethods"
         :key="method.type"
         type="button"
         :disabled="!method.available"
         :class="[
-          'relative flex min-h-[72px] items-center gap-3 rounded-xl border px-4 text-left transition-colors',
+          'relative flex min-h-[64px] items-center gap-3 rounded-xl border px-3.5 py-2.5 text-left transition-colors',
           !method.available
             ? 'cursor-not-allowed border-gray-200 bg-gray-50 opacity-50 dark:border-dark-700 dark:bg-dark-800/50'
             : selected === method.type
@@ -19,23 +19,23 @@
         ]"
         @click="method.available && emit('select', method.type)"
       >
-        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-gray-100 dark:bg-dark-900 dark:ring-dark-700">
+        <span class="flex h-9 w-9 shrink-0 items-center justify-center">
           <PaymentBrandIcon
             :type="method.type"
             :alt="t(`payment.methods.${method.type}`)"
-            size="26px"
+            size="32px"
           />
         </span>
         <span class="min-w-0 flex-1">
-          <span class="block truncate text-base font-semibold">{{ t(`payment.methods.${method.type}`) }}</span>
-          <span class="mt-1 block text-xs text-gray-500 dark:text-dark-400">
+          <span class="block truncate text-sm font-semibold leading-tight">{{ t(`payment.methods.${method.type}`) }}</span>
+          <span class="mt-0.5 block truncate text-[11px] leading-tight text-gray-500 dark:text-dark-400">
             <template v-if="method.fee_rate > 0">{{ t('payment.fee') }} {{ method.fee_rate }}%</template>
             <template v-else>{{ method.available ? t('common.available') : t('common.notAvailable') }}</template>
           </span>
         </span>
         <span
           v-if="selected === method.type"
-          class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 text-white dark:bg-white dark:text-gray-950"
+          class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gray-900 text-white dark:bg-white dark:text-gray-950"
         >
           <Icon name="check" size="xs" :stroke-width="3" />
         </span>
@@ -57,10 +57,13 @@ export interface PaymentMethodOption {
   available: boolean
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   methods: PaymentMethodOption[]
   selected: string
-}>()
+  layout?: 'grid' | 'list'
+}>(), {
+  layout: 'grid',
+})
 
 const emit = defineEmits<{
   select: [type: string]

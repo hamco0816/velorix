@@ -34,6 +34,10 @@
       <OrderTable :orders="orders" :loading="loading">
         <template #actions="{ row }">
           <div class="flex items-center gap-2">
+            <button v-if="canResumePayment(row)" @click="openResumeDialog(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/20">
+              <Icon name="creditCard" size="sm" />
+              <span>{{ t('payment.orders.resume') }}</span>
+            </button>
             <button v-if="row.status === 'PENDING'" @click="handleCancel(row.id)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-yellow-600 hover:bg-yellow-50 dark:text-yellow-400 dark:hover:bg-yellow-900/20">
               <Icon name="x" size="sm" />
               <span>{{ t('payment.orders.cancel') }}</span>
@@ -66,6 +70,24 @@
           <button class="btn btn-danger" :disabled="actionLoading" @click="confirmCancel">{{ actionLoading ? t('common.processing') : t('payment.orders.cancel') }}</button>
         </div>
       </template>
+    </BaseDialog>
+
+    <!-- Resume Payment Dialog -->
+    <BaseDialog :show="!!resumeTarget" :title="t('payment.orders.resume')" @close="closeResumeDialog">
+      <div v-if="resumeTarget" class="-mx-1">
+        <PaymentStatusPanel
+          :order-id="resumeTarget.id"
+          :qr-code="resumeTarget.qr_code || ''"
+          :qr-code-image="resumeTarget.qr_code_img || ''"
+          :expires-at="resumeTarget.expires_at"
+          :payment-type="resumeTarget.payment_type"
+          :pay-url="resumeTarget.pay_url"
+          :order-type="resumeTarget.order_type"
+          @done="closeResumeDialog"
+          @success="onResumeSuccess"
+          @settled="onResumeSettled"
+        />
+      </div>
     </BaseDialog>
 
     <!-- Refund Dialog -->
@@ -110,6 +132,7 @@ import BaseDialog from '@/components/common/BaseDialog.vue'
 import Select from '@/components/common/Select.vue'
 import Icon from '@/components/icons/Icon.vue'
 import OrderTable from '@/components/payment/OrderTable.vue'
+import PaymentStatusPanel from '@/components/payment/PaymentStatusPanel.vue'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -121,6 +144,7 @@ const orders = ref<PaymentOrder[]>([])
 const refundEligibleProviders = ref<Set<string>>(new Set())
 const currentFilter = ref('')
 const cancelTargetId = ref<number | null>(null)
+const resumeTarget = ref<PaymentOrder | null>(null)
 const refundTarget = ref<PaymentOrder | null>(null)
 const refundReason = ref('')
 const pagination = reactive({ page: 1, page_size: 20, total: 0 })
@@ -192,6 +216,31 @@ function canRequestRefund(order: PaymentOrder): boolean {
   if (order.status !== 'COMPLETED') return false
   if (!order.provider_instance_id) return false
   return refundEligibleProviders.value.has(order.provider_instance_id)
+}
+
+// 待支付订单：未过期 + 至少有 pay_url / qr_code / qr_code_img 之一才能继续支付
+function canResumePayment(order: PaymentOrder): boolean {
+  if (order.status !== 'PENDING') return false
+  if (!order.expires_at) return false
+  if (Date.parse(order.expires_at) <= Date.now()) return false
+  return !!(order.pay_url || order.qr_code || order.qr_code_img)
+}
+
+function openResumeDialog(order: PaymentOrder) {
+  resumeTarget.value = order
+}
+
+function closeResumeDialog() {
+  resumeTarget.value = null
+  fetchOrders()
+}
+
+function onResumeSuccess() {
+  appStore.showSuccess(t('payment.result.success'))
+}
+
+function onResumeSettled(_outcome: 'success' | 'cancelled' | 'expired') {
+  // 让用户看到结果再点确认关闭，settled 不直接关弹窗；列表在关闭时刷新
 }
 
 async function loadRefundEligibility() {

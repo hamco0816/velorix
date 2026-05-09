@@ -95,6 +95,10 @@ export interface PaymentOrder {
   refund_request_reason?: string
   plan_id?: number
   provider_instance_id?: string
+  /** 待支付订单可恢复扫码所需的字段 */
+  pay_url?: string
+  qr_code?: string
+  qr_code_img?: string
 }
 
 // ==================== Plans & Channels ====================
