@@ -313,11 +313,13 @@ func TestXunhupayCreatePaymentDesktopAlipay(t *testing.T) {
 		t.Fatalf("desktop request should not carry wap_* params, got type=%q wap_url=%q wap_name=%q",
 			captured.Get("type"), captured.Get("wap_url"), captured.Get("wap_name"))
 	}
-	if resp.QRCode != "https://qr.example.com/abc" {
-		t.Fatalf("qr code = %q", resp.QRCode)
-	}
+	// 虎皮椒中间页 URL 必须放到 PayURL 走跳转模式；不应放到 QRCode（避免被前端
+	// 当作支付码二次编码导致用户扫码后看到二级二维码页面）。
 	if resp.PayURL != "https://pay.example.com/cashier/abc" {
 		t.Fatalf("pay url = %q", resp.PayURL)
+	}
+	if resp.QRCode != "" {
+		t.Fatalf("qr code should be empty for xunhupay redirect mode, got %q", resp.QRCode)
 	}
 }
 
@@ -357,8 +359,8 @@ func TestXunhupayCreatePaymentAcceptsNumericOpenID(t *testing.T) {
 	if resp.TradeNo != "20297475748" {
 		t.Fatalf("trade_no = %q, want %q", resp.TradeNo, "20297475748")
 	}
-	if resp.QRCode != "https://q.example.com/abc" {
-		t.Fatalf("qr code = %q", resp.QRCode)
+	if resp.PayURL != "https://pay.example.com/cashier/abc" {
+		t.Fatalf("pay url = %q", resp.PayURL)
 	}
 }
 

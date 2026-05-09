@@ -321,16 +321,18 @@ func (x *Xunhupay) CreatePayment(ctx context.Context, req payment.CreatePaymentR
 		return nil, fmt.Errorf("xunhupay error: %s (body=%s)", strings.TrimSpace(resp.ErrMsg), xunhupayResponseSummary(body))
 	}
 
+	// 虎皮椒不暴露原生支付宝/微信二维码内容，url 与 url_qrcode 都是它自己的中间页 URL。
+	// 把 url 作为 PayURL 让前端走跳转模式（用户跳到虎皮椒页面扫码 / 唤起支付，
+	// 完成后通过 return_url 跳回我们的页面），不设 QRCode 字段，避免被前端
+	// 误编码成"扫码后又出现一个二维码页面"的二级跳转。
 	payURL := resp.URL
-	qrCode := resp.URLQrcode
-	if req.IsMobile && payURL == "" {
-		payURL = qrCode
+	if payURL == "" {
+		payURL = resp.URLQrcode
 	}
 	tradeNo := strings.TrimSpace(xunhupayStringify(resp.OpenID))
 	return &payment.CreatePaymentResponse{
 		TradeNo: tradeNo,
 		PayURL:  payURL,
-		QRCode:  qrCode,
 	}, nil
 }
 
