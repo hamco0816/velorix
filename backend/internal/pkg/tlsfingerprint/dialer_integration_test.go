@@ -5,7 +5,8 @@
 // Integration tests for verifying TLS fingerprint correctness.
 // These tests make actual network requests to external services and should be run manually.
 //
-// Run with: go test -v -tags=integration ./internal/pkg/tlsfingerprint/...
+// Run with:
+// TLSFINGERPRINT_RUN_NETWORK_TESTS=1 go test -v -tags=integration ./internal/pkg/tlsfingerprint/...
 package tlsfingerprint
 
 import (
@@ -28,8 +29,11 @@ func skipIfExternalServiceUnavailable(t *testing.T, err error) {
 		if strings.Contains(errStr, "certificate has expired") ||
 			strings.Contains(errStr, "certificate is not yet valid") ||
 			strings.Contains(errStr, "connection refused") ||
+			strings.Contains(errStr, "connection reset") ||
+			strings.Contains(errStr, "EOF") ||
 			strings.Contains(errStr, "no such host") ||
 			strings.Contains(errStr, "network is unreachable") ||
+			strings.Contains(errStr, "forbidden by its access permissions") ||
 			strings.Contains(errStr, "timeout") ||
 			strings.Contains(errStr, "deadline exceeded") {
 			t.Skipf("skipping test: external service unavailable: %v", err)
@@ -46,6 +50,7 @@ func TestJA3Fingerprint(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test in short mode")
 	}
+	skipUnlessNetworkTLSFingerprintTestsEnabled(t)
 
 	profile := &Profile{
 		Name:         "Default Profile Test",
@@ -109,6 +114,7 @@ func TestAllProfiles(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test in short mode")
 	}
+	skipUnlessNetworkTLSFingerprintTestsEnabled(t)
 
 	// Define all profiles to test with their expected fingerprints
 	// These profiles are from config.yaml gateway.tls_fingerprint.profiles
