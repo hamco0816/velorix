@@ -97,6 +97,7 @@ type CreateOrderResponse struct {
 	OutTradeNo   string                          `json:"out_trade_no,omitempty"`
 	PayURL       string                          `json:"pay_url,omitempty"`
 	QRCode       string                          `json:"qr_code,omitempty"`
+	QRCodeImage  string                          `json:"qr_code_image,omitempty"`
 	ClientSecret string                          `json:"client_secret,omitempty"`
 	OAuth        *payment.WechatOAuthInfo        `json:"oauth,omitempty"`
 	JSAPI        *payment.WechatJSAPIPayload     `json:"jsapi,omitempty"`

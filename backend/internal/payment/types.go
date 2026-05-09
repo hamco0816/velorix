@@ -143,7 +143,8 @@ type WechatJSAPIPayload struct {
 type CreatePaymentResponse struct {
 	TradeNo      string                  // Third-party transaction ID
 	PayURL       string                  // H5 payment URL (alipay/wxpay)
-	QRCode       string                  // QR code content for scanning
+	QRCode       string                  // QR code content for scanning (rendered by qrcode.js on the frontend)
+	QRCodeImage  string                  // Pre-rendered QR PNG URL provided by upstream, embed via <img>
 	ClientSecret string                  // Stripe PaymentIntent client secret
 	ResultType   CreatePaymentResultType // Typed result contract for frontend flows
 	OAuth        *WechatOAuthInfo        // WeChat OAuth bootstrap payload when required

@@ -285,10 +285,7 @@ func (x *Xunhupay) CreatePayment(ctx context.Context, req payment.CreatePaymentR
 	if cb := strings.TrimSpace(x.config["callbackUrl"]); cb != "" {
 		params["callback_url"] = cb
 	}
-	// 不显式发 payment 字段：appid 已经唯一标识支付通道，强制传 payment=alipay 会让
-	// 虎皮椒在 PC 端默认路由到 H5 收银台，反而看不到扫码二维码。
-	// 微信支付在虎皮椒侧需要 type=WAP/wap_url/wap_name 才能正常返回收银台页面（PC 仍是二维码，
-	// 移动端是 H5），支付宝 PC 端不带这组参数让虎皮椒自动按 UA 分流 PC 扫码 / 移动 H5。
+	// 微信全程、支付宝移动端需要 H5 收银台参数；支付宝 PC 端不带，由虎皮椒按 UA 返回扫码页。
 	if channel == xunhupayWxPayChannel || (channel == xunhupayAlipayChannel && req.IsMobile) {
 		params["type"] = "WAP"
 		if wapURL := xunhupayWapURL(returnURL, x.config); wapURL != "" {
@@ -306,8 +303,8 @@ func (x *Xunhupay) CreatePayment(ctx context.Context, req payment.CreatePaymentR
 		return nil, fmt.Errorf("xunhupay create: %w", err)
 	}
 
+	// any 兼容虎皮椒不同版本字符串或裸数字返回。
 	var resp struct {
-		// OpenID 用 any 兼容虎皮椒不同版本返回的字符串或裸数字
 		OpenID    any             `json:"openid"`
 		URL       string          `json:"url"`
 		URLQrcode string          `json:"url_qrcode"`
@@ -322,18 +319,13 @@ func (x *Xunhupay) CreatePayment(ctx context.Context, req payment.CreatePaymentR
 		return nil, fmt.Errorf("xunhupay error: %s (body=%s)", strings.TrimSpace(resp.ErrMsg), xunhupayResponseSummary(body))
 	}
 
-	// 虎皮椒不暴露原生支付宝/微信二维码内容，url 与 url_qrcode 都是它自己的中间页 URL。
-	// 把 url 作为 PayURL 让前端走跳转模式（用户跳到虎皮椒页面扫码 / 唤起支付，
-	// 完成后通过 return_url 跳回我们的页面），不设 QRCode 字段，避免被前端
-	// 误编码成"扫码后又出现一个二维码页面"的二级跳转。
-	payURL := resp.URL
-	if payURL == "" {
-		payURL = resp.URLQrcode
-	}
+	// url_qrcode 是虎皮椒预渲染的 PNG 图片地址，前端 <img> 直接嵌入即可显示扫码二维码；
+	// url 是虎皮椒收银台 HTML 页面，作为 PC 跳转 / 移动端 H5 唤起的备用入口。
 	tradeNo := strings.TrimSpace(xunhupayStringify(resp.OpenID))
 	return &payment.CreatePaymentResponse{
-		TradeNo: tradeNo,
-		PayURL:  payURL,
+		TradeNo:     tradeNo,
+		PayURL:      resp.URL,
+		QRCodeImage: resp.URLQrcode,
 	}, nil
 }
 
@@ -375,7 +367,7 @@ func (x *Xunhupay) queryOrderWithCredential(ctx context.Context, tradeNo string,
 	if err := xunhupayVerifyResponseHash(body, cred.AppSecret); err != nil {
 		return nil, fmt.Errorf("xunhupay query: %w", err)
 	}
-	// 各字段统一用 any 兼容虎皮椒不同版本可能返回字符串或裸数字
+	// any 兼容虎皮椒不同版本字符串或裸数字返回。
 	var resp struct {
 		Data struct {
 			Status        any `json:"status"`

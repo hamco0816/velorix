@@ -32,6 +32,7 @@ export interface PaymentRecoverySnapshot {
   orderId: number
   amount: number
   qrCode: string
+  qrCodeImage: string
   expiresAt: string
   paymentType: string
   payUrl: string
@@ -133,6 +134,7 @@ export function decidePaymentLaunch(
     orderId: result.order_id,
     amount: result.amount,
     qrCode: result.qr_code || '',
+    qrCodeImage: result.qr_code_image || '',
     expiresAt: result.expires_at || '',
     paymentType: visibleMethod,
     payUrl: result.pay_url || '',
@@ -170,15 +172,16 @@ export function decidePaymentLaunch(
     return { kind: 'wechat_jsapi', paymentState: baseState, recovery: baseState, jsapi: jsapiPayload }
   }
 
+  const hasQr = !!baseState.qrCode || !!baseState.qrCodeImage
   const normalizedPaymentMode = baseState.paymentMode.trim().toLowerCase()
   const prefersRedirect = normalizedPaymentMode === 'redirect'
     || normalizedPaymentMode === 'popup'
     || (context.isMobile && !!baseState.payUrl)
   const prefersQr = normalizedPaymentMode === 'qrcode'
     || normalizedPaymentMode === 'native'
-    || (!prefersRedirect && !!baseState.qrCode)
+    || (!prefersRedirect && hasQr)
 
-  if (visibleMethod === 'wxpay' && context.isWechatBrowser && baseState.payUrl && !baseState.qrCode) {
+  if (visibleMethod === 'wxpay' && context.isWechatBrowser && baseState.payUrl && !hasQr) {
     return { kind: 'redirect_waiting', paymentState: baseState, recovery: baseState }
   }
 
@@ -186,7 +189,7 @@ export function decidePaymentLaunch(
     return { kind: 'redirect_waiting', paymentState: baseState, recovery: baseState }
   }
 
-  if (prefersQr && baseState.qrCode) {
+  if (prefersQr && hasQr) {
     return { kind: 'qr_waiting', paymentState: baseState, recovery: baseState }
   }
 
@@ -260,6 +263,7 @@ export function readPaymentRecoverySnapshot(
       orderId: parsed.orderId,
       amount: parsed.amount,
       qrCode: parsed.qrCode,
+      qrCodeImage: typeof parsed.qrCodeImage === 'string' ? parsed.qrCodeImage : '',
       expiresAt: parsed.expiresAt,
       paymentType: parsed.paymentType,
       payUrl: parsed.payUrl,

@@ -188,6 +188,7 @@ export interface CreateOrderResult {
   amount: number
   pay_url?: string
   qr_code?: string
+  qr_code_image?: string
   client_secret?: string
   pay_amount: number
   fee_rate: number
