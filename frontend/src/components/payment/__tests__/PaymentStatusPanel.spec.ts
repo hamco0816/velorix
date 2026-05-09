@@ -119,13 +119,69 @@ describe('PaymentStatusPanel', () => {
     await flushPromises()
     expect(wrapper.text()).toContain('payment.qr.openPayWindow')
 
-    await wrapper.get('button.btn.btn-secondary.text-sm').trigger('click')
+    const reopenBtn = wrapper.findAll('button').find((b) => b.text().includes('payment.qr.openPayWindow'))
+    expect(reopenBtn).toBeTruthy()
+    await reopenBtn!.trigger('click')
     expect(openSpy).toHaveBeenCalledWith(
       'https://pay.example.com/session/42',
       'paymentPopup',
       expect.any(String),
     )
 
+    openSpy.mockRestore()
+  })
+
+  it('hides reopen button when image-mode QR is shown (xunhupay PNG endpoint)', async () => {
+    const wrapper = mount(PaymentStatusPanel, {
+      props: {
+        orderId: 42,
+        qrCode: '',
+        qrCodeImage: 'https://api.xunhupay.com/plugins/newQrcode?data=abc',
+        payUrl: 'https://api.xunhupay.com/payments/alipay/newQrcode?id=42',
+        expiresAt: '2099-01-01T12:30:00Z',
+        paymentType: 'alipay',
+        orderType: 'balance',
+      },
+      global: { stubs: { Icon: true } },
+    })
+
+    await flushPromises()
+
+    const img = wrapper.find('img[src^="https://api.xunhupay.com/plugins/newQrcode"]')
+    expect(img.exists()).toBe(true)
+    const reopenBtn = wrapper.findAll('button').find((b) => b.text().includes('payment.qr.openPayWindow'))
+    expect(reopenBtn).toBeUndefined()
+  })
+
+  it('falls back to reopen button when QR image fails to load', async () => {
+    const openSpy = vi.spyOn(window, 'open').mockReturnValue({ closed: false } as Window)
+
+    const wrapper = mount(PaymentStatusPanel, {
+      props: {
+        orderId: 42,
+        qrCode: '',
+        qrCodeImage: 'https://api.xunhupay.com/plugins/newQrcode?data=abc',
+        payUrl: 'https://api.xunhupay.com/payments/alipay/newQrcode?id=42',
+        expiresAt: '2099-01-01T12:30:00Z',
+        paymentType: 'alipay',
+        orderType: 'balance',
+      },
+      global: { stubs: { Icon: true } },
+    })
+
+    await flushPromises()
+    await wrapper.find('img[src^="https://api.xunhupay.com/plugins/newQrcode"]').trigger('error')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('payment.qr.imageLoadFailed')
+    const reopenBtn = wrapper.findAll('button').find((b) => b.text().includes('payment.qr.openPayWindow'))
+    expect(reopenBtn).toBeTruthy()
+    await reopenBtn!.trigger('click')
+    expect(openSpy).toHaveBeenCalledWith(
+      'https://api.xunhupay.com/payments/alipay/newQrcode?id=42',
+      'paymentPopup',
+      expect.any(String),
+    )
     openSpy.mockRestore()
   })
 })

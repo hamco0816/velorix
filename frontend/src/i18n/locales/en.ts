@@ -6264,6 +6264,7 @@ export default {
       cancelledDesc: 'You have cancelled this payment.',
       waitingPayment: 'Waiting for payment...',
       cancelOrder: 'Cancel Order',
+      imageLoadFailed: 'QR image failed to load. Use the fallback link below to pay.',
     },
     orders: {
       title: 'My Orders',

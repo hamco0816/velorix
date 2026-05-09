@@ -71,53 +71,92 @@
 
     <!-- QR Code Mode -->
     <template v-else-if="qrUrl || qrImageUrl">
-      <div class="card p-6">
-        <div class="flex flex-col items-center space-y-4">
-          <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ scanTitle }}</p>
-          <div :class="['relative rounded-lg border-2 p-4', qrBorderClass]">
-            <img v-if="qrImageUrl" :src="qrImageUrl" alt="" class="mx-auto h-[220px] w-[220px]" />
-            <canvas v-else ref="qrCanvas" class="mx-auto"></canvas>
-            <!-- Brand logo overlay -->
-            <div v-if="!qrImageUrl" class="pointer-events-none absolute inset-0 flex items-center justify-center">
-              <span :class="['rounded-full p-2 shadow ring-2 ring-white', qrLogoBgClass]">
+      <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-dark-700 dark:bg-dark-800">
+        <!-- 品牌头部 -->
+        <div :class="['flex items-center gap-3 px-5 py-3', qrHeaderBgClass]">
+          <span :class="['flex h-9 w-9 items-center justify-center rounded-full ring-2 ring-white/60', qrLogoBgClass]">
+            <img :src="isAlipay ? alipayIcon : wxpayIcon" alt="" class="h-5 w-5 brightness-0 invert" />
+          </span>
+          <div class="flex-1">
+            <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ scanTitle }}</p>
+            <p v-if="scanHint" class="text-xs text-gray-500 dark:text-gray-400">{{ scanHint }}</p>
+          </div>
+          <div class="hidden text-right sm:block">
+            <p class="text-[11px] uppercase tracking-wide text-gray-400 dark:text-gray-500">{{ t('payment.qr.expiresIn') }}</p>
+            <p :class="['text-base font-semibold tabular-nums', countdownColorClass]">{{ countdownDisplay }}</p>
+          </div>
+        </div>
+        <!-- 二维码主区域 -->
+        <div class="flex flex-col items-center px-5 py-7">
+          <!-- 图片加载失败时改用 canvas/payUrl 备用入口 -->
+          <div v-if="qrImageUrl && qrImageError" class="flex flex-col items-center gap-3 rounded-xl border border-dashed border-gray-300 px-6 py-8 text-center dark:border-dark-600">
+            <Icon name="infoCircle" size="md" class="text-amber-500" />
+            <p class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ t('payment.qr.imageLoadFailed') }}</p>
+            <button v-if="payUrl" class="text-sm text-primary-600 underline-offset-2 hover:underline dark:text-primary-400" @click="reopenPopup">
+              {{ t('payment.qr.openPayWindow') }}
+            </button>
+          </div>
+          <div v-else :class="['rounded-xl border-2 bg-white p-3', qrBorderClass]">
+            <img v-if="qrImageUrl" :src="qrImageUrl" alt="" class="block h-[220px] w-[220px]" @error="onQrImageError" @load="onQrImageLoad" />
+            <div v-else class="relative">
+              <canvas ref="qrCanvas" class="block"></canvas>
+              <span :class="['pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full p-2 shadow ring-2 ring-white', qrLogoBgClass]">
                 <img :src="isAlipay ? alipayIcon : wxpayIcon" alt="" class="h-5 w-5 brightness-0 invert" />
               </span>
             </div>
           </div>
-          <p v-if="scanHint" class="text-center text-sm text-gray-500 dark:text-gray-400">{{ scanHint }}</p>
-          <button v-if="payUrl" class="btn btn-secondary text-sm" @click="reopenPopup">
+          <div class="mt-5 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+            <span class="relative flex h-2 w-2">
+              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+            </span>
+            <span>{{ t('payment.qr.waitingPayment') }}</span>
+          </div>
+          <p class="mt-1 text-[11px] sm:hidden" :class="countdownColorClass">
+            {{ t('payment.qr.expiresIn') }} · <span class="tabular-nums">{{ countdownDisplay }}</span>
+          </p>
+        </div>
+        <!-- 底部次级操作 -->
+        <div class="flex divide-x divide-gray-100 border-t border-gray-100 text-sm dark:divide-dark-700 dark:border-dark-700">
+          <button v-if="payUrl && (!qrImageUrl || qrImageError)"
+            class="flex-1 py-3 text-gray-600 transition hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-dark-700"
+            @click="reopenPopup">
             {{ t('payment.qr.openPayWindow') }}
+          </button>
+          <button
+            class="flex-1 py-3 text-gray-500 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-400 dark:hover:bg-dark-700"
+            :disabled="cancelling" @click="handleCancel">
+            {{ cancelling ? t('common.processing') : t('payment.qr.cancelOrder') }}
           </button>
         </div>
       </div>
-      <div class="card p-4 text-center">
-        <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('payment.qr.expiresIn') }}</p>
-        <p class="mt-1 text-2xl font-bold tabular-nums text-gray-900 dark:text-white">{{ countdownDisplay }}</p>
-        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">{{ t('payment.qr.waitingPayment') }}</p>
-      </div>
-      <button class="btn btn-secondary w-full" :disabled="cancelling" @click="handleCancel">
-        {{ cancelling ? t('common.processing') : t('payment.qr.cancelOrder') }}
-      </button>
     </template>
 
     <!-- Waiting for Popup/Redirect Mode -->
     <template v-else>
-      <div class="card p-6">
-        <div class="flex flex-col items-center space-y-4 py-4">
+      <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-dark-700 dark:bg-dark-800">
+        <div class="flex flex-col items-center gap-4 px-5 py-10">
           <div class="h-10 w-10 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
-          <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('payment.qr.payInNewWindowHint') }}</p>
-          <button v-if="payUrl" class="btn btn-secondary text-sm" @click="reopenPopup">
+          <p class="text-sm text-gray-700 dark:text-gray-200">{{ t('payment.qr.payInNewWindowHint') }}</p>
+          <button v-if="payUrl"
+            class="rounded-lg bg-primary-50 px-4 py-2 text-sm font-medium text-primary-600 transition hover:bg-primary-100 dark:bg-primary-500/10 dark:text-primary-400 dark:hover:bg-primary-500/20"
+            @click="reopenPopup">
             {{ t('payment.qr.openPayWindow') }}
+          </button>
+          <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+            <span>{{ t('payment.qr.expiresIn') }}</span>
+            <span :class="['font-semibold tabular-nums', countdownColorClass]">{{ countdownDisplay }}</span>
+          </div>
+          <p class="text-[11px] text-gray-400 dark:text-gray-500">{{ t('payment.qr.waitingPayment') }}</p>
+        </div>
+        <div class="flex border-t border-gray-100 dark:border-dark-700">
+          <button
+            class="flex-1 py-3 text-sm text-gray-500 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:text-gray-400 dark:hover:bg-dark-700"
+            :disabled="cancelling" @click="handleCancel">
+            {{ cancelling ? t('common.processing') : t('payment.qr.cancelOrder') }}
           </button>
         </div>
       </div>
-      <div class="card p-4 text-center">
-        <p class="mt-1 text-2xl font-bold tabular-nums text-gray-900 dark:text-white">{{ countdownDisplay }}</p>
-        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">{{ t('payment.qr.waitingPayment') }}</p>
-      </div>
-      <button class="btn btn-secondary w-full" :disabled="cancelling" @click="handleCancel">
-        {{ cancelling ? t('common.processing') : t('payment.qr.cancelOrder') }}
-      </button>
     </template>
   </div>
 </template>
@@ -157,6 +196,10 @@ const appStore = useAppStore()
 const qrCanvas = ref<HTMLCanvasElement | null>(null)
 const qrUrl = ref('')
 const qrImageUrl = computed(() => props.qrCodeImage || '')
+const qrImageError = ref(false)
+
+function onQrImageError() { qrImageError.value = true }
+function onQrImageLoad() { qrImageError.value = false }
 const remainingSeconds = ref(0)
 const cancelling = ref(false)
 const paidOrder = ref<PaymentOrder | null>(null)
@@ -171,9 +214,15 @@ const isAlipay = computed(() => props.paymentType.includes('alipay'))
 const isWxpay = computed(() => props.paymentType.includes('wxpay'))
 
 const qrBorderClass = computed(() => {
-  if (isAlipay.value) return 'border-[#00AEEF] bg-blue-50 dark:border-[#00AEEF]/70 dark:bg-blue-950/20'
-  if (isWxpay.value) return 'border-[#2BB741] bg-green-50 dark:border-[#2BB741]/70 dark:bg-green-950/20'
-  return 'border-gray-200 bg-white dark:border-dark-600 dark:bg-dark-800'
+  if (isAlipay.value) return 'border-[#00AEEF]/40'
+  if (isWxpay.value) return 'border-[#2BB741]/40'
+  return 'border-gray-200'
+})
+
+const qrHeaderBgClass = computed(() => {
+  if (isAlipay.value) return 'bg-gradient-to-r from-[#E6F6FE] to-transparent dark:from-[#00AEEF]/10'
+  if (isWxpay.value) return 'bg-gradient-to-r from-[#E8F6EB] to-transparent dark:from-[#2BB741]/10'
+  return 'bg-gray-50 dark:bg-dark-700'
 })
 
 const qrLogoBgClass = computed(() => {
@@ -198,6 +247,12 @@ const countdownDisplay = computed(() => {
   const m = Math.floor(remainingSeconds.value / 60)
   const s = remainingSeconds.value % 60
   return m.toString().padStart(2, '0') + ':' + s.toString().padStart(2, '0')
+})
+
+const countdownColorClass = computed(() => {
+  if (remainingSeconds.value <= 60) return 'text-red-500 dark:text-red-400'
+  if (remainingSeconds.value <= 300) return 'text-amber-500 dark:text-amber-400'
+  return 'text-gray-900 dark:text-white'
 })
 
 function isSuccessStatus(status: string | null | undefined): boolean {

@@ -6454,6 +6454,7 @@ export default {
       cancelledDesc: '您已取消本次支付',
       waitingPayment: '等待支付...',
       cancelOrder: '取消订单',
+      imageLoadFailed: '二维码加载失败，请使用下方备用入口完成支付',
     },
     orders: {
       title: '我的订单',
