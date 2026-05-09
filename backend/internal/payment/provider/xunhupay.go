@@ -306,7 +306,8 @@ func (x *Xunhupay) CreatePayment(ctx context.Context, req payment.CreatePaymentR
 	}
 
 	var resp struct {
-		OpenID    string          `json:"openid"`
+		// OpenID 用 any 兼容虎皮椒不同版本返回的字符串或裸数字
+		OpenID    any             `json:"openid"`
 		URL       string          `json:"url"`
 		URLQrcode string          `json:"url_qrcode"`
 		Hash      string          `json:"hash"`
@@ -325,7 +326,7 @@ func (x *Xunhupay) CreatePayment(ctx context.Context, req payment.CreatePaymentR
 	if req.IsMobile && payURL == "" {
 		payURL = qrCode
 	}
-	tradeNo := strings.TrimSpace(resp.OpenID)
+	tradeNo := strings.TrimSpace(xunhupayStringify(resp.OpenID))
 	return &payment.CreatePaymentResponse{
 		TradeNo: tradeNo,
 		PayURL:  payURL,
@@ -371,13 +372,14 @@ func (x *Xunhupay) queryOrderWithCredential(ctx context.Context, tradeNo string,
 	if err := xunhupayVerifyResponseHash(body, cred.AppSecret); err != nil {
 		return nil, fmt.Errorf("xunhupay query: %w", err)
 	}
+	// 各字段统一用 any 兼容虎皮椒不同版本可能返回字符串或裸数字
 	var resp struct {
 		Data struct {
-			Status        string `json:"status"`
-			TotalFee      string `json:"total_fee"`
-			TransactionID string `json:"transaction_id"`
-			OpenOrderID   string `json:"open_order_id"`
-			Time          string `json:"time"`
+			Status        any `json:"status"`
+			TotalFee      any `json:"total_fee"`
+			TransactionID any `json:"transaction_id"`
+			OpenOrderID   any `json:"open_order_id"`
+			Time          any `json:"time"`
 		} `json:"data"`
 		ErrCode json.RawMessage `json:"errcode"`
 		ErrMsg  string          `json:"errmsg"`
@@ -388,13 +390,14 @@ func (x *Xunhupay) queryOrderWithCredential(ctx context.Context, tradeNo string,
 	if !xunhupayCodeIsSuccess(resp.ErrCode) {
 		return nil, fmt.Errorf("xunhupay query failed via %s/%s: %s", cred.Scope, orderField, strings.TrimSpace(resp.ErrMsg))
 	}
-	amount, err := strconv.ParseFloat(resp.Data.TotalFee, 64)
+	totalFeeStr := strings.TrimSpace(xunhupayStringify(resp.Data.TotalFee))
+	amount, err := strconv.ParseFloat(totalFeeStr, 64)
 	if err != nil || amount <= 0 {
-		return nil, fmt.Errorf("xunhupay query invalid total_fee: %q", resp.Data.TotalFee)
+		return nil, fmt.Errorf("xunhupay query invalid total_fee: %q", totalFeeStr)
 	}
 	return &payment.QueryOrderResponse{
-		TradeNo:  resp.Data.OpenOrderID,
-		Status:   xunhupayMapStatus(resp.Data.Status),
+		TradeNo:  strings.TrimSpace(xunhupayStringify(resp.Data.OpenOrderID)),
+		Status:   xunhupayMapStatus(strings.TrimSpace(xunhupayStringify(resp.Data.Status))),
 		Amount:   amount,
 		Metadata: map[string]string{"appid": cred.AppID},
 	}, nil

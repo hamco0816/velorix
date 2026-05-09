@@ -321,6 +321,47 @@ func TestXunhupayCreatePaymentDesktopAlipay(t *testing.T) {
 	}
 }
 
+// 兼容虎皮椒以裸数字返回 openid 的版本（曾因 struct 写成 string 解析失败）。
+func TestXunhupayCreatePaymentAcceptsNumericOpenID(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if err := r.ParseForm(); err != nil {
+			t.Fatalf("parse form: %v", err)
+		}
+		// 直接拼出 openid 为裸数字的 JSON，不能用 map[string]any 因为 Go 会包成字符串
+		raw := `{"openid":20297475748,"url_qrcode":"https://q.example.com/abc","url":"https://pay.example.com/cashier/abc","errcode":0,"errmsg":"success!"}`
+		_, _ = w.Write([]byte(raw))
+	}))
+	defer server.Close()
+
+	x, err := NewXunhupay("inst-1", map[string]string{
+		"alipayAppId":     "ali-app",
+		"alipayAppSecret": "ali-secret",
+		"notifyUrl":       "https://example.com/notify",
+		"apiBase":         server.URL,
+	})
+	if err != nil {
+		t.Fatalf("create xunhupay: %v", err)
+	}
+
+	resp, err := x.CreatePayment(context.Background(), payment.CreatePaymentRequest{
+		OrderID:     "ord-numeric-openid",
+		Amount:      "9.90",
+		PaymentType: payment.TypeAlipay,
+		Subject:     "VIP plan",
+		ReturnURL:   "https://shop.example.com/return",
+		IsMobile:    false,
+	})
+	if err != nil {
+		t.Fatalf("create payment: %v", err)
+	}
+	if resp.TradeNo != "20297475748" {
+		t.Fatalf("trade_no = %q, want %q", resp.TradeNo, "20297475748")
+	}
+	if resp.QRCode != "https://q.example.com/abc" {
+		t.Fatalf("qr code = %q", resp.QRCode)
+	}
+}
+
 // 移动端支付宝下单：必须带 type=WAP / wap_url / wap_name。
 func TestXunhupayCreatePaymentMobileAlipayCarriesWapParams(t *testing.T) {
 	var captured url.Values
