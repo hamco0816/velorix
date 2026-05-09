@@ -273,7 +273,6 @@ func (x *Xunhupay) CreatePayment(ctx context.Context, req payment.CreatePaymentR
 		"version":        xunhupayAPIVersion,
 		"appid":          cred.AppID,
 		"trade_order_id": req.OrderID,
-		"payment":        channel,
 		"total_fee":      req.Amount,
 		"title":          req.Subject,
 		"time":           strconv.FormatInt(time.Now().Unix(), 10),
@@ -286,15 +285,17 @@ func (x *Xunhupay) CreatePayment(ctx context.Context, req payment.CreatePaymentR
 	if cb := strings.TrimSpace(x.config["callbackUrl"]); cb != "" {
 		params["callback_url"] = cb
 	}
-	// 移动端 H5 支付需要补充 wap_url / wap_name，否则虎皮椒会拒绝下单。
-	if req.IsMobile {
+	// 不显式发 payment 字段：appid 已经唯一标识支付通道，强制传 payment=alipay 会让
+	// 虎皮椒在 PC 端默认路由到 H5 收银台，反而看不到扫码二维码。
+	// 微信支付在虎皮椒侧需要 type=WAP/wap_url/wap_name 才能正常返回收银台页面（PC 仍是二维码，
+	// 移动端是 H5），支付宝 PC 端不带这组参数让虎皮椒自动按 UA 分流 PC 扫码 / 移动 H5。
+	if channel == xunhupayWxPayChannel || (channel == xunhupayAlipayChannel && req.IsMobile) {
 		params["type"] = "WAP"
 		if wapURL := xunhupayWapURL(returnURL, x.config); wapURL != "" {
 			params["wap_url"] = wapURL
 		}
 		params["wap_name"] = xunhupayWapName(req.Subject, x.config)
 	}
-	params["plugins"] = "sub2api"
 	params["hash"] = xunhupaySign(params, cred.AppSecret)
 
 	body, err := x.post(ctx, x.apiBase()+xunhupayPathPay, params)

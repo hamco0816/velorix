@@ -300,8 +300,9 @@ func TestXunhupayCreatePaymentDesktopAlipay(t *testing.T) {
 	if err != nil {
 		t.Fatalf("create payment: %v", err)
 	}
-	if captured.Get("payment") != xunhupayAlipayChannel {
-		t.Fatalf("payment field = %q, want %q", captured.Get("payment"), xunhupayAlipayChannel)
+	// 不应显式发 payment 字段（虎皮椒会按 appid 自动分流；强制发 payment=alipay 反而会让 PC 走 H5）
+	if got := captured.Get("payment"); got != "" {
+		t.Fatalf("payment field should be empty, got %q", got)
 	}
 	if captured.Get("appid") != "ali-app" {
 		t.Fatalf("appid = %q", captured.Get("appid"))
@@ -310,7 +311,7 @@ func TestXunhupayCreatePaymentDesktopAlipay(t *testing.T) {
 		t.Fatalf("trade_order_id = %q", captured.Get("trade_order_id"))
 	}
 	if captured.Get("type") != "" || captured.Get("wap_url") != "" || captured.Get("wap_name") != "" {
-		t.Fatalf("desktop request should not carry wap_* params, got type=%q wap_url=%q wap_name=%q",
+		t.Fatalf("desktop alipay should not carry wap_* params, got type=%q wap_url=%q wap_name=%q",
 			captured.Get("type"), captured.Get("wap_url"), captured.Get("wap_name"))
 	}
 	// 虎皮椒中间页 URL 必须放到 PayURL 走跳转模式；不应放到 QRCode（避免被前端
@@ -412,8 +413,51 @@ func TestXunhupayCreatePaymentMobileAlipayCarriesWapParams(t *testing.T) {
 	if captured.Get("wap_name") != "VIP plan" {
 		t.Fatalf("wap_name = %q", captured.Get("wap_name"))
 	}
-	if captured.Get("payment") != xunhupayAlipayChannel {
-		t.Fatalf("payment = %q", captured.Get("payment"))
+	if got := captured.Get("payment"); got != "" {
+		t.Fatalf("payment should be empty (let xunhupay route by appid), got %q", got)
+	}
+}
+
+// 桌面端微信支付：必须带 type=WAP / wap_url / wap_name，否则虎皮椒可能拒绝下单。
+func TestXunhupayCreatePaymentDesktopWxpayCarriesWapParams(t *testing.T) {
+	var captured url.Values
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if err := r.ParseForm(); err != nil {
+			t.Fatalf("parse form: %v", err)
+		}
+		captured = r.PostForm
+		_, _ = w.Write([]byte(`{"errcode":0,"errmsg":"","url":"https://pay.example.com/wx-cashier/abc","openid":"open-3"}`))
+	}))
+	defer server.Close()
+
+	x, err := NewXunhupay("inst-1", map[string]string{
+		"wxpayAppId":     "wx-app",
+		"wxpayAppSecret": "wx-secret",
+		"notifyUrl":      "https://example.com/notify",
+		"apiBase":        server.URL,
+	})
+	if err != nil {
+		t.Fatalf("create xunhupay: %v", err)
+	}
+
+	if _, err := x.CreatePayment(context.Background(), payment.CreatePaymentRequest{
+		OrderID:     "ord-wx-desktop",
+		Amount:      "1.00",
+		PaymentType: payment.TypeWxpay,
+		Subject:     "VIP plan",
+		ReturnURL:   "https://shop.example.com/return",
+		IsMobile:    false,
+	}); err != nil {
+		t.Fatalf("create payment: %v", err)
+	}
+	if captured.Get("type") != "WAP" {
+		t.Fatalf("type = %q, want WAP", captured.Get("type"))
+	}
+	if captured.Get("wap_url") != "https://shop.example.com" {
+		t.Fatalf("wap_url = %q", captured.Get("wap_url"))
+	}
+	if got := captured.Get("payment"); got != "" {
+		t.Fatalf("payment should be empty, got %q", got)
 	}
 }
 
