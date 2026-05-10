@@ -54,6 +54,11 @@ const (
 	subFieldWeeklyUsage  = "weekly_usage"
 	subFieldMonthlyUsage = "monthly_usage"
 	subFieldVersion      = "version"
+	// 限额快照（migration 138）：缺失即 nil，调度回落到 group 限额
+	subFieldDailyLimit   = "daily_limit_usd"
+	subFieldWeeklyLimit  = "weekly_limit_usd"
+	subFieldMonthlyLimit = "monthly_limit_usd"
+	subFieldRateMul      = "rate_multiplier"
 )
 
 // billingRateLimitKey generates the Redis key for API key rate limit cache.
@@ -214,6 +219,25 @@ func (c *billingCache) parseSubscriptionCache(data map[string]string) (*service.
 		result.Version, _ = strconv.ParseInt(versionStr, 10, 64)
 	}
 
+	// 限额快照：字段不存在 → 保持 nil（调度回落到 group）
+	if v, ok := data[subFieldDailyLimit]; ok && v != "" {
+		if f, err := strconv.ParseFloat(v, 64); err == nil {
+			result.DailyLimitUSD = &f
+		}
+	}
+	if v, ok := data[subFieldWeeklyLimit]; ok && v != "" {
+		if f, err := strconv.ParseFloat(v, 64); err == nil {
+			result.WeeklyLimitUSD = &f
+		}
+	}
+	if v, ok := data[subFieldMonthlyLimit]; ok && v != "" {
+		if f, err := strconv.ParseFloat(v, 64); err == nil {
+			result.MonthlyLimitUSD = &f
+		}
+	}
+	// rate_multiplier 不在 SubscriptionCacheData 上（cache 主要服务限额校验，倍率读 sub/group 即时值）；
+	// 解析后丢弃也无妨——保留扩展接口但当前不用
+
 	return result, nil
 }
 
@@ -232,8 +256,20 @@ func (c *billingCache) SetSubscriptionCache(ctx context.Context, userID, groupID
 		subFieldMonthlyUsage: data.MonthlyUsage,
 		subFieldVersion:      data.Version,
 	}
+	// 限额快照只在非 nil 时写入，缺省 = "用 group 默认"
+	if data.DailyLimitUSD != nil {
+		fields[subFieldDailyLimit] = *data.DailyLimitUSD
+	}
+	if data.WeeklyLimitUSD != nil {
+		fields[subFieldWeeklyLimit] = *data.WeeklyLimitUSD
+	}
+	if data.MonthlyLimitUSD != nil {
+		fields[subFieldMonthlyLimit] = *data.MonthlyLimitUSD
+	}
 
 	pipe := c.rdb.Pipeline()
+	// 先 Del 再 HSet 避免上次写入的快照字段残留（plan 改动后 sub 重建立缓存时旧字段会污染）
+	pipe.Del(ctx, key)
 	pipe.HSet(ctx, key, fields)
 	pipe.Expire(ctx, key, jitteredTTL())
 	_, err := pipe.Exec(ctx)

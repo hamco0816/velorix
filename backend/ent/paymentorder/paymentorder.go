@@ -56,6 +56,8 @@ const (
 	FieldProviderKey = "provider_key"
 	// FieldProviderSnapshot holds the string denoting the provider_snapshot field in the database.
 	FieldProviderSnapshot = "provider_snapshot"
+	// FieldRenewalSeatID holds the string denoting the renewal_seat_id field in the database.
+	FieldRenewalSeatID = "renewal_seat_id"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldRefundAmount holds the string denoting the refund_amount field in the database.
@@ -129,6 +131,7 @@ var Columns = []string{
 	FieldProviderInstanceID,
 	FieldProviderKey,
 	FieldProviderSnapshot,
+	FieldRenewalSeatID,
 	FieldStatus,
 	FieldRefundAmount,
 	FieldRefundReason,
@@ -312,6 +315,11 @@ func ByProviderInstanceID(opts ...sql.OrderTermOption) OrderOption {
 // ByProviderKey orders the results by the provider_key field.
 func ByProviderKey(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldProviderKey, opts...).ToFunc()
+}
+
+// ByRenewalSeatID orders the results by the renewal_seat_id field.
+func ByRenewalSeatID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRenewalSeatID, opts...).ToFunc()
 }
 
 // ByStatus orders the results by the status field.

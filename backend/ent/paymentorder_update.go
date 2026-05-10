@@ -417,6 +417,33 @@ func (_u *PaymentOrderUpdate) ClearProviderSnapshot() *PaymentOrderUpdate {
 	return _u
 }
 
+// SetRenewalSeatID sets the "renewal_seat_id" field.
+func (_u *PaymentOrderUpdate) SetRenewalSeatID(v int64) *PaymentOrderUpdate {
+	_u.mutation.ResetRenewalSeatID()
+	_u.mutation.SetRenewalSeatID(v)
+	return _u
+}
+
+// SetNillableRenewalSeatID sets the "renewal_seat_id" field if the given value is not nil.
+func (_u *PaymentOrderUpdate) SetNillableRenewalSeatID(v *int64) *PaymentOrderUpdate {
+	if v != nil {
+		_u.SetRenewalSeatID(*v)
+	}
+	return _u
+}
+
+// AddRenewalSeatID adds value to the "renewal_seat_id" field.
+func (_u *PaymentOrderUpdate) AddRenewalSeatID(v int64) *PaymentOrderUpdate {
+	_u.mutation.AddRenewalSeatID(v)
+	return _u
+}
+
+// ClearRenewalSeatID clears the value of the "renewal_seat_id" field.
+func (_u *PaymentOrderUpdate) ClearRenewalSeatID() *PaymentOrderUpdate {
+	_u.mutation.ClearRenewalSeatID()
+	return _u
+}
+
 // SetStatus sets the "status" field.
 func (_u *PaymentOrderUpdate) SetStatus(v string) *PaymentOrderUpdate {
 	_u.mutation.SetStatus(v)
@@ -959,6 +986,15 @@ func (_u *PaymentOrderUpdate) sqlSave(ctx context.Context) (_node int, err error
 	if _u.mutation.ProviderSnapshotCleared() {
 		_spec.ClearField(paymentorder.FieldProviderSnapshot, field.TypeJSON)
 	}
+	if value, ok := _u.mutation.RenewalSeatID(); ok {
+		_spec.SetField(paymentorder.FieldRenewalSeatID, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedRenewalSeatID(); ok {
+		_spec.AddField(paymentorder.FieldRenewalSeatID, field.TypeInt64, value)
+	}
+	if _u.mutation.RenewalSeatIDCleared() {
+		_spec.ClearField(paymentorder.FieldRenewalSeatID, field.TypeInt64)
+	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(paymentorder.FieldStatus, field.TypeString, value)
 	}
@@ -1477,6 +1513,33 @@ func (_u *PaymentOrderUpdateOne) SetProviderSnapshot(v map[string]interface{}) *
 // ClearProviderSnapshot clears the value of the "provider_snapshot" field.
 func (_u *PaymentOrderUpdateOne) ClearProviderSnapshot() *PaymentOrderUpdateOne {
 	_u.mutation.ClearProviderSnapshot()
+	return _u
+}
+
+// SetRenewalSeatID sets the "renewal_seat_id" field.
+func (_u *PaymentOrderUpdateOne) SetRenewalSeatID(v int64) *PaymentOrderUpdateOne {
+	_u.mutation.ResetRenewalSeatID()
+	_u.mutation.SetRenewalSeatID(v)
+	return _u
+}
+
+// SetNillableRenewalSeatID sets the "renewal_seat_id" field if the given value is not nil.
+func (_u *PaymentOrderUpdateOne) SetNillableRenewalSeatID(v *int64) *PaymentOrderUpdateOne {
+	if v != nil {
+		_u.SetRenewalSeatID(*v)
+	}
+	return _u
+}
+
+// AddRenewalSeatID adds value to the "renewal_seat_id" field.
+func (_u *PaymentOrderUpdateOne) AddRenewalSeatID(v int64) *PaymentOrderUpdateOne {
+	_u.mutation.AddRenewalSeatID(v)
+	return _u
+}
+
+// ClearRenewalSeatID clears the value of the "renewal_seat_id" field.
+func (_u *PaymentOrderUpdateOne) ClearRenewalSeatID() *PaymentOrderUpdateOne {
+	_u.mutation.ClearRenewalSeatID()
 	return _u
 }
 
@@ -2051,6 +2114,15 @@ func (_u *PaymentOrderUpdateOne) sqlSave(ctx context.Context) (_node *PaymentOrd
 	}
 	if _u.mutation.ProviderSnapshotCleared() {
 		_spec.ClearField(paymentorder.FieldProviderSnapshot, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.RenewalSeatID(); ok {
+		_spec.SetField(paymentorder.FieldRenewalSeatID, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedRenewalSeatID(); ok {
+		_spec.AddField(paymentorder.FieldRenewalSeatID, field.TypeInt64, value)
+	}
+	if _u.mutation.RenewalSeatIDCleared() {
+		_spec.ClearField(paymentorder.FieldRenewalSeatID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(paymentorder.FieldStatus, field.TypeString, value)

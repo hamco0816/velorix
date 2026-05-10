@@ -12,7 +12,8 @@ import type {
   CheckoutInfoResponse,
   CreateOrderRequest,
   CreateOrderResult,
-  PaymentOrder
+  PaymentOrder,
+  ExclusiveSeat,
 } from '@/types/payment'
 import type { BasePaginationResponse } from '@/types'
 
@@ -104,5 +105,27 @@ export const paymentAPI = {
   /** Get provider instance IDs that allow user refund */
   getRefundEligibleProviders() {
     return apiClient.get<{ provider_instance_ids: string[] }>('/payment/orders/refund-eligible-providers')
-  }
+  },
+
+  /** 我的独享号列表（含历史） */
+  getMyExclusiveSeats() {
+    return apiClient.get<{ items: ExclusiveSeat[]; total: number }>('/payment/seats')
+  },
+
+  /** 续费预览：返回续费需要支付的金额、对应 plan 摘要 + 完整 plan 对象（用于已下架套餐场景）。 */
+  previewRenewal(seatId: number) {
+    return apiClient.get<{
+      seat_id: number
+      plan_id: number
+      plan_name: string
+      price: number
+      validity_days: number
+      validity_unit: string
+      current_expires_at: string
+      last_paid_price: number
+      // 完整 plan，覆盖 checkout.plans 列表里 for_sale=true 的情况，
+      // 让前端续费跳转能用即使是已下架套餐也正常进入支付。
+      plan?: SubscriptionPlan
+    }>(`/payment/seats/${seatId}/renewal-preview`)
+  },
 }

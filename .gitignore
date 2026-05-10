@@ -136,3 +136,5 @@ docs/*
 frontend/coverage/
 aicodex
 output/
+# vitest 在仓库根目录创建的运行缓存（与 frontend/node_modules/.vite 区分），不应提交
+.vite/

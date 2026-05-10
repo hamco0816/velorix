@@ -20,7 +20,7 @@
       <!-- Filters -->
       <div class="card p-4">
         <div class="flex flex-wrap items-center gap-3">
-          <Select v-model="currentFilter" :options="statusFilters" class="w-36" @change="fetchOrders" />
+          <Select v-model="currentFilter" :options="statusFilters" class="min-w-[10rem]" @change="fetchOrders" />
           <div class="flex flex-1 items-center justify-end gap-2">
             <button @click="fetchOrders" :disabled="loading" class="btn btn-secondary" :title="t('common.refresh')">
               <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
@@ -31,7 +31,7 @@
       </div>
 
       <!-- Table -->
-      <OrderTable :orders="orders" :loading="loading">
+      <OrderTable :orders="orders" :loading="loading" @inspect-refund="openRefundDetails">
         <template #actions="{ row }">
           <div class="flex items-center gap-2">
             <button v-if="canResumePayment(row)" @click="openResumeDialog(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/20">
@@ -71,6 +71,9 @@
         </div>
       </template>
     </BaseDialog>
+
+    <!-- Refund Details Dialog -->
+    <RefundDetailsDialog :order="refundDetailsTarget" @close="refundDetailsTarget = null" />
 
     <!-- Resume Payment Dialog -->
     <BaseDialog :show="!!resumeTarget" :title="t('payment.orders.resume')" @close="closeResumeDialog">
@@ -133,6 +136,7 @@ import Select from '@/components/common/Select.vue'
 import Icon from '@/components/icons/Icon.vue'
 import OrderTable from '@/components/payment/OrderTable.vue'
 import PaymentStatusPanel from '@/components/payment/PaymentStatusPanel.vue'
+import RefundDetailsDialog from '@/components/payment/RefundDetailsDialog.vue'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -146,6 +150,11 @@ const currentFilter = ref('')
 const cancelTargetId = ref<number | null>(null)
 const resumeTarget = ref<PaymentOrder | null>(null)
 const refundTarget = ref<PaymentOrder | null>(null)
+const refundDetailsTarget = ref<PaymentOrder | null>(null)
+
+function openRefundDetails(order: PaymentOrder) {
+  refundDetailsTarget.value = order
+}
 const refundReason = ref('')
 const pagination = reactive({ page: 1, page_size: 20, total: 0 })
 

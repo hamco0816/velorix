@@ -1,11 +1,14 @@
 package middleware
 
 import (
+	"context"
 	"errors"
 	"strings"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
+	"github.com/Wei-Shaw/sub2api/internal/pkg/ctxkey"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/googleapi"
+	"github.com/Wei-Shaw/sub2api/internal/pkg/ip"
 	"github.com/Wei-Shaw/sub2api/internal/service"
 
 	"github.com/gin-gonic/gin"
@@ -42,10 +45,43 @@ func APIKeyAuthWithSubscriptionGoogle(apiKeyService *service.APIKeyService, subs
 			return
 		}
 
+		// 状态语义与 api_key_auth.go 对齐：disabled → 401；expired → 403；quota_exhausted → 429。
+		// 只把"未知/已禁用"的 key 当 401 disabled，避免给 Gemini 客户端返回错误的 disabled 语义。
 		if !apiKey.IsActive() {
-			abortWithGoogleError(c, 401, "API key is disabled")
+			switch apiKey.Status {
+			case service.StatusAPIKeyExpired:
+				abortWithGoogleError(c, 403, "API key has expired")
+				return
+			case service.StatusAPIKeyQuotaExhausted:
+				abortWithGoogleError(c, 429, "API key quota has been exhausted")
+				return
+			default:
+				abortWithGoogleError(c, 401, "API key is disabled")
+				return
+			}
+		}
+		// 即使状态是 active，也要做运行时过期/配额检查（与 api_key_auth.go 第 178/182 行同款）
+		if apiKey.IsExpired() {
+			abortWithGoogleError(c, 403, "API key has expired")
 			return
 		}
+		if apiKey.IsQuotaExhausted() {
+			abortWithGoogleError(c, 429, "API key quota has been exhausted")
+			return
+		}
+
+		// IP 白/黑名单检查：与 api_key_auth.go 第 89~98 行同款。
+		// /v1beta 与 /antigravity/v1beta 路径之前没挂这个检查，导致用户给 API Key 配的 IP 限制
+		// 在 Gemini 原生 SDK 路径上被绕过（GPT round 21 #2）。错误信息故意模糊。
+		if len(apiKey.IPWhitelist) > 0 || len(apiKey.IPBlacklist) > 0 {
+			clientIP := ip.GetTrustedClientIP(c)
+			allowed, _ := ip.CheckIPRestrictionWithCompiledRules(clientIP, apiKey.CompiledIPWhitelist, apiKey.CompiledIPBlacklist)
+			if !allowed {
+				abortWithGoogleError(c, 403, "Access denied")
+				return
+			}
+		}
+
 		if apiKey.User == nil {
 			abortWithGoogleError(c, 401, "User associated with API key not found")
 			return
@@ -64,42 +100,56 @@ func APIKeyAuthWithSubscriptionGoogle(apiKeyService *service.APIKeyService, subs
 			})
 			c.Set(string(ContextKeyUserRole), apiKey.User.Role)
 			setGroupContext(c, apiKey.Group)
+			// 注入 Sub2APIUserID：simple 模式下也可能走 Gemini 独享调度，
+			// 不写入会让 trySelectExclusiveSeatAccount 在 ctx 中拿不到 user，导致独享 seat 失效
+			setSub2APIUserContext(c, apiKey.User.ID)
 			_ = apiKeyService.TouchLastUsed(c.Request.Context(), apiKey.ID)
 			c.Next()
 			return
 		}
 
 		isSubscriptionType := apiKey.Group != nil && apiKey.Group.IsSubscriptionType()
+		var hasActiveExclusiveSeat bool
 		if isSubscriptionType && subscriptionService != nil {
-			subscription, err := subscriptionService.GetActiveSubscription(
-				c.Request.Context(),
-				apiKey.User.ID,
-				apiKey.Group.ID,
-			)
-			if err != nil {
-				abortWithGoogleError(c, 403, "No active subscription found for this group")
-				return
-			}
-
-			needsMaintenance, err := subscriptionService.ValidateAndCheckLimits(subscription, apiKey.Group)
-			if err != nil {
-				status := 403
-				if errors.Is(err, service.ErrDailyLimitExceeded) ||
-					errors.Is(err, service.ErrWeeklyLimitExceeded) ||
-					errors.Is(err, service.ErrMonthlyLimitExceeded) {
-					status = 429
+			// 优先级：独享 seat > 共享订阅（与 api_key_auth.go 同步）
+			// 调度层 DP2C 优先独享，鉴权/计费层必须保持一致语义，避免共享 sub 限额拦截独享请求
+			if subscriptionService.HasActiveExclusiveSeat(c.Request.Context(), apiKey.User.ID, apiKey.Group.ID) {
+				hasActiveExclusiveSeat = true
+				ctx := context.WithValue(c.Request.Context(), ctxkey.ExclusiveSeatActive, true)
+				c.Request = c.Request.WithContext(ctx)
+			} else {
+				subscription, err := subscriptionService.GetActiveSubscription(
+					c.Request.Context(),
+					apiKey.User.ID,
+					apiKey.Group.ID,
+				)
+				if err != nil {
+					abortWithGoogleError(c, 403, "No active subscription found for this group")
+					return
 				}
-				abortWithGoogleError(c, status, err.Error())
-				return
-			}
+				needsMaintenance, validateErr := subscriptionService.ValidateAndCheckLimits(subscription, apiKey.Group)
+				if validateErr != nil {
+					status := 403
+					if errors.Is(validateErr, service.ErrDailyLimitExceeded) ||
+						errors.Is(validateErr, service.ErrWeeklyLimitExceeded) ||
+						errors.Is(validateErr, service.ErrMonthlyLimitExceeded) {
+						status = 429
+					}
+					abortWithGoogleError(c, status, validateErr.Error())
+					return
+				}
 
-			c.Set(string(ContextKeySubscription), subscription)
+				c.Set(string(ContextKeySubscription), subscription)
 
-			if needsMaintenance {
-				maintenanceCopy := *subscription
-				subscriptionService.DoWindowMaintenance(&maintenanceCopy)
+				if needsMaintenance {
+					maintenanceCopy := *subscription
+					subscriptionService.DoWindowMaintenance(&maintenanceCopy)
+				}
 			}
-		} else {
+		}
+
+		// 余额检查：独享 seat 已付费跳过
+		if !isSubscriptionType && !hasActiveExclusiveSeat {
 			if apiKey.User.Balance <= 0 {
 				abortWithGoogleError(c, 403, "Insufficient account balance")
 				return
@@ -113,6 +163,8 @@ func APIKeyAuthWithSubscriptionGoogle(apiKeyService *service.APIKeyService, subs
 		})
 		c.Set(string(ContextKeyUserRole), apiKey.User.Role)
 		setGroupContext(c, apiKey.Group)
+		// 注入 Sub2APIUserID：让 /v1beta/models 等只走鉴权的端点也能命中独享 seat 调度
+		setSub2APIUserContext(c, apiKey.User.ID)
 		_ = apiKeyService.TouchLastUsed(c.Request.Context(), apiKey.ID)
 		c.Next()
 	}

@@ -1188,6 +1188,9 @@ watch(openAIUsageRefreshKey, (nextKey, prevKey) => {
   if (!prevKey || nextKey === prevKey) return
   if (props.account.platform !== 'openai' || props.account.type !== 'oauth') return
 
+  // refresh key 变化（updated_at / codex 快照变了）说明账号上游状态有更新，旧缓存失效
+  // 清掉本地 cache 才能让 requestAutoLoad → loadUsage 真正调 API（否则 cache 命中跳过 getUsage）
+  _usageCache.delete(props.account.id)
   requestAutoLoad()
 })
 

@@ -673,6 +673,10 @@ func (r *stubUserSubscriptionRepo) UpdateNotes(ctx context.Context, subscription
 	return errors.New("not implemented")
 }
 
+func (r *stubUserSubscriptionRepo) UpdatePlanLimitSnapshot(ctx context.Context, subscriptionID int64, daily, weekly, monthly, rateMul *float64) error {
+	return errors.New("not implemented")
+}
+
 func (r *stubUserSubscriptionRepo) ActivateWindows(ctx context.Context, id int64, start time.Time) error {
 	if r.activateWindow != nil {
 		return r.activateWindow(ctx, id, start)

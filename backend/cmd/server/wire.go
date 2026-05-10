@@ -71,6 +71,10 @@ func provideCleanup(
 	schedulerSnapshot *service.SchedulerSnapshotService,
 	tokenRefresh *service.TokenRefreshService,
 	accountExpiry *service.AccountExpiryService,
+	exclusiveSeatExpiry *service.ExclusiveSeatExpiryService,
+	seatReleaseRetry *service.SeatReleaseRetryService,
+	systemOverloadMonitor *service.SystemOverloadMonitor,
+	_ service.ExclusiveSeatGatewayWired,
 	subscriptionExpiry *service.SubscriptionExpiryService,
 	usageCleanup *service.UsageCleanupService,
 	idempotencyCleanup *service.IdempotencyCleanupService,
@@ -160,6 +164,24 @@ func provideCleanup(
 			}},
 			{"AccountExpiryService", func() error {
 				accountExpiry.Stop()
+				return nil
+			}},
+			{"ExclusiveSeatExpiryService", func() error {
+				if exclusiveSeatExpiry != nil {
+					exclusiveSeatExpiry.Stop()
+				}
+				return nil
+			}},
+			{"SeatReleaseRetryService", func() error {
+				if seatReleaseRetry != nil {
+					seatReleaseRetry.Stop()
+				}
+				return nil
+			}},
+			{"SystemOverloadMonitor", func() error {
+				if systemOverloadMonitor != nil {
+					systemOverloadMonitor.Stop()
+				}
 				return nil
 			}},
 			{"SubscriptionExpiryService", func() error {

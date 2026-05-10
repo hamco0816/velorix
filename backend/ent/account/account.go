@@ -71,6 +71,8 @@ const (
 	FieldSessionWindowEnd = "session_window_end"
 	// FieldSessionWindowStatus holds the string denoting the session_window_status field in the database.
 	FieldSessionWindowStatus = "session_window_status"
+	// FieldAssignedSeatID holds the string denoting the assigned_seat_id field in the database.
+	FieldAssignedSeatID = "assigned_seat_id"
 	// EdgeGroups holds the string denoting the groups edge name in mutations.
 	EdgeGroups = "groups"
 	// EdgeProxy holds the string denoting the proxy edge name in mutations.
@@ -140,6 +142,7 @@ var Columns = []string{
 	FieldSessionWindowStart,
 	FieldSessionWindowEnd,
 	FieldSessionWindowStatus,
+	FieldAssignedSeatID,
 }
 
 var (
@@ -336,6 +339,11 @@ func BySessionWindowEnd(opts ...sql.OrderTermOption) OrderOption {
 // BySessionWindowStatus orders the results by the session_window_status field.
 func BySessionWindowStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSessionWindowStatus, opts...).ToFunc()
+}
+
+// ByAssignedSeatID orders the results by the assigned_seat_id field.
+func ByAssignedSeatID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAssignedSeatID, opts...).ToFunc()
 }
 
 // ByGroupsCount orders the results by groups count.

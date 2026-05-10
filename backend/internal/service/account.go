@@ -52,6 +52,10 @@ type Account struct {
 	SessionWindowEnd    *time.Time
 	SessionWindowStatus string
 
+	// AssignedSeatID 当账号被独享名额占用时指向 exclusive_subscription.id；空闲时为 nil。
+	// 调度命中独享 seat 后产生的 cost 通过这个字段回写到 seat.usage_usd。
+	AssignedSeatID *int64
+
 	Proxy         *Proxy
 	AccountGroups []AccountGroup
 	GroupIDs      []int64

@@ -23,9 +23,9 @@
           <div class="flex-1 sm:max-w-64">
             <input v-model="orderSearch" type="text" :placeholder="t('payment.admin.searchOrders')" class="input" @input="debounceLoadOrders" />
           </div>
-          <Select v-model="orderFilters.status" :options="statusFilterOptions" class="w-36" @change="loadOrders" />
-          <Select v-model="orderFilters.payment_type" :options="paymentTypeFilterOptions" class="w-40" @change="loadOrders" />
-          <Select v-model="orderFilters.order_type" :options="orderTypeFilterOptions" class="w-36" @change="loadOrders" />
+          <Select v-model="orderFilters.status" :options="statusFilterOptions" class="min-w-[10rem]" @change="loadOrders" />
+          <Select v-model="orderFilters.payment_type" :options="paymentTypeFilterOptions" class="min-w-[10rem]" @change="loadOrders" />
+          <Select v-model="orderFilters.order_type" :options="orderTypeFilterOptions" class="min-w-[10rem]" @change="loadOrders" />
           <div class="flex flex-1 flex-wrap items-center justify-end gap-2">
             <button @click="loadOrders" :disabled="ordersLoading" class="btn btn-secondary" :title="t('common.refresh')">
               <Icon name="refresh" size="md" :class="ordersLoading ? 'animate-spin' : ''" />
@@ -35,7 +35,7 @@
       </div>
 
       <!-- Table -->
-      <OrderTable :orders="orders" :loading="ordersLoading" show-user>
+      <OrderTable :orders="orders" :loading="ordersLoading" show-user @inspect-refund="refundDetailsTarget = $event">
         <template #actions="{ row }">
           <div class="flex items-center gap-1">
             <button @click="showOrderDetail(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-dark-600">
@@ -124,6 +124,9 @@
     </BaseDialog>
 
     <AdminRefundDialog :show="showRefundDialog" :order="selectedOrder" :submitting="refundSubmitting" @confirm="handleRefund" @cancel="showRefundDialog = false" />
+
+    <!-- Refund Details (read-only, 同款用户侧弹窗) -->
+    <RefundDetailsDialog :order="refundDetailsTarget" @close="refundDetailsTarget = null" />
   </AppLayout>
 </template>
 
@@ -143,6 +146,7 @@ import Icon from '@/components/icons/Icon.vue'
 import AdminRefundDialog from '@/components/admin/payment/AdminRefundDialog.vue'
 import OrderStatusBadge from '@/components/payment/OrderStatusBadge.vue'
 import OrderTable from '@/components/payment/OrderTable.vue'
+import RefundDetailsDialog from '@/components/payment/RefundDetailsDialog.vue'
 import PaymentBrandIcon from '@/components/payment/PaymentBrandIcon.vue'
 
 interface AuditLog {
@@ -165,6 +169,7 @@ const selectedOrder = ref<PaymentOrder | null>(null)
 const showDetailDialog = ref(false)
 const showRefundDialog = ref(false)
 const refundSubmitting = ref(false)
+const refundDetailsTarget = ref<PaymentOrder | null>(null)
 const orderAuditLogs = ref<AuditLog[]>([])
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null

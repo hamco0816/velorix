@@ -67,6 +67,20 @@ const (
 	SubscriptionStatusSuspended = "suspended"
 )
 
+// SubscriptionPlan 类型
+const (
+	PlanKindShared    = "shared"    // 共享池套餐：购买后用户在 group 内共享账号资源
+	PlanKindExclusive = "exclusive" // 独享池套餐：购买后从 group 池子独占分配一个账号
+)
+
+// ExclusiveSubscription 状态
+const (
+	ExclusiveSeatStatusActive    = "active"    // 当前生效中
+	ExclusiveSeatStatusExpired   = "expired"   // 自然到期
+	ExclusiveSeatStatusRefunded  = "refunded"  // 因退款被释放
+	ExclusiveSeatStatusCancelled = "cancelled" // 用户/管理员主动取消
+)
+
 // DefaultAntigravityModelMapping 是 Antigravity 平台的默认模型映射
 // 当账号未配置 model_mapping 时使用此默认值
 // 与前端 useModelWhitelist.ts 中的 antigravityDefaultMappings 保持一致

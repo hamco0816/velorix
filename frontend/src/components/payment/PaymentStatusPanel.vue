@@ -74,8 +74,8 @@
       <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-dark-700 dark:bg-dark-800">
         <!-- 品牌头部 -->
         <div :class="['flex items-center gap-3 px-5 py-3', qrHeaderBgClass]">
-          <span :class="['flex h-9 w-9 items-center justify-center rounded-full ring-2 ring-white/60', qrLogoBgClass]">
-            <img :src="isAlipay ? alipayIcon : wxpayIcon" alt="" class="h-5 w-5 brightness-0 invert" />
+          <span class="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-gray-100 dark:bg-dark-900 dark:ring-dark-700">
+            <img :src="isAlipay ? alipayIcon : wxpayIcon" alt="" class="h-6 w-6" />
           </span>
           <div class="flex-1">
             <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ scanTitle }}</p>

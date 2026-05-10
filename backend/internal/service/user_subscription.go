@@ -23,12 +23,63 @@ type UserSubscription struct {
 	AssignedAt time.Time
 	Notes      string
 
+	// 限额/倍率快照（migration 138）：购买时从 plan 拷贝，nil 表示回落到 group
+	DailyLimitUSD   *float64
+	WeeklyLimitUSD  *float64
+	MonthlyLimitUSD *float64
+	RateMultiplier  *float64
+
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
 	User           *User
 	Group          *Group
 	AssignedByUser *User
+}
+
+// EffectiveDailyLimit 返回该订阅生效的日限额：优先 sub 快照，其次 group。
+// 返回 (limit, hasLimit)；hasLimit=false 表示完全不限日限额。
+func (s *UserSubscription) EffectiveDailyLimit(group *Group) (float64, bool) {
+	if s.DailyLimitUSD != nil && *s.DailyLimitUSD > 0 {
+		return *s.DailyLimitUSD, true
+	}
+	if group != nil && group.HasDailyLimit() {
+		return *group.DailyLimitUSD, true
+	}
+	return 0, false
+}
+
+// EffectiveWeeklyLimit 同 EffectiveDailyLimit，周维度
+func (s *UserSubscription) EffectiveWeeklyLimit(group *Group) (float64, bool) {
+	if s.WeeklyLimitUSD != nil && *s.WeeklyLimitUSD > 0 {
+		return *s.WeeklyLimitUSD, true
+	}
+	if group != nil && group.HasWeeklyLimit() {
+		return *group.WeeklyLimitUSD, true
+	}
+	return 0, false
+}
+
+// EffectiveMonthlyLimit 同 EffectiveDailyLimit，月维度
+func (s *UserSubscription) EffectiveMonthlyLimit(group *Group) (float64, bool) {
+	if s.MonthlyLimitUSD != nil && *s.MonthlyLimitUSD > 0 {
+		return *s.MonthlyLimitUSD, true
+	}
+	if group != nil && group.HasMonthlyLimit() {
+		return *group.MonthlyLimitUSD, true
+	}
+	return 0, false
+}
+
+// EffectiveRateMultiplier 返回该订阅生效的倍率：优先 sub 快照，其次 group，最后默认 1.0
+func (s *UserSubscription) EffectiveRateMultiplier(group *Group) float64 {
+	if s.RateMultiplier != nil && *s.RateMultiplier > 0 {
+		return *s.RateMultiplier
+	}
+	if group != nil && group.RateMultiplier > 0 {
+		return group.RateMultiplier
+	}
+	return 1.0
 }
 
 func (s *UserSubscription) IsActive() bool {
@@ -96,24 +147,27 @@ func (s *UserSubscription) MonthlyResetTime() *time.Time {
 }
 
 func (s *UserSubscription) CheckDailyLimit(group *Group, additionalCost float64) bool {
-	if !group.HasDailyLimit() {
+	limit, has := s.EffectiveDailyLimit(group)
+	if !has {
 		return true
 	}
-	return s.DailyUsageUSD+additionalCost <= *group.DailyLimitUSD
+	return s.DailyUsageUSD+additionalCost <= limit
 }
 
 func (s *UserSubscription) CheckWeeklyLimit(group *Group, additionalCost float64) bool {
-	if !group.HasWeeklyLimit() {
+	limit, has := s.EffectiveWeeklyLimit(group)
+	if !has {
 		return true
 	}
-	return s.WeeklyUsageUSD+additionalCost <= *group.WeeklyLimitUSD
+	return s.WeeklyUsageUSD+additionalCost <= limit
 }
 
 func (s *UserSubscription) CheckMonthlyLimit(group *Group, additionalCost float64) bool {
-	if !group.HasMonthlyLimit() {
+	limit, has := s.EffectiveMonthlyLimit(group)
+	if !has {
 		return true
 	}
-	return s.MonthlyUsageUSD+additionalCost <= *group.MonthlyLimitUSD
+	return s.MonthlyUsageUSD+additionalCost <= limit
 }
 
 func (s *UserSubscription) CheckAllLimits(group *Group, additionalCost float64) (daily, weekly, monthly bool) {

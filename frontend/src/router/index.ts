@@ -283,6 +283,18 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/seats',
+    name: 'MyExclusiveSeats',
+    component: () => import('@/views/user/MyExclusiveSeatsView.vue'),
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: false,
+      title: 'My Exclusive Seats',
+      titleKey: 'nav.mySeats',
+      requiresPayment: true
+    }
+  },
+  {
     path: '/payment/qrcode',
     name: 'PaymentQRCode',
     component: () => import('@/views/user/PaymentQRCodeView.vue'),
@@ -580,6 +592,18 @@ const routes: RouteRecordRaw[] = [
       requiresAdmin: true,
       title: 'Order Management',
       titleKey: 'nav.orderManagement',
+      requiresPayment: true
+    }
+  },
+  {
+    path: '/admin/orders/exclusive-pools',
+    name: 'AdminExclusivePools',
+    component: () => import('@/views/admin/orders/AdminExclusivePoolsView.vue'),
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: true,
+      title: 'Exclusive Pools',
+      titleKey: 'nav.exclusivePools',
       requiresPayment: true
     }
   },

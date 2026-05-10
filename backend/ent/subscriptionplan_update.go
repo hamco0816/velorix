@@ -223,6 +223,128 @@ func (_u *SubscriptionPlanUpdate) AddSortOrder(v int) *SubscriptionPlanUpdate {
 	return _u
 }
 
+// SetKind sets the "kind" field.
+func (_u *SubscriptionPlanUpdate) SetKind(v string) *SubscriptionPlanUpdate {
+	_u.mutation.SetKind(v)
+	return _u
+}
+
+// SetNillableKind sets the "kind" field if the given value is not nil.
+func (_u *SubscriptionPlanUpdate) SetNillableKind(v *string) *SubscriptionPlanUpdate {
+	if v != nil {
+		_u.SetKind(*v)
+	}
+	return _u
+}
+
+// SetDailyLimitUsd sets the "daily_limit_usd" field.
+func (_u *SubscriptionPlanUpdate) SetDailyLimitUsd(v float64) *SubscriptionPlanUpdate {
+	_u.mutation.ResetDailyLimitUsd()
+	_u.mutation.SetDailyLimitUsd(v)
+	return _u
+}
+
+// SetNillableDailyLimitUsd sets the "daily_limit_usd" field if the given value is not nil.
+func (_u *SubscriptionPlanUpdate) SetNillableDailyLimitUsd(v *float64) *SubscriptionPlanUpdate {
+	if v != nil {
+		_u.SetDailyLimitUsd(*v)
+	}
+	return _u
+}
+
+// AddDailyLimitUsd adds value to the "daily_limit_usd" field.
+func (_u *SubscriptionPlanUpdate) AddDailyLimitUsd(v float64) *SubscriptionPlanUpdate {
+	_u.mutation.AddDailyLimitUsd(v)
+	return _u
+}
+
+// ClearDailyLimitUsd clears the value of the "daily_limit_usd" field.
+func (_u *SubscriptionPlanUpdate) ClearDailyLimitUsd() *SubscriptionPlanUpdate {
+	_u.mutation.ClearDailyLimitUsd()
+	return _u
+}
+
+// SetWeeklyLimitUsd sets the "weekly_limit_usd" field.
+func (_u *SubscriptionPlanUpdate) SetWeeklyLimitUsd(v float64) *SubscriptionPlanUpdate {
+	_u.mutation.ResetWeeklyLimitUsd()
+	_u.mutation.SetWeeklyLimitUsd(v)
+	return _u
+}
+
+// SetNillableWeeklyLimitUsd sets the "weekly_limit_usd" field if the given value is not nil.
+func (_u *SubscriptionPlanUpdate) SetNillableWeeklyLimitUsd(v *float64) *SubscriptionPlanUpdate {
+	if v != nil {
+		_u.SetWeeklyLimitUsd(*v)
+	}
+	return _u
+}
+
+// AddWeeklyLimitUsd adds value to the "weekly_limit_usd" field.
+func (_u *SubscriptionPlanUpdate) AddWeeklyLimitUsd(v float64) *SubscriptionPlanUpdate {
+	_u.mutation.AddWeeklyLimitUsd(v)
+	return _u
+}
+
+// ClearWeeklyLimitUsd clears the value of the "weekly_limit_usd" field.
+func (_u *SubscriptionPlanUpdate) ClearWeeklyLimitUsd() *SubscriptionPlanUpdate {
+	_u.mutation.ClearWeeklyLimitUsd()
+	return _u
+}
+
+// SetMonthlyLimitUsd sets the "monthly_limit_usd" field.
+func (_u *SubscriptionPlanUpdate) SetMonthlyLimitUsd(v float64) *SubscriptionPlanUpdate {
+	_u.mutation.ResetMonthlyLimitUsd()
+	_u.mutation.SetMonthlyLimitUsd(v)
+	return _u
+}
+
+// SetNillableMonthlyLimitUsd sets the "monthly_limit_usd" field if the given value is not nil.
+func (_u *SubscriptionPlanUpdate) SetNillableMonthlyLimitUsd(v *float64) *SubscriptionPlanUpdate {
+	if v != nil {
+		_u.SetMonthlyLimitUsd(*v)
+	}
+	return _u
+}
+
+// AddMonthlyLimitUsd adds value to the "monthly_limit_usd" field.
+func (_u *SubscriptionPlanUpdate) AddMonthlyLimitUsd(v float64) *SubscriptionPlanUpdate {
+	_u.mutation.AddMonthlyLimitUsd(v)
+	return _u
+}
+
+// ClearMonthlyLimitUsd clears the value of the "monthly_limit_usd" field.
+func (_u *SubscriptionPlanUpdate) ClearMonthlyLimitUsd() *SubscriptionPlanUpdate {
+	_u.mutation.ClearMonthlyLimitUsd()
+	return _u
+}
+
+// SetRateMultiplier sets the "rate_multiplier" field.
+func (_u *SubscriptionPlanUpdate) SetRateMultiplier(v float64) *SubscriptionPlanUpdate {
+	_u.mutation.ResetRateMultiplier()
+	_u.mutation.SetRateMultiplier(v)
+	return _u
+}
+
+// SetNillableRateMultiplier sets the "rate_multiplier" field if the given value is not nil.
+func (_u *SubscriptionPlanUpdate) SetNillableRateMultiplier(v *float64) *SubscriptionPlanUpdate {
+	if v != nil {
+		_u.SetRateMultiplier(*v)
+	}
+	return _u
+}
+
+// AddRateMultiplier adds value to the "rate_multiplier" field.
+func (_u *SubscriptionPlanUpdate) AddRateMultiplier(v float64) *SubscriptionPlanUpdate {
+	_u.mutation.AddRateMultiplier(v)
+	return _u
+}
+
+// ClearRateMultiplier clears the value of the "rate_multiplier" field.
+func (_u *SubscriptionPlanUpdate) ClearRateMultiplier() *SubscriptionPlanUpdate {
+	_u.mutation.ClearRateMultiplier()
+	return _u
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *SubscriptionPlanUpdate) SetUpdatedAt(v time.Time) *SubscriptionPlanUpdate {
 	_u.mutation.SetUpdatedAt(v)
@@ -285,6 +407,11 @@ func (_u *SubscriptionPlanUpdate) check() error {
 	if v, ok := _u.mutation.ProductName(); ok {
 		if err := subscriptionplan.ProductNameValidator(v); err != nil {
 			return &ValidationError{Name: "product_name", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.product_name": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.Kind(); ok {
+		if err := subscriptionplan.KindValidator(v); err != nil {
+			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.kind": %w`, err)}
 		}
 	}
 	return nil
@@ -352,6 +479,45 @@ func (_u *SubscriptionPlanUpdate) sqlSave(ctx context.Context) (_node int, err e
 	}
 	if value, ok := _u.mutation.AddedSortOrder(); ok {
 		_spec.AddField(subscriptionplan.FieldSortOrder, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.Kind(); ok {
+		_spec.SetField(subscriptionplan.FieldKind, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.DailyLimitUsd(); ok {
+		_spec.SetField(subscriptionplan.FieldDailyLimitUsd, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedDailyLimitUsd(); ok {
+		_spec.AddField(subscriptionplan.FieldDailyLimitUsd, field.TypeFloat64, value)
+	}
+	if _u.mutation.DailyLimitUsdCleared() {
+		_spec.ClearField(subscriptionplan.FieldDailyLimitUsd, field.TypeFloat64)
+	}
+	if value, ok := _u.mutation.WeeklyLimitUsd(); ok {
+		_spec.SetField(subscriptionplan.FieldWeeklyLimitUsd, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedWeeklyLimitUsd(); ok {
+		_spec.AddField(subscriptionplan.FieldWeeklyLimitUsd, field.TypeFloat64, value)
+	}
+	if _u.mutation.WeeklyLimitUsdCleared() {
+		_spec.ClearField(subscriptionplan.FieldWeeklyLimitUsd, field.TypeFloat64)
+	}
+	if value, ok := _u.mutation.MonthlyLimitUsd(); ok {
+		_spec.SetField(subscriptionplan.FieldMonthlyLimitUsd, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedMonthlyLimitUsd(); ok {
+		_spec.AddField(subscriptionplan.FieldMonthlyLimitUsd, field.TypeFloat64, value)
+	}
+	if _u.mutation.MonthlyLimitUsdCleared() {
+		_spec.ClearField(subscriptionplan.FieldMonthlyLimitUsd, field.TypeFloat64)
+	}
+	if value, ok := _u.mutation.RateMultiplier(); ok {
+		_spec.SetField(subscriptionplan.FieldRateMultiplier, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedRateMultiplier(); ok {
+		_spec.AddField(subscriptionplan.FieldRateMultiplier, field.TypeFloat64, value)
+	}
+	if _u.mutation.RateMultiplierCleared() {
+		_spec.ClearField(subscriptionplan.FieldRateMultiplier, field.TypeFloat64)
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(subscriptionplan.FieldUpdatedAt, field.TypeTime, value)
@@ -571,6 +737,128 @@ func (_u *SubscriptionPlanUpdateOne) AddSortOrder(v int) *SubscriptionPlanUpdate
 	return _u
 }
 
+// SetKind sets the "kind" field.
+func (_u *SubscriptionPlanUpdateOne) SetKind(v string) *SubscriptionPlanUpdateOne {
+	_u.mutation.SetKind(v)
+	return _u
+}
+
+// SetNillableKind sets the "kind" field if the given value is not nil.
+func (_u *SubscriptionPlanUpdateOne) SetNillableKind(v *string) *SubscriptionPlanUpdateOne {
+	if v != nil {
+		_u.SetKind(*v)
+	}
+	return _u
+}
+
+// SetDailyLimitUsd sets the "daily_limit_usd" field.
+func (_u *SubscriptionPlanUpdateOne) SetDailyLimitUsd(v float64) *SubscriptionPlanUpdateOne {
+	_u.mutation.ResetDailyLimitUsd()
+	_u.mutation.SetDailyLimitUsd(v)
+	return _u
+}
+
+// SetNillableDailyLimitUsd sets the "daily_limit_usd" field if the given value is not nil.
+func (_u *SubscriptionPlanUpdateOne) SetNillableDailyLimitUsd(v *float64) *SubscriptionPlanUpdateOne {
+	if v != nil {
+		_u.SetDailyLimitUsd(*v)
+	}
+	return _u
+}
+
+// AddDailyLimitUsd adds value to the "daily_limit_usd" field.
+func (_u *SubscriptionPlanUpdateOne) AddDailyLimitUsd(v float64) *SubscriptionPlanUpdateOne {
+	_u.mutation.AddDailyLimitUsd(v)
+	return _u
+}
+
+// ClearDailyLimitUsd clears the value of the "daily_limit_usd" field.
+func (_u *SubscriptionPlanUpdateOne) ClearDailyLimitUsd() *SubscriptionPlanUpdateOne {
+	_u.mutation.ClearDailyLimitUsd()
+	return _u
+}
+
+// SetWeeklyLimitUsd sets the "weekly_limit_usd" field.
+func (_u *SubscriptionPlanUpdateOne) SetWeeklyLimitUsd(v float64) *SubscriptionPlanUpdateOne {
+	_u.mutation.ResetWeeklyLimitUsd()
+	_u.mutation.SetWeeklyLimitUsd(v)
+	return _u
+}
+
+// SetNillableWeeklyLimitUsd sets the "weekly_limit_usd" field if the given value is not nil.
+func (_u *SubscriptionPlanUpdateOne) SetNillableWeeklyLimitUsd(v *float64) *SubscriptionPlanUpdateOne {
+	if v != nil {
+		_u.SetWeeklyLimitUsd(*v)
+	}
+	return _u
+}
+
+// AddWeeklyLimitUsd adds value to the "weekly_limit_usd" field.
+func (_u *SubscriptionPlanUpdateOne) AddWeeklyLimitUsd(v float64) *SubscriptionPlanUpdateOne {
+	_u.mutation.AddWeeklyLimitUsd(v)
+	return _u
+}
+
+// ClearWeeklyLimitUsd clears the value of the "weekly_limit_usd" field.
+func (_u *SubscriptionPlanUpdateOne) ClearWeeklyLimitUsd() *SubscriptionPlanUpdateOne {
+	_u.mutation.ClearWeeklyLimitUsd()
+	return _u
+}
+
+// SetMonthlyLimitUsd sets the "monthly_limit_usd" field.
+func (_u *SubscriptionPlanUpdateOne) SetMonthlyLimitUsd(v float64) *SubscriptionPlanUpdateOne {
+	_u.mutation.ResetMonthlyLimitUsd()
+	_u.mutation.SetMonthlyLimitUsd(v)
+	return _u
+}
+
+// SetNillableMonthlyLimitUsd sets the "monthly_limit_usd" field if the given value is not nil.
+func (_u *SubscriptionPlanUpdateOne) SetNillableMonthlyLimitUsd(v *float64) *SubscriptionPlanUpdateOne {
+	if v != nil {
+		_u.SetMonthlyLimitUsd(*v)
+	}
+	return _u
+}
+
+// AddMonthlyLimitUsd adds value to the "monthly_limit_usd" field.
+func (_u *SubscriptionPlanUpdateOne) AddMonthlyLimitUsd(v float64) *SubscriptionPlanUpdateOne {
+	_u.mutation.AddMonthlyLimitUsd(v)
+	return _u
+}
+
+// ClearMonthlyLimitUsd clears the value of the "monthly_limit_usd" field.
+func (_u *SubscriptionPlanUpdateOne) ClearMonthlyLimitUsd() *SubscriptionPlanUpdateOne {
+	_u.mutation.ClearMonthlyLimitUsd()
+	return _u
+}
+
+// SetRateMultiplier sets the "rate_multiplier" field.
+func (_u *SubscriptionPlanUpdateOne) SetRateMultiplier(v float64) *SubscriptionPlanUpdateOne {
+	_u.mutation.ResetRateMultiplier()
+	_u.mutation.SetRateMultiplier(v)
+	return _u
+}
+
+// SetNillableRateMultiplier sets the "rate_multiplier" field if the given value is not nil.
+func (_u *SubscriptionPlanUpdateOne) SetNillableRateMultiplier(v *float64) *SubscriptionPlanUpdateOne {
+	if v != nil {
+		_u.SetRateMultiplier(*v)
+	}
+	return _u
+}
+
+// AddRateMultiplier adds value to the "rate_multiplier" field.
+func (_u *SubscriptionPlanUpdateOne) AddRateMultiplier(v float64) *SubscriptionPlanUpdateOne {
+	_u.mutation.AddRateMultiplier(v)
+	return _u
+}
+
+// ClearRateMultiplier clears the value of the "rate_multiplier" field.
+func (_u *SubscriptionPlanUpdateOne) ClearRateMultiplier() *SubscriptionPlanUpdateOne {
+	_u.mutation.ClearRateMultiplier()
+	return _u
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *SubscriptionPlanUpdateOne) SetUpdatedAt(v time.Time) *SubscriptionPlanUpdateOne {
 	_u.mutation.SetUpdatedAt(v)
@@ -646,6 +934,11 @@ func (_u *SubscriptionPlanUpdateOne) check() error {
 	if v, ok := _u.mutation.ProductName(); ok {
 		if err := subscriptionplan.ProductNameValidator(v); err != nil {
 			return &ValidationError{Name: "product_name", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.product_name": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.Kind(); ok {
+		if err := subscriptionplan.KindValidator(v); err != nil {
+			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.kind": %w`, err)}
 		}
 	}
 	return nil
@@ -730,6 +1023,45 @@ func (_u *SubscriptionPlanUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 	}
 	if value, ok := _u.mutation.AddedSortOrder(); ok {
 		_spec.AddField(subscriptionplan.FieldSortOrder, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.Kind(); ok {
+		_spec.SetField(subscriptionplan.FieldKind, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.DailyLimitUsd(); ok {
+		_spec.SetField(subscriptionplan.FieldDailyLimitUsd, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedDailyLimitUsd(); ok {
+		_spec.AddField(subscriptionplan.FieldDailyLimitUsd, field.TypeFloat64, value)
+	}
+	if _u.mutation.DailyLimitUsdCleared() {
+		_spec.ClearField(subscriptionplan.FieldDailyLimitUsd, field.TypeFloat64)
+	}
+	if value, ok := _u.mutation.WeeklyLimitUsd(); ok {
+		_spec.SetField(subscriptionplan.FieldWeeklyLimitUsd, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedWeeklyLimitUsd(); ok {
+		_spec.AddField(subscriptionplan.FieldWeeklyLimitUsd, field.TypeFloat64, value)
+	}
+	if _u.mutation.WeeklyLimitUsdCleared() {
+		_spec.ClearField(subscriptionplan.FieldWeeklyLimitUsd, field.TypeFloat64)
+	}
+	if value, ok := _u.mutation.MonthlyLimitUsd(); ok {
+		_spec.SetField(subscriptionplan.FieldMonthlyLimitUsd, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedMonthlyLimitUsd(); ok {
+		_spec.AddField(subscriptionplan.FieldMonthlyLimitUsd, field.TypeFloat64, value)
+	}
+	if _u.mutation.MonthlyLimitUsdCleared() {
+		_spec.ClearField(subscriptionplan.FieldMonthlyLimitUsd, field.TypeFloat64)
+	}
+	if value, ok := _u.mutation.RateMultiplier(); ok {
+		_spec.SetField(subscriptionplan.FieldRateMultiplier, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedRateMultiplier(); ok {
+		_spec.AddField(subscriptionplan.FieldRateMultiplier, field.TypeFloat64, value)
+	}
+	if _u.mutation.RateMultiplierCleared() {
+		_spec.ClearField(subscriptionplan.FieldRateMultiplier, field.TypeFloat64)
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(subscriptionplan.FieldUpdatedAt, field.TypeTime, value)

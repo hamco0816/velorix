@@ -16,6 +16,8 @@ func RegisterPaymentRoutes(
 	paymentHandler *handler.PaymentHandler,
 	webhookHandler *handler.PaymentWebhookHandler,
 	adminPaymentHandler *admin.PaymentHandler,
+	seatHandler *handler.SeatHandler,
+	adminSeatHandler *admin.SeatHandler,
 	jwtAuth middleware.JWTAuthMiddleware,
 	adminAuth middleware.AdminAuthMiddleware,
 	settingService *service.SettingService,
@@ -40,6 +42,13 @@ func RegisterPaymentRoutes(
 			orders.POST("/:id/cancel", paymentHandler.CancelOrder)
 			orders.POST("/:id/refund-request", paymentHandler.RequestRefund)
 			orders.GET("/refund-eligible-providers", paymentHandler.GetRefundEligibleProviders)
+		}
+
+		// 独享池：用户视角的「我的独享号」+ 续费预览（续费走 CreateOrder 支付流程）
+		seats := authenticated.Group("/seats")
+		{
+			seats.GET("", seatHandler.MyExclusiveSeats)
+			seats.GET("/:id/renewal-preview", seatHandler.PreviewRenewal)
 		}
 	}
 
@@ -107,5 +116,20 @@ func RegisterPaymentRoutes(
 			providers.PUT("/:id", adminPaymentHandler.UpdateProvider)
 			providers.DELETE("/:id", adminPaymentHandler.DeleteProvider)
 		}
+
+		// 独享池管理
+		adminSeats := adminGroup.Group("/seats")
+		{
+			adminSeats.GET("", adminSeatHandler.ListSeats)
+			adminSeats.POST("/grant", adminSeatHandler.GrantSeat)
+			adminSeats.POST("/:id/release", adminSeatHandler.ReleaseSeat)
+			adminSeats.POST("/:id/swap", adminSeatHandler.SwapSeatAccount)
+			adminSeats.POST("/:id/extend", adminSeatHandler.ExtendSeat)
+			// 退款已成功但 seat 释放失败的待处理列表 + 手动重试入口（自动重试由
+			// SeatReleaseRetryService 后台 5 分钟一次承担，本接口主要用于排查/人工兜底）
+			adminSeats.GET("/release-failures", adminSeatHandler.ListSeatReleaseFailures)
+			adminSeats.POST("/release-failures/:orderID/retry", adminSeatHandler.RetrySeatReleaseFailure)
+		}
+		adminGroup.GET("/exclusive-pools/:groupId/inventory", adminSeatHandler.GetGroupInventory)
 	}
 }

@@ -536,7 +536,9 @@ const formatNumber = (value: number): string => {
   return value.toLocaleString()
 }
 
-const formatCost = (value: number): string => {
+const formatCost = (value: number | null | undefined): string => {
+  // null / undefined / NaN 兜底为 0：API 返回字段缺失时不让 .toFixed() 抛 TypeError 让面板崩
+  if (value == null || Number.isNaN(value)) return '0.00'
   if (value >= 1000) {
     return (value / 1000).toFixed(2) + 'K'
   } else if (value >= 1) {

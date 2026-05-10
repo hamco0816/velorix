@@ -13,6 +13,7 @@ import (
 
 	dbent "github.com/Wei-Shaw/sub2api/ent"
 	"github.com/Wei-Shaw/sub2api/ent/paymentorder"
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	"github.com/Wei-Shaw/sub2api/internal/payment"
 	"github.com/Wei-Shaw/sub2api/internal/payment/provider"
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
@@ -112,8 +113,14 @@ func (s *PaymentService) validateSubOrder(ctx context.Context, req CreateOrderRe
 		return nil, infraerrors.BadRequest("INVALID_INPUT", "subscription order requires a plan")
 	}
 	plan, err := s.configService.GetPlan(ctx, req.PlanID)
-	if err != nil || !plan.ForSale {
-		return nil, infraerrors.NotFound("PLAN_NOT_AVAILABLE", "plan not found or not for sale")
+	if err != nil {
+		return nil, infraerrors.NotFound("PLAN_NOT_AVAILABLE", "plan not found")
+	}
+	// for_sale=false 是「对新用户的销售开关」：
+	//   - 新购订单（RenewalSeatID == 0）：拒绝下单（plan 已下架）
+	//   - 续费订单（RenewalSeatID > 0）：放行（已购用户保留续费权利，跟 SaaS 行业惯例一致）
+	if !plan.ForSale && req.RenewalSeatID == 0 {
+		return nil, infraerrors.NotFound("PLAN_NOT_AVAILABLE", "plan is not for sale")
 	}
 	if math.IsNaN(plan.Price) || math.IsInf(plan.Price, 0) || plan.Price <= 0 || !payment.HasAtMostCents(plan.Price) {
 		return nil, infraerrors.BadRequest("INVALID_PLAN_PRICE", "subscription plan price must be a positive amount with at most 2 decimal places")
@@ -124,6 +131,34 @@ func (s *PaymentService) validateSubOrder(ctx context.Context, req CreateOrderRe
 	}
 	if !group.IsSubscriptionType() {
 		return nil, infraerrors.BadRequest("GROUP_TYPE_MISMATCH", "group is not a subscription type")
+	}
+	// 续费订单合法性校验：seat 必须存在、属于本用户、对应的 plan 一致
+	if req.RenewalSeatID > 0 {
+		if plan.Kind != domain.PlanKindExclusive {
+			return nil, infraerrors.BadRequest("RENEWAL_REQUIRES_EXCLUSIVE_PLAN", "only exclusive plans support renewal")
+		}
+		seat, err := s.exclusiveSeatSvc.GetSeat(ctx, req.RenewalSeatID)
+		if err != nil {
+			return nil, err
+		}
+		if seat.UserID != req.UserID {
+			return nil, infraerrors.Forbidden("RENEWAL_SEAT_NOT_OWNED", "seat does not belong to current user")
+		}
+		if seat.PlanID != plan.ID {
+			return nil, infraerrors.BadRequest("RENEWAL_PLAN_MISMATCH", "seat is bound to a different plan")
+		}
+		// 状态 + 账号可恢复性双重校验：active 或在 7 天宽限期内、且原账号未被别人占用，才允许进入支付。
+		// 不在前置阶段拦截会让用户付完款后才在 fulfillment 看到 SEAT_ACCOUNT_TAKEN，被动走自动退款流程。
+		if err := s.exclusiveSeatSvc.CheckSeatRenewable(ctx, seat, 7*24*time.Hour); err != nil {
+			return nil, err
+		}
+	} else if plan.Kind == domain.PlanKindExclusive {
+		// 新购独享套餐：下单前预校验库存，避免"付完款发货时库存不足"再走自动退款
+		// 这只是软校验（fulfillment 仍会用 FOR UPDATE SKIP LOCKED 兜底真实抢占），但能在 99% 场景下拦掉售罄请求
+		inv, invErr := s.exclusiveSeatSvc.GetGroupInventory(ctx, plan.GroupID)
+		if invErr == nil && inv != nil && inv.Schedulable <= 0 {
+			return nil, infraerrors.Conflict("EXCLUSIVE_OUT_OF_STOCK", "exclusive plan is currently out of stock; please try again later")
+		}
 	}
 	return plan, nil
 }
@@ -187,6 +222,9 @@ func (s *PaymentService) createOrderInTx(ctx context.Context, req CreateOrderReq
 	}
 	if plan != nil {
 		b.SetPlanID(plan.ID).SetSubscriptionGroupID(plan.GroupID).SetSubscriptionDays(psComputeValidityDays(plan.ValidityDays, plan.ValidityUnit))
+	}
+	if req.RenewalSeatID > 0 {
+		b.SetRenewalSeatID(req.RenewalSeatID)
 	}
 	order, err := b.Save(ctx)
 	if err != nil {
@@ -632,6 +670,12 @@ func buildWeChatPaymentOAuthStartURL(req CreateOrderRequest, scope string) (stri
 	}
 	if req.PlanID > 0 {
 		q.Set("plan_id", strconv.FormatInt(req.PlanID, 10))
+	}
+	// 续费独享名额时把 seat_id 放进顶层 renew_seat：
+	// auth_wechat_oauth.go 的 OAuth start 读的就是顶层 c.Query("renew_seat")，
+	// 不放进来即使前端把 renew_seat 塞进 redirect 嵌套也无效（会被忽略）
+	if req.RenewalSeatID > 0 {
+		q.Set("renew_seat", strconv.FormatInt(req.RenewalSeatID, 10))
 	}
 	if scope = strings.TrimSpace(scope); scope != "" {
 		q.Set("scope", scope)

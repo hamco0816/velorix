@@ -15,6 +15,24 @@ type schedulerOutboxRepository struct {
 
 const schedulerOutboxDedupWindow = time.Second
 
+// NewSchedulerOutboxNotifier 返回 service.SchedulerOutboxNotifier 实现。
+// 用于让独享 seat 操作（AssignSeat/RenewSeat/Release/Swap）刷新调度快照，
+// 让共享池快照及时排除被独享占用的账号。
+func NewSchedulerOutboxNotifier(db *sql.DB) service.SchedulerOutboxNotifier {
+	return &schedulerOutboxNotifier{db: db}
+}
+
+type schedulerOutboxNotifier struct {
+	db *sql.DB
+}
+
+func (n *schedulerOutboxNotifier) NotifyAccountChanged(ctx context.Context, accountID int64) error {
+	if n == nil || n.db == nil || accountID <= 0 {
+		return nil
+	}
+	return enqueueSchedulerOutbox(ctx, n.db, service.SchedulerOutboxEventAccountChanged, &accountID, nil, nil)
+}
+
 func NewSchedulerOutboxRepository(db *sql.DB) service.SchedulerOutboxRepository {
 	return &schedulerOutboxRepository{db: db}
 }

@@ -286,6 +286,8 @@ onMounted(async () => {
     pendingAuthTokenField.value = activePendingSession.token_field
     pendingProvider.value = activePendingSession.provider
     pendingRedirect.value = activePendingSession.redirect || ''
+    // OAuth 待绑定注册流程：从 localStorage 兜底恢复推荐码，避免提交时丢失（payload 走 line 509）
+    affCode.value = loadAffiliateReferralCode()
   }
 
   // Load public settings

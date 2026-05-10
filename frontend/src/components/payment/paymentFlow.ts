@@ -72,6 +72,8 @@ export interface BuildCreateOrderPayloadInput {
   origin?: string
   isMobile: boolean
   isWechatBrowser: boolean
+  /** 续费独享名额时填入目标 seat ID（>0 时本订单走 RenewSeat 路径） */
+  renewSeatId?: number
 }
 
 type CreateOrderFlowResult = CreateOrderResult & {
@@ -117,6 +119,9 @@ export function buildCreateOrderPayload(input: BuildCreateOrderPayloadInput): Cr
 
   if (input.planId) {
     payload.plan_id = input.planId
+  }
+  if (input.renewSeatId && input.renewSeatId > 0) {
+    payload.renewal_seat_id = input.renewSeatId
   }
   if (normalizedOrigin) {
     payload.return_url = `${normalizedOrigin}/payment/result`

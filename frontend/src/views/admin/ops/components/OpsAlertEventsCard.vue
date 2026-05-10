@@ -363,10 +363,10 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
       </div>
 
       <div class="flex items-center gap-2">
-        <Select :model-value="timeRange" :options="timeRangeOptions" class="w-[120px]" @change="timeRange = String($event || '24h')" />
-        <Select :model-value="severity" :options="severityOptions" class="w-[88px]" @change="severity = String($event || '')" />
-        <Select :model-value="status" :options="statusOptions" class="w-[110px]" @change="status = String($event || '')" />
-        <Select :model-value="emailSent" :options="emailSentOptions" class="w-[110px]" @change="emailSent = String($event || '')" />
+        <Select :model-value="timeRange" :options="timeRangeOptions" class="min-w-[8rem]" @change="timeRange = String($event || '24h')" />
+        <Select :model-value="severity" :options="severityOptions" class="min-w-[7rem]" @change="severity = String($event || '')" />
+        <Select :model-value="status" :options="statusOptions" class="min-w-[8rem]" @change="status = String($event || '')" />
+        <Select :model-value="emailSent" :options="emailSentOptions" class="min-w-[8rem]" @change="emailSent = String($event || '')" />
         <button
           class="flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-bold text-gray-700 transition-colors hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600"
           :disabled="loading"
@@ -604,7 +604,7 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
               <div class="text-sm font-bold text-gray-900 dark:text-white">{{ t('admin.ops.alertEvents.detail.historyTitle') }}</div>
               <div class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{{ t('admin.ops.alertEvents.detail.historyHint') }}</div>
             </div>
-            <Select :model-value="historyRange" :options="historyRangeOptions" class="w-[140px]" @change="historyRange = String($event || '7d')" />
+            <Select :model-value="historyRange" :options="historyRangeOptions" class="min-w-[9rem]" @change="historyRange = String($event || '7d')" />
           </div>
 
           <div v-if="historyLoading" class="py-6 text-center text-xs text-gray-500 dark:text-gray-400">

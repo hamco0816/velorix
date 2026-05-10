@@ -44,11 +44,50 @@
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div><label class="input-label">{{ t('payment.admin.sortOrder') }}</label><input v-model.number="planForm.sort_order" type="number" min="0" class="input" /></div>
+        <div>
+          <label class="input-label">{{ t('payment.admin.planKind') }} <span class="text-red-500">*</span></label>
+          <Select v-model="planForm.kind" :options="planKindOptions" />
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            {{ planForm.kind === 'exclusive' ? t('payment.admin.planKindExclusiveHint') : t('payment.admin.planKindSharedHint') }}
+          </p>
+        </div>
       </div>
       <div>
         <label class="input-label">{{ t('payment.admin.features') }}</label>
         <textarea v-model="planFeaturesText" rows="3" class="input" :placeholder="t('payment.admin.featuresPlaceholder')"></textarea>
         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ t('payment.admin.featuresHint') }}</p>
+      </div>
+
+      <!-- 套餐级限额/倍率覆盖：留空 = 沿用 group 默认；填值 = 覆盖（同 group 下做差异化档位） -->
+      <div class="rounded-lg border border-gray-200 bg-gray-50/60 p-4 dark:border-dark-700 dark:bg-dark-800/40">
+        <div class="mb-3 flex items-start justify-between gap-3">
+          <div class="flex-1">
+            <p class="text-sm font-semibold text-gray-900 dark:text-gray-50">
+              {{ t('payment.admin.limitOverrideTitle') }}
+            </p>
+            <p class="mt-0.5 text-xs text-gray-500 dark:text-dark-300">
+              {{ t('payment.admin.limitOverrideHint') }}
+            </p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="input-label">{{ t('payment.admin.planDailyLimitUSD') }}</label>
+            <input v-model.number="planForm.daily_limit_usd" type="number" step="0.01" min="0" class="input" :placeholder="t('payment.admin.limitInheritGroup')" />
+          </div>
+          <div>
+            <label class="input-label">{{ t('payment.admin.planWeeklyLimitUSD') }}</label>
+            <input v-model.number="planForm.weekly_limit_usd" type="number" step="0.01" min="0" class="input" :placeholder="t('payment.admin.limitInheritGroup')" />
+          </div>
+          <div>
+            <label class="input-label">{{ t('payment.admin.planMonthlyLimitUSD') }}</label>
+            <input v-model.number="planForm.monthly_limit_usd" type="number" step="0.01" min="0" class="input" :placeholder="t('payment.admin.limitInheritGroup')" />
+          </div>
+          <div>
+            <label class="input-label">{{ t('payment.admin.planRateMultiplier') }}</label>
+            <input v-model.number="planForm.rate_multiplier" type="number" step="0.01" min="0" class="input" :placeholder="t('payment.admin.limitInheritGroup')" />
+          </div>
+        </div>
       </div>
       <div class="flex items-center gap-3">
         <label class="text-sm text-gray-700 dark:text-gray-300">{{ t('payment.admin.forSale') }}</label>
@@ -105,13 +144,34 @@ const { t } = useI18n()
 const appStore = useAppStore()
 
 const saving = ref(false)
-const planForm = reactive({ name: '', group_id: null as number | null, description: '', price: 0, original_price: 0, validity_days: 30, validity_unit: 'days', sort_order: 0, for_sale: true })
+const planForm = reactive({
+  name: '',
+  group_id: null as number | null,
+  description: '',
+  price: 0,
+  original_price: 0,
+  validity_days: 30,
+  validity_unit: 'days',
+  sort_order: 0,
+  for_sale: true,
+  kind: 'shared' as 'shared' | 'exclusive',
+  // 套餐级覆盖字段：null/0 表示沿用 group 默认值
+  daily_limit_usd: null as number | null,
+  weekly_limit_usd: null as number | null,
+  monthly_limit_usd: null as number | null,
+  rate_multiplier: null as number | null,
+})
 const planFeaturesText = ref('')
 
 const validityUnitOptions = computed(() => [
   { value: 'days', label: t('payment.admin.days') },
   { value: 'weeks', label: t('payment.admin.weeks') },
   { value: 'months', label: t('payment.admin.months') },
+])
+
+const planKindOptions = computed(() => [
+  { value: 'shared', label: t('payment.admin.planKindShared') },
+  { value: 'exclusive', label: t('payment.admin.planKindExclusive') },
 ])
 
 const groupOptions = computed(() =>
@@ -133,10 +193,30 @@ const selectedGroupInfo = computed(() => {
 watch(() => props.show, (visible) => {
   if (!visible) return
   if (props.plan) {
-    Object.assign(planForm, { name: props.plan.name, group_id: props.plan.group_id, description: props.plan.description, price: props.plan.price, original_price: props.plan.original_price || 0, validity_days: props.plan.validity_days, validity_unit: props.plan.validity_unit || 'days', sort_order: props.plan.sort_order || 0, for_sale: props.plan.for_sale })
+    Object.assign(planForm, {
+      name: props.plan.name,
+      group_id: props.plan.group_id,
+      description: props.plan.description,
+      price: props.plan.price,
+      original_price: props.plan.original_price || 0,
+      validity_days: props.plan.validity_days,
+      validity_unit: props.plan.validity_unit || 'days',
+      sort_order: props.plan.sort_order || 0,
+      for_sale: props.plan.for_sale,
+      kind: props.plan.kind || 'shared',
+      daily_limit_usd: (props.plan as any).daily_limit_usd ?? null,
+      weekly_limit_usd: (props.plan as any).weekly_limit_usd ?? null,
+      monthly_limit_usd: (props.plan as any).monthly_limit_usd ?? null,
+      rate_multiplier: (props.plan as any).rate_multiplier ?? null,
+    })
     planFeaturesText.value = (props.plan.features || []).join('\n')
   } else {
-    Object.assign(planForm, { name: '', group_id: null, description: '', price: 0, original_price: 0, validity_days: 30, validity_unit: 'days', sort_order: 0, for_sale: true })
+    Object.assign(planForm, {
+      name: '', group_id: null, description: '', price: 0, original_price: 0,
+      validity_days: 30, validity_unit: 'days', sort_order: 0, for_sale: true,
+      kind: 'shared',
+      daily_limit_usd: null, weekly_limit_usd: null, monthly_limit_usd: null, rate_multiplier: null,
+    })
     planFeaturesText.value = ''
   }
 })
@@ -144,6 +224,13 @@ watch(() => props.show, (visible) => {
 /** Build request payload with snake_case keys matching backend JSON tags */
 function buildPlanPayload() {
   const features = planFeaturesText.value.split('\n').map(f => f.trim()).filter(Boolean).join('\n')
+  // 限额覆盖字段语义：
+  //   后端 *float64 nil = "不修改"（保持 DB 现状）；0 = "清空覆盖"（→ 调度回落到 group）；> 0 = "设置覆盖"
+  // 前端永远显式传值（0 或正数），不传 null/undefined，避免 admin 清空字段后 DB 仍保留旧值
+  const optionalLimit = (v: number | null): number => {
+    if (v === null || v === undefined || Number.isNaN(v) || v <= 0) return 0
+    return v
+  }
   return {
     name: planForm.name,
     group_id: planForm.group_id,
@@ -155,6 +242,11 @@ function buildPlanPayload() {
     sort_order: planForm.sort_order,
     for_sale: planForm.for_sale,
     features,
+    kind: planForm.kind,
+    daily_limit_usd: optionalLimit(planForm.daily_limit_usd),
+    weekly_limit_usd: optionalLimit(planForm.weekly_limit_usd),
+    monthly_limit_usd: optionalLimit(planForm.monthly_limit_usd),
+    rate_multiplier: optionalLimit(planForm.rate_multiplier),
   }
 }
 

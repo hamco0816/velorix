@@ -185,6 +185,11 @@ func SessionWindowStatus(v string) predicate.Account {
 	return predicate.Account(sql.FieldEQ(FieldSessionWindowStatus, v))
 }
 
+// AssignedSeatID applies equality check predicate on the "assigned_seat_id" field. It's identical to AssignedSeatIDEQ.
+func AssignedSeatID(v int64) predicate.Account {
+	return predicate.Account(sql.FieldEQ(FieldAssignedSeatID, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Account {
 	return predicate.Account(sql.FieldEQ(FieldCreatedAt, v))
@@ -1493,6 +1498,56 @@ func SessionWindowStatusEqualFold(v string) predicate.Account {
 // SessionWindowStatusContainsFold applies the ContainsFold predicate on the "session_window_status" field.
 func SessionWindowStatusContainsFold(v string) predicate.Account {
 	return predicate.Account(sql.FieldContainsFold(FieldSessionWindowStatus, v))
+}
+
+// AssignedSeatIDEQ applies the EQ predicate on the "assigned_seat_id" field.
+func AssignedSeatIDEQ(v int64) predicate.Account {
+	return predicate.Account(sql.FieldEQ(FieldAssignedSeatID, v))
+}
+
+// AssignedSeatIDNEQ applies the NEQ predicate on the "assigned_seat_id" field.
+func AssignedSeatIDNEQ(v int64) predicate.Account {
+	return predicate.Account(sql.FieldNEQ(FieldAssignedSeatID, v))
+}
+
+// AssignedSeatIDIn applies the In predicate on the "assigned_seat_id" field.
+func AssignedSeatIDIn(vs ...int64) predicate.Account {
+	return predicate.Account(sql.FieldIn(FieldAssignedSeatID, vs...))
+}
+
+// AssignedSeatIDNotIn applies the NotIn predicate on the "assigned_seat_id" field.
+func AssignedSeatIDNotIn(vs ...int64) predicate.Account {
+	return predicate.Account(sql.FieldNotIn(FieldAssignedSeatID, vs...))
+}
+
+// AssignedSeatIDGT applies the GT predicate on the "assigned_seat_id" field.
+func AssignedSeatIDGT(v int64) predicate.Account {
+	return predicate.Account(sql.FieldGT(FieldAssignedSeatID, v))
+}
+
+// AssignedSeatIDGTE applies the GTE predicate on the "assigned_seat_id" field.
+func AssignedSeatIDGTE(v int64) predicate.Account {
+	return predicate.Account(sql.FieldGTE(FieldAssignedSeatID, v))
+}
+
+// AssignedSeatIDLT applies the LT predicate on the "assigned_seat_id" field.
+func AssignedSeatIDLT(v int64) predicate.Account {
+	return predicate.Account(sql.FieldLT(FieldAssignedSeatID, v))
+}
+
+// AssignedSeatIDLTE applies the LTE predicate on the "assigned_seat_id" field.
+func AssignedSeatIDLTE(v int64) predicate.Account {
+	return predicate.Account(sql.FieldLTE(FieldAssignedSeatID, v))
+}
+
+// AssignedSeatIDIsNil applies the IsNil predicate on the "assigned_seat_id" field.
+func AssignedSeatIDIsNil() predicate.Account {
+	return predicate.Account(sql.FieldIsNull(FieldAssignedSeatID))
+}
+
+// AssignedSeatIDNotNil applies the NotNil predicate on the "assigned_seat_id" field.
+func AssignedSeatIDNotNil() predicate.Account {
+	return predicate.Account(sql.FieldNotNull(FieldAssignedSeatID))
 }
 
 // HasGroups applies the HasEdge predicate on the "groups" edge.

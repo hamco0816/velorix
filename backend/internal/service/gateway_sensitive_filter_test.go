@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"strconv"
 	"testing"
 )
 
@@ -93,6 +94,60 @@ func TestCheckGatewaySensitiveJSONAllowsNormalPrompt(t *testing.T) {
 	}
 	if match != nil {
 		t.Fatalf("expected no match, got %#v", match)
+	}
+}
+
+// AC 自动机缓存命中测试：相同词典两次查询，应复用同一个 AC 实例
+func TestSensitiveACCacheReusesMachine(t *testing.T) {
+	rules := []gatewaySensitiveRule{
+		{Word: "first", Source: "custom"},
+		{Word: "second", Source: "custom"},
+	}
+	m1 := getOrBuildSensitiveACForRules(rules, false)
+	m2 := getOrBuildSensitiveACForRules(rules, false)
+	if m1 == nil || m1 != m2 {
+		t.Fatalf("expected same AC machine instance for identical rules; m1=%p m2=%p", m1, m2)
+	}
+	// 词序不同 fnv 后应仍命中同一缓存
+	rulesReordered := []gatewaySensitiveRule{
+		{Word: "second", Source: "custom"},
+		{Word: "first", Source: "custom"},
+	}
+	m3 := getOrBuildSensitiveACForRules(rulesReordered, false)
+	if m3 != m1 {
+		t.Fatalf("expected reordered rules to share AC cache key")
+	}
+}
+
+// AC 路径下大词典命中测试：内置词典 + 自定义大词，文本里只有最后一个词命中
+func TestSensitiveACLargeDictionaryHit(t *testing.T) {
+	custom := make([]string, 0, 1500)
+	for i := 0; i < 1500; i++ {
+		custom = append(custom, "noisefiller_"+strconv.Itoa(i))
+	}
+	custom = append(custom, "needle_word")
+	settings := &GatewaySensitiveFilterSettings{Enabled: true, Words: custom}
+	body := []byte(`{"messages":[{"role":"user","content":"the needle_word is hiding here"}]}`)
+	match, err := CheckGatewaySensitiveJSON(body, settings)
+	if err != nil {
+		t.Fatalf("check json: %v", err)
+	}
+	if match == nil || match.Word != "needle_word" {
+		t.Fatalf("expected to match needle_word, got %#v", match)
+	}
+}
+
+// Benchmark 大词典 miss：扫一段不命中的文本，量化 AC 相对原循环的加速比
+func BenchmarkCheckGatewaySensitiveJSONLargeDictMiss(b *testing.B) {
+	custom := make([]string, 0, 1500)
+	for i := 0; i < 1500; i++ {
+		custom = append(custom, "noisefiller_"+strconv.Itoa(i))
+	}
+	settings := &GatewaySensitiveFilterSettings{Enabled: true, Words: custom}
+	body := []byte(`{"messages":[{"role":"user","content":"this is a perfectly normal product documentation summary request without any sensitive content whatsoever; please respond accordingly."}]}`)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = CheckGatewaySensitiveJSON(body, settings)
 	}
 }
 

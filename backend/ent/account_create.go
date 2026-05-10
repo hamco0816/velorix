@@ -377,6 +377,20 @@ func (_c *AccountCreate) SetNillableSessionWindowStatus(v *string) *AccountCreat
 	return _c
 }
 
+// SetAssignedSeatID sets the "assigned_seat_id" field.
+func (_c *AccountCreate) SetAssignedSeatID(v int64) *AccountCreate {
+	_c.mutation.SetAssignedSeatID(v)
+	return _c
+}
+
+// SetNillableAssignedSeatID sets the "assigned_seat_id" field if the given value is not nil.
+func (_c *AccountCreate) SetNillableAssignedSeatID(v *int64) *AccountCreate {
+	if v != nil {
+		_c.SetAssignedSeatID(*v)
+	}
+	return _c
+}
+
 // AddGroupIDs adds the "groups" edge to the Group entity by IDs.
 func (_c *AccountCreate) AddGroupIDs(ids ...int64) *AccountCreate {
 	_c.mutation.AddGroupIDs(ids...)
@@ -704,6 +718,10 @@ func (_c *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.SessionWindowStatus(); ok {
 		_spec.SetField(account.FieldSessionWindowStatus, field.TypeString, value)
 		_node.SessionWindowStatus = &value
+	}
+	if value, ok := _c.mutation.AssignedSeatID(); ok {
+		_spec.SetField(account.FieldAssignedSeatID, field.TypeInt64, value)
+		_node.AssignedSeatID = &value
 	}
 	if nodes := _c.mutation.GroupsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1245,6 +1263,30 @@ func (u *AccountUpsert) UpdateSessionWindowStatus() *AccountUpsert {
 // ClearSessionWindowStatus clears the value of the "session_window_status" field.
 func (u *AccountUpsert) ClearSessionWindowStatus() *AccountUpsert {
 	u.SetNull(account.FieldSessionWindowStatus)
+	return u
+}
+
+// SetAssignedSeatID sets the "assigned_seat_id" field.
+func (u *AccountUpsert) SetAssignedSeatID(v int64) *AccountUpsert {
+	u.Set(account.FieldAssignedSeatID, v)
+	return u
+}
+
+// UpdateAssignedSeatID sets the "assigned_seat_id" field to the value that was provided on create.
+func (u *AccountUpsert) UpdateAssignedSeatID() *AccountUpsert {
+	u.SetExcluded(account.FieldAssignedSeatID)
+	return u
+}
+
+// AddAssignedSeatID adds v to the "assigned_seat_id" field.
+func (u *AccountUpsert) AddAssignedSeatID(v int64) *AccountUpsert {
+	u.Add(account.FieldAssignedSeatID, v)
+	return u
+}
+
+// ClearAssignedSeatID clears the value of the "assigned_seat_id" field.
+func (u *AccountUpsert) ClearAssignedSeatID() *AccountUpsert {
+	u.SetNull(account.FieldAssignedSeatID)
 	return u
 }
 
@@ -1801,6 +1843,34 @@ func (u *AccountUpsertOne) UpdateSessionWindowStatus() *AccountUpsertOne {
 func (u *AccountUpsertOne) ClearSessionWindowStatus() *AccountUpsertOne {
 	return u.Update(func(s *AccountUpsert) {
 		s.ClearSessionWindowStatus()
+	})
+}
+
+// SetAssignedSeatID sets the "assigned_seat_id" field.
+func (u *AccountUpsertOne) SetAssignedSeatID(v int64) *AccountUpsertOne {
+	return u.Update(func(s *AccountUpsert) {
+		s.SetAssignedSeatID(v)
+	})
+}
+
+// AddAssignedSeatID adds v to the "assigned_seat_id" field.
+func (u *AccountUpsertOne) AddAssignedSeatID(v int64) *AccountUpsertOne {
+	return u.Update(func(s *AccountUpsert) {
+		s.AddAssignedSeatID(v)
+	})
+}
+
+// UpdateAssignedSeatID sets the "assigned_seat_id" field to the value that was provided on create.
+func (u *AccountUpsertOne) UpdateAssignedSeatID() *AccountUpsertOne {
+	return u.Update(func(s *AccountUpsert) {
+		s.UpdateAssignedSeatID()
+	})
+}
+
+// ClearAssignedSeatID clears the value of the "assigned_seat_id" field.
+func (u *AccountUpsertOne) ClearAssignedSeatID() *AccountUpsertOne {
+	return u.Update(func(s *AccountUpsert) {
+		s.ClearAssignedSeatID()
 	})
 }
 
@@ -2523,6 +2593,34 @@ func (u *AccountUpsertBulk) UpdateSessionWindowStatus() *AccountUpsertBulk {
 func (u *AccountUpsertBulk) ClearSessionWindowStatus() *AccountUpsertBulk {
 	return u.Update(func(s *AccountUpsert) {
 		s.ClearSessionWindowStatus()
+	})
+}
+
+// SetAssignedSeatID sets the "assigned_seat_id" field.
+func (u *AccountUpsertBulk) SetAssignedSeatID(v int64) *AccountUpsertBulk {
+	return u.Update(func(s *AccountUpsert) {
+		s.SetAssignedSeatID(v)
+	})
+}
+
+// AddAssignedSeatID adds v to the "assigned_seat_id" field.
+func (u *AccountUpsertBulk) AddAssignedSeatID(v int64) *AccountUpsertBulk {
+	return u.Update(func(s *AccountUpsert) {
+		s.AddAssignedSeatID(v)
+	})
+}
+
+// UpdateAssignedSeatID sets the "assigned_seat_id" field to the value that was provided on create.
+func (u *AccountUpsertBulk) UpdateAssignedSeatID() *AccountUpsertBulk {
+	return u.Update(func(s *AccountUpsert) {
+		s.UpdateAssignedSeatID()
+	})
+}
+
+// ClearAssignedSeatID clears the value of the "assigned_seat_id" field.
+func (u *AccountUpsertBulk) ClearAssignedSeatID() *AccountUpsertBulk {
+	return u.Update(func(s *AccountUpsert) {
+		s.ClearAssignedSeatID()
 	})
 }
 

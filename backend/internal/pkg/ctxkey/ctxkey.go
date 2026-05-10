@@ -55,4 +55,14 @@ const (
 
 	// ClaudeCodeVersion stores the extracted Claude Code version from User-Agent (e.g. "2.1.22")
 	ClaudeCodeVersion Key = "ctx_claude_code_version"
+
+	// Sub2APIUserID 当前请求的 sub2api 用户 ID（来自 ApiKey.UserID），由网关 handler 注入。
+	// 用于独享池调度路径：调度器查 ExclusiveSubscription 是否命中以跳过共享池负载均衡。
+	Sub2APIUserID Key = "ctx_sub2api_user_id"
+
+	// ExclusiveSeatActive 当前请求由独享 seat 鉴权放行（非 user_subscription）。
+	// 用于：
+	//   - api_key_auth 跳过 balance 余额检查（独享用户已付费，不该再扣余额）
+	//   - 计费路径不写 BalanceCost、不调 DeductBalance（仅累加 seat.usage_usd）
+	ExclusiveSeatActive Key = "ctx_exclusive_seat_active"
 )

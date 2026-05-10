@@ -54,6 +54,14 @@ type GeminiMessagesCompatService struct {
 	antigravityGatewayService *AntigravityGatewayService
 	cfg                       *config.Config
 	responseHeaderFilter      *responseheaders.CompiledHeaderFilter
+	exclusiveSeatSvc          *ExclusiveSeatService // 独享池调度（setter 注入避免循环依赖）
+}
+
+// SetExclusiveSeatService 注入 ExclusiveSeatService 让 /v1beta/models 等端点支持独享池
+func (s *GeminiMessagesCompatService) SetExclusiveSeatService(svc *ExclusiveSeatService) {
+	if s != nil {
+		s.exclusiveSeatSvc = svc
+	}
 }
 
 func NewGeminiMessagesCompatService(
@@ -488,6 +496,20 @@ func (s *GeminiMessagesCompatService) HasAntigravityAccounts(ctx context.Context
 // 3) OAuth accounts explicitly marked as ai_studio
 // 4) Any remaining Gemini accounts (fallback)
 func (s *GeminiMessagesCompatService) SelectAccountForAIStudioEndpoints(ctx context.Context, groupID *int64) (*Account, error) {
+	// 独享池优先：让独享-only 分组也能列模型 / 走 AI Studio 端点
+	// 严格遵守 DP2C 语义：用户**有独享名额但当下不可用**时直接报错，不悄悄降级到共享池
+	if s.exclusiveSeatSvc != nil && s.accountRepo != nil {
+		acc, hit, err := trySelectExclusiveSeatAccount(ctx, s.exclusiveSeatSvc, &accountRepoSeatResolver{repo: s.accountRepo}, groupID, nil)
+		if err != nil {
+			// ErrNoUsableExclusiveAccount 也归此路径——必须透传，不能吞掉去共享池捡漏
+			return nil, err
+		}
+		if hit && acc != nil {
+			return acc, nil
+		}
+		// hit=false 表示用户没有独享名额 → 走共享池
+	}
+
 	accounts, err := s.listSchedulableAccountsOnce(ctx, groupID, PlatformGemini, true)
 	if err != nil {
 		return nil, fmt.Errorf("query accounts failed: %w", err)

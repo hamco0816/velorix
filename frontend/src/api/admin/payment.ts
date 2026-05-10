@@ -9,7 +9,9 @@ import type {
   PaymentOrder,
   PaymentChannel,
   SubscriptionPlan,
-  ProviderInstance
+  ProviderInstance,
+  AdminExclusiveSeat,
+  ExclusivePoolInventory,
 } from '@/types/payment'
 import type { BasePaginationResponse } from '@/types'
 
@@ -174,7 +176,39 @@ export const adminPaymentAPI = {
   /** Delete a provider instance */
   deleteProvider(id: number) {
     return apiClient.delete(`/admin/payment/providers/${id}`)
-  }
+  },
+
+  // ========== 独享池 ==========
+
+  /** 列出独享名额（按 user_id / group_id / status 过滤） */
+  listSeats(params?: { user_id?: number; group_id?: number; status?: string; limit?: number; offset?: number }) {
+    return apiClient.get<{ items: AdminExclusiveSeat[] }>('/admin/payment/seats', { params })
+  },
+
+  /** 查询独享池库存 */
+  getPoolInventory(groupId: number) {
+    return apiClient.get<ExclusivePoolInventory>(`/admin/payment/exclusive-pools/${groupId}/inventory`)
+  },
+
+  /** 管理员赠送一份独享名额（带 group_id 让后端做 plan.GroupID 一致性校验） */
+  grantSeat(data: { user_id: number; plan_id: number; group_id?: number; validity_days?: number; notes?: string }) {
+    return apiClient.post<AdminExclusiveSeat>('/admin/payment/seats/grant', data)
+  },
+
+  /** 强制释放独享名额（账号回池） */
+  releaseSeat(seatId: number, reason?: string) {
+    return apiClient.post(`/admin/payment/seats/${seatId}/release`, { reason: reason || '' })
+  },
+
+  /** 强制换号 */
+  swapSeatAccount(seatId: number) {
+    return apiClient.post<AdminExclusiveSeat>(`/admin/payment/seats/${seatId}/swap`)
+  },
+
+  /** 延期 / 提前结束（days 可正可负） */
+  extendSeat(seatId: number, days: number) {
+    return apiClient.post<AdminExclusiveSeat>(`/admin/payment/seats/${seatId}/extend`, { days })
+  },
 }
 
 export default adminPaymentAPI

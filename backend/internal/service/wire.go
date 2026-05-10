@@ -138,6 +138,68 @@ func ProvideAccountExpiryService(accountRepo AccountRepository) *AccountExpirySe
 	return svc
 }
 
+// ProvideExclusiveSeatExpiryService creates and starts ExclusiveSeatExpiryService.
+// 复用 PaymentService 已经持有的 ExclusiveSeatService 单例（避免重复初始化）。
+func ProvideExclusiveSeatExpiryService(paymentSvc *PaymentService) *ExclusiveSeatExpiryService {
+	svc := NewExclusiveSeatExpiryService(paymentSvc.ExclusiveSeatService(), 5*time.Minute)
+	svc.Start()
+	return svc
+}
+
+// ProvideSeatReleaseRetryService creates and starts SeatReleaseRetryService.
+// 自动重试退款成功但 seat 释放失败的订单，让"钱退了 seat 仍可用"的危险状态形成闭环。
+func ProvideSeatReleaseRetryService(paymentSvc *PaymentService) *SeatReleaseRetryService {
+	svc := NewSeatReleaseRetryService(paymentSvc, 5*time.Minute)
+	svc.Start()
+	return svc
+}
+
+// WireExclusiveSeatToGateway 把独享池服务挂载到网关 service 上。
+// 在 wire 完成基础对象创建后再调一次（参考 wire 的 "post-construction" 模式）。
+// 通过返回 struct{} 仅作为依赖标记，让 wire 知道在哪些 service 之后执行。
+type ExclusiveSeatGatewayWired struct{}
+
+func ProvideExclusiveSeatGatewayWiring(
+	gatewaySvc *GatewayService,
+	openaiGatewaySvc *OpenAIGatewayService,
+	geminiCompatSvc *GeminiMessagesCompatService,
+	paymentSvc *PaymentService,
+	billingCacheSvc *BillingCacheService,
+	subscriptionSvc *SubscriptionService,
+	outbox SchedulerOutboxNotifier,
+) ExclusiveSeatGatewayWired {
+	if paymentSvc == nil {
+		return ExclusiveSeatGatewayWired{}
+	}
+	seatSvc := paymentSvc.ExclusiveSeatService()
+	if gatewaySvc != nil {
+		gatewaySvc.SetExclusiveSeatService(seatSvc)
+	}
+	if openaiGatewaySvc != nil {
+		openaiGatewaySvc.SetExclusiveSeatService(seatSvc)
+	}
+	// Gemini compat（/v1beta/models 等）也需要独享池支持
+	if geminiCompatSvc != nil {
+		geminiCompatSvc.SetExclusiveSeatService(seatSvc)
+	}
+	// BillingCache 在 CheckBillingEligibility 中按 seat 限额拦截超额（migration 140）
+	if billingCacheSvc != nil {
+		billingCacheSvc.SetExclusiveSeatService(seatSvc)
+		// 二次注入 SubscriptionService 作为安全网（GPT round 29 #1）：
+		// NewSubscriptionService 构造期已经调过 SetSubscriptionService 一次，但那依赖 wire
+		// 的构造顺序（先 BillingCache 后 SubscriptionService）。这里在 post-construction
+		// 阶段再显式注入一次，避免任何 wire 顺序变更让独享用户的余额检查跳过失效。
+		if subscriptionSvc != nil {
+			billingCacheSvc.SetSubscriptionService(subscriptionSvc)
+		}
+	}
+	// 注入 SchedulerOutboxNotifier：seat 操作改变 account.assigned_seat_id 时触发快照刷新
+	if outbox != nil {
+		seatSvc.SetSchedulerOutbox(outbox)
+	}
+	return ExclusiveSeatGatewayWired{}
+}
+
 // ProvideSubscriptionExpiryService creates and starts SubscriptionExpiryService.
 func ProvideSubscriptionExpiryService(userSubRepo UserSubscriptionRepository) *SubscriptionExpiryService {
 	svc := NewSubscriptionExpiryService(userSubRepo, time.Minute)
@@ -229,6 +291,13 @@ func ProvideOpsMetricsCollector(
 	collector := NewOpsMetricsCollector(opsRepo, settingRepo, accountRepo, concurrencyService, db, redisClient, cfg)
 	collector.Start()
 	return collector
+}
+
+// ProvideSystemOverloadMonitor creates and starts SystemOverloadMonitor (in-process CPU/mem/disk sampler for overload-protection middleware).
+func ProvideSystemOverloadMonitor(settingService *SettingService) *SystemOverloadMonitor {
+	monitor := NewSystemOverloadMonitor(settingService)
+	monitor.Start(context.Background())
+	return monitor
 }
 
 // ProvideOpsAggregationService creates and starts OpsAggregationService (hourly/daily pre-aggregation).
@@ -449,6 +518,7 @@ var ProviderSet = wire.NewSet(
 	ProvideOpsSystemLogSink,
 	NewOpsService,
 	ProvideOpsMetricsCollector,
+	ProvideSystemOverloadMonitor,
 	ProvideOpsAggregationService,
 	ProvideOpsAlertEvaluatorService,
 	ProvideOpsCleanupService,
@@ -466,6 +536,9 @@ var ProviderSet = wire.NewSet(
 	NewCRSSyncService,
 	ProvideTokenRefreshService,
 	ProvideAccountExpiryService,
+	ProvideExclusiveSeatExpiryService,
+	ProvideSeatReleaseRetryService,
+	ProvideExclusiveSeatGatewayWiring,
 	ProvideSubscriptionExpiryService,
 	ProvideTimingWheelService,
 	ProvideDashboardAggregationService,

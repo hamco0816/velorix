@@ -133,7 +133,7 @@
           </template>
 
           <template #cell-billing_type="{ row }">
-            <div class="inline-block space-y-1 text-left align-middle">
+            <div class="flex flex-col items-center gap-1">
               <!-- Type Badge -->
               <span
                 :class="[
@@ -149,10 +149,10 @@
                     : t("admin.groups.subscription.standard")
                 }}
               </span>
-              <!-- Subscription Limits - compact single line -->
+              <!-- Subscription Limits - compact single line, centered -->
               <div
                 v-if="row.subscription_type === 'subscription'"
-                class="text-xs text-gray-500 dark:text-gray-400"
+                class="text-center text-xs text-gray-500 dark:text-gray-400"
               >
                 <template
                   v-if="

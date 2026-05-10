@@ -16,6 +16,8 @@ import (
 	dbent "github.com/Wei-Shaw/sub2api/ent"
 	"github.com/Wei-Shaw/sub2api/ent/authidentity"
 	"github.com/Wei-Shaw/sub2api/ent/authidentitychannel"
+	"github.com/Wei-Shaw/sub2api/ent/exclusivesubscription"
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/httpclient"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/logger"
@@ -1780,6 +1782,28 @@ func (s *adminServiceImpl) UpdateGroup(ctx context.Context, id int64, input *Upd
 }
 
 func (s *adminServiceImpl) DeleteGroup(ctx context.Context, id int64) error {
+	// 删分组前阻断 active 独享 seat（GPT round 20 #1）：
+	// DeleteCascade 只软删 user_subscriptions、清 api_keys、删 user_allowed_groups / account_groups，
+	// 不处理 exclusive_subscriptions。如果有 active seat 仍然存在，但分组和账号池已被拆掉，
+	// 用户付费 seat 进入"鉴权放行 → 调度找不到账号 → 退款流程也找不到 plan group" 的不一致状态。
+	// 强制先走 ReleaseSeat / 退款流程，删分组前必须清空 active seat。
+	if s.entClient != nil {
+		bound, err := s.entClient.ExclusiveSubscription.Query().
+			Where(
+				exclusivesubscription.GroupIDEQ(id),
+				exclusivesubscription.StatusEQ(domain.ExclusiveSeatStatusActive),
+				exclusivesubscription.DeletedAtIsNil(),
+			).Count(ctx)
+		if err != nil {
+			return fmt.Errorf("check active exclusive seats: %w", err)
+		}
+		if bound > 0 {
+			return infraerrors.Conflict("GROUP_BOUND_TO_ACTIVE_SEAT",
+				fmt.Sprintf("this group has %d active exclusive seat(s); release or refund those seats before deleting the group", bound))
+		}
+	}
+	// entClient == nil（测试场景）跳过 active seat 检查
+
 	var groupKeys []string
 	if s.authCacheInvalidator != nil {
 		keys, err := s.apiKeyRepo.ListKeysByGroupID(ctx, id)
@@ -2318,6 +2342,11 @@ func (s *adminServiceImpl) UpdateAccount(ctx context.Context, id int64, input *U
 				return nil, err
 			}
 		}
+
+		// active seat 保护：BindGroups 是全量替换，移出 seat 所在 group 会导致独享调度找不到账号
+		if err := s.assertGroupChangeKeepsActiveSeats(ctx, []int64{account.ID}, *input.GroupIDs); err != nil {
+			return nil, err
+		}
 	}
 
 	if err := s.accountRepo.Update(ctx, account); err != nil {
@@ -2441,6 +2470,13 @@ func (s *adminServiceImpl) BulkUpdateAccounts(ctx context.Context, input *BulkUp
 		return nil, err
 	}
 
+	// active seat 保护：批量改 group 同样会触发"账号被移出 seat 所在 group"问题，必须前置拦截
+	if input.GroupIDs != nil && len(input.AccountIDs) > 0 {
+		if err := s.assertGroupChangeKeepsActiveSeats(ctx, input.AccountIDs, *input.GroupIDs); err != nil {
+			return nil, err
+		}
+	}
+
 	// Handle group bindings per account (requires individual operations).
 	for _, accountID := range input.AccountIDs {
 		entry := BulkUpdateAccountResult{AccountID: accountID}
@@ -2514,7 +2550,88 @@ func (s *adminServiceImpl) resolveBulkUpdateTargetIDs(ctx context.Context, filte
 	}
 }
 
+// assertGroupChangeKeepsActiveSeats 在改 account_groups 前确保不会把仍被 active seat 占着的账号
+// 移出 seat 所在 group。BindGroups 是"全量替换"语义，新 GroupIDs 不含 seat.group_id 时会让 seat
+// 失去对应分组，独享调度命中后从该 group 找不到候选账号、库存口径也对不上（GPT round 20 #2）。
+//
+// 设计：
+//   - 拒绝而非"自动续保留"，让管理员明确知道需要先 ReleaseSeat / SwapSeatAccount 再换池。
+//   - 多账号场景一次性查出所有 violator，错误消息列前 5 个，方便排查。
+func (s *adminServiceImpl) assertGroupChangeKeepsActiveSeats(ctx context.Context, accountIDs []int64, newGroupIDs []int64) error {
+	if len(accountIDs) == 0 {
+		return nil
+	}
+	// nil entClient（测试场景）→ 无法查 ExclusiveSubscription 表，fail-open 跳过校验。
+	// 生产路径 wire 注入保证非 nil；这里只是为了让既有 admin_service 单测能继续构造 zero-value svc。
+	if s == nil || s.entClient == nil {
+		return nil
+	}
+	allowed := make(map[int64]struct{}, len(newGroupIDs))
+	for _, gid := range newGroupIDs {
+		allowed[gid] = struct{}{}
+	}
+	seats, err := s.entClient.ExclusiveSubscription.Query().
+		Where(
+			exclusivesubscription.AccountIDIn(accountIDs...),
+			exclusivesubscription.StatusEQ(domain.ExclusiveSeatStatusActive),
+			exclusivesubscription.DeletedAtIsNil(),
+		).All(ctx)
+	if err != nil {
+		return fmt.Errorf("check active exclusive seats: %w", err)
+	}
+	type violation struct {
+		accountID int64
+		seatID    int64
+		groupID   int64
+	}
+	var violations []violation
+	for _, seat := range seats {
+		if _, ok := allowed[seat.GroupID]; ok {
+			continue
+		}
+		violations = append(violations, violation{
+			accountID: seat.AccountID,
+			seatID:    seat.ID,
+			groupID:   seat.GroupID,
+		})
+	}
+	if len(violations) == 0 {
+		return nil
+	}
+	parts := make([]string, 0, len(violations))
+	const maxShow = 5
+	for i, v := range violations {
+		if i >= maxShow {
+			parts = append(parts, fmt.Sprintf("...and %d more", len(violations)-maxShow))
+			break
+		}
+		parts = append(parts, fmt.Sprintf("account=%d seat=%d still bound to group=%d", v.accountID, v.seatID, v.groupID))
+	}
+	return infraerrors.Conflict("ACCOUNT_BOUND_TO_ACTIVE_SEAT",
+		fmt.Sprintf("cannot remove account(s) from group while active exclusive seats are bound: %s", strings.Join(parts, "; ")))
+}
+
 func (s *adminServiceImpl) DeleteAccount(ctx context.Context, id int64) error {
+	// 删除账号前必须确认没有 active 独享 seat 绑定该账号。
+	// 否则 user_subscription 视图仍然把该用户当成"已付费独享用户"放行计费，但调度时找不到账号
+	// 会失败 → "用户付费但用不了"且无人感知。强制走 ReleaseSeat / RefundOrder 流程更安全。
+	if s.entClient == nil {
+		// 测试场景：跳过 active seat 校验，让既有单测能用 zero-value svc 构造
+		return s.accountRepo.Delete(ctx, id)
+	}
+	bound, err := s.entClient.ExclusiveSubscription.Query().
+		Where(
+			exclusivesubscription.AccountIDEQ(id),
+			exclusivesubscription.StatusEQ(domain.ExclusiveSeatStatusActive),
+			exclusivesubscription.DeletedAtIsNil(),
+		).Count(ctx)
+	if err != nil {
+		return fmt.Errorf("check active exclusive seats: %w", err)
+	}
+	if bound > 0 {
+		return infraerrors.Conflict("ACCOUNT_BOUND_TO_ACTIVE_SEAT",
+			fmt.Sprintf("this account is bound to %d active exclusive seat(s); release the seat(s) first via 'release' or 'swap account' before deleting", bound))
+	}
 	if err := s.accountRepo.Delete(ctx, id); err != nil {
 		return err
 	}

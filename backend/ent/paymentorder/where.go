@@ -155,6 +155,11 @@ func ProviderKey(v string) predicate.PaymentOrder {
 	return predicate.PaymentOrder(sql.FieldEQ(FieldProviderKey, v))
 }
 
+// RenewalSeatID applies equality check predicate on the "renewal_seat_id" field. It's identical to RenewalSeatIDEQ.
+func RenewalSeatID(v int64) predicate.PaymentOrder {
+	return predicate.PaymentOrder(sql.FieldEQ(FieldRenewalSeatID, v))
+}
+
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v string) predicate.PaymentOrder {
 	return predicate.PaymentOrder(sql.FieldEQ(FieldStatus, v))
@@ -1448,6 +1453,56 @@ func ProviderSnapshotIsNil() predicate.PaymentOrder {
 // ProviderSnapshotNotNil applies the NotNil predicate on the "provider_snapshot" field.
 func ProviderSnapshotNotNil() predicate.PaymentOrder {
 	return predicate.PaymentOrder(sql.FieldNotNull(FieldProviderSnapshot))
+}
+
+// RenewalSeatIDEQ applies the EQ predicate on the "renewal_seat_id" field.
+func RenewalSeatIDEQ(v int64) predicate.PaymentOrder {
+	return predicate.PaymentOrder(sql.FieldEQ(FieldRenewalSeatID, v))
+}
+
+// RenewalSeatIDNEQ applies the NEQ predicate on the "renewal_seat_id" field.
+func RenewalSeatIDNEQ(v int64) predicate.PaymentOrder {
+	return predicate.PaymentOrder(sql.FieldNEQ(FieldRenewalSeatID, v))
+}
+
+// RenewalSeatIDIn applies the In predicate on the "renewal_seat_id" field.
+func RenewalSeatIDIn(vs ...int64) predicate.PaymentOrder {
+	return predicate.PaymentOrder(sql.FieldIn(FieldRenewalSeatID, vs...))
+}
+
+// RenewalSeatIDNotIn applies the NotIn predicate on the "renewal_seat_id" field.
+func RenewalSeatIDNotIn(vs ...int64) predicate.PaymentOrder {
+	return predicate.PaymentOrder(sql.FieldNotIn(FieldRenewalSeatID, vs...))
+}
+
+// RenewalSeatIDGT applies the GT predicate on the "renewal_seat_id" field.
+func RenewalSeatIDGT(v int64) predicate.PaymentOrder {
+	return predicate.PaymentOrder(sql.FieldGT(FieldRenewalSeatID, v))
+}
+
+// RenewalSeatIDGTE applies the GTE predicate on the "renewal_seat_id" field.
+func RenewalSeatIDGTE(v int64) predicate.PaymentOrder {
+	return predicate.PaymentOrder(sql.FieldGTE(FieldRenewalSeatID, v))
+}
+
+// RenewalSeatIDLT applies the LT predicate on the "renewal_seat_id" field.
+func RenewalSeatIDLT(v int64) predicate.PaymentOrder {
+	return predicate.PaymentOrder(sql.FieldLT(FieldRenewalSeatID, v))
+}
+
+// RenewalSeatIDLTE applies the LTE predicate on the "renewal_seat_id" field.
+func RenewalSeatIDLTE(v int64) predicate.PaymentOrder {
+	return predicate.PaymentOrder(sql.FieldLTE(FieldRenewalSeatID, v))
+}
+
+// RenewalSeatIDIsNil applies the IsNil predicate on the "renewal_seat_id" field.
+func RenewalSeatIDIsNil() predicate.PaymentOrder {
+	return predicate.PaymentOrder(sql.FieldIsNull(FieldRenewalSeatID))
+}
+
+// RenewalSeatIDNotNil applies the NotNil predicate on the "renewal_seat_id" field.
+func RenewalSeatIDNotNil() predicate.PaymentOrder {
+	return predicate.PaymentOrder(sql.FieldNotNull(FieldRenewalSeatID))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.

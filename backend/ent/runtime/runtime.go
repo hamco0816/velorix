@@ -17,6 +17,7 @@ import (
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitorhistory"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitorrequesttemplate"
 	"github.com/Wei-Shaw/sub2api/ent/errorpassthroughrule"
+	"github.com/Wei-Shaw/sub2api/ent/exclusivesubscription"
 	"github.com/Wei-Shaw/sub2api/ent/group"
 	"github.com/Wei-Shaw/sub2api/ent/idempotencyrecord"
 	"github.com/Wei-Shaw/sub2api/ent/identityadoptiondecision"
@@ -736,6 +737,51 @@ func init() {
 	errorpassthroughruleDescSkipMonitoring := errorpassthroughruleFields[11].Descriptor()
 	// errorpassthroughrule.DefaultSkipMonitoring holds the default value on creation for the skip_monitoring field.
 	errorpassthroughrule.DefaultSkipMonitoring = errorpassthroughruleDescSkipMonitoring.Default.(bool)
+	exclusivesubscriptionMixin := schema.ExclusiveSubscription{}.Mixin()
+	exclusivesubscriptionMixinHooks1 := exclusivesubscriptionMixin[1].Hooks()
+	exclusivesubscription.Hooks[0] = exclusivesubscriptionMixinHooks1[0]
+	exclusivesubscriptionMixinInters1 := exclusivesubscriptionMixin[1].Interceptors()
+	exclusivesubscription.Interceptors[0] = exclusivesubscriptionMixinInters1[0]
+	exclusivesubscriptionMixinFields0 := exclusivesubscriptionMixin[0].Fields()
+	_ = exclusivesubscriptionMixinFields0
+	exclusivesubscriptionFields := schema.ExclusiveSubscription{}.Fields()
+	_ = exclusivesubscriptionFields
+	// exclusivesubscriptionDescCreatedAt is the schema descriptor for created_at field.
+	exclusivesubscriptionDescCreatedAt := exclusivesubscriptionMixinFields0[0].Descriptor()
+	// exclusivesubscription.DefaultCreatedAt holds the default value on creation for the created_at field.
+	exclusivesubscription.DefaultCreatedAt = exclusivesubscriptionDescCreatedAt.Default.(func() time.Time)
+	// exclusivesubscriptionDescUpdatedAt is the schema descriptor for updated_at field.
+	exclusivesubscriptionDescUpdatedAt := exclusivesubscriptionMixinFields0[1].Descriptor()
+	// exclusivesubscription.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	exclusivesubscription.DefaultUpdatedAt = exclusivesubscriptionDescUpdatedAt.Default.(func() time.Time)
+	// exclusivesubscription.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	exclusivesubscription.UpdateDefaultUpdatedAt = exclusivesubscriptionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// exclusivesubscriptionDescStatus is the schema descriptor for status field.
+	exclusivesubscriptionDescStatus := exclusivesubscriptionFields[4].Descriptor()
+	// exclusivesubscription.DefaultStatus holds the default value on creation for the status field.
+	exclusivesubscription.DefaultStatus = exclusivesubscriptionDescStatus.Default.(string)
+	// exclusivesubscription.StatusValidator is a validator for the "status" field. It is called by the builders before save.
+	exclusivesubscription.StatusValidator = exclusivesubscriptionDescStatus.Validators[0].(func(string) error)
+	// exclusivesubscriptionDescAssignedAt is the schema descriptor for assigned_at field.
+	exclusivesubscriptionDescAssignedAt := exclusivesubscriptionFields[7].Descriptor()
+	// exclusivesubscription.DefaultAssignedAt holds the default value on creation for the assigned_at field.
+	exclusivesubscription.DefaultAssignedAt = exclusivesubscriptionDescAssignedAt.Default.(func() time.Time)
+	// exclusivesubscriptionDescUsageUsd is the schema descriptor for usage_usd field.
+	exclusivesubscriptionDescUsageUsd := exclusivesubscriptionFields[9].Descriptor()
+	// exclusivesubscription.DefaultUsageUsd holds the default value on creation for the usage_usd field.
+	exclusivesubscription.DefaultUsageUsd = exclusivesubscriptionDescUsageUsd.Default.(float64)
+	// exclusivesubscriptionDescDailyUsageUsd is the schema descriptor for daily_usage_usd field.
+	exclusivesubscriptionDescDailyUsageUsd := exclusivesubscriptionFields[13].Descriptor()
+	// exclusivesubscription.DefaultDailyUsageUsd holds the default value on creation for the daily_usage_usd field.
+	exclusivesubscription.DefaultDailyUsageUsd = exclusivesubscriptionDescDailyUsageUsd.Default.(float64)
+	// exclusivesubscriptionDescWeeklyUsageUsd is the schema descriptor for weekly_usage_usd field.
+	exclusivesubscriptionDescWeeklyUsageUsd := exclusivesubscriptionFields[14].Descriptor()
+	// exclusivesubscription.DefaultWeeklyUsageUsd holds the default value on creation for the weekly_usage_usd field.
+	exclusivesubscription.DefaultWeeklyUsageUsd = exclusivesubscriptionDescWeeklyUsageUsd.Default.(float64)
+	// exclusivesubscriptionDescMonthlyUsageUsd is the schema descriptor for monthly_usage_usd field.
+	exclusivesubscriptionDescMonthlyUsageUsd := exclusivesubscriptionFields[15].Descriptor()
+	// exclusivesubscription.DefaultMonthlyUsageUsd holds the default value on creation for the monthly_usage_usd field.
+	exclusivesubscription.DefaultMonthlyUsageUsd = exclusivesubscriptionDescMonthlyUsageUsd.Default.(float64)
 	groupMixin := schema.Group{}.Mixin()
 	groupMixinHooks1 := groupMixin[1].Hooks()
 	group.Hooks[0] = groupMixinHooks1[0]
@@ -982,37 +1028,37 @@ func init() {
 	// paymentorder.ProviderKeyValidator is a validator for the "provider_key" field. It is called by the builders before save.
 	paymentorder.ProviderKeyValidator = paymentorderDescProviderKey.Validators[0].(func(string) error)
 	// paymentorderDescStatus is the schema descriptor for status field.
-	paymentorderDescStatus := paymentorderFields[21].Descriptor()
+	paymentorderDescStatus := paymentorderFields[22].Descriptor()
 	// paymentorder.DefaultStatus holds the default value on creation for the status field.
 	paymentorder.DefaultStatus = paymentorderDescStatus.Default.(string)
 	// paymentorder.StatusValidator is a validator for the "status" field. It is called by the builders before save.
 	paymentorder.StatusValidator = paymentorderDescStatus.Validators[0].(func(string) error)
 	// paymentorderDescRefundAmount is the schema descriptor for refund_amount field.
-	paymentorderDescRefundAmount := paymentorderFields[22].Descriptor()
+	paymentorderDescRefundAmount := paymentorderFields[23].Descriptor()
 	// paymentorder.DefaultRefundAmount holds the default value on creation for the refund_amount field.
 	paymentorder.DefaultRefundAmount = paymentorderDescRefundAmount.Default.(float64)
 	// paymentorderDescForceRefund is the schema descriptor for force_refund field.
-	paymentorderDescForceRefund := paymentorderFields[25].Descriptor()
+	paymentorderDescForceRefund := paymentorderFields[26].Descriptor()
 	// paymentorder.DefaultForceRefund holds the default value on creation for the force_refund field.
 	paymentorder.DefaultForceRefund = paymentorderDescForceRefund.Default.(bool)
 	// paymentorderDescRefundRequestedBy is the schema descriptor for refund_requested_by field.
-	paymentorderDescRefundRequestedBy := paymentorderFields[28].Descriptor()
+	paymentorderDescRefundRequestedBy := paymentorderFields[29].Descriptor()
 	// paymentorder.RefundRequestedByValidator is a validator for the "refund_requested_by" field. It is called by the builders before save.
 	paymentorder.RefundRequestedByValidator = paymentorderDescRefundRequestedBy.Validators[0].(func(string) error)
 	// paymentorderDescClientIP is the schema descriptor for client_ip field.
-	paymentorderDescClientIP := paymentorderFields[34].Descriptor()
+	paymentorderDescClientIP := paymentorderFields[35].Descriptor()
 	// paymentorder.ClientIPValidator is a validator for the "client_ip" field. It is called by the builders before save.
 	paymentorder.ClientIPValidator = paymentorderDescClientIP.Validators[0].(func(string) error)
 	// paymentorderDescSrcHost is the schema descriptor for src_host field.
-	paymentorderDescSrcHost := paymentorderFields[35].Descriptor()
+	paymentorderDescSrcHost := paymentorderFields[36].Descriptor()
 	// paymentorder.SrcHostValidator is a validator for the "src_host" field. It is called by the builders before save.
 	paymentorder.SrcHostValidator = paymentorderDescSrcHost.Validators[0].(func(string) error)
 	// paymentorderDescCreatedAt is the schema descriptor for created_at field.
-	paymentorderDescCreatedAt := paymentorderFields[37].Descriptor()
+	paymentorderDescCreatedAt := paymentorderFields[38].Descriptor()
 	// paymentorder.DefaultCreatedAt holds the default value on creation for the created_at field.
 	paymentorder.DefaultCreatedAt = paymentorderDescCreatedAt.Default.(func() time.Time)
 	// paymentorderDescUpdatedAt is the schema descriptor for updated_at field.
-	paymentorderDescUpdatedAt := paymentorderFields[38].Descriptor()
+	paymentorderDescUpdatedAt := paymentorderFields[39].Descriptor()
 	// paymentorder.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	paymentorder.DefaultUpdatedAt = paymentorderDescUpdatedAt.Default.(func() time.Time)
 	// paymentorder.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
@@ -1492,12 +1538,18 @@ func init() {
 	subscriptionplanDescSortOrder := subscriptionplanFields[10].Descriptor()
 	// subscriptionplan.DefaultSortOrder holds the default value on creation for the sort_order field.
 	subscriptionplan.DefaultSortOrder = subscriptionplanDescSortOrder.Default.(int)
+	// subscriptionplanDescKind is the schema descriptor for kind field.
+	subscriptionplanDescKind := subscriptionplanFields[11].Descriptor()
+	// subscriptionplan.DefaultKind holds the default value on creation for the kind field.
+	subscriptionplan.DefaultKind = subscriptionplanDescKind.Default.(string)
+	// subscriptionplan.KindValidator is a validator for the "kind" field. It is called by the builders before save.
+	subscriptionplan.KindValidator = subscriptionplanDescKind.Validators[0].(func(string) error)
 	// subscriptionplanDescCreatedAt is the schema descriptor for created_at field.
-	subscriptionplanDescCreatedAt := subscriptionplanFields[11].Descriptor()
+	subscriptionplanDescCreatedAt := subscriptionplanFields[16].Descriptor()
 	// subscriptionplan.DefaultCreatedAt holds the default value on creation for the created_at field.
 	subscriptionplan.DefaultCreatedAt = subscriptionplanDescCreatedAt.Default.(func() time.Time)
 	// subscriptionplanDescUpdatedAt is the schema descriptor for updated_at field.
-	subscriptionplanDescUpdatedAt := subscriptionplanFields[12].Descriptor()
+	subscriptionplanDescUpdatedAt := subscriptionplanFields[17].Descriptor()
 	// subscriptionplan.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	subscriptionplan.DefaultUpdatedAt = subscriptionplanDescUpdatedAt.Default.(func() time.Time)
 	// subscriptionplan.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

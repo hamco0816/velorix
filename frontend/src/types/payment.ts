@@ -90,6 +90,7 @@ export interface PaymentOrder {
   completed_at?: string
   refund_amount: number
   refund_reason?: string
+  refund_at?: string
   refund_requested_at?: string
   refund_requested_by?: number
   refund_request_reason?: string
@@ -112,6 +113,8 @@ export interface SubscriptionPlan {
   daily_limit_usd?: number | null
   weekly_limit_usd?: number | null
   monthly_limit_usd?: number | null
+  /** 该套餐自带限额/倍率覆盖（migration 138）；true = 独立档位，限额跟同 group 其他 plan 不同 */
+  has_plan_limit_override?: boolean
   supported_model_scopes?: string[]
   name: string
   description: string
@@ -123,6 +126,53 @@ export interface SubscriptionPlan {
   features: string[]
   for_sale: boolean
   sort_order: number
+  /** 'shared' = 共享池套餐；'exclusive' = 独享池套餐（购买后独占一个账号） */
+  kind?: 'shared' | 'exclusive'
+  /** 独享池套餐的剩余库存数；shared 套餐为 undefined */
+  stock_available?: number
+}
+
+export type PlanKind = 'shared' | 'exclusive'
+
+// 独享池 seat 状态
+export type ExclusiveSeatStatus = 'active' | 'expired' | 'refunded' | 'cancelled'
+
+// 用户视角的「我的独享号」一行
+// 后端用户接口（SeatHandler）只下发脱敏 account_label，不暴露内部 account_id；
+// 管理员路径有独立的 AdminSeatView 类型。
+export interface ExclusiveSeat {
+  id: number
+  user_id: number
+  group_id: number
+  group_name?: string
+  group_platform?: string
+  plan_id: number
+  plan_name?: string
+  account_label: string
+  status: ExclusiveSeatStatus
+  starts_at: string
+  expires_at: string
+  assigned_at: string
+  last_renewal_at?: string
+  usage_usd: number
+  notes?: string
+}
+
+// 后台视角：管理员接口（AdminSeatView）下发完整 account_id 用于运维操作（释放/换号等）。
+export interface AdminExclusiveSeat extends ExclusiveSeat {
+  account_id: number
+  assigned_by?: number
+}
+
+// 独享池库存
+export interface ExclusivePoolInventory {
+  group_id: number
+  total: number
+  free: number
+  used: number
+  /** 当下立即可分配的账号数（剔除限流/过载/临时不可用 + 已占用），是真实"可售卖"指标 */
+  schedulable?: number
+  expiring_in_7: number
 }
 
 export interface PaymentChannel {
@@ -155,6 +205,11 @@ export interface ProviderInstance {
 
 // ==================== Request / Response ====================
 
+export interface RenewalSeatRequest {
+  /** 续费目标 seat ID（>0 时本订单走 RenewSeat 路径，不消耗库存） */
+  renewal_seat_id?: number
+}
+
 export interface CreateOrderRequest {
   amount: number
   payment_type: string
@@ -165,6 +220,8 @@ export interface CreateOrderRequest {
   openid?: string
   wechat_resume_token?: string
   is_mobile?: boolean
+  /** 续费目标 seat ID（>0 时本订单走 RenewSeat 路径） */
+  renewal_seat_id?: number
 }
 
 export type CreateOrderResultType = 'order_created' | 'oauth_required' | 'jsapi_ready'

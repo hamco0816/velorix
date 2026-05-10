@@ -10,7 +10,9 @@ import (
 	"time"
 
 	dbent "github.com/Wei-Shaw/sub2api/ent"
+	"github.com/Wei-Shaw/sub2api/ent/exclusivesubscription"
 	"github.com/Wei-Shaw/sub2api/internal/config"
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/pagination"
 	"github.com/dgraph-io/ristretto"
@@ -65,6 +67,11 @@ func NewSubscriptionService(groupRepo GroupRepository, userSubRepo UserSubscript
 	}
 	svc.initSubCache(cfg)
 	svc.initMaintenanceQueue(cfg)
+	// 反向注入：BillingCacheService 在 CheckBillingEligibility 中需要查独享 seat
+	// 构造期 SubscriptionService 后于 BillingCacheService，靠 setter 解决循环依赖
+	if billingCacheService != nil {
+		billingCacheService.SetSubscriptionService(svc)
+	}
 	return svc
 }
 
@@ -149,6 +156,9 @@ type AssignSubscriptionInput struct {
 	ValidityDays int
 	AssignedBy   int64
 	Notes        string
+	// PlanID 可选：通过支付订单创建时填入，让 fulfillment 把该 plan 的限额/倍率快照到 user_subscription
+	// 兑换码、首次注册赠送等场景留 0，使用 group 默认限额
+	PlanID int64
 }
 
 // AssignSubscription 分配订阅给用户（不允许重复分配）
@@ -222,6 +232,17 @@ func (s *SubscriptionService) AssignOrExtendSubscription(ctx context.Context, in
 			return nil, false, fmt.Errorf("extend subscription: %w", err)
 		}
 
+		// 续期时刷新限额/倍率快照（与独享池 RenewSeat 行为一致）：plan 改了限额后续费按新值
+		// PlanID > 0 才能查到 plan；兑换码、首次注册等系统赠送场景 PlanID=0 跳过
+		if input.PlanID > 0 {
+			if plan, err := s.entClient.SubscriptionPlan.Get(txCtx, input.PlanID); err == nil && plan != nil {
+				if err := s.userSubRepo.UpdatePlanLimitSnapshot(txCtx, existingSub.ID, plan.DailyLimitUsd, plan.WeeklyLimitUsd, plan.MonthlyLimitUsd, plan.RateMultiplier); err != nil {
+					_ = tx.Rollback()
+					return nil, false, fmt.Errorf("update plan limit snapshot: %w", err)
+				}
+			}
+		}
+
 		// 如果订阅已过期或被暂停，恢复为active状态
 		if existingSub.Status != SubscriptionStatusActive {
 			if err := s.userSubRepo.UpdateStatus(txCtx, existingSub.ID, SubscriptionStatusActive); err != nil {
@@ -284,6 +305,34 @@ func (s *SubscriptionService) AssignOrExtendSubscription(ctx context.Context, in
 	return sub, false, nil // false 表示是新建
 }
 
+// snapshotPlanLimitsToSub 把 plan 当前的限额/倍率快照到 UserSubscription。
+// PlanID <= 0 或 plan 查不到时静默 noop，sub 的限额字段保持 nil（→ 调度时回落到 group）。
+func (s *SubscriptionService) snapshotPlanLimitsToSub(ctx context.Context, sub *UserSubscription, planID int64) {
+	if sub == nil || planID <= 0 || s.entClient == nil {
+		return
+	}
+	plan, err := s.entClient.SubscriptionPlan.Get(ctx, planID)
+	if err != nil || plan == nil {
+		return
+	}
+	if plan.DailyLimitUsd != nil {
+		v := *plan.DailyLimitUsd
+		sub.DailyLimitUSD = &v
+	}
+	if plan.WeeklyLimitUsd != nil {
+		v := *plan.WeeklyLimitUsd
+		sub.WeeklyLimitUSD = &v
+	}
+	if plan.MonthlyLimitUsd != nil {
+		v := *plan.MonthlyLimitUsd
+		sub.MonthlyLimitUSD = &v
+	}
+	if plan.RateMultiplier != nil {
+		v := *plan.RateMultiplier
+		sub.RateMultiplier = &v
+	}
+}
+
 // createSubscription 创建新订阅（内部方法）
 func (s *SubscriptionService) createSubscription(ctx context.Context, input *AssignSubscriptionInput) (*UserSubscription, error) {
 	validityDays := input.ValidityDays
@@ -315,6 +364,8 @@ func (s *SubscriptionService) createSubscription(ctx context.Context, input *Ass
 	if input.AssignedBy > 0 {
 		sub.AssignedBy = &input.AssignedBy
 	}
+	// 把 plan 上的限额/倍率快照到订阅记录（NULL 时回落到 group）
+	s.snapshotPlanLimitsToSub(ctx, sub, input.PlanID)
 
 	if err := s.userSubRepo.Create(ctx, sub); err != nil {
 		return nil, err
@@ -598,6 +649,27 @@ func (s *SubscriptionService) GetActiveSubscription(ctx context.Context, userID,
 	}
 	cp := *sub
 	return &cp, nil
+}
+
+// HasActiveExclusiveSeat 检查用户在指定 group 是否有 active 独享名额。
+// 用于 api_key_auth 中间件：独享套餐 fulfillment 不创建 user_subscription，
+// 但 active seat 应被视为"订阅有效"，让用户能通过鉴权调用 API。
+func (s *SubscriptionService) HasActiveExclusiveSeat(ctx context.Context, userID, groupID int64) bool {
+	if s == nil || s.entClient == nil || userID <= 0 || groupID <= 0 {
+		return false
+	}
+	exists, err := s.entClient.ExclusiveSubscription.Query().
+		Where(
+			exclusivesubscription.UserIDEQ(userID),
+			exclusivesubscription.GroupIDEQ(groupID),
+			exclusivesubscription.StatusEQ(domain.ExclusiveSeatStatusActive),
+			exclusivesubscription.ExpiresAtGT(time.Now()),
+			exclusivesubscription.DeletedAtIsNil(),
+		).Exist(ctx)
+	if err != nil {
+		return false
+	}
+	return exists
 }
 
 // ListUserSubscriptions 获取用户的所有订阅
@@ -941,9 +1013,9 @@ func (s *SubscriptionService) calculateProgress(sub *UserSubscription, group *Gr
 		ExpiresInDays: sub.DaysRemaining(),
 	}
 
-	// 日进度
-	if group.HasDailyLimit() && sub.DailyWindowStart != nil {
-		limit := *group.DailyLimitUSD
+	// 日进度（先用 sub 快照覆盖值，再 fallback 到 group）
+	if dailyLimit, hasDaily := sub.EffectiveDailyLimit(group); hasDaily && sub.DailyWindowStart != nil {
+		limit := dailyLimit
 		resetsAt := sub.DailyWindowStart.Add(24 * time.Hour)
 		progress.Daily = &UsageWindowProgress{
 			LimitUSD:        limit,
@@ -966,8 +1038,8 @@ func (s *SubscriptionService) calculateProgress(sub *UserSubscription, group *Gr
 	}
 
 	// 周进度
-	if group.HasWeeklyLimit() && sub.WeeklyWindowStart != nil {
-		limit := *group.WeeklyLimitUSD
+	if weeklyLimit, hasWeekly := sub.EffectiveWeeklyLimit(group); hasWeekly && sub.WeeklyWindowStart != nil {
+		limit := weeklyLimit
 		resetsAt := sub.WeeklyWindowStart.Add(7 * 24 * time.Hour)
 		progress.Weekly = &UsageWindowProgress{
 			LimitUSD:        limit,
@@ -990,8 +1062,8 @@ func (s *SubscriptionService) calculateProgress(sub *UserSubscription, group *Gr
 	}
 
 	// 月进度
-	if group.HasMonthlyLimit() && sub.MonthlyWindowStart != nil {
-		limit := *group.MonthlyLimitUSD
+	if monthlyLimit, hasMonthly := sub.EffectiveMonthlyLimit(group); hasMonthly && sub.MonthlyWindowStart != nil {
+		limit := monthlyLimit
 		resetsAt := sub.MonthlyWindowStart.Add(30 * 24 * time.Hour)
 		progress.Monthly = &UsageWindowProgress{
 			LimitUSD:        limit,

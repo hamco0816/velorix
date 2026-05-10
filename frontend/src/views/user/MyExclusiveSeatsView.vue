@@ -1,0 +1,335 @@
+<template>
+  <AppLayout>
+    <div class="space-y-5">
+      <!-- Hero -->
+      <header class="page-hero page-hero-violet">
+        <div class="relative z-10 max-w-3xl">
+          <span class="page-hero-tag page-hero-tag-violet">
+            <Icon name="badge" size="sm" />
+            {{ t('exclusiveSeats.title') }}
+          </span>
+          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
+            {{ t('exclusiveSeats.title') }}
+          </h1>
+          <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
+            {{ t('exclusiveSeats.subtitle') }}
+          </p>
+        </div>
+      </header>
+
+      <!-- Loading -->
+      <div v-if="loading" class="flex items-center justify-center py-20">
+        <div class="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
+      </div>
+
+      <!-- Empty -->
+      <div v-else-if="seats.length === 0" class="card py-16 text-center">
+        <Icon name="badge" size="xl" class="mx-auto mb-3 text-gray-300 dark:text-dark-600" />
+        <p class="text-gray-500 dark:text-gray-400">{{ t('exclusiveSeats.empty') }}</p>
+        <button class="btn btn-primary mt-4" @click="router.push('/purchase')">
+          {{ t('exclusiveSeats.browsePlans') }}
+        </button>
+      </div>
+
+      <!-- 使用引导：用户有 active seat 时提醒需要 ApiKey -->
+      <div v-else-if="hasActiveSeats"
+        class="flex items-start gap-3 rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-sky-50 px-5 py-3.5 dark:border-blue-900/50 dark:from-blue-950/30 dark:to-sky-950/20">
+        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-300">
+          <Icon name="infoCircle" size="md" :stroke-width="2.2" />
+        </div>
+        <div class="flex-1 text-sm text-blue-800 dark:text-blue-200">
+          <p class="font-semibold">{{ t('exclusiveSeats.usageGuideTitle') }}</p>
+          <p class="mt-0.5 text-xs text-blue-700/80 dark:text-blue-300/80">
+            {{ t('exclusiveSeats.usageGuideHint') }}
+          </p>
+        </div>
+        <button
+          class="shrink-0 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-blue-700"
+          @click="router.push('/keys')">
+          {{ t('exclusiveSeats.goToKeys') }}
+        </button>
+      </div>
+
+      <!-- Seats list -->
+      <div v-if="seats.length > 0" class="grid gap-3 lg:grid-cols-2">
+        <div v-for="seat in seats" :key="seat.id"
+          class="overflow-hidden rounded-2xl border bg-white shadow-sm dark:bg-dark-900"
+          :class="seat.status === 'active' ? 'border-emerald-200 dark:border-emerald-900/50' : 'border-gray-200 dark:border-dark-700'">
+          <!-- Header -->
+          <div class="flex items-center gap-3 border-b border-gray-100 px-4 py-3 dark:border-dark-700">
+            <div :class="['flex h-10 w-10 items-center justify-center rounded-xl', statusBadgeClass(seat.status)]">
+              <Icon name="badge" size="md" />
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ seat.plan_name || `Plan #${seat.plan_id}` }}</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">{{ seat.account_label }}</p>
+            </div>
+            <span :class="['rounded-full px-2 py-1 text-[11px] font-semibold', statusPillClass(seat.status)]">
+              {{ t(`exclusiveSeats.status.${seat.status}`) }}
+            </span>
+          </div>
+
+          <!-- Body -->
+          <div class="space-y-2 px-4 py-3 text-sm">
+            <div class="flex justify-between">
+              <span class="text-gray-500 dark:text-gray-400">{{ t('exclusiveSeats.assignedAt') }}</span>
+              <span class="text-gray-900 dark:text-white">{{ formatDate(seat.assigned_at) }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-500 dark:text-gray-400">{{ t('exclusiveSeats.expiresAt') }}</span>
+              <span :class="['font-medium', expiryColor(seat)]">
+                {{ formatDate(seat.expires_at) }}
+                <span v-if="seat.status === 'active'" class="ml-1 text-xs">
+                  ({{ daysRemainingLabel(seat.expires_at) }})
+                </span>
+              </span>
+            </div>
+            <div v-if="seat.last_renewal_at" class="flex justify-between text-xs">
+              <span class="text-gray-400 dark:text-gray-500">{{ t('exclusiveSeats.lastRenewalAt') }}</span>
+              <span class="text-gray-500 dark:text-gray-400">{{ formatDate(seat.last_renewal_at) }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-500 dark:text-gray-400">{{ t('exclusiveSeats.usage') }}</span>
+              <span class="text-gray-900 dark:text-white">${{ seat.usage_usd.toFixed(4) }}</span>
+            </div>
+          </div>
+
+          <!-- Footer actions -->
+          <div v-if="canRenew(seat)" class="flex border-t border-gray-100 dark:border-dark-700">
+            <button class="flex-1 py-3 text-sm font-medium text-emerald-600 transition hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/20"
+              @click="openRenew(seat)">
+              <Icon name="refresh" size="sm" class="mr-1 inline-block" />
+              {{ t('exclusiveSeats.renew') }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Renew preview dialog: 显示价格与续费时长，点击"前往支付"跳转购买页继续走支付流程 -->
+    <BaseDialog :show="!!renewTarget" :title="t('exclusiveSeats.renewTitle')" width="narrow" @close="renewTarget = null">
+      <div v-if="renewTarget && renewPreview" class="space-y-4">
+        <p class="text-sm text-gray-600 dark:text-gray-300">
+          {{ t('exclusiveSeats.renewHint', { name: renewPreview.plan_name }) }}
+        </p>
+
+        <!-- 价格变动提示块（三态都展示，保持高度一致）：涨价 amber、降价 emerald、不变中性灰 -->
+        <div v-if="renewPreview.last_paid_price > 0"
+          class="flex items-start gap-2.5 rounded-lg border-l-4 px-3 py-2.5"
+          :class="renewDialogTrend === 'up'
+            ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/30'
+            : renewDialogTrend === 'down'
+              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30'
+              : 'border-gray-300 bg-gray-50 dark:border-dark-600 dark:bg-dark-800/60'">
+          <Icon
+            :name="renewDialogTrend === 'up' ? 'exclamationTriangle' : 'check'"
+            size="sm"
+            class="mt-0.5 shrink-0"
+            :class="renewDialogTrend === 'up'
+              ? 'text-amber-600 dark:text-amber-300'
+              : renewDialogTrend === 'down'
+                ? 'text-emerald-600 dark:text-emerald-300'
+                : 'text-gray-500 dark:text-dark-300'" />
+          <div class="flex-1 text-xs leading-5"
+            :class="renewDialogTrend === 'up'
+              ? 'text-amber-800 dark:text-amber-200'
+              : renewDialogTrend === 'down'
+                ? 'text-emerald-800 dark:text-emerald-200'
+                : 'text-gray-700 dark:text-dark-200'">
+            <span v-if="renewDialogTrend === 'up'">{{ t('exclusiveSeats.priceIncreasedWarning', { delta: (renewPreview.price - renewPreview.last_paid_price).toFixed(2) }) }}</span>
+            <span v-else-if="renewDialogTrend === 'down'">{{ t('exclusiveSeats.priceDecreasedNote', { delta: (renewPreview.last_paid_price - renewPreview.price).toFixed(2) }) }}</span>
+            <span v-else>{{ t('exclusiveSeats.priceUnchangedNote') }}</span>
+          </div>
+        </div>
+
+        <!-- 续费明细卡：行间距加大、字号 hierarchy 更明显 -->
+        <div class="rounded-xl border border-gray-200 bg-gray-50/60 p-5 dark:border-dark-700 dark:bg-dark-800/40">
+          <!-- 有效期 -->
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-gray-500 dark:text-gray-400">{{ t('exclusiveSeats.validityDays') }}</span>
+            <span class="font-medium tabular-nums">{{ renewPreview.validity_days }} {{ renewPreview.validity_unit }}</span>
+          </div>
+
+          <!-- 上次价行：行间距 mt-3，删除线加粗到 decoration-2 让"过时"语义更明确 -->
+          <div v-if="renewPreview.last_paid_price > 0" class="mt-3 flex items-center justify-between text-sm">
+            <span class="text-gray-500 dark:text-gray-400">{{ t('payment.renewalBanner.lastPaid') }}</span>
+            <span class="font-mono tabular-nums"
+              :class="renewDialogTrend === 'same'
+                ? 'text-gray-700 dark:text-dark-100'
+                : 'text-gray-400 line-through decoration-2 decoration-gray-300/80 dark:text-dark-400 dark:decoration-dark-600/80'">
+              ¥{{ renewPreview.last_paid_price.toFixed(2) }}
+            </span>
+          </div>
+
+          <!-- 本次价：跟其他行一致结构（label 左、金额右），chip 内联到金额左侧 -->
+          <div class="mt-3 flex items-baseline justify-between">
+            <span class="text-sm text-gray-500 dark:text-gray-400">{{ t('payment.actualPay') }}</span>
+            <div class="flex items-baseline gap-2">
+              <span v-if="renewDialogTrend === 'up'"
+                class="inline-flex items-center rounded-md bg-amber-100/80 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                +¥{{ (renewPreview.price - renewPreview.last_paid_price).toFixed(2) }}
+              </span>
+              <span v-else-if="renewDialogTrend === 'down'"
+                class="inline-flex items-center rounded-md bg-emerald-100/80 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                −¥{{ (renewPreview.last_paid_price - renewPreview.price).toFixed(2) }}
+              </span>
+              <span v-else
+                class="inline-flex items-center rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-dark-700 dark:text-dark-300">
+                {{ t('payment.renewalBanner.priceSame') }}
+              </span>
+              <span class="font-mono text-2xl font-bold tabular-nums leading-none"
+                :class="renewDialogTrend === 'up' ? 'text-amber-600 dark:text-amber-300'
+                  : renewDialogTrend === 'down' ? 'text-emerald-600 dark:text-emerald-300'
+                  : 'text-primary-600 dark:text-primary-400'">
+                ¥{{ renewPreview.price.toFixed(2) }}
+              </span>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('exclusiveSeats.renewPaymentHint') }}</p>
+      </div>
+      <template #footer>
+        <div class="flex justify-end gap-3">
+          <button class="btn btn-secondary" @click="renewTarget = null">{{ t('common.cancel') }}</button>
+          <button class="btn btn-primary" :disabled="!renewPreview" @click="goToRenewPayment">
+            {{ t('exclusiveSeats.goToPay') }}
+          </button>
+        </div>
+      </template>
+    </BaseDialog>
+  </AppLayout>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
+import { useAppStore } from '@/stores'
+import { paymentAPI } from '@/api/payment'
+import { extractI18nErrorMessage } from '@/utils/apiError'
+import type { ExclusiveSeat } from '@/types/payment'
+import AppLayout from '@/components/layout/AppLayout.vue'
+import BaseDialog from '@/components/common/BaseDialog.vue'
+import Icon from '@/components/icons/Icon.vue'
+
+const { t } = useI18n()
+const router = useRouter()
+const appStore = useAppStore()
+
+const loading = ref(false)
+const seats = ref<ExclusiveSeat[]>([])
+const renewTarget = ref<ExclusiveSeat | null>(null)
+const renewPreview = ref<{
+  seat_id: number
+  plan_id: number
+  plan_name: string
+  price: number
+  validity_days: number
+  validity_unit: string
+  current_expires_at: string
+  last_paid_price: number
+} | null>(null)
+
+const hasActiveSeats = computed(() => seats.value.some((s) => s.status === 'active'))
+
+// 续费 dialog 内的价格变动方向（与 PaymentView 一致，差额 < 0.005 视为不变）
+const renewDialogTrend = computed<'up' | 'down' | 'same'>(() => {
+  const p = renewPreview.value
+  if (!p || p.last_paid_price <= 0) return 'same'
+  const delta = p.price - p.last_paid_price
+  if (delta > 0.005) return 'up'
+  if (delta < -0.005) return 'down'
+  return 'same'
+})
+
+async function loadSeats() {
+  loading.value = true
+  try {
+    const res = await paymentAPI.getMyExclusiveSeats()
+    seats.value = res.data.items || []
+  } catch (err: unknown) {
+    appStore.showError(extractI18nErrorMessage(err, t, 'payment.errors', t('common.error')))
+  } finally {
+    loading.value = false
+  }
+}
+
+function canRenew(seat: ExclusiveSeat): boolean {
+  if (seat.status === 'active') return true
+  // 过期 7 天宽限期内可补缴
+  if (seat.status === 'expired') {
+    const expiredMs = Date.now() - Date.parse(seat.expires_at)
+    return expiredMs > 0 && expiredMs <= 7 * 24 * 60 * 60 * 1000
+  }
+  return false
+}
+
+async function openRenew(seat: ExclusiveSeat) {
+  renewTarget.value = seat
+  renewPreview.value = null
+  try {
+    const res = await paymentAPI.previewRenewal(seat.id)
+    renewPreview.value = res.data
+  } catch (err: unknown) {
+    appStore.showError(extractI18nErrorMessage(err, t, 'payment.errors', t('common.error')))
+    renewTarget.value = null
+  }
+}
+
+// 续费走完整支付链路：跳转到购买页，PaymentView 检测到 query.renew_seat 后
+// 自动选中对应 plan 并把 renewal_seat_id 透传到 CreateOrder。
+function goToRenewPayment() {
+  if (!renewTarget.value || !renewPreview.value) return
+  router.push({
+    path: '/purchase',
+    query: {
+      tab: 'subscription',
+      plan_id: String(renewPreview.value.plan_id),
+      renew_seat: String(renewTarget.value.id),
+    },
+  })
+  renewTarget.value = null
+}
+
+function statusBadgeClass(status: string): string {
+  switch (status) {
+    case 'active': return 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300'
+    case 'expired': return 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300'
+    case 'refunded': return 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300'
+    default: return 'bg-gray-100 text-gray-500 dark:bg-dark-700 dark:text-gray-400'
+  }
+}
+
+function statusPillClass(status: string): string {
+  switch (status) {
+    case 'active': return 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:ring-emerald-900/50'
+    case 'expired': return 'bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:ring-amber-900/50'
+    case 'refunded': return 'bg-purple-50 text-purple-700 ring-1 ring-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:ring-purple-900/50'
+    default: return 'bg-gray-50 text-gray-600 ring-1 ring-gray-200 dark:bg-dark-800 dark:text-gray-400 dark:ring-dark-600'
+  }
+}
+
+function expiryColor(seat: ExclusiveSeat): string {
+  if (seat.status !== 'active') return 'text-gray-500 dark:text-gray-400'
+  const remainingMs = Date.parse(seat.expires_at) - Date.now()
+  if (remainingMs <= 24 * 60 * 60 * 1000) return 'text-red-500 dark:text-red-400'
+  if (remainingMs <= 7 * 24 * 60 * 60 * 1000) return 'text-amber-500 dark:text-amber-400'
+  return 'text-gray-900 dark:text-white'
+}
+
+function daysRemainingLabel(expiresAt: string): string {
+  const ms = Date.parse(expiresAt) - Date.now()
+  const days = Math.ceil(ms / (24 * 60 * 60 * 1000))
+  if (days <= 0) return t('exclusiveSeats.expiringNow')
+  return t('exclusiveSeats.daysLeft', { days })
+}
+
+function formatDate(s: string): string {
+  if (!s) return '-'
+  const d = new Date(s)
+  if (isNaN(d.getTime())) return s
+  return d.toLocaleString()
+}
+
+onMounted(loadSeats)
+</script>

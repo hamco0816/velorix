@@ -58,6 +58,30 @@ func (SubscriptionPlan) Fields() []ent.Field {
 			Default(true),
 		field.Int("sort_order").
 			Default(0),
+		// 套餐类型：shared = 共享池订阅（用户共享 group 内账号）
+		// exclusive = 独享池订阅（购买后从 group 池子里独占分配一个账号）
+		field.String("kind").
+			MaxLen(20).
+			Default("shared"),
+		// 套餐级限额/倍率覆盖（migration 138）：NULL = 使用 group 默认值
+		// 用于同 group 下不同档位的差异化（Lite/Pro/Max）。购买时会把当前值
+		// 快照到 user_subscriptions/exclusive_subscriptions，后续 plan 改不影响已购用户
+		field.Float("daily_limit_usd").
+			Optional().
+			Nillable().
+			SchemaType(map[string]string{dialect.Postgres: "decimal(20,8)"}),
+		field.Float("weekly_limit_usd").
+			Optional().
+			Nillable().
+			SchemaType(map[string]string{dialect.Postgres: "decimal(20,8)"}),
+		field.Float("monthly_limit_usd").
+			Optional().
+			Nillable().
+			SchemaType(map[string]string{dialect.Postgres: "decimal(20,8)"}),
+		field.Float("rate_multiplier").
+			Optional().
+			Nillable().
+			SchemaType(map[string]string{dialect.Postgres: "decimal(10,4)"}),
 		field.Time("created_at").
 			Immutable().
 			Default(time.Now).

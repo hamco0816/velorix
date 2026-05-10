@@ -36,6 +36,7 @@ func newGatewayRoutesTestRouter() *gin.Engine {
 		nil,
 		nil,
 		nil,
+		nil, // systemOverloadMonitor: 测试场景不需要，nil 中间件会 fail-open 放行
 		&config.Config{},
 	)
 

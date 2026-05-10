@@ -503,6 +503,33 @@ func (_u *AccountUpdate) ClearSessionWindowStatus() *AccountUpdate {
 	return _u
 }
 
+// SetAssignedSeatID sets the "assigned_seat_id" field.
+func (_u *AccountUpdate) SetAssignedSeatID(v int64) *AccountUpdate {
+	_u.mutation.ResetAssignedSeatID()
+	_u.mutation.SetAssignedSeatID(v)
+	return _u
+}
+
+// SetNillableAssignedSeatID sets the "assigned_seat_id" field if the given value is not nil.
+func (_u *AccountUpdate) SetNillableAssignedSeatID(v *int64) *AccountUpdate {
+	if v != nil {
+		_u.SetAssignedSeatID(*v)
+	}
+	return _u
+}
+
+// AddAssignedSeatID adds value to the "assigned_seat_id" field.
+func (_u *AccountUpdate) AddAssignedSeatID(v int64) *AccountUpdate {
+	_u.mutation.AddAssignedSeatID(v)
+	return _u
+}
+
+// ClearAssignedSeatID clears the value of the "assigned_seat_id" field.
+func (_u *AccountUpdate) ClearAssignedSeatID() *AccountUpdate {
+	_u.mutation.ClearAssignedSeatID()
+	return _u
+}
+
 // AddGroupIDs adds the "groups" edge to the Group entity by IDs.
 func (_u *AccountUpdate) AddGroupIDs(ids ...int64) *AccountUpdate {
 	_u.mutation.AddGroupIDs(ids...)
@@ -806,6 +833,15 @@ func (_u *AccountUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.SessionWindowStatusCleared() {
 		_spec.ClearField(account.FieldSessionWindowStatus, field.TypeString)
+	}
+	if value, ok := _u.mutation.AssignedSeatID(); ok {
+		_spec.SetField(account.FieldAssignedSeatID, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedAssignedSeatID(); ok {
+		_spec.AddField(account.FieldAssignedSeatID, field.TypeInt64, value)
+	}
+	if _u.mutation.AssignedSeatIDCleared() {
+		_spec.ClearField(account.FieldAssignedSeatID, field.TypeInt64)
 	}
 	if _u.mutation.GroupsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1430,6 +1466,33 @@ func (_u *AccountUpdateOne) ClearSessionWindowStatus() *AccountUpdateOne {
 	return _u
 }
 
+// SetAssignedSeatID sets the "assigned_seat_id" field.
+func (_u *AccountUpdateOne) SetAssignedSeatID(v int64) *AccountUpdateOne {
+	_u.mutation.ResetAssignedSeatID()
+	_u.mutation.SetAssignedSeatID(v)
+	return _u
+}
+
+// SetNillableAssignedSeatID sets the "assigned_seat_id" field if the given value is not nil.
+func (_u *AccountUpdateOne) SetNillableAssignedSeatID(v *int64) *AccountUpdateOne {
+	if v != nil {
+		_u.SetAssignedSeatID(*v)
+	}
+	return _u
+}
+
+// AddAssignedSeatID adds value to the "assigned_seat_id" field.
+func (_u *AccountUpdateOne) AddAssignedSeatID(v int64) *AccountUpdateOne {
+	_u.mutation.AddAssignedSeatID(v)
+	return _u
+}
+
+// ClearAssignedSeatID clears the value of the "assigned_seat_id" field.
+func (_u *AccountUpdateOne) ClearAssignedSeatID() *AccountUpdateOne {
+	_u.mutation.ClearAssignedSeatID()
+	return _u
+}
+
 // AddGroupIDs adds the "groups" edge to the Group entity by IDs.
 func (_u *AccountUpdateOne) AddGroupIDs(ids ...int64) *AccountUpdateOne {
 	_u.mutation.AddGroupIDs(ids...)
@@ -1763,6 +1826,15 @@ func (_u *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err er
 	}
 	if _u.mutation.SessionWindowStatusCleared() {
 		_spec.ClearField(account.FieldSessionWindowStatus, field.TypeString)
+	}
+	if value, ok := _u.mutation.AssignedSeatID(); ok {
+		_spec.SetField(account.FieldAssignedSeatID, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedAssignedSeatID(); ok {
+		_spec.AddField(account.FieldAssignedSeatID, field.TypeInt64, value)
+	}
+	if _u.mutation.AssignedSeatIDCleared() {
+		_spec.ClearField(account.FieldAssignedSeatID, field.TypeInt64)
 	}
 	if _u.mutation.GroupsCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -99,6 +99,12 @@ func (PaymentOrder) Fields() []ent.Field {
 			Optional().
 			SchemaType(map[string]string{dialect.Postgres: "jsonb"}),
 
+		// 续费独享名额时填入目标 seat ID（normal 新购订单为 nil）
+		// fulfillment 检测到此字段时走 RenewSeat 路径而不是 AssignSeat。
+		field.Int64("renewal_seat_id").
+			Optional().
+			Nillable(),
+
 		// 状态
 		field.String("status").
 			MaxLen(30).
@@ -195,5 +201,6 @@ func (PaymentOrder) Indexes() []ent.Index {
 		index.Fields("paid_at"),
 		index.Fields("payment_type", "paid_at"),
 		index.Fields("order_type"),
+		index.Fields("renewal_seat_id"),
 	}
 }

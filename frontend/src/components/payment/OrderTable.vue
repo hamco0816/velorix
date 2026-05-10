@@ -29,8 +29,19 @@
         {{ t('payment.methods.' + value, value) }}
       </span>
     </template>
-    <template #cell-status="{ value }">
-      <OrderStatusBadge :status="value" />
+    <template #cell-status="{ value, row }">
+      <div class="inline-flex items-center gap-1.5">
+        <OrderStatusBadge :status="value" />
+        <button
+          v-if="isRefundStatus(value) && row.refund_amount > 0"
+          type="button"
+          class="flex h-5 w-5 items-center justify-center rounded-full bg-rose-50 text-rose-500 transition-colors hover:bg-rose-100 hover:text-rose-600 dark:bg-rose-900/30 dark:text-rose-300 dark:hover:bg-rose-900/50"
+          :title="t('payment.orders.viewRefund')"
+          @click="$emit('inspect-refund', row)"
+        >
+          <Icon name="infoCircle" size="xs" :stroke-width="2.5" />
+        </button>
+      </div>
     </template>
     <template #cell-created_at="{ value }">
       <span class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(value) }}</span>
@@ -49,6 +60,7 @@ import type { Column } from '@/components/common/types'
 import DataTable from '@/components/common/DataTable.vue'
 import OrderStatusBadge from '@/components/payment/OrderStatusBadge.vue'
 import PaymentBrandIcon from '@/components/payment/PaymentBrandIcon.vue'
+import Icon from '@/components/icons/Icon.vue'
 
 const { t } = useI18n()
 
@@ -57,6 +69,12 @@ const props = defineProps<{
   loading: boolean
   showUser?: boolean
 }>()
+
+defineEmits<{ 'inspect-refund': [order: PaymentOrder] }>()
+
+function isRefundStatus(status: string): boolean {
+  return status === 'REFUNDED' || status === 'PARTIALLY_REFUNDED' || status === 'REFUND_REQUESTED' || status === 'REFUNDING' || status === 'REFUND_FAILED'
+}
 
 function formatDate(dateStr: string) { return new Date(dateStr).toLocaleString() }
 

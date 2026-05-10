@@ -28,7 +28,34 @@
       <!-- Plans Table -->
       <DataTable :columns="planColumns" :data="plans" :loading="plansLoading">
         <template #cell-name="{ value, row }">
-          <span class="text-sm font-medium" :class="getPlanNameClass(row.group_id)">{{ value }}</span>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-sm font-medium" :class="getPlanNameClass(row.group_id)">{{ value }}</span>
+            <span
+              v-if="row.kind === 'exclusive'"
+              class="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-semibold text-violet-700 ring-1 ring-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:ring-violet-900/50"
+              :title="t('payment.admin.planKindExclusiveHint')"
+            >
+              <Icon name="badge" size="xs" :stroke-width="2.5" />
+              {{ t('payment.admin.kindBadgeExclusive') }}
+            </span>
+            <span
+              v-for="ct in [derivePlanCardType(row.validity_days, row.validity_unit)]"
+              :key="ct"
+              v-show="ct !== 'custom'"
+              :class="['inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold', cardTypeBadgeClass(ct)]"
+            >
+              {{ t(`payment.admin.cardType.${ct}`) }}
+            </span>
+            <!-- 独立档位徽章：plan 有自定义限额覆盖时展示，方便管理员一眼识别 -->
+            <span
+              v-if="hasPlanLimitOverride(row)"
+              class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-semibold text-indigo-700 ring-1 ring-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:ring-indigo-900/50"
+              :title="t('payment.admin.limitOverrideHint')"
+            >
+              <Icon name="badge" size="xs" :stroke-width="2.5" />
+              {{ t('payment.planCard.tierBadge') }}
+            </span>
+          </div>
         </template>
         <template #cell-group_id="{ value }">
           <span v-if="isGroupMissing(value)" class="text-sm">
@@ -106,6 +133,7 @@ import Icon from '@/components/icons/Icon.vue'
 import GroupBadge from '@/components/common/GroupBadge.vue'
 import PlanEditDialog from './PlanEditDialog.vue'
 import { platformTextClass } from '@/utils/platformColors'
+import { derivePlanCardType, cardTypeBadgeClass } from '@/utils/planCardType'
 
 const { t } = useI18n()
 const appStore = useAppStore()
@@ -131,6 +159,14 @@ function isGroupMissing(id: number): boolean {
 function getPlanNameClass(groupId: number): string {
   const group = getGroup(groupId)
   return group ? platformTextClass(group.platform) : 'text-gray-900 dark:text-white'
+}
+
+// 判断 plan 是否有自定义限额覆盖（用于"独立档位"徽章）
+// 注：管理员列表 API 返回的 plan 直接来自 ent，所以这 4 个字段是 plan 自身值（区别于用户端 checkoutPlan 的合并值）
+function hasPlanLimitOverride(plan: SubscriptionPlan): boolean {
+  // checkoutPlan 已经标好了 has_plan_limit_override；管理员 API 没有该字段时回退到原始字段判断
+  if (typeof plan.has_plan_limit_override === 'boolean') return plan.has_plan_limit_override
+  return Boolean(plan.daily_limit_usd || plan.weekly_limit_usd || plan.monthly_limit_usd || plan.rate_multiplier)
 }
 
 

@@ -14,6 +14,7 @@ import (
 	dbent "github.com/Wei-Shaw/sub2api/ent"
 	"github.com/Wei-Shaw/sub2api/ent/paymentauditlog"
 	"github.com/Wei-Shaw/sub2api/ent/paymentorder"
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	"github.com/Wei-Shaw/sub2api/internal/payment"
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 )
@@ -332,6 +333,19 @@ func (s *PaymentService) ExecuteSubscriptionFulfillment(ctx context.Context, oid
 	}
 	if err := s.doSub(ctx, o); err != nil {
 		s.markFailed(ctx, oid, err)
+		// 钱已收但发货失败，必须自动退款的两类场景：
+		// 1. 独享池库存为 0（售前还有、并发抢光）；
+		// 2. 续费订单 RenewSeat 失败（如 seat 状态变更、account 被占等系统侧异常）。
+		// PrepareRefund 接受 FAILED 状态作为合法退款来源。
+		shouldAutoRefund := errors.Is(err, ErrNoFreeAccount) || (o.RenewalSeatID != nil && *o.RenewalSeatID > 0)
+		if shouldAutoRefund {
+			refreshed, getErr := s.entClient.PaymentOrder.Get(ctx, oid)
+			if getErr == nil {
+				if refErr := s.autoRefundOrderForNoStock(ctx, refreshed); refErr != nil {
+					slog.Error("[ExclusiveSeat] auto refund on fulfillment failure failed", "order_id", oid, "renewal", o.RenewalSeatID != nil, "error", refErr)
+				}
+			}
+		}
 		return err
 	}
 	return nil
@@ -350,12 +364,116 @@ func (s *PaymentService) doSub(ctx context.Context, o *dbent.PaymentOrder) error
 		slog.Info("subscription already assigned for order, skipping", "orderID", o.ID, "groupID", gid)
 		return s.markCompleted(ctx, o, "SUBSCRIPTION_SUCCESS")
 	}
-	orderNote := fmt.Sprintf("payment order %d", o.ID)
-	_, _, err = s.subscriptionSvc.AssignOrExtendSubscription(ctx, &AssignSubscriptionInput{UserID: o.UserID, GroupID: gid, ValidityDays: days, AssignedBy: 0, Notes: orderNote})
+
+	// 按 plan.kind 分叉：独享套餐走 AssignSeat，共享套餐走原 AssignOrExtendSubscription
+	planKind, err := s.resolvePlanKind(ctx, o)
 	if err != nil {
-		return fmt.Errorf("assign subscription: %w", err)
+		return fmt.Errorf("resolve plan kind: %w", err)
+	}
+	orderNote := fmt.Sprintf("payment order %d", o.ID)
+	switch planKind {
+	case domain.PlanKindExclusive:
+		if o.PlanID == nil {
+			return fmt.Errorf("exclusive plan requires plan_id on order %d", o.ID)
+		}
+		// 续费订单：调 RenewSeat 延长 expires_at（不消耗库存、保留绑定账号）
+		if o.RenewalSeatID != nil && *o.RenewalSeatID > 0 {
+			// 幂等保护：RenewSeat 成功但 markCompleted 失败时重试不能再次延期
+			// 上层 hasAuditLog SUBSCRIPTION_SUCCESS 检查不够（mark 之前就 RenewSeat 了），需 EXCLUSIVE_SEAT_RENEWED 兜底
+			if s.hasAuditLog(ctx, o.ID, "EXCLUSIVE_SEAT_RENEWED") {
+				slog.Info("exclusive seat already renewed for order, skipping", "orderID", o.ID, "seatID", *o.RenewalSeatID)
+				break
+			}
+			seat, renewErr := s.exclusiveSeatSvc.RenewSeat(ctx, *o.RenewalSeatID, days, 7*24*time.Hour)
+			if renewErr != nil {
+				return fmt.Errorf("renew exclusive seat: %w", renewErr)
+			}
+			s.writeAuditLog(ctx, o.ID, "EXCLUSIVE_SEAT_RENEWED", "system", formatSeatAuditFields(seat))
+		} else {
+			// 新购订单：从池子里挑空闲账号绑定
+			seat, assignErr := s.exclusiveSeatSvc.AssignSeat(ctx, AssignSeatInput{
+				UserID: o.UserID, GroupID: gid, PlanID: *o.PlanID,
+				ValidityDays: days, AssignedBy: 0,
+				SourceOrderID: o.ID,
+				Notes:         orderNote,
+			})
+			if assignErr != nil {
+				// 库存不足（并发抢购到 0 + 售前查询时还有库存）：写 audit log 后透传 ErrNoFreeAccount。
+				// 自动退款由 ExecuteSubscriptionFulfillment 在 markFailed 之后处理（订单状态变为 FAILED 后才能退款）。
+				if errors.Is(assignErr, ErrNoFreeAccount) {
+					s.writeAuditLog(ctx, o.ID, "EXCLUSIVE_SEAT_NO_STOCK", "system", map[string]any{
+						"plan_id":  fmt.Sprintf("%d", *o.PlanID),
+						"group_id": fmt.Sprintf("%d", gid),
+					})
+					return fmt.Errorf("exclusive pool sold out for plan %d: %w", *o.PlanID, assignErr)
+				}
+				return fmt.Errorf("assign exclusive seat: %w", assignErr)
+			}
+			s.writeAuditLog(ctx, o.ID, "EXCLUSIVE_SEAT_ASSIGNED", "system", formatSeatAuditFields(seat))
+		}
+		// 注意：独享套餐**不**创建 user_subscription —— api_key_auth 已直接支持
+		// "有 active exclusive seat 即视为订阅有效"，避免多 seat 用户的 user_sub 被叠加续期
+		// 导致 seat 全部过期后鉴权仍能通过、调度降级到共享池的语义违背。
+	default:
+		// PlanID 透传给 fulfillment：让限额/倍率快照从 plan 拷贝到 user_subscription
+		var planID int64
+		if o.PlanID != nil {
+			planID = *o.PlanID
+		}
+		_, _, err = s.subscriptionSvc.AssignOrExtendSubscription(ctx, &AssignSubscriptionInput{
+			UserID: o.UserID, GroupID: gid, ValidityDays: days, AssignedBy: 0, Notes: orderNote, PlanID: planID,
+		})
+		if err != nil {
+			return fmt.Errorf("assign subscription: %w", err)
+		}
 	}
 	return s.markCompleted(ctx, o, "SUBSCRIPTION_SUCCESS")
+}
+
+// autoRefundOrderForNoStock 在独享池库存为 0 触发的支付失败场景下，
+// 把已收的钱按订单原渠道全额退回。
+//
+// 流程：PrepareRefund（按订单全额、不扣余额）→ ExecuteRefund（调上游退款 API）。
+// 任何一步失败都向上抛错，并依赖 audit log + 后台告警让管理员介入。
+func (s *PaymentService) autoRefundOrderForNoStock(ctx context.Context, o *dbent.PaymentOrder) error {
+	// amt 传 o.Amount（订单金额）而非 o.PayAmount：
+	// 1. PrepareRefund 用 amt-o.Amount > tolerance 校验，传 PayAmount 在 fee_rate>0 时会被拒绝；
+	// 2. calculateGatewayRefundAmount 在 amt == Amount 时按全额退 PayAmount（含手续费）。
+	plan, prep, err := s.PrepareRefund(ctx, o.ID, o.Amount, "exclusive_pool_sold_out", true /* force */, false /* deduct balance */)
+	if err != nil {
+		return fmt.Errorf("prepare refund: %w", err)
+	}
+	if prep != nil && !prep.Success {
+		return fmt.Errorf("prepare refund returned non-success: %+v", prep)
+	}
+	result, err := s.ExecuteRefund(ctx, plan)
+	if err != nil {
+		return fmt.Errorf("execute refund: %w", err)
+	}
+	if result == nil || !result.Success {
+		return fmt.Errorf("refund result is not success: %+v", result)
+	}
+	s.writeAuditLog(ctx, o.ID, "AUTO_REFUND_NO_STOCK", "system", map[string]any{
+		"refund_amount":    fmt.Sprintf("%.2f", o.PayAmount),
+		"balance_deducted": fmt.Sprintf("%.2f", result.BalanceDeducted),
+	})
+	return nil
+}
+
+// resolvePlanKind 读取订单关联套餐的 kind；plan_id 为空或套餐已被删除时回退到共享。
+func (s *PaymentService) resolvePlanKind(ctx context.Context, o *dbent.PaymentOrder) (string, error) {
+	if o.PlanID == nil {
+		return domain.PlanKindShared, nil
+	}
+	plan, err := s.entClient.SubscriptionPlan.Get(ctx, *o.PlanID)
+	if err != nil {
+		// 套餐已被删除等场景：保持向后兼容走共享
+		return domain.PlanKindShared, nil
+	}
+	if plan.Kind == domain.PlanKindExclusive {
+		return domain.PlanKindExclusive, nil
+	}
+	return domain.PlanKindShared, nil
 }
 
 func (s *PaymentService) hasAuditLog(ctx context.Context, orderID int64, action string) bool {

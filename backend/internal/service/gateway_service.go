@@ -443,14 +443,23 @@ func prefetchedStickyAccountIDFromContext(ctx context.Context, groupID *int64) i
 
 // shouldClearStickySession 检查账号是否处于不可调度状态，需要清理粘性会话绑定。
 // 委托 IsSchedulable() 判断账号级可调度性（状态、配额、过载、限流等），
-// 额外检查模型级限流。
+// 额外检查模型级限流；并显式排除已被独享 seat 占用的账号。
+//
+// 关于 AssignedSeatID 检查：共享池查询链路（ListSchedulable*）已经把 AssignedSeatID != nil
+// 的账号过滤掉，但 sticky 路径直接按 account_id 反查，会绕过这层过滤。如果同一账号上次还是
+// 共享号、被某用户 sticky 绑定，之后被独享 seat 卖出去，新请求仍可能命中这条 sticky，导致
+// "其他用户继续用刚卖出的独享账号 + 用量累加到 seat" 这类越权问题（GPT round 18 #1）。
 //
 // shouldClearStickySession checks if an account is in an unschedulable state
 // and the sticky session binding should be cleared.
-// Delegates to IsSchedulable() for account-level checks, plus model-level rate limiting.
+// Delegates to IsSchedulable() for account-level checks, plus model-level rate limiting,
+// and an explicit AssignedSeatID guard to keep shared sticky away from exclusive-bound accounts.
 func shouldClearStickySession(account *Account, requestedModel string) bool {
 	if account == nil {
 		return false
+	}
+	if account.AssignedSeatID != nil {
+		return true
 	}
 	if !account.IsSchedulable() {
 		return true
@@ -570,6 +579,14 @@ type GatewayService struct {
 	debugGatewayBodyFile  atomic.Pointer[os.File] // non-nil when SUB2API_DEBUG_GATEWAY_BODY is set
 	tlsFPProfileService   *TLSFingerprintProfileService
 	balanceNotifyService  *BalanceNotifyService
+	// 独享池调度：可选注入；nil 时调度器走原共享池逻辑
+	exclusiveSeatSvc *ExclusiveSeatService
+}
+
+// SetExclusiveSeatService 注入独享池服务（在 wire 初始化阶段调用一次）。
+// 通过 setter 而非构造函数参数传入，避免再次扩张 NewGatewayService 的参数列表。
+func (s *GatewayService) SetExclusiveSeatService(svc *ExclusiveSeatService) {
+	s.exclusiveSeatSvc = svc
 }
 
 // NewGatewayService creates a new GatewayService
@@ -1352,6 +1369,26 @@ func (s *GatewayService) SelectAccountForModel(ctx context.Context, groupID *int
 
 // SelectAccountForModelWithExclusions selects an account supporting the requested model while excluding specified accounts.
 func (s *GatewayService) SelectAccountForModelWithExclusions(ctx context.Context, groupID *int64, sessionHash string, requestedModel string, excludedIDs map[int64]struct{}) (*Account, error) {
+	// 渠道价格限制必须先执行（与 SelectAccountWithLoadAwareness 一致）：
+	// admin 在分组级禁用某模型时，独享用户也应受限（防绕过）；
+	// CountTokens 等"非负载感知"路径也走这个方法，必须保持同样的预检顺序。
+	if s.checkChannelPricingRestriction(ctx, groupID, requestedModel) {
+		slog.Warn("channel pricing restriction blocked request (non-load-aware path)",
+			"group_id", derefGroupID(groupID), "model", requestedModel)
+		return nil, fmt.Errorf("%w supporting model: %s (channel pricing restriction)", ErrNoAvailableAccounts, requestedModel)
+	}
+	// 独享池优先级（DP2C）：用户在该 group 下有活跃独享名额则跳过共享池负载均衡。
+	// 用户独享号全部不可用时直接报错，不悄悄降级到共享池。
+	// 同时复用共享池的"账号是否支持此模型"判断，避免把不支持模型/作用域的独享账号发给上游导致 404
+	if acc, hit, err := trySelectExclusiveSeatAccountForModelWithCheck(
+		ctx, s.exclusiveSeatSvc, &accountRepoSeatResolver{repo: s.accountRepo},
+		groupID, requestedModel, excludedIDs, s.seatEligibilityCheck(requestedModel),
+	); err != nil {
+		return nil, err
+	} else if hit && acc != nil {
+		return s.hydrateSelectedAccount(ctx, acc)
+	}
+
 	// 优先检查 context 中的强制平台（/antigravity 路由）
 	var platform string
 	forcePlatform, hasForcePlatform := ctx.Value(ctxkey.ForcePlatform).(string)
@@ -1403,6 +1440,58 @@ func (s *GatewayService) SelectAccountForModelWithExclusions(ctx context.Context
 // metadataUserID: 用于客户端亲和调度，从中提取客户端 ID
 // sub2apiUserID: 系统用户 ID，用于二维亲和调度
 func (s *GatewayService) SelectAccountWithLoadAwareness(ctx context.Context, groupID *int64, sessionHash string, requestedModel string, excludedIDs map[int64]struct{}, metadataUserID string, sub2apiUserID int64) (*AccountSelectionResult, error) {
+	// 把显式传入的 sub2apiUserID 注入到 ctx，让下游统一从 ctx.Sub2APIUserID 获取
+	// （独享池调度路径靠 ctx 里的 user_id 命中）。
+	if sub2apiUserID > 0 {
+		ctx = context.WithValue(ctx, ctxkey.Sub2APIUserID, sub2apiUserID)
+	}
+
+	// 独享池优先级：命中时直接返回，跳过 sticky / 限流 / 负载均衡等共享池逻辑。
+	// 用户独享号全部不可用时返回 ErrNoUsableExclusiveAccount，调用方按调度失败处理。
+	//
+	// 但渠道价格限制（admin 在全局禁用某模型）必须先执行 —— 否则独享用户绕过该限制。
+	// Claude Code 客户端限制故意不在独享路径上做（独享用户用自己付费买的账号，应豁免 fallback 切换）。
+	if s.checkChannelPricingRestriction(ctx, groupID, requestedModel) {
+		slog.Warn("channel pricing restriction blocked request (exclusive path)",
+			"group_id", derefGroupID(groupID), "model", requestedModel)
+		return nil, fmt.Errorf("%w supporting model: %s (channel pricing restriction)", ErrNoAvailableAccounts, requestedModel)
+	}
+	if acc, hit, err := trySelectExclusiveSeatAccountForModelWithCheck(
+		ctx, s.exclusiveSeatSvc, &accountRepoSeatResolver{repo: s.accountRepo},
+		groupID, requestedModel, excludedIDs, s.seatEligibilityCheck(requestedModel),
+	); err != nil {
+		return nil, err
+	} else if hit && acc != nil {
+		hydrated, hydErr := s.hydrateSelectedAccount(ctx, acc)
+		if hydErr != nil {
+			return nil, hydErr
+		}
+		// Platform sanity check：forcePlatform（如 /antigravity 路由）与独享账号实际平台不一致时报错
+		// 防止把 anthropic 独享账号转发给 openai 协议、或反过来，避免上游 404/解析失败
+		if forcePlatform, ok := ctx.Value(ctxkey.ForcePlatform).(string); ok && forcePlatform != "" && hydrated.Platform != forcePlatform {
+			slog.Warn("exclusive seat platform mismatch",
+				"account_id", hydrated.ID, "account_platform", hydrated.Platform, "force_platform", forcePlatform)
+			return nil, fmt.Errorf("%w: exclusive account platform %q does not match forced platform %q", ErrNoAvailableAccounts, hydrated.Platform, forcePlatform)
+		}
+		// 独享账号也要走账号级并发槽位：handler 用 Acquired/ReleaseFunc 判断是否拿到槽位
+		// 不获取槽位会让 handler 走"无可用账号"分支直接返回 503
+		acquireResult, acqErr := s.tryAcquireAccountSlot(ctx, hydrated.ID, hydrated.Concurrency)
+		if acqErr == nil && acquireResult != nil && acquireResult.Acquired {
+			return &AccountSelectionResult{Account: hydrated, Acquired: true, ReleaseFunc: acquireResult.ReleaseFunc}, nil
+		}
+		// 拿不到槽位（账号当下并发打满）：返回 WaitPlan 让 handler 决定排队还是拒绝；
+		// 独享池场景仍允许排队（用户付费购买的账号，等一会比直接 503 体验好）
+		return &AccountSelectionResult{
+			Account: hydrated,
+			WaitPlan: &AccountWaitPlan{
+				AccountID:      hydrated.ID,
+				MaxConcurrency: hydrated.Concurrency,
+				Timeout:        s.schedulingConfig().StickySessionWaitTimeout,
+				MaxWaiting:     s.schedulingConfig().StickySessionMaxWaiting,
+			},
+		}, nil
+	}
+
 	// 调试日志：记录调度入口参数
 	excludedIDsList := make([]int64, 0, len(excludedIDs))
 	for id := range excludedIDs {
@@ -2513,6 +2602,31 @@ func (s *GatewayService) isAccountSchedulableForQuota(account *Account) bool {
 		return true
 	}
 	return !account.IsQuotaExceeded()
+}
+
+// seatEligibilityCheck 把共享池里"账号是否能跑这个模型"的判断同步给独享路径。
+// 复用 isModelSupportedByAccountWithContext（模型映射）+ isAccountSchedulableForModelSelection
+// （模型作用域 / 模型限流 lock）+ isAccountSchedulableForQuota（apikey 配额），
+// 但故意排除 window cost / RPM / sticky 等"共享池负载均衡"逻辑——独享账号是用户独占的，
+// 不存在多人争抢 RPM 的语义。requestedModel 为空时只校验配额。
+func (s *GatewayService) seatEligibilityCheck(requestedModel string) SeatEligibilityCheck {
+	if requestedModel == "" {
+		return func(_ context.Context, acc *Account) bool {
+			return s.isAccountSchedulableForQuota(acc)
+		}
+	}
+	return func(ctx context.Context, acc *Account) bool {
+		if !s.isModelSupportedByAccountWithContext(ctx, acc, requestedModel) {
+			return false
+		}
+		if !s.isAccountSchedulableForModelSelection(ctx, acc, requestedModel) {
+			return false
+		}
+		if !s.isAccountSchedulableForQuota(acc) {
+			return false
+		}
+		return true
+	}
 }
 
 // isAccountSchedulableForWindowCost 检查账号是否可根据窗口费用进行调度
@@ -7881,6 +7995,7 @@ type postUsageBillingParams struct {
 	Subscription          *UserSubscription
 	RequestPayloadHash    string
 	IsSubscriptionBill    bool
+	IsExclusiveBill       bool // 显式标记：本次请求由独享 seat 调度命中（来自 ctxkey.ExclusiveSeatActive）
 	AccountRateMultiplier float64
 	APIKeyService         APIKeyQuotaUpdater
 }
@@ -7906,6 +8021,16 @@ func postUsageBilling(ctx context.Context, p *postUsageBillingParams, deps *bill
 
 	cost := p.Cost
 
+	// 独享场景：用户已为 seat 付费，不应再扣余额；usage 仅累加到 seat.usage_usd
+	// 优先用调度路径显式注入的 ctxkey.ExclusiveSeatActive 或 p.IsExclusiveBill 标记，
+	// 避免单纯按 account.AssignedSeatID 反推（共享路径误选到 owner 账号时会被误判）
+	isExclusiveBill := p.IsExclusiveBill
+	if !isExclusiveBill {
+		if v, ok := ctx.Value(ctxkey.ExclusiveSeatActive).(bool); ok && v {
+			isExclusiveBill = true
+		}
+	}
+
 	if p.IsSubscriptionBill {
 		// Subscription usage tracked by ActualCost so group rate multiplier
 		// consumes the quota at the expected speed.
@@ -7914,11 +8039,33 @@ func postUsageBilling(ctx context.Context, p *postUsageBillingParams, deps *bill
 				slog.Error("increment subscription usage failed", "subscription_id", p.Subscription.ID, "error", err)
 			}
 		}
-	} else {
+	} else if !isExclusiveBill {
+		// 共享池余额模式：扣余额。独享场景跳过。
 		if cost.ActualCost > 0 {
 			if err := deps.userRepo.DeductBalance(billingCtx, p.User.ID, cost.ActualCost); err != nil {
 				slog.Error("deduct balance failed", "user_id", p.User.ID, "error", err)
 			}
+		}
+	}
+
+	// 独享池：把 ActualCost 累加到 seat.usage_usd，用户中心/后台展示真实用量。
+	// 触发条件改为显式 IsExclusiveBill（GPT round 20 #3）：仅靠 account.AssignedSeatID != nil
+	// 反推会让 sticky / cache / manual 等误选独享账号的"共享请求"也被记到 seat 上。
+	// p.Account.AssignedSeatID 仍用作 seat_id 来源，但 nil 时直接跳过并打 warn 帮助排查。
+	if isExclusiveBill && deps.exclusiveSeatSvc != nil && cost.ActualCost > 0 {
+		if p.Account != nil && p.Account.AssignedSeatID != nil {
+			if err := deps.exclusiveSeatSvc.IncrementSeatUsage(billingCtx, *p.Account.AssignedSeatID, cost.ActualCost); err != nil {
+				slog.Error("increment exclusive seat usage failed",
+					"seat_id", *p.Account.AssignedSeatID, "account_id", p.Account.ID, "error", err)
+			}
+		} else {
+			slog.Warn("exclusive bill but account has no AssignedSeatID; seat usage skipped",
+				"account_id", func() int64 {
+					if p.Account != nil {
+						return p.Account.ID
+					}
+					return 0
+				}())
 		}
 	}
 
@@ -8013,10 +8160,15 @@ func buildUsageBillingCommand(requestID string, usageLog *UsageLog, p *postUsage
 	// user-specific) rate multiplier consumes subscription quota at the expected
 	// speed. TotalCost remains the raw (pre-multiplier) value; downstream guards
 	// on "> 0" still correctly skip free subscriptions (RateMultiplier == 0).
+	//
+	// 独享场景：账号绑定到 active seat 且不是订阅扣费 → 既不走 sub 也不走 balance
+	// （账号是用户买断的，cost 仅用于 seat.usage_usd 累加，不能再扣 balance）
+	// 用显式标记代替 account.AssignedSeatID 反推，避免共享池误选到 owner 账号时被误识别
+	isExclusiveBillCmd := p.IsExclusiveBill
 	if p.IsSubscriptionBill && p.Subscription != nil && p.Cost.TotalCost > 0 {
 		cmd.SubscriptionID = &p.Subscription.ID
 		cmd.SubscriptionCost = p.Cost.ActualCost
-	} else if p.Cost.ActualCost > 0 {
+	} else if !isExclusiveBillCmd && p.Cost.ActualCost > 0 {
 		cmd.BalanceCost = p.Cost.ActualCost
 	}
 
@@ -8073,12 +8225,38 @@ func finalizePostUsageBilling(p *postUsageBillingParams, deps *billingDeps, resu
 		return
 	}
 
+	// 独享场景：账号绑定到 active seat 且不是订阅扣费 → 不扣余额、不写 sub usage，仅累加 seat
+	// 用显式标记代替反推（防止共享路径误选到 owner 账号被误判为独享扣费）
+	isExclusiveBill := p.IsExclusiveBill
+
 	if p.IsSubscriptionBill {
 		if p.Cost.ActualCost > 0 && p.User != nil && p.APIKey != nil && p.APIKey.GroupID != nil {
 			deps.billingCacheService.QueueUpdateSubscriptionUsage(p.User.ID, *p.APIKey.GroupID, p.Cost.ActualCost)
 		}
-	} else if p.Cost.ActualCost > 0 && p.User != nil {
+	} else if !isExclusiveBill && p.Cost.ActualCost > 0 && p.User != nil {
 		deps.billingCacheService.QueueDeductBalance(p.User.ID, p.Cost.ActualCost)
+	}
+
+	// 独享池 seat usage 累加（与 postUsageBilling 老路径一致）：repo 路径之前漏了这步，
+	// 导致用户中心/admin 看到的 seat 累计用量长期为 0。
+	// 触发条件改为显式 IsExclusiveBill（GPT round 20 #3），与 postUsageBilling 同步处理逻辑保持一致。
+	if isExclusiveBill && deps.exclusiveSeatSvc != nil && p.Cost.ActualCost > 0 {
+		if p.Account != nil && p.Account.AssignedSeatID != nil {
+			bgCtx, cancel := detachedBillingContext(context.Background())
+			defer cancel()
+			if err := deps.exclusiveSeatSvc.IncrementSeatUsage(bgCtx, *p.Account.AssignedSeatID, p.Cost.ActualCost); err != nil {
+				slog.Error("increment exclusive seat usage failed (repo path)",
+					"seat_id", *p.Account.AssignedSeatID, "account_id", p.Account.ID, "error", err)
+			}
+		} else {
+			slog.Warn("exclusive bill but account has no AssignedSeatID (repo path); seat usage skipped",
+				"account_id", func() int64 {
+					if p.Account != nil {
+						return p.Account.ID
+					}
+					return 0
+				}())
+		}
 	}
 
 	if p.Cost.ActualCost > 0 && p.APIKey != nil && p.APIKey.HasRateLimits() {
@@ -8102,9 +8280,12 @@ func notifyBalanceLow(p *postUsageBillingParams, deps *billingDeps, result *Usag
 			slog.Error("panic in notifyBalanceLow", "recover", r)
 		}
 	}()
-	if p.IsSubscriptionBill || p.Cost.ActualCost <= 0 || p.User == nil || deps.balanceNotifyService == nil {
+	// 独享 seat 计费不扣余额，发余额不足通知会让独享用户收到无关提醒（GPT round 21 #3）。
+	// 同样跳过 subscription / cost<=0 / nil 等明显不该通知的场景。
+	if p.IsSubscriptionBill || p.IsExclusiveBill || p.Cost.ActualCost <= 0 || p.User == nil || deps.balanceNotifyService == nil {
 		slog.Debug("notifyBalanceLow: skipped",
 			"is_subscription", p.IsSubscriptionBill,
+			"is_exclusive", p.IsExclusiveBill,
 			"actual_cost", p.Cost.ActualCost,
 			"user_nil", p.User == nil,
 			"service_nil", deps.balanceNotifyService == nil,
@@ -8198,6 +8379,9 @@ type billingDeps struct {
 	billingCacheService  *BillingCacheService
 	deferredService      *DeferredService
 	balanceNotifyService *BalanceNotifyService
+	// 独享池（可选）：调度命中独享 seat 的账号产生 usage 后，
+	// 通过这个 service 把 cost 累加回 seat.usage_usd，让用户中心显示真实用量。
+	exclusiveSeatSvc *ExclusiveSeatService
 }
 
 func (s *GatewayService) billingDeps() *billingDeps {
@@ -8208,6 +8392,7 @@ func (s *GatewayService) billingDeps() *billingDeps {
 		billingCacheService:  s.billingCacheService,
 		deferredService:      s.deferredService,
 		balanceNotifyService: s.balanceNotifyService,
+		exclusiveSeatSvc:     s.exclusiveSeatSvc,
 	}
 }
 
@@ -8358,14 +8543,26 @@ func (s *GatewayService) recordUsageCore(ctx context.Context, input *recordUsage
 		cacheTTLOverridden = (result.Usage.CacheCreation5mTokens + result.Usage.CacheCreation1hTokens) > 0
 	}
 
-	// 获取费率倍数（优先级：用户专属 > 分组默认 > 系统默认）
+	// 获取费率倍数（优先级：用户专属 > 独享 seat 快照 > 套餐快照(plan/sub) > 分组默认 > 系统默认）
+	// plan 级倍率让同 group 下不同档位（Lite/Pro/Max）能用不同倍率
+	// 独享场景：seat.rate_multiplier 优先 user_subscription（独享不创建 sub），让独享档位差异生效
 	multiplier := 1.0
 	if s.cfg != nil {
 		multiplier = s.cfg.Default.RateMultiplier
 	}
 	if apiKey.GroupID != nil && apiKey.Group != nil {
-		groupDefault := apiKey.Group.RateMultiplier
-		multiplier = s.getUserGroupRateMultiplier(ctx, user.ID, *apiKey.GroupID, groupDefault)
+		effectiveDefault := apiKey.Group.RateMultiplier
+		if input.Subscription != nil && input.Subscription.RateMultiplier != nil && *input.Subscription.RateMultiplier > 0 {
+			effectiveDefault = *input.Subscription.RateMultiplier
+		}
+		// 独享 seat 命中时，用 seat 上的快照倍率（独享档位差异化）
+		if account != nil && account.AssignedSeatID != nil && s.exclusiveSeatSvc != nil {
+			if seat, err := s.exclusiveSeatSvc.GetSeat(ctx, *account.AssignedSeatID); err == nil && seat != nil &&
+				seat.RateMultiplier != nil && *seat.RateMultiplier > 0 {
+				effectiveDefault = *seat.RateMultiplier
+			}
+		}
+		multiplier = s.getUserGroupRateMultiplier(ctx, user.ID, *apiKey.GroupID, effectiveDefault)
 	}
 
 	// 确定计费模型
@@ -8386,10 +8583,18 @@ func (s *GatewayService) recordUsageCore(ctx context.Context, input *recordUsage
 	// 计算费用
 	cost := s.calculateRecordUsageCost(ctx, result, apiKey, billingModel, multiplier, opts)
 
-	// 判断计费方式：订阅模式 vs 余额模式
+	// 判断计费方式：独享 seat > 订阅 > 余额。
+	// 优先读 ctxkey.ExclusiveSeatActive（鉴权层显式标记的"本次请求走独享路径"）；
+	// AssignedSeatID 仅作为快速路径补充——sticky/cache/manual 路径误选独享账号时，
+	// 共享请求不会被错误归到 BillingTypeExclusive（GPT round 20 #3）。
+	exclusiveCtx, _ := ctx.Value(ctxkey.ExclusiveSeatActive).(bool)
+	isExclusiveBill := exclusiveCtx && account != nil && account.AssignedSeatID != nil
 	isSubscriptionBilling := subscription != nil && apiKey.Group != nil && apiKey.Group.IsSubscriptionType()
 	billingType := BillingTypeBalance
-	if isSubscriptionBilling {
+	switch {
+	case isExclusiveBill:
+		billingType = BillingTypeExclusive
+	case isSubscriptionBilling:
 		billingType = BillingTypeSubscription
 	}
 
@@ -8422,6 +8627,8 @@ func (s *GatewayService) recordUsageCore(ctx context.Context, input *recordUsage
 		return nil
 	}
 
+	// 复用前面（billingType 判定时）的 isExclusiveBill：
+	// 显式 ctx 标记 + account.AssignedSeatID 同时具备才视为独享计费
 	requestID := usageLog.RequestID
 	_, billingErr := applyUsageBilling(ctx, requestID, usageLog, &postUsageBillingParams{
 		Cost:                  cost,
@@ -8431,6 +8638,7 @@ func (s *GatewayService) recordUsageCore(ctx context.Context, input *recordUsage
 		Subscription:          subscription,
 		RequestPayloadHash:    resolveUsageBillingPayloadFingerprint(ctx, input.RequestPayloadHash),
 		IsSubscriptionBill:    isSubscriptionBilling,
+		IsExclusiveBill:       isExclusiveBill,
 		AccountRateMultiplier: accountRateMultiplier,
 		APIKeyService:         input.APIKeyService,
 	}, s.billingDeps(), s.usageBillingRepo)

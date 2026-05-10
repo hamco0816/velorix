@@ -49,6 +49,10 @@ func TestProvideCleanup_WithMinimalDependencies_NoPanic(t *testing.T) {
 		schedulerSnapshotSvc,
 		tokenRefreshSvc,
 		accountExpirySvc,
+		nil,                                 // exclusiveSeatExpiry: 测试场景不启动定时任务
+		nil,                                 // seatReleaseRetry: 测试场景不启动重试 worker
+		nil,                                 // systemOverloadMonitor: 测试场景不启动采样
+		service.ExclusiveSeatGatewayWired{}, // 标志类型，零值即可
 		subscriptionExpirySvc,
 		&service.UsageCleanupService{},
 		idempotencyCleanupSvc,

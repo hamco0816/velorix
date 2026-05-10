@@ -418,6 +418,22 @@ const CreditCardIcon = {
     )
 }
 
+// 独享名额菜单：用 ID 卡/徽章风格的图标，区分于普通订阅
+const BadgeIcon = {
+  render: () =>
+    h(
+      'svg',
+      { fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor', 'stroke-width': '1.5' },
+      [
+        h('path', {
+          'stroke-linecap': 'round',
+          'stroke-linejoin': 'round',
+          d: 'M9 4.5v15m6-15v15M3.75 7.5h16.5M3.75 16.5h16.5M5.25 4.5h13.5a1.5 1.5 0 011.5 1.5v12a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V6a1.5 1.5 0 011.5-1.5z'
+        })
+      ]
+    )
+}
+
 const RechargeSubscriptionIcon = {
   render: () =>
     h(
@@ -705,6 +721,7 @@ function buildSelfNavItems(withDashboard: boolean): NavItem[] {
     { path: '/docs', label: t('nav.docs'), icon: BookIcon, iconColor: 'text-indigo-500 dark:text-indigo-400', hideInSimpleMode: true },
     { path: '/monitor', label: t('nav.channelStatus'), icon: SignalIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', featureFlag: flagChannelMonitor },
     { path: '/subscriptions', label: t('nav.mySubscriptions'), icon: CreditCardIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true },
+    { path: '/seats', label: t('nav.mySeats'), icon: BadgeIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true, featureFlag: flagPayment },
     { path: '/purchase', label: t('nav.buySubscription'), icon: RechargeSubscriptionIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true, featureFlag: flagPayment },
     { path: '/orders', label: t('nav.myOrders'), icon: OrderListIcon, iconColor: 'text-amber-500 dark:text-amber-400', hideInSimpleMode: true, featureFlag: flagPayment },
     { path: '/redeem', label: t('nav.redeem'), icon: GiftIcon, iconColor: 'text-rose-500 dark:text-rose-400', hideInSimpleMode: true },
@@ -787,6 +804,7 @@ const adminNavItems = computed((): NavItem[] => {
         { path: '/admin/orders/dashboard', label: t('nav.paymentDashboard'), icon: ChartIcon, iconColor: 'text-violet-500 dark:text-violet-400' },
         { path: '/admin/orders', label: t('nav.orderManagement'), icon: OrderIcon, iconColor: 'text-amber-500 dark:text-amber-400' },
         { path: '/admin/orders/plans', label: t('nav.paymentPlans'), icon: CreditCardIcon, iconColor: 'text-teal-500 dark:text-teal-400' },
+        { path: '/admin/orders/exclusive-pools', label: t('nav.exclusivePools'), icon: BadgeIcon, iconColor: 'text-violet-500 dark:text-violet-400' },
       ],
     },
     { path: '/admin/usage', label: t('nav.usage'), icon: ChartIcon, iconColor: 'text-violet-500 dark:text-violet-400' }

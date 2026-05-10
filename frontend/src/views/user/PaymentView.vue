@@ -135,6 +135,88 @@
           <template v-else-if="activeTab === 'subscription'">
             <!-- Subscription confirm (inline, replaces plan list) -->
             <template v-if="selectedPlan">
+              <!-- 续费提示横幅：从「我的独享号」跳转过来时显示 -->
+              <!-- 设计原则：主体中性 + 左侧 4px 强调条；价格对比区强化字号 hierarchy 让新价成为视觉中心 -->
+              <div v-if="pendingRenewSeatId > 0"
+                class="overflow-hidden rounded-2xl border bg-white shadow-sm shadow-gray-100 dark:bg-dark-900 dark:shadow-none"
+                :class="renewBannerOuterClass">
+                <!-- 顶部：图标 + 标题 + hint。hint 文字色随趋势走，让用户一眼看出涨/降态 -->
+                <div class="flex items-start gap-3.5 px-5 py-4">
+                  <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+                    :class="renewBannerIconBoxClass">
+                    <Icon :name="renewPriceTrend === 'up' ? 'exclamationTriangle' : 'refresh'" size="md" :stroke-width="2.2" />
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-gray-900 dark:text-gray-50">
+                      {{ t('payment.renewalBanner.title') }}
+                    </p>
+                    <!-- min-h-[2lh] 锁定 2 行高度，避免三态 hint 长短不一导致整 banner 顶部参差 -->
+                    <p class="mt-1 text-xs leading-relaxed min-h-[2lh]" :class="renewBannerHintClass">
+                      <span v-if="renewPriceTrend === 'up'">{{ t('payment.renewalBanner.hintUp') }}</span>
+                      <span v-else-if="renewPriceTrend === 'down'">{{ t('payment.renewalBanner.hintDown') }}</span>
+                      <span v-else>{{ t('payment.renewalBanner.hint') }}</span>
+                    </p>
+                  </div>
+                </div>
+
+                <!-- 价格对比卡片：3 列同基线对齐；新价右侧紧贴 delta chip（一行内，不再上下分布）-->
+                <div v-if="renewLastPaidPrice > 0 && selectedPlan"
+                  class="border-t border-gray-100 bg-gradient-to-b from-gray-50/40 to-gray-50/80 px-5 py-4 dark:border-dark-700 dark:from-dark-800/30 dark:to-dark-800/60">
+                  <!-- label 行（统一在金额上方） -->
+                  <div class="grid grid-cols-[1fr_auto_1fr] gap-4">
+                    <div class="text-right text-[10px] font-medium uppercase tracking-wider text-gray-400 dark:text-dark-400">
+                      {{ t('payment.renewalBanner.lastPaid') }}
+                    </div>
+                    <div></div>
+                    <div class="text-left text-[10px] font-medium uppercase tracking-wider text-gray-400 dark:text-dark-400">
+                      {{ t('payment.renewalBanner.thisTime') }}
+                    </div>
+                  </div>
+                  <!-- 金额行：旧价 → 大圆趋势锚点 → 新价+chip，items-center 让圆和金额完美对齐 -->
+                  <div class="mt-1.5 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+                    <!-- 旧价 -->
+                    <div class="text-right font-mono text-base font-medium tabular-nums leading-none"
+                      :class="renewPriceTrend === 'same'
+                        ? 'text-gray-700 dark:text-dark-100'
+                        : 'text-gray-400 line-through decoration-2 decoration-gray-300/80 dark:text-dark-400 dark:decoration-dark-600/80'">
+                      ¥{{ renewLastPaidPrice.toFixed(2) }}
+                    </div>
+
+                    <!-- 中央趋势锚点：实色 + ring 光晕 -->
+                    <div class="flex h-11 w-11 items-center justify-center rounded-full"
+                      :class="renewTrendDotClass">
+                      <svg v-if="renewPriceTrend === 'up'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+                        <path fill-rule="evenodd" d="M10 17a.75.75 0 01-.75-.75V5.612L5.29 9.77a.75.75 0 11-1.08-1.04l5.25-5.5a.75.75 0 011.08 0l5.25 5.5a.75.75 0 11-1.08 1.04L10.75 5.612V16.25A.75.75 0 0110 17z" clip-rule="evenodd" />
+                      </svg>
+                      <svg v-else-if="renewPriceTrend === 'down'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+                        <path fill-rule="evenodd" d="M10 3a.75.75 0 01.75.75v10.638l3.96-4.158a.75.75 0 111.08 1.04l-5.25 5.5a.75.75 0 01-1.08 0l-5.25-5.5a.75.75 0 111.08-1.04l3.96 4.158V3.75A.75.75 0 0110 3z" clip-rule="evenodd" />
+                      </svg>
+                      <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+                        <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h12.5a.75.75 0 010 1.5H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
+                      </svg>
+                    </div>
+
+                    <!-- 新价：大字号 + 紧邻 delta chip 做视觉锚点群 -->
+                    <div class="flex items-baseline gap-2">
+                      <span class="font-mono text-2xl font-bold tabular-nums leading-none" :class="renewPriceTextClass">
+                        ¥{{ selectedPlan.price.toFixed(2) }}
+                      </span>
+                      <span v-if="renewPriceTrend === 'up'"
+                        class="inline-flex items-center rounded-md bg-amber-100/80 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                        +¥{{ (selectedPlan.price - renewLastPaidPrice).toFixed(2) }}
+                      </span>
+                      <span v-else-if="renewPriceTrend === 'down'"
+                        class="inline-flex items-center rounded-md bg-emerald-100/80 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                        −¥{{ (renewLastPaidPrice - selectedPlan.price).toFixed(2) }}
+                      </span>
+                      <span v-else
+                        class="inline-flex items-center rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-dark-700 dark:text-dark-300">
+                        {{ t('payment.renewalBanner.priceSame') }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <section :class="['overflow-hidden rounded-2xl border bg-white shadow-sm shadow-gray-200/70 dark:bg-dark-900 dark:shadow-none', planBorderClass]">
                 <div :class="['h-2', planAccentClass]" />
                 <div class="grid gap-0 lg:grid-cols-[minmax(0,1fr)_320px]">
@@ -264,11 +346,11 @@
                           <span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
                           {{ t('common.processing') }}
                         </span>
-                        <span v-else>{{ t('payment.createOrder') }} ¥{{ (feeRate > 0 ? subTotalAmount : selectedPlan.price).toFixed(2) }}</span>
+                        <span v-else>{{ pendingRenewSeatId > 0 ? t('payment.confirmRenewal') : t('payment.createOrder') }} ¥{{ (feeRate > 0 ? subTotalAmount : selectedPlan.price).toFixed(2) }}</span>
                       </button>
                       <button
                         class="block w-full py-2 text-center text-sm text-gray-500 transition-colors hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
-                        @click="selectedPlan = null">
+                        @click="cancelSubscriptionFlow">
                         {{ t('common.cancel') }}
                       </button>
                     </div>
@@ -282,9 +364,25 @@
                 <Icon name="gift" size="xl" class="mx-auto mb-3 text-gray-300 dark:text-dark-600" />
                 <p class="text-gray-500 dark:text-gray-400">{{ t('payment.noPlans') }}</p>
               </div>
-              <div v-else :class="planGridClass">
-                <SubscriptionPlanCard v-for="plan in checkout.plans" :key="plan.id" :plan="plan" :active-subscriptions="activeSubscriptions" @select="selectPlan" />
-              </div>
+              <template v-else>
+                <!-- 卡类型筛选：当套餐数量 > 1 且存在多种卡类型时才显示 -->
+                <div v-if="cardTypeFilters.length > 1" class="-mx-1 mb-1 flex flex-wrap gap-1 px-1">
+                  <button v-for="ct in cardTypeFilters" :key="ct"
+                    type="button"
+                    :class="[
+                      'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
+                      activeCardType === ct
+                        ? 'border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-gray-900'
+                        : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:text-gray-900 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-300 dark:hover:border-dark-600 dark:hover:text-white',
+                    ]"
+                    @click="activeCardType = ct">
+                    {{ ct === 'all' ? t('payment.admin.cardType.all') : t(`payment.admin.cardType.${ct}`) }}
+                  </button>
+                </div>
+                <div :class="planGridClass">
+                  <SubscriptionPlanCard v-for="plan in filteredPlans" :key="plan.id" :plan="plan" :active-subscriptions="activeSubscriptions" @select="selectPlan" />
+                </div>
+              </template>
               <!-- Active subscriptions (compact, below plan list) -->
               <div v-if="activeSubscriptions.length > 0">
                 <p class="mb-2 text-xs font-medium text-gray-400 dark:text-gray-500">{{ t('payment.activeSubscription') }}</p>
@@ -376,6 +474,7 @@ import {
   type PaymentRecoverySnapshot,
   writePaymentRecoverySnapshot,
 } from '@/components/payment/paymentFlow'
+import { collectCardTypes, derivePlanCardType, type PlanCardType } from '@/utils/planCardType'
 import {
   platformAccentBarClass,
   platformBadgeLightClass,
@@ -425,6 +524,12 @@ const amount = ref<number | null>(null)
 const selectedMethod = ref('')
 const selectedPlan = ref<SubscriptionPlan | null>(null)
 const previewImage = ref('')
+// 续费独享名额时携带的 seat ID（来自 ?renew_seat=<id>），confirmSubscribe 透传给 CreateOrder
+const pendingRenewSeatId = ref<number>(0)
+// 续费场景下用户上次实际支付的金额（来自 PreviewRenewal API），用于「上次 → 本次」对比展示
+const renewLastPaidPrice = ref<number>(0)
+// 卡类型筛选：'all' 显示全部，否则按 derivePlanCardType 推导后过滤
+const activeCardType = ref<'all' | PlanCardType>('all')
 
 const paymentPhase = ref<'select' | 'paying'>('select')
 
@@ -434,6 +539,8 @@ interface CreateOrderOptions {
   paymentType?: string
   isResume?: boolean
   mobileQrFallbackAttempted?: boolean
+  /** 续费目标 seat ID（>0 时本订单走 RenewSeat 路径而不是 AssignSeat） */
+  renewSeatId?: number
 }
 
 interface WeixinJSBridgeLike {
@@ -535,7 +642,7 @@ async function redirectToPaymentResult(state: PaymentRecoverySnapshot): Promise<
 
 function buildWechatOAuthAuthorizeUrl(
   authorizeUrl: string,
-  context: { paymentType: string; orderType: OrderType; planId?: number; orderAmount: number },
+  context: { paymentType: string; orderType: OrderType; planId?: number; orderAmount: number; renewSeatId?: number },
 ): string {
   const normalizedUrl = authorizeUrl.trim()
   if (!normalizedUrl || typeof window === 'undefined') {
@@ -561,6 +668,14 @@ function buildWechatOAuthAuthorizeUrl(
       redirectUrl.searchParams.set('amount', String(context.orderAmount))
     } else {
       redirectUrl.searchParams.delete('amount')
+    }
+
+    // 续费独享名额时把 seat_id 也带进 redirect，OAuth 回跳后前端会一并恢复并发给后端，
+    // 避免续费上下文丢失导致重新分配账号 / 库存不足触发自动退款
+    if (context.renewSeatId && context.renewSeatId > 0) {
+      redirectUrl.searchParams.set('renew_seat', String(context.renewSeatId))
+    } else {
+      redirectUrl.searchParams.delete('renew_seat')
     }
 
     targetUrl.searchParams.set('redirect', `${redirectUrl.pathname}${redirectUrl.search}`)
@@ -624,10 +739,25 @@ const creditedAmount = computed(() => Math.round((validAmount.value * balanceRec
 
 // Adaptive grid: center single card, 2-col for 2 plans, 3-col for 3+
 const planGridClass = computed(() => {
-  const n = checkout.value.plans.length
+  const n = filteredPlans.value.length
   if (n === 1) return 'grid grid-cols-1 gap-5'
   if (n <= 2) return 'grid grid-cols-1 gap-5 sm:grid-cols-2'
   return 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'
+})
+
+// 卡类型筛选 tab：实际存在的类型 + 「全部」
+const cardTypeFilters = computed<('all' | PlanCardType)[]>(() => {
+  const present = collectCardTypes(checkout.value.plans)
+  if (present.length <= 1) return []
+  return ['all', ...present]
+})
+
+// 按卡类型过滤后的套餐列表
+const filteredPlans = computed(() => {
+  if (activeCardType.value === 'all') return checkout.value.plans
+  return checkout.value.plans.filter(
+    (p) => derivePlanCardType(p.validity_days, p.validity_unit) === activeCardType.value,
+  )
 })
 
 // Check if an amount fits a method's [min, max]. 0 = no limit.
@@ -726,6 +856,75 @@ const subTotalAmount = computed(() => {
   return Math.round((price + subFeeAmount.value) * 100) / 100
 })
 
+// 续费场景的价格变动方向（与上次实付价对比，差额 < 0.005 视为不变）
+const renewPriceTrend = computed<'up' | 'down' | 'same'>(() => {
+  if (!selectedPlan.value || renewLastPaidPrice.value <= 0) return 'same'
+  const delta = selectedPlan.value.price - renewLastPaidPrice.value
+  if (delta > 0.005) return 'up'
+  if (delta < -0.005) return 'down'
+  return 'same'
+})
+
+// 本次价金额的文本颜色：涨价 amber、降价 emerald、不变保持深灰
+const renewPriceTextClass = computed(() => {
+  switch (renewPriceTrend.value) {
+    case 'up':
+      return 'text-amber-600 dark:text-amber-300'
+    case 'down':
+      return 'text-emerald-600 dark:text-emerald-300'
+    default:
+      return 'text-gray-900 dark:text-gray-50'
+  }
+})
+
+// banner 外框：涨价时左侧 4px amber 强调条 + amber 边框（仍保持白底，不全染）
+const renewBannerOuterClass = computed(() => {
+  switch (renewPriceTrend.value) {
+    case 'up':
+      return 'border-amber-200 border-l-4 border-l-amber-500 dark:border-amber-900/50 dark:border-l-amber-500'
+    case 'down':
+      return 'border-emerald-200 border-l-4 border-l-emerald-500 dark:border-emerald-900/50 dark:border-l-emerald-500'
+    default:
+      return 'border-gray-200 dark:border-dark-700'
+  }
+})
+
+// 标题旁圆角图标盒
+const renewBannerIconBoxClass = computed(() => {
+  switch (renewPriceTrend.value) {
+    case 'up':
+      return 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300'
+    case 'down':
+      return 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300'
+    default:
+      return 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300'
+  }
+})
+
+// 中央趋势 dot 容器：双层 ring（外层淡色光晕 + 内层 ring offset）做地标感
+const renewTrendDotClass = computed(() => {
+  switch (renewPriceTrend.value) {
+    case 'up':
+      return 'bg-amber-500 text-white ring-4 ring-amber-100 dark:bg-amber-500 dark:text-white dark:ring-amber-900/40'
+    case 'down':
+      return 'bg-emerald-500 text-white ring-4 ring-emerald-100 dark:bg-emerald-500 dark:text-white dark:ring-emerald-900/40'
+    default:
+      return 'bg-gray-300 text-white ring-4 ring-gray-100 dark:bg-dark-500 dark:text-dark-200 dark:ring-dark-700'
+  }
+})
+
+// 顶部 hint 文字色：跟趋势同色（涨 amber-700、降 emerald-700、不变 gray），强化趋势感知
+const renewBannerHintClass = computed(() => {
+  switch (renewPriceTrend.value) {
+    case 'up':
+      return 'text-amber-700 dark:text-amber-300/90'
+    case 'down':
+      return 'text-emerald-700 dark:text-emerald-300/90'
+    default:
+      return 'text-gray-500 dark:text-dark-300'
+  }
+})
+
 const canSubmitSubscription = computed(() =>
   selectedPlan.value !== null
     && amountFitsMethod(selectedPlan.value.price, selectedMethod.value)
@@ -737,6 +936,13 @@ watch(() => [validAmount.value, selectedMethod.value] as const, ([amt, method]) 
   if (amt <= 0 || amountFitsMethod(amt, method)) return
   const available = enabledMethods.value.find((m) => amountFitsMethod(amt, m))
   if (available) selectedMethod.value = available
+})
+
+// 卡类型筛选自愈：当前 activeCardType 在可用 tab 里消失（管理员下架所有该类套餐）→ 重置到 all
+watch(cardTypeFilters, (filters) => {
+  if (filters.length > 0 && !filters.includes(activeCardType.value)) {
+    activeCardType.value = 'all'
+  }
 })
 
 // Payment button class: follows selected payment method color
@@ -801,6 +1007,11 @@ const planValiditySuffix = computed(() => {
 })
 
 function selectPlan(plan: SubscriptionPlan) {
+  // 切换到不同套餐时清掉续费上下文，避免后端 RENEWAL_PLAN_MISMATCH
+  if (pendingRenewSeatId.value > 0 && selectedPlan.value?.id !== plan.id) {
+    pendingRenewSeatId.value = 0
+    renewLastPaidPrice.value = 0
+  }
   selectedPlan.value = plan
   errorMessage.value = ''
 }
@@ -808,6 +1019,9 @@ function selectPlan(plan: SubscriptionPlan) {
 function selectPlanFromModal(plan: SubscriptionPlan) {
   showRenewalModal.value = false
   renewGroupId.value = null
+  // 续费弹窗里选套餐属于全新购买流程，清掉残留的续费上下文
+  pendingRenewSeatId.value = 0
+  renewLastPaidPrice.value = 0
   selectedPlan.value = plan
   errorMessage.value = ''
 }
@@ -824,7 +1038,14 @@ async function handleSubmitRecharge() {
 
 async function confirmSubscribe() {
   if (!selectedPlan.value || submitting.value) return
-  await createOrder(selectedPlan.value.price, 'subscription', selectedPlan.value.id)
+  await createOrder(selectedPlan.value.price, 'subscription', selectedPlan.value.id, { renewSeatId: pendingRenewSeatId.value })
+}
+
+// 取消选中套餐：同时清掉续费上下文，避免再点其他 plan 仍带着 renewal 标记
+function cancelSubscriptionFlow() {
+  selectedPlan.value = null
+  pendingRenewSeatId.value = 0
+  renewLastPaidPrice.value = 0
 }
 
 async function createOrder(orderAmount: number, orderType: OrderType, planId?: number, options: CreateOrderOptions = {}) {
@@ -841,6 +1062,7 @@ async function createOrder(orderAmount: number, orderType: OrderType, planId?: n
       origin: typeof window !== 'undefined' ? window.location.origin : '',
       isMobile: isMobileDevice(),
       isWechatBrowser: typeof window !== 'undefined' && /MicroMessenger/i.test(window.navigator.userAgent),
+      renewSeatId: options.renewSeatId,
     })
     if (options.openid) {
       payload.openid = options.openid
@@ -888,6 +1110,7 @@ async function createOrder(orderAmount: number, orderType: OrderType, planId?: n
         orderType,
         planId,
         orderAmount,
+        renewSeatId: options.renewSeatId,
       })
       return
     }
@@ -926,6 +1149,7 @@ async function createOrder(orderAmount: number, orderType: OrderType, planId?: n
               planId,
               paymentType: visibleMethod,
               attempted: options.mobileQrFallbackAttempted === true,
+              renewSeatId: options.renewSeatId,
             },
           )
           if (!fallbackApplied) {
@@ -944,6 +1168,7 @@ async function createOrder(orderAmount: number, orderType: OrderType, planId?: n
           planId,
           paymentType: visibleMethod,
           attempted: options.mobileQrFallbackAttempted === true,
+          renewSeatId: options.renewSeatId,
         })
         if (!fallbackApplied) {
           throw err
@@ -973,6 +1198,7 @@ async function createOrder(orderAmount: number, orderType: OrderType, planId?: n
       planId,
       paymentType: requestType,
       attempted: options.mobileQrFallbackAttempted === true,
+      renewSeatId: options.renewSeatId,
     })) {
       return
     } else {
@@ -1000,6 +1226,9 @@ interface MobileQrFallbackContext {
   planId?: number
   paymentType: string
   attempted: boolean
+  // 续费场景必须把 seat_id 透传到回退建单，否则后端拿不到 seat 上下文会按"新购"处理，
+  // 消耗新库存或 fulfillment 时因独享池无可用账号触发自动退款（GPT round 18 #2）
+  renewSeatId?: number
 }
 
 function shouldFallbackToDesktopQr(err: unknown, paymentMethod: string, attempted: boolean): boolean {
@@ -1050,6 +1279,7 @@ async function attemptMobileQrFallback(err: unknown, context: MobileQrFallbackCo
       origin: typeof window !== 'undefined' ? window.location.origin : '',
       isMobile: false,
       isWechatBrowser: false,
+      renewSeatId: context.renewSeatId,
     })
     const result = await paymentStore.createOrder(payload) as CreateOrderResult & { resume_token?: string }
     const stripeMethod = visibleMethod === 'wxpay' ? 'wechat_pay' : 'alipay'
@@ -1127,6 +1357,7 @@ async function resumeWechatPaymentFromQuery() {
       wechatResumeToken: resume.wechatResumeToken,
       paymentType: resume.paymentType,
       isResume: true,
+      renewSeatId: resume.renewSeatId,
     })
     return
   }
@@ -1136,6 +1367,7 @@ async function resumeWechatPaymentFromQuery() {
       openid: resume.openid,
       paymentType: resume.paymentType,
       isResume: true,
+      renewSeatId: resume.renewSeatId,
     })
   }
 }
@@ -1196,6 +1428,32 @@ onMounted(async () => {
         } else if (groupPlans.length > 1) {
           renewGroupId.value = groupId
           showRenewalModal.value = true
+        }
+      }
+      // 续费独享名额：?plan_id=&renew_seat= 时自动选中对应套餐 + 标记为续费订单
+      if (route.query.plan_id && route.query.renew_seat) {
+        const planId = Number(route.query.plan_id)
+        const seatId = Number(route.query.renew_seat)
+        const inListPlan = checkout.value.plans.find(p => p.id === planId)
+        if (seatId > 0) {
+          // 续费允许已下架（for_sale=false）的 plan，但 checkout 列表只含在售套餐 →
+          // find 失败时用 previewRenewal 返回的完整 plan 兜底（GPT round 28 #1）。
+          // 这样管理员下架老套餐后老用户仍能续费。
+          if (inListPlan) {
+            selectedPlan.value = inListPlan
+            pendingRenewSeatId.value = seatId
+          }
+          paymentAPI.previewRenewal(seatId).then(res => {
+            renewLastPaidPrice.value = res.data.last_paid_price ?? 0
+            if (!inListPlan && res.data.plan) {
+              // 仅在 checkout 列表没有时才用 preview 返回的 plan，避免覆盖正在售卖的最新数据
+              selectedPlan.value = res.data.plan
+              pendingRenewSeatId.value = seatId
+            }
+          }).catch(() => {
+            // 失败不影响主流程，banner 退化为通用提示
+            renewLastPaidPrice.value = 0
+          })
         }
       }
     }

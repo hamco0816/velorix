@@ -22,6 +22,7 @@ import (
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/apicompat"
+	"github.com/Wei-Shaw/sub2api/internal/pkg/ctxkey"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/logger"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/openai"
 	"github.com/Wei-Shaw/sub2api/internal/util/responseheaders"
@@ -350,6 +351,14 @@ type OpenAIGatewayService struct {
 	openaiWSRetryMetrics  openAIWSRetryMetrics
 	responseHeaderFilter  *responseheaders.CompiledHeaderFilter
 	codexSnapshotThrottle *accountWriteThrottle
+
+	// 独享池调度：可选注入；nil 时走原共享池逻辑
+	exclusiveSeatSvc *ExclusiveSeatService
+}
+
+// SetExclusiveSeatService 在 wire 初始化阶段注入独享池服务（与 GatewayService 同款 setter 注入）。
+func (s *OpenAIGatewayService) SetExclusiveSeatService(svc *ExclusiveSeatService) {
+	s.exclusiveSeatSvc = svc
 }
 
 // NewOpenAIGatewayService creates a new OpenAIGatewayService
@@ -495,6 +504,7 @@ func (s *OpenAIGatewayService) billingDeps() *billingDeps {
 		billingCacheService:  s.billingCacheService,
 		deferredService:      s.deferredService,
 		balanceNotifyService: s.balanceNotifyService,
+		exclusiveSeatSvc:     s.exclusiveSeatSvc,
 	}
 }
 
@@ -1326,11 +1336,28 @@ func resolveOpenAIAccountUpstreamModelForRequest(account *Account, requestedMode
 }
 
 func (s *OpenAIGatewayService) selectAccountForModelWithExclusions(ctx context.Context, groupID *int64, sessionHash string, requestedModel string, excludedIDs map[int64]struct{}, requireCompact bool, stickyAccountID int64) (*Account, error) {
+	// 渠道价格限制必须先执行：admin 全局禁用某模型时，独享用户也不能用（防绕过）
+	// 与 selectAccountWithLoadAwareness 顺序保持一致
 	if s.checkChannelPricingRestriction(ctx, groupID, requestedModel) {
 		slog.Warn("channel pricing restriction blocked request",
 			"group_id", derefGroupID(groupID),
 			"model", requestedModel)
 		return nil, fmt.Errorf("%w supporting model: %s (channel pricing restriction)", ErrNoAvailableAccounts, requestedModel)
+	}
+
+	// 独享池优先（DP2C）：命中则直接用绑定账号，跳过 sticky / 限流 / 负载均衡等共享池流程。
+	// 复用共享池 isOpenAIAccountEligibleForRequest（OpenAI 平台 + 模型支持 + compact 支持），
+	// 避免选到不支持该模型 / compact 的独享账号导致上游 404。
+	if acc, hit, err := trySelectExclusiveSeatAccountForModelWithCheck(
+		ctx, s.exclusiveSeatSvc, &accountRepoSeatResolver{repo: s.accountRepo},
+		groupID, requestedModel, excludedIDs,
+		func(_ context.Context, acc *Account) bool {
+			return isOpenAIAccountEligibleForRequest(acc, requestedModel, requireCompact)
+		},
+	); err != nil {
+		return nil, err
+	} else if hit && acc != nil {
+		return acc, nil
 	}
 
 	// 1. 尝试粘性会话命中
@@ -1527,11 +1554,40 @@ func (s *OpenAIGatewayService) SelectAccountWithLoadAwareness(ctx context.Contex
 }
 
 func (s *OpenAIGatewayService) selectAccountWithLoadAwareness(ctx context.Context, groupID *int64, sessionHash string, requestedModel string, excludedIDs map[int64]struct{}, requireCompact bool) (*AccountSelectionResult, error) {
+	// 渠道价格限制必须先执行：admin 全局禁用某模型时，独享用户也应受限（防绕过）。
+	// 与 GatewayService 一致的顺序：先 channel pricing → 再独享 seat 命中。
 	if s.checkChannelPricingRestriction(ctx, groupID, requestedModel) {
 		slog.Warn("channel pricing restriction blocked request",
 			"group_id", derefGroupID(groupID),
 			"model", requestedModel)
 		return nil, fmt.Errorf("%w supporting model: %s (channel pricing restriction)", ErrNoAvailableAccounts, requestedModel)
+	}
+
+	// 独享池优先级：用户在该 group 下有活跃 seat 时直接命中绑定账号，跳过共享池负载均衡。
+	// 与 GatewayService 同款 DP2C 行为：用户独享号都不可用时返回 ErrNoUsableExclusiveAccount，不降级共享池。
+	// 同样复用共享池 isOpenAIAccountEligibleForRequest 校验账号-模型适配性
+	if acc, hit, err := trySelectExclusiveSeatAccountForModelWithCheck(
+		ctx, s.exclusiveSeatSvc, &accountRepoSeatResolver{repo: s.accountRepo},
+		groupID, requestedModel, excludedIDs,
+		func(_ context.Context, acc *Account) bool {
+			return isOpenAIAccountEligibleForRequest(acc, requestedModel, requireCompact)
+		},
+	); err != nil {
+		return nil, err
+	} else if hit && acc != nil {
+		// 独享账号也要走账号级并发槽位：跳过会让账号无限并发，可能打爆上游
+		acquireResult, acqErr := s.tryAcquireAccountSlot(ctx, acc.ID, acc.Concurrency)
+		if acqErr == nil && acquireResult != nil && acquireResult.Acquired {
+			return s.newSelectionResult(ctx, acc, true, acquireResult.ReleaseFunc, nil)
+		}
+		// 拿不到槽位：让 handler 排队，独享用户付费应享受等待权益而非直接 503
+		cfg := s.schedulingConfig()
+		return s.newSelectionResult(ctx, acc, false, nil, &AccountWaitPlan{
+			AccountID:      acc.ID,
+			MaxConcurrency: acc.Concurrency,
+			Timeout:        cfg.StickySessionWaitTimeout,
+			MaxWaiting:     cfg.StickySessionMaxWaiting,
+		})
 	}
 
 	cfg := s.schedulingConfig()
@@ -5062,7 +5118,8 @@ func (s *OpenAIGatewayService) RecordUsage(ctx context.Context, input *OpenAIRec
 		ImageOutputTokens:   result.Usage.ImageOutputTokens,
 	}
 
-	// Get rate multiplier
+	// Get rate multiplier (优先级：用户专属 > 独享 seat 快照 > 套餐快照(plan/sub) > 分组默认 > 系统默认)
+	// 与 GatewayService.recordUsageCore 保持一致，让同一独享套餐在 OpenAI/Claude/Gemini 入口按相同倍率计费
 	multiplier := 1.0
 	if s.cfg != nil {
 		multiplier = s.cfg.Default.RateMultiplier
@@ -5072,7 +5129,18 @@ func (s *OpenAIGatewayService) RecordUsage(ctx context.Context, input *OpenAIRec
 		if resolver == nil {
 			resolver = newUserGroupRateResolver(nil, nil, resolveUserGroupRateCacheTTL(s.cfg), nil, "service.openai_gateway")
 		}
-		multiplier = resolver.Resolve(ctx, user.ID, *apiKey.GroupID, apiKey.Group.RateMultiplier)
+		effectiveDefault := apiKey.Group.RateMultiplier
+		if input.Subscription != nil && input.Subscription.RateMultiplier != nil && *input.Subscription.RateMultiplier > 0 {
+			effectiveDefault = *input.Subscription.RateMultiplier
+		}
+		// 独享 seat 命中时优先用 seat 上的快照倍率（独享档位差异化）
+		if account != nil && account.AssignedSeatID != nil && s.exclusiveSeatSvc != nil {
+			if seat, err := s.exclusiveSeatSvc.GetSeat(ctx, *account.AssignedSeatID); err == nil && seat != nil &&
+				seat.RateMultiplier != nil && *seat.RateMultiplier > 0 {
+				effectiveDefault = *seat.RateMultiplier
+			}
+		}
+		multiplier = resolver.Resolve(ctx, user.ID, *apiKey.GroupID, effectiveDefault)
 	}
 
 	var cost *CostBreakdown
@@ -5096,10 +5164,18 @@ func (s *OpenAIGatewayService) RecordUsage(ctx context.Context, input *OpenAIRec
 		cost = &CostBreakdown{ActualCost: 0}
 	}
 
-	// Determine billing type
+	// Determine billing type: exclusive seat > subscription > balance.
+	// 优先读 ctxkey.ExclusiveSeatActive（鉴权层显式标记），AssignedSeatID 仅作为补充条件，
+	// 与 GatewayService.recordUsageCore 同款逻辑，防 sticky/cache 路径误选独享账号时把共享请求
+	// 错误归到 BillingTypeExclusive（GPT round 20 #3）
+	exclusiveCtx, _ := ctx.Value(ctxkey.ExclusiveSeatActive).(bool)
+	isExclusiveBill := exclusiveCtx && account != nil && account.AssignedSeatID != nil
 	isSubscriptionBilling := subscription != nil && apiKey.Group != nil && apiKey.Group.IsSubscriptionType()
 	billingType := BillingTypeBalance
-	if isSubscriptionBilling {
+	switch {
+	case isExclusiveBill:
+		billingType = BillingTypeExclusive
+	case isSubscriptionBilling:
 		billingType = BillingTypeSubscription
 	}
 
@@ -5197,6 +5273,7 @@ func (s *OpenAIGatewayService) RecordUsage(ctx context.Context, input *OpenAIRec
 		return nil
 	}
 
+	// 复用前面 billingType 判定时计算的 isExclusiveBill（ctx 标记 + AssignedSeatID 双确认）
 	billingErr := func() error {
 		_, err := applyUsageBilling(ctx, requestID, usageLog, &postUsageBillingParams{
 			Cost:                  cost,
@@ -5206,6 +5283,7 @@ func (s *OpenAIGatewayService) RecordUsage(ctx context.Context, input *OpenAIRec
 			Subscription:          subscription,
 			RequestPayloadHash:    resolveUsageBillingPayloadFingerprint(ctx, input.RequestPayloadHash),
 			IsSubscriptionBill:    isSubscriptionBilling,
+			IsExclusiveBill:       isExclusiveBill,
 			AccountRateMultiplier: accountRateMultiplier,
 			APIKeyService:         input.APIKeyService,
 		}, s.billingDeps(), s.usageBillingRepo)

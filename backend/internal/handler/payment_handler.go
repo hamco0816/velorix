@@ -7,6 +7,7 @@ import (
 	"time"
 
 	dbent "github.com/Wei-Shaw/sub2api/ent"
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 	"github.com/Wei-Shaw/sub2api/internal/payment"
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/pagination"
@@ -100,16 +101,43 @@ func (h *PaymentHandler) GetPlans(c *gin.Context) {
 		ProductName   string   `json:"product_name"`
 		ForSale       bool     `json:"for_sale"`
 		SortOrder     int      `json:"sort_order"`
+		Kind          string   `json:"kind"`
+		// 独享池套餐才有效；shared 套餐为 nil（不显示库存信息）
+		StockAvailable *int `json:"stock_available,omitempty"`
 	}
 	platformMap := h.configService.GetGroupPlatformMap(c.Request.Context(), plans)
+	// 一次性查所有独享池的库存（按 group_id 去重）
+	seatSvc := h.paymentService.ExclusiveSeatService()
+	stockByGroup := map[int64]int{}
+	for _, p := range plans {
+		if p.Kind != "exclusive" {
+			continue
+		}
+		if _, cached := stockByGroup[p.GroupID]; cached {
+			continue
+		}
+		if seatSvc != nil {
+			if inv, err := seatSvc.GetGroupInventory(c.Request.Context(), p.GroupID); err == nil {
+				// 用 Schedulable（"当下立即可分配"）作为售卖库存口径，与 GetCheckoutInfo 保持一致；
+				// 若用 Free 会把不可调度账号也算成有货，列表显示有库存但下单会失败
+				stockByGroup[p.GroupID] = inv.Schedulable
+			}
+		}
+	}
 	result := make([]planWithPlatform, 0, len(plans))
 	for _, p := range plans {
-		result = append(result, planWithPlatform{
+		row := planWithPlatform{
 			ID: int64(p.ID), GroupID: p.GroupID, GroupPlatform: platformMap[p.GroupID],
 			Name: p.Name, Description: p.Description, Price: p.Price, OriginalPrice: p.OriginalPrice,
 			ValidityDays: p.ValidityDays, ValidityUnit: p.ValidityUnit, Features: p.Features,
 			ProductName: p.ProductName, ForSale: p.ForSale, SortOrder: p.SortOrder,
-		})
+			Kind: p.Kind,
+		}
+		if p.Kind == "exclusive" {
+			s := stockByGroup[p.GroupID]
+			row.StockAvailable = &s
+		}
+		result = append(result, row)
 	}
 	response.Success(c, result)
 }
@@ -148,18 +176,66 @@ func (h *PaymentHandler) GetCheckoutInfo(c *gin.Context) {
 	// Fetch plans with group info
 	plans, _ := h.configService.ListPlansForSale(ctx)
 	groupInfo := h.configService.GetGroupInfoMap(ctx, plans)
+	// 独享套餐库存预查（一次查所有 group 减少 N+1）；shared 套餐不需要库存
+	exclusiveGroupIDs := make(map[int64]struct{})
+	for _, p := range plans {
+		if p.Kind == domain.PlanKindExclusive {
+			exclusiveGroupIDs[p.GroupID] = struct{}{}
+		}
+	}
+	groupStock := make(map[int64]int, len(exclusiveGroupIDs))
+	if len(exclusiveGroupIDs) > 0 && h.paymentService != nil {
+		seatSvc := h.paymentService.ExclusiveSeatService()
+		for gid := range exclusiveGroupIDs {
+			if inv, err := seatSvc.GetGroupInventory(ctx, gid); err == nil && inv != nil {
+				// 用 Schedulable（"当下立即可分配"）作为售卖库存口径，比 Free 更准
+				groupStock[gid] = inv.Schedulable
+			}
+		}
+	}
 	planList := make([]checkoutPlan, 0, len(plans))
 	for _, p := range plans {
 		gi := groupInfo[p.GroupID]
+		// 套餐展示用的限额/倍率：plan 覆盖值优先，nil 时回落到 group
+		// 这样用户在购买页直接看到本档位的真实限额（migration 138）
+		rateMultiplier := gi.RateMultiplier
+		if p.RateMultiplier != nil && *p.RateMultiplier > 0 {
+			rateMultiplier = *p.RateMultiplier
+		}
+		dailyLimit := gi.DailyLimitUSD
+		if p.DailyLimitUsd != nil && *p.DailyLimitUsd > 0 {
+			v := *p.DailyLimitUsd
+			dailyLimit = &v
+		}
+		weeklyLimit := gi.WeeklyLimitUSD
+		if p.WeeklyLimitUsd != nil && *p.WeeklyLimitUsd > 0 {
+			v := *p.WeeklyLimitUsd
+			weeklyLimit = &v
+		}
+		monthlyLimit := gi.MonthlyLimitUSD
+		if p.MonthlyLimitUsd != nil && *p.MonthlyLimitUsd > 0 {
+			v := *p.MonthlyLimitUsd
+			monthlyLimit = &v
+		}
+		var stockPtr *int
+		if p.Kind == domain.PlanKindExclusive {
+			if s, ok := groupStock[p.GroupID]; ok {
+				v := s
+				stockPtr = &v
+			}
+		}
 		planList = append(planList, checkoutPlan{
 			ID: int64(p.ID), GroupID: p.GroupID,
 			GroupPlatform: gi.Platform, GroupName: gi.Name,
-			RateMultiplier: gi.RateMultiplier, DailyLimitUSD: gi.DailyLimitUSD,
-			WeeklyLimitUSD: gi.WeeklyLimitUSD, MonthlyLimitUSD: gi.MonthlyLimitUSD,
-			ModelScopes: gi.ModelScopes,
-			Name:        p.Name, Description: p.Description, Price: p.Price, OriginalPrice: p.OriginalPrice,
+			RateMultiplier: rateMultiplier, DailyLimitUSD: dailyLimit,
+			WeeklyLimitUSD: weeklyLimit, MonthlyLimitUSD: monthlyLimit,
+			HasPlanLimitOverride: p.DailyLimitUsd != nil || p.WeeklyLimitUsd != nil || p.MonthlyLimitUsd != nil || p.RateMultiplier != nil,
+			ModelScopes:          gi.ModelScopes,
+			Name:                 p.Name, Description: p.Description, Price: p.Price, OriginalPrice: p.OriginalPrice,
 			ValidityDays: p.ValidityDays, ValidityUnit: p.ValidityUnit, Features: parseFeatures(p.Features),
-			ProductName: p.ProductName,
+			ProductName:    p.ProductName,
+			Kind:           p.Kind,
+			StockAvailable: stockPtr,
 		})
 	}
 
@@ -201,15 +277,21 @@ type checkoutPlan struct {
 	DailyLimitUSD   *float64 `json:"daily_limit_usd"`
 	WeeklyLimitUSD  *float64 `json:"weekly_limit_usd"`
 	MonthlyLimitUSD *float64 `json:"monthly_limit_usd"`
-	ModelScopes     []string `json:"supported_model_scopes"`
-	Name            string   `json:"name"`
-	Description     string   `json:"description"`
-	Price           float64  `json:"price"`
-	OriginalPrice   *float64 `json:"original_price,omitempty"`
-	ValidityDays    int      `json:"validity_days"`
-	ValidityUnit    string   `json:"validity_unit"`
-	Features        []string `json:"features"`
-	ProductName     string   `json:"product_name"`
+	// 标识该 plan 是否有自定义限额覆盖（用于前端展示"独立档位"徽章）
+	HasPlanLimitOverride bool     `json:"has_plan_limit_override"`
+	ModelScopes          []string `json:"supported_model_scopes"`
+	Name                 string   `json:"name"`
+	Description          string   `json:"description"`
+	Price                float64  `json:"price"`
+	OriginalPrice        *float64 `json:"original_price,omitempty"`
+	ValidityDays         int      `json:"validity_days"`
+	ValidityUnit         string   `json:"validity_unit"`
+	Features             []string `json:"features"`
+	ProductName          string   `json:"product_name"`
+	// 套餐类型 + 独享池库存（供 SubscriptionPlanCard 渲染独享徽章 / 售罄状态）
+	// shared 套餐 StockAvailable 为 nil（前端不展示库存提示）
+	Kind           string `json:"kind"`
+	StockAvailable *int   `json:"stock_available,omitempty"`
 }
 
 // parseFeatures splits a newline-separated features string into a string slice.
@@ -250,6 +332,8 @@ type CreateOrderRequest struct {
 	PaymentSource     string  `json:"payment_source"`
 	OrderType         string  `json:"order_type"`
 	PlanID            int64   `json:"plan_id"`
+	// RenewalSeatID > 0 时表示续费已有独享名额（不消耗库存、保留绑定账号）。
+	RenewalSeatID int64 `json:"renewal_seat_id"`
 	// IsMobile lets the frontend declare its mobile status directly. When
 	// nil we fall back to User-Agent heuristics (which miss iPadOS / some
 	// embedded browsers that strip the "Mobile" keyword).
@@ -299,6 +383,7 @@ func (h *PaymentHandler) CreateOrder(c *gin.Context) {
 		PaymentSource:   req.PaymentSource,
 		OrderType:       req.OrderType,
 		PlanID:          req.PlanID,
+		RenewalSeatID:   req.RenewalSeatID,
 	})
 	if err != nil {
 		response.ErrorFrom(c, err)
@@ -341,6 +426,11 @@ func applyWeChatPaymentResumeClaims(req *CreateOrderRequest, claims *service.WeC
 	}
 	if claims.PlanID > 0 {
 		req.PlanID = claims.PlanID
+	}
+	// 恢复续费独享名额的 seat_id：微信 OAuth 回跳前用户在续费上下文中，
+	// 不恢复会让后端把请求当成新购，重新分配账号或库存不足直接退款
+	if claims.RenewalSeatID > 0 {
+		req.RenewalSeatID = claims.RenewalSeatID
 	}
 	return nil
 }

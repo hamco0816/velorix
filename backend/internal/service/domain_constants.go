@@ -334,6 +334,13 @@ const (
 	SettingKeyGatewaySensitiveFilterEnabled = "gateway_sensitive_filter_enabled"
 	SettingKeyGatewaySensitiveFilterWords   = "gateway_sensitive_filter_words"
 
+	// System overload protection: 网关请求路径上的实时门控
+	// 启用后，CPU/内存/磁盘超过阈值时直接 503 拒绝 LLM 转发请求，避免雪崩
+	SettingKeySystemOverloadProtectionEnabled = "system_overload_protection_enabled" // 总开关，默认 false
+	SettingKeySystemOverloadCPUThreshold      = "system_overload_cpu_threshold"      // CPU 占用阈值，0-100，0 关闭该项
+	SettingKeySystemOverloadMemoryThreshold   = "system_overload_memory_threshold"   // 内存占用阈值，0-100，0 关闭该项
+	SettingKeySystemOverloadDiskThreshold     = "system_overload_disk_threshold"     // 磁盘占用阈值，0-100，0 关闭该项
+
 	// Gateway Forwarding Behavior
 	// SettingKeyEnableFingerprintUnification 是否统一 OAuth 账号的 X-Stainless-* 指纹头（默认 true）
 	SettingKeyEnableFingerprintUnification = "enable_fingerprint_unification"

@@ -193,6 +193,12 @@ func (Account) Fields() []ent.Field {
 			Optional().
 			Nillable().
 			MaxLen(20),
+
+		// 独享池：当前绑定的独享名额 ID（NULL = 空闲可分配）
+		// 由 exclusive_subscription 维护一致性，仅作为后台库存看板的反向索引加速字段
+		field.Int64("assigned_seat_id").
+			Optional().
+			Nillable(),
 	}
 }
 
@@ -232,5 +238,6 @@ func (Account) Indexes() []ent.Index {
 		index.Fields("platform", "priority"),
 		index.Fields("priority", "status"),
 		index.Fields("deleted_at"), // 软删除查询优化
+		index.Fields("assigned_seat_id"), // 独享池库存看板查询
 	}
 }

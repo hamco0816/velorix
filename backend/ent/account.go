@@ -75,6 +75,8 @@ type Account struct {
 	SessionWindowEnd *time.Time `json:"session_window_end,omitempty"`
 	// SessionWindowStatus holds the value of the "session_window_status" field.
 	SessionWindowStatus *string `json:"session_window_status,omitempty"`
+	// AssignedSeatID holds the value of the "assigned_seat_id" field.
+	AssignedSeatID *int64 `json:"assigned_seat_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AccountQuery when eager-loading is set.
 	Edges        AccountEdges `json:"edges"`
@@ -145,7 +147,7 @@ func (*Account) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case account.FieldRateMultiplier:
 			values[i] = new(sql.NullFloat64)
-		case account.FieldID, account.FieldProxyID, account.FieldConcurrency, account.FieldLoadFactor, account.FieldPriority:
+		case account.FieldID, account.FieldProxyID, account.FieldConcurrency, account.FieldLoadFactor, account.FieldPriority, account.FieldAssignedSeatID:
 			values[i] = new(sql.NullInt64)
 		case account.FieldName, account.FieldNotes, account.FieldPlatform, account.FieldType, account.FieldStatus, account.FieldErrorMessage, account.FieldTempUnschedulableReason, account.FieldSessionWindowStatus:
 			values[i] = new(sql.NullString)
@@ -359,6 +361,13 @@ func (_m *Account) assignValues(columns []string, values []any) error {
 				_m.SessionWindowStatus = new(string)
 				*_m.SessionWindowStatus = value.String
 			}
+		case account.FieldAssignedSeatID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field assigned_seat_id", values[i])
+			} else if value.Valid {
+				_m.AssignedSeatID = new(int64)
+				*_m.AssignedSeatID = value.Int64
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -527,6 +536,11 @@ func (_m *Account) String() string {
 	if v := _m.SessionWindowStatus; v != nil {
 		builder.WriteString("session_window_status=")
 		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.AssignedSeatID; v != nil {
+		builder.WriteString("assigned_seat_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')
 	return builder.String()

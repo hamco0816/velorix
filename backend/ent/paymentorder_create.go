@@ -245,6 +245,20 @@ func (_c *PaymentOrderCreate) SetProviderSnapshot(v map[string]interface{}) *Pay
 	return _c
 }
 
+// SetRenewalSeatID sets the "renewal_seat_id" field.
+func (_c *PaymentOrderCreate) SetRenewalSeatID(v int64) *PaymentOrderCreate {
+	_c.mutation.SetRenewalSeatID(v)
+	return _c
+}
+
+// SetNillableRenewalSeatID sets the "renewal_seat_id" field if the given value is not nil.
+func (_c *PaymentOrderCreate) SetNillableRenewalSeatID(v *int64) *PaymentOrderCreate {
+	if v != nil {
+		_c.SetRenewalSeatID(*v)
+	}
+	return _c
+}
+
 // SetStatus sets the "status" field.
 func (_c *PaymentOrderCreate) SetStatus(v string) *PaymentOrderCreate {
 	_c.mutation.SetStatus(v)
@@ -781,6 +795,10 @@ func (_c *PaymentOrderCreate) createSpec() (*PaymentOrder, *sqlgraph.CreateSpec)
 		_spec.SetField(paymentorder.FieldProviderSnapshot, field.TypeJSON, value)
 		_node.ProviderSnapshot = value
 	}
+	if value, ok := _c.mutation.RenewalSeatID(); ok {
+		_spec.SetField(paymentorder.FieldRenewalSeatID, field.TypeInt64, value)
+		_node.RenewalSeatID = &value
+	}
 	if value, ok := _c.mutation.Status(); ok {
 		_spec.SetField(paymentorder.FieldStatus, field.TypeString, value)
 		_node.Status = value
@@ -1267,6 +1285,30 @@ func (u *PaymentOrderUpsert) UpdateProviderSnapshot() *PaymentOrderUpsert {
 // ClearProviderSnapshot clears the value of the "provider_snapshot" field.
 func (u *PaymentOrderUpsert) ClearProviderSnapshot() *PaymentOrderUpsert {
 	u.SetNull(paymentorder.FieldProviderSnapshot)
+	return u
+}
+
+// SetRenewalSeatID sets the "renewal_seat_id" field.
+func (u *PaymentOrderUpsert) SetRenewalSeatID(v int64) *PaymentOrderUpsert {
+	u.Set(paymentorder.FieldRenewalSeatID, v)
+	return u
+}
+
+// UpdateRenewalSeatID sets the "renewal_seat_id" field to the value that was provided on create.
+func (u *PaymentOrderUpsert) UpdateRenewalSeatID() *PaymentOrderUpsert {
+	u.SetExcluded(paymentorder.FieldRenewalSeatID)
+	return u
+}
+
+// AddRenewalSeatID adds v to the "renewal_seat_id" field.
+func (u *PaymentOrderUpsert) AddRenewalSeatID(v int64) *PaymentOrderUpsert {
+	u.Add(paymentorder.FieldRenewalSeatID, v)
+	return u
+}
+
+// ClearRenewalSeatID clears the value of the "renewal_seat_id" field.
+func (u *PaymentOrderUpsert) ClearRenewalSeatID() *PaymentOrderUpsert {
+	u.SetNull(paymentorder.FieldRenewalSeatID)
 	return u
 }
 
@@ -1988,6 +2030,34 @@ func (u *PaymentOrderUpsertOne) UpdateProviderSnapshot() *PaymentOrderUpsertOne 
 func (u *PaymentOrderUpsertOne) ClearProviderSnapshot() *PaymentOrderUpsertOne {
 	return u.Update(func(s *PaymentOrderUpsert) {
 		s.ClearProviderSnapshot()
+	})
+}
+
+// SetRenewalSeatID sets the "renewal_seat_id" field.
+func (u *PaymentOrderUpsertOne) SetRenewalSeatID(v int64) *PaymentOrderUpsertOne {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.SetRenewalSeatID(v)
+	})
+}
+
+// AddRenewalSeatID adds v to the "renewal_seat_id" field.
+func (u *PaymentOrderUpsertOne) AddRenewalSeatID(v int64) *PaymentOrderUpsertOne {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.AddRenewalSeatID(v)
+	})
+}
+
+// UpdateRenewalSeatID sets the "renewal_seat_id" field to the value that was provided on create.
+func (u *PaymentOrderUpsertOne) UpdateRenewalSeatID() *PaymentOrderUpsertOne {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.UpdateRenewalSeatID()
+	})
+}
+
+// ClearRenewalSeatID clears the value of the "renewal_seat_id" field.
+func (u *PaymentOrderUpsertOne) ClearRenewalSeatID() *PaymentOrderUpsertOne {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.ClearRenewalSeatID()
 	})
 }
 
@@ -2920,6 +2990,34 @@ func (u *PaymentOrderUpsertBulk) UpdateProviderSnapshot() *PaymentOrderUpsertBul
 func (u *PaymentOrderUpsertBulk) ClearProviderSnapshot() *PaymentOrderUpsertBulk {
 	return u.Update(func(s *PaymentOrderUpsert) {
 		s.ClearProviderSnapshot()
+	})
+}
+
+// SetRenewalSeatID sets the "renewal_seat_id" field.
+func (u *PaymentOrderUpsertBulk) SetRenewalSeatID(v int64) *PaymentOrderUpsertBulk {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.SetRenewalSeatID(v)
+	})
+}
+
+// AddRenewalSeatID adds v to the "renewal_seat_id" field.
+func (u *PaymentOrderUpsertBulk) AddRenewalSeatID(v int64) *PaymentOrderUpsertBulk {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.AddRenewalSeatID(v)
+	})
+}
+
+// UpdateRenewalSeatID sets the "renewal_seat_id" field to the value that was provided on create.
+func (u *PaymentOrderUpsertBulk) UpdateRenewalSeatID() *PaymentOrderUpsertBulk {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.UpdateRenewalSeatID()
+	})
+}
+
+// ClearRenewalSeatID clears the value of the "renewal_seat_id" field.
+func (u *PaymentOrderUpsertBulk) ClearRenewalSeatID() *PaymentOrderUpsertBulk {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.ClearRenewalSeatID()
 	})
 }
 

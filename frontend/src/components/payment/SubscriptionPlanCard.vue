@@ -2,8 +2,24 @@
   <!-- 卡片：用中性边框 + 兑换码同款"远距离浮起阴影"，平台色仅在 badge / 价格 / 按钮处点缀，
        避免整张卡片被绿/橙色边框包围造成视觉冲击 -->
   <div
-    class="plan-card group relative flex min-h-[250px] flex-col overflow-hidden rounded-lg border border-gray-200 bg-white transition-colors hover:border-gray-300 dark:border-dark-700 dark:bg-dark-900 dark:hover:border-dark-500"
+    :class="[
+      'plan-card group relative flex min-h-[250px] flex-col overflow-hidden rounded-lg border bg-white transition-colors dark:bg-dark-900',
+      soldOut
+        ? 'border-gray-200 opacity-65 grayscale dark:border-dark-700'
+        : 'border-gray-200 hover:border-gray-300 dark:border-dark-700 dark:hover:border-dark-500',
+    ]"
   >
+    <!-- 售罄角标：右上角红色斜带，最强的视觉提示 -->
+    <div
+      v-if="soldOut"
+      class="pointer-events-none absolute right-0 top-0 z-10 overflow-hidden"
+    >
+      <div class="relative h-[88px] w-[88px]">
+        <div class="absolute -right-[26px] top-[18px] flex w-[120px] rotate-45 items-center justify-center bg-rose-500 py-1 text-[11px] font-bold uppercase tracking-wider text-white shadow-md">
+          {{ t('payment.admin.stockSoldOut') }}
+        </div>
+      </div>
+    </div>
 
     <div class="flex flex-1 flex-col p-5">
       <div class="mb-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -19,9 +35,31 @@
             </span>
             <div class="min-w-0">
               <h3 class="truncate text-lg font-bold text-gray-900 dark:text-white">{{ plan.name }}</h3>
-              <span :class="['mt-1 inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium', badgeLightClass]">
-                {{ pLabel }}
-              </span>
+              <div class="mt-1 flex flex-wrap items-center gap-1.5">
+                <span :class="['inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium', badgeLightClass]">
+                  {{ pLabel }}
+                </span>
+                <span v-if="plan.kind === 'exclusive'"
+                  class="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 text-[11px] font-semibold text-violet-700 ring-1 ring-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:ring-violet-900/50">
+                  <Icon name="badge" size="xs" :stroke-width="2.5" />
+                  {{ t('payment.admin.kindBadgeExclusive') }}
+                </span>
+                <span v-if="cardType !== 'custom'"
+                  :class="['inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold', cardTypeBadgeClass(cardType)]">
+                  {{ t(`payment.admin.cardType.${cardType}`) }}
+                </span>
+                <!-- 套餐自带限额覆盖：标识"独立档位"，让买家看到这档跟同 group 其他档限额不同 -->
+                <span v-if="plan.has_plan_limit_override"
+                  class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-700 ring-1 ring-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:ring-indigo-900/50"
+                  :title="t('payment.planCard.tierBadgeHint')">
+                  <Icon name="badge" size="xs" :stroke-width="2.5" />
+                  {{ t('payment.planCard.tierBadge') }}
+                </span>
+                <span v-if="plan.kind === 'exclusive' && stockInfo"
+                  :class="['inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold', stockInfo.cls]">
+                  {{ stockInfo.text }}
+                </span>
+              </div>
             </div>
           </div>
           <p v-if="plan.description" class="line-clamp-2 text-sm leading-relaxed text-gray-500 dark:text-dark-400">
@@ -105,10 +143,16 @@
       <div class="mt-4 flex justify-center">
         <button
           type="button"
-          class="inline-flex items-center justify-center rounded-md bg-gray-900 px-10 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:scale-[0.99] dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
-          @click="emit('select', plan)"
+          :disabled="soldOut"
+          :class="[
+            'inline-flex items-center justify-center rounded-md px-10 py-2.5 text-sm font-semibold transition-colors active:scale-[0.99]',
+            soldOut
+              ? 'cursor-not-allowed bg-gray-200 text-gray-400 dark:bg-dark-700 dark:text-dark-500'
+              : 'bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100',
+          ]"
+          @click="!soldOut && emit('select', plan)"
         >
-          {{ isRenewal ? t('payment.renewNow') : t('payment.subscribeNow') }}
+          {{ soldOut ? t('payment.admin.stockSoldOut') : (isRenewal ? t('payment.renewNow') : t('payment.subscribeNow')) }}
         </button>
       </div>
     </div>
@@ -130,6 +174,7 @@ import {
   platformDiscountClass,
   platformLabel,
 } from '@/utils/platformColors'
+import { derivePlanCardType, cardTypeBadgeClass } from '@/utils/planCardType'
 
 const props = defineProps<{ plan: SubscriptionPlan; activeSubscriptions?: UserSubscription[] }>()
 const emit = defineEmits<{ select: [plan: SubscriptionPlan] }>()
@@ -153,6 +198,30 @@ const platformBrand = computed<'claude' | 'openai' | 'gemini' | null>(() => {
   return null
 })
 const platformInitial = computed(() => pLabel.value.charAt(0).toUpperCase())
+
+// 卡类型（日/周/月/季/年/自定义）—— 纯前端推导，不影响业务逻辑
+const cardType = computed(() => derivePlanCardType(props.plan.validity_days, props.plan.validity_unit))
+
+// 独享池库存：sold_out 时禁用购买按钮
+const stock = computed<number | null>(() => {
+  if (props.plan.kind !== 'exclusive') return null
+  const v = (props.plan as SubscriptionPlan & { stock_available?: number }).stock_available
+  return typeof v === 'number' ? v : null
+})
+const soldOut = computed(() => stock.value !== null && stock.value <= 0)
+const stockInfo = computed<{ text: string; cls: string } | null>(() => {
+  if (stock.value === null) return null
+  if (stock.value <= 0) {
+    return {
+      text: t('payment.admin.stockSoldOut'),
+      cls: 'bg-red-50 text-red-700 ring-1 ring-red-200 dark:bg-red-900/20 dark:text-red-300 dark:ring-red-900/50',
+    }
+  }
+  return {
+    text: t('payment.admin.stockAvailable', { n: stock.value }),
+    cls: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:ring-emerald-900/50',
+  }
+})
 
 const discountText = computed(() => {
   if (!props.plan.original_price || props.plan.original_price <= 0) return ''

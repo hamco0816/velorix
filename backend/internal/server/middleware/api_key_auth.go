@@ -119,6 +119,7 @@ func apiKeyAuthWithSubscription(apiKeyService *service.APIKeyService, subscripti
 			})
 			c.Set(string(ContextKeyUserRole), apiKey.User.Role)
 			setGroupContext(c, apiKey.Group)
+			setSub2APIUserContext(c, apiKey.User.ID)
 			_ = apiKeyService.TouchLastUsed(c.Request.Context(), apiKey.ID)
 			c.Next()
 			return
@@ -130,22 +131,33 @@ func apiKeyAuthWithSubscription(apiKeyService *service.APIKeyService, subscripti
 		skipBilling := c.Request.URL.Path == "/v1/usage"
 
 		var subscription *service.UserSubscription
+		var hasActiveExclusiveSeat bool
 		isSubscriptionType := apiKey.Group != nil && apiKey.Group.IsSubscriptionType()
 
 		if isSubscriptionType && subscriptionService != nil {
-			sub, subErr := subscriptionService.GetActiveSubscription(
-				c.Request.Context(),
-				apiKey.User.ID,
-				apiKey.Group.ID,
-			)
-			if subErr != nil {
-				if !skipBilling {
-					AbortWithError(c, 403, "SUBSCRIPTION_NOT_FOUND", "No active subscription found for this group")
-					return
-				}
-				// skipBilling: 订阅不存在也放行，handler 会返回可用的数据
+			// 优先级：独享 seat > 共享订阅
+			// 调度层（trySelectExclusiveSeatAccount）已经按 DP2C 优先选独享账号，
+			// 鉴权/计费层若仍按共享 sub 限额拦截会出现"请求实际走独享号但被共享日额限流"或"重复扣费"。
+			// 既然请求会走独享路径，鉴权和计费都应该走独享路径。
+			if subscriptionService.HasActiveExclusiveSeat(c.Request.Context(), apiKey.User.ID, apiKey.Group.ID) {
+				hasActiveExclusiveSeat = true
+				ctx := context.WithValue(c.Request.Context(), ctxkey.ExclusiveSeatActive, true)
+				c.Request = c.Request.WithContext(ctx)
 			} else {
-				subscription = sub
+				sub, subErr := subscriptionService.GetActiveSubscription(
+					c.Request.Context(),
+					apiKey.User.ID,
+					apiKey.Group.ID,
+				)
+				if subErr != nil {
+					if !skipBilling {
+						AbortWithError(c, 403, "SUBSCRIPTION_NOT_FOUND", "No active subscription found for this group")
+						return
+					}
+					// skipBilling: 订阅不存在也放行，handler 会返回可用的数据
+				} else {
+					subscription = sub
+				}
 			}
 		}
 
@@ -193,6 +205,9 @@ func apiKeyAuthWithSubscription(apiKeyService *service.APIKeyService, subscripti
 					maintenanceCopy := *subscription
 					subscriptionService.DoWindowMaintenance(&maintenanceCopy)
 				}
+			} else if hasActiveExclusiveSeat {
+				// 独享 seat 鉴权放行的请求：跳过余额检查（独享用户已付费）
+				// 计费路径会通过 ctxkey.ExclusiveSeatActive 识别，不扣余额、只累加 seat.usage_usd
 			} else {
 				// 非订阅模式 或 订阅模式但 subscriptionService 未注入：回退到余额检查
 				if apiKey.User.Balance <= 0 {
@@ -214,10 +229,24 @@ func apiKeyAuthWithSubscription(apiKeyService *service.APIKeyService, subscripti
 		})
 		c.Set(string(ContextKeyUserRole), apiKey.User.Role)
 		setGroupContext(c, apiKey.Group)
+		setSub2APIUserContext(c, apiKey.User.ID)
 		_ = apiKeyService.TouchLastUsed(c.Request.Context(), apiKey.ID)
 
 		c.Next()
 	}
+}
+
+// setSub2APIUserContext 把当前用户 ID 注入到 request.Context，
+// 让下游 service 层（独享池调度等）通过 ctxkey.Sub2APIUserID 命中用户。
+func setSub2APIUserContext(c *gin.Context, userID int64) {
+	if userID <= 0 {
+		return
+	}
+	if existing, ok := c.Request.Context().Value(ctxkey.Sub2APIUserID).(int64); ok && existing == userID {
+		return
+	}
+	ctx := context.WithValue(c.Request.Context(), ctxkey.Sub2APIUserID, userID)
+	c.Request = c.Request.WithContext(ctx)
 }
 
 // GetAPIKeyFromContext 从上下文中获取API key

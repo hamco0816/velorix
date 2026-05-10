@@ -4,13 +4,17 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"hash/fnv"
 	"log/slog"
+	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"time"
 	"unicode"
 
+	goahocorasick "github.com/anknown/ahocorasick"
 	"golang.org/x/sync/singleflight"
 )
 
@@ -305,27 +309,149 @@ func findGatewaySensitiveMatch(value any, rules []gatewaySensitiveRule, path str
 	return nil
 }
 
+// matchGatewaySensitiveText 双层匹配：
+//  1. AC 自动机扫一次 lowerText（O(M+hits)），命中直接返回
+//  2. AC 自动机扫一次 compactText（去空格/标点/零宽 后再匹配 compactWord 词典），防绕过
+//
+// 词典随 settings 变化，按 fnv64 hash 缓存 AC 实例（builtin+custom 词集合不变时复用）。
 func matchGatewaySensitiveText(text string, rules []gatewaySensitiveRule, path string) *GatewaySensitiveMatch {
-	if text == "" {
+	if text == "" || len(rules) == 0 {
 		return nil
 	}
 	lowerText := strings.ToLower(text)
+	if hit := acFirstHit(getOrBuildSensitiveACForRules(rules, false), lowerText); hit != "" {
+		return buildSensitiveMatch(hit, rules, path, text)
+	}
 	compactText := compactGatewaySensitiveText(text)
+	if compactText == "" {
+		return nil
+	}
+	if hit := acFirstHit(getOrBuildSensitiveACForRules(rules, true), compactText); hit != "" {
+		return buildSensitiveMatch(hit, rules, path, text)
+	}
+	return nil
+}
+
+// buildSensitiveMatch 命中后回填 Source（区分 builtin / custom）：AC 扫的是规范化后的 word，
+// 通过 lowerWord 或 compactWord 反查原 rule，保留原 word 字面给上游告警。
+func buildSensitiveMatch(hitWord string, rules []gatewaySensitiveRule, path, original string) *GatewaySensitiveMatch {
+	preview := sanitizeGatewaySensitivePreview(original)
 	for _, rule := range rules {
 		word := strings.TrimSpace(rule.Word)
 		if word == "" {
 			continue
 		}
-		lowerWord := strings.ToLower(word)
-		if lowerWord != "" && strings.Contains(lowerText, lowerWord) {
-			return &GatewaySensitiveMatch{Word: word, Path: path, Source: rule.Source, Preview: sanitizeGatewaySensitivePreview(text)}
-		}
-		compactWord := compactGatewaySensitiveText(word)
-		if compactWord != "" && strings.Contains(compactText, compactWord) {
-			return &GatewaySensitiveMatch{Word: word, Path: path, Source: rule.Source, Preview: sanitizeGatewaySensitivePreview(text)}
+		if strings.EqualFold(word, hitWord) ||
+			strings.EqualFold(strings.ToLower(word), hitWord) ||
+			compactGatewaySensitiveText(word) == hitWord {
+			return &GatewaySensitiveMatch{Word: word, Path: path, Source: rule.Source, Preview: preview}
 		}
 	}
-	return nil
+	// 兜底（理论上 rules 必含此词）
+	return &GatewaySensitiveMatch{Word: hitWord, Path: path, Source: "builtin", Preview: preview}
+}
+
+// --- AC 自动机缓存（按词典+模式 fnv hash 复用实例）---
+
+type sensitiveACCacheEntry struct {
+	machine *goahocorasick.Machine
+}
+
+var sensitiveACCache sync.Map // key: string -> *sensitiveACCacheEntry
+
+func sensitiveACCacheKey(rules []gatewaySensitiveRule, compact bool) (string, []string) {
+	if len(rules) == 0 {
+		return "", nil
+	}
+	words := make([]string, 0, len(rules))
+	seen := make(map[string]struct{}, len(rules))
+	for _, r := range rules {
+		var w string
+		if compact {
+			w = compactGatewaySensitiveText(r.Word)
+		} else {
+			w = strings.ToLower(strings.TrimSpace(r.Word))
+		}
+		if w == "" {
+			continue
+		}
+		if _, ok := seen[w]; ok {
+			continue
+		}
+		seen[w] = struct{}{}
+		words = append(words, w)
+	}
+	if len(words) == 0 {
+		return "", nil
+	}
+	sort.Strings(words)
+	hasher := fnv.New64a()
+	if compact {
+		_, _ = hasher.Write([]byte("c|"))
+	} else {
+		_, _ = hasher.Write([]byte("l|"))
+	}
+	for _, w := range words {
+		_, _ = hasher.Write([]byte{0})
+		_, _ = hasher.Write([]byte(w))
+	}
+	return strconv.FormatUint(hasher.Sum64(), 16), words
+}
+
+func getOrBuildSensitiveACForRules(rules []gatewaySensitiveRule, compact bool) *goahocorasick.Machine {
+	key, words := sensitiveACCacheKey(rules, compact)
+	if key == "" || len(words) == 0 {
+		return nil
+	}
+	if v, ok := sensitiveACCache.Load(key); ok {
+		if e, ok2 := v.(*sensitiveACCacheEntry); ok2 && e != nil {
+			return e.machine
+		}
+	}
+	machine := buildAhoCorasick(words)
+	if machine == nil {
+		return nil
+	}
+	if actual, loaded := sensitiveACCache.LoadOrStore(key, &sensitiveACCacheEntry{machine: machine}); loaded {
+		if e, ok := actual.(*sensitiveACCacheEntry); ok && e != nil {
+			return e.machine
+		}
+	}
+	return machine
+}
+
+func buildAhoCorasick(words []string) *goahocorasick.Machine {
+	if len(words) == 0 {
+		return nil
+	}
+	patterns := make([][]rune, 0, len(words))
+	for _, w := range words {
+		if w == "" {
+			continue
+		}
+		patterns = append(patterns, []rune(w))
+	}
+	if len(patterns) == 0 {
+		return nil
+	}
+	m := new(goahocorasick.Machine)
+	if err := m.Build(patterns); err != nil {
+		slog.Warn("sensitive: build aho-corasick failed", "error", err, "patterns", len(patterns))
+		return nil
+	}
+	return m
+}
+
+// acFirstHit 用 AC 扫一遍文本，返回第一个命中的词；未命中返回空串。
+func acFirstHit(m *goahocorasick.Machine, text string) string {
+	if m == nil || text == "" {
+		return ""
+	}
+	hits := m.MultiPatternSearch([]rune(text), true)
+	if len(hits) == 0 {
+		return ""
+	}
+	return string(hits[0].Word)
 }
 
 func compactGatewaySensitiveText(value string) string {

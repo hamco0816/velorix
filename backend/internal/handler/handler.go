@@ -33,6 +33,7 @@ type AdminHandlers struct {
 	ChannelMonitor         *admin.ChannelMonitorHandler
 	ChannelMonitorTemplate *admin.ChannelMonitorRequestTemplateHandler
 	Payment                *admin.PaymentHandler
+	Seat                   *admin.SeatHandler
 	Affiliate              *admin.AffiliateHandler
 }
 
@@ -53,6 +54,7 @@ type Handlers struct {
 	Totp             *TotpHandler
 	Payment          *PaymentHandler
 	PaymentWebhook   *PaymentWebhookHandler
+	Seat             *SeatHandler
 	AvailableChannel *AvailableChannelHandler
 }
 

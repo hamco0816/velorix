@@ -63,10 +63,12 @@ type WeChatPaymentResumeClaims struct {
 	Amount      string `json:"amt,omitempty"`
 	OrderType   string `json:"ot,omitempty"`
 	PlanID      int64  `json:"pid,omitempty"`
-	RedirectTo  string `json:"rd,omitempty"`
-	Scope       string `json:"scp,omitempty"`
-	IssuedAt    int64  `json:"iat"`
-	ExpiresAt   int64  `json:"exp,omitempty"`
+	// 续费独享名额时携带的 seat_id；微信 OAuth 回跳后必须恢复，否则续费会变新购（重新分配账号）
+	RenewalSeatID int64  `json:"rsid,omitempty"`
+	RedirectTo    string `json:"rd,omitempty"`
+	Scope         string `json:"scp,omitempty"`
+	IssuedAt      int64  `json:"iat"`
+	ExpiresAt     int64  `json:"exp,omitempty"`
 }
 
 type PaymentResumeService struct {

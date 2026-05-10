@@ -188,6 +188,84 @@ func (s *BillingCacheSuite) TestSubscriptionCache() {
 			},
 		},
 		{
+			// Bug B 回归测试：plan 限额快照必须能完整经过 Redis 序列化往返
+			// 避免后续修改 SetSubscriptionCache / parseSubscriptionCache 时丢字段
+			name: "plan_limit_snapshot_round_trip",
+			fn: func(ctx context.Context, _ *redis.Client, cache service.BillingCache) {
+				userID := int64(120)
+				groupID := int64(220)
+				daily := 30.0
+				weekly := 100.0
+				monthly := 400.0
+				data := &service.SubscriptionCacheData{
+					Status:          "active",
+					ExpiresAt:       time.Now().Add(1 * time.Hour),
+					DailyLimitUSD:   &daily,
+					WeeklyLimitUSD:  &weekly,
+					MonthlyLimitUSD: &monthly,
+					Version:         11,
+				}
+				require.NoError(s.T(), cache.SetSubscriptionCache(ctx, userID, groupID, data))
+				got, err := cache.GetSubscriptionCache(ctx, userID, groupID)
+				require.NoError(s.T(), err)
+				require.NotNil(s.T(), got.DailyLimitUSD, "daily limit must survive Redis round trip")
+				require.Equal(s.T(), 30.0, *got.DailyLimitUSD)
+				require.NotNil(s.T(), got.WeeklyLimitUSD)
+				require.Equal(s.T(), 100.0, *got.WeeklyLimitUSD)
+				require.NotNil(s.T(), got.MonthlyLimitUSD)
+				require.Equal(s.T(), 400.0, *got.MonthlyLimitUSD)
+			},
+		},
+		{
+			// 限额快照为 nil 时，Redis 中应该完全没这些字段；GetSubscriptionCache 返回 nil 指针
+			name: "plan_limit_snapshot_nil_means_inherit_group",
+			fn: func(ctx context.Context, _ *redis.Client, cache service.BillingCache) {
+				userID := int64(121)
+				groupID := int64(221)
+				data := &service.SubscriptionCacheData{
+					Status:    "active",
+					ExpiresAt: time.Now().Add(1 * time.Hour),
+					Version:   12,
+					// DailyLimitUSD / WeeklyLimitUSD / MonthlyLimitUSD 全部 nil
+				}
+				require.NoError(s.T(), cache.SetSubscriptionCache(ctx, userID, groupID, data))
+				got, err := cache.GetSubscriptionCache(ctx, userID, groupID)
+				require.NoError(s.T(), err)
+				require.Nil(s.T(), got.DailyLimitUSD, "nil snapshot should remain nil after round trip → fallback to group")
+				require.Nil(s.T(), got.WeeklyLimitUSD)
+				require.Nil(s.T(), got.MonthlyLimitUSD)
+			},
+		},
+		{
+			// 防御 Bug B 升级路径：第二次 Set 时不应保留上次写入的快照字段
+			// 场景：plan 原本有覆盖 → admin 清空覆盖 → sub cache 重新建立时不能保留旧值
+			name: "plan_limit_snapshot_overwrite_clears_old_fields",
+			fn: func(ctx context.Context, _ *redis.Client, cache service.BillingCache) {
+				userID := int64(122)
+				groupID := int64(222)
+				daily := 30.0
+				first := &service.SubscriptionCacheData{
+					Status:        "active",
+					ExpiresAt:     time.Now().Add(1 * time.Hour),
+					DailyLimitUSD: &daily,
+					Version:       1,
+				}
+				require.NoError(s.T(), cache.SetSubscriptionCache(ctx, userID, groupID, first))
+
+				// 模拟 admin 清空覆盖 → sub 快照变 nil → 重新写入缓存
+				second := &service.SubscriptionCacheData{
+					Status:    "active",
+					ExpiresAt: time.Now().Add(1 * time.Hour),
+					Version:   2,
+				}
+				require.NoError(s.T(), cache.SetSubscriptionCache(ctx, userID, groupID, second))
+
+				got, err := cache.GetSubscriptionCache(ctx, userID, groupID)
+				require.NoError(s.T(), err)
+				require.Nil(s.T(), got.DailyLimitUSD, "second Set must wipe stale daily_limit_usd field from previous write")
+			},
+		},
+		{
 			name: "update_usage_increments_all_fields",
 			fn: func(ctx context.Context, rdb *redis.Client, cache service.BillingCache) {
 				userID := int64(13)

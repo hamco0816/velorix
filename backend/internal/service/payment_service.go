@@ -84,6 +84,10 @@ type CreateOrderRequest struct {
 	PaymentSource   string
 	OrderType       string
 	PlanID          int64
+	// RenewalSeatID 大于 0 表示这是一笔续费订单，目标 seat 必须属于当前用户且
+	// 关联的套餐 / group 必须与本订单一致。fulfillment 检测到此字段后调
+	// RenewSeat 而非 AssignSeat（不创建新 seat、不消耗库存、保留绑定账号）。
+	RenewalSeatID int64
 }
 
 type CreateOrderResponse struct {
@@ -184,12 +188,20 @@ type PaymentService struct {
 	groupRepo        GroupRepository
 	resumeService    *PaymentResumeService
 	affiliateService *AffiliateService
+	// 独享池：支付完成时按 plan.kind 分叉调用 AssignSeat
+	exclusiveSeatSvc *ExclusiveSeatService
 }
 
 func NewPaymentService(entClient *dbent.Client, registry *payment.Registry, loadBalancer payment.LoadBalancer, redeemService *RedeemService, subscriptionSvc *SubscriptionService, configService *PaymentConfigService, userRepo UserRepository, groupRepo GroupRepository, affiliateService *AffiliateService) *PaymentService {
 	svc := &PaymentService{entClient: entClient, registry: registry, loadBalancer: newVisibleMethodLoadBalancer(loadBalancer, configService), redeemService: redeemService, subscriptionSvc: subscriptionSvc, configService: configService, userRepo: userRepo, groupRepo: groupRepo, affiliateService: affiliateService}
 	svc.resumeService = psNewPaymentResumeService(configService)
+	svc.exclusiveSeatSvc = NewExclusiveSeatService(entClient)
 	return svc
+}
+
+// ExclusiveSeatService 暴露给依赖方（handler、调度器）共用同一个实例。
+func (s *PaymentService) ExclusiveSeatService() *ExclusiveSeatService {
+	return s.exclusiveSeatSvc
 }
 
 // --- Provider Registry ---

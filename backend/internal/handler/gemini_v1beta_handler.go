@@ -54,6 +54,12 @@ func (h *GatewayHandler) GeminiV1BetaListModels(c *gin.Context) {
 
 	account, err := h.geminiCompatService.SelectAccountForAIStudioEndpoints(c.Request.Context(), apiKey.GroupID)
 	if err != nil {
+		// 独享 seat 不可用：必须直接报错，不能悄悄降级到 antigravity 静态列表
+		// （DP2C：用户付费购买的独享池不允许 fallback 共享/其他池）
+		if errors.Is(err, service.ErrNoUsableExclusiveAccount) {
+			googleError(c, http.StatusServiceUnavailable, "Exclusive Gemini accounts currently unavailable")
+			return
+		}
 		// 没有 gemini 账户，检查是否有 antigravity 账户可用
 		hasAntigravity, _ := h.geminiCompatService.HasAntigravityAccounts(c.Request.Context(), apiKey.GroupID)
 		if hasAntigravity {
@@ -106,6 +112,11 @@ func (h *GatewayHandler) GeminiV1BetaGetModel(c *gin.Context) {
 
 	account, err := h.geminiCompatService.SelectAccountForAIStudioEndpoints(c.Request.Context(), apiKey.GroupID)
 	if err != nil {
+		// 独享 seat 不可用：直接报错，不降级到 antigravity 静态列表（DP2C 一致性）
+		if errors.Is(err, service.ErrNoUsableExclusiveAccount) {
+			googleError(c, http.StatusServiceUnavailable, "Exclusive Gemini accounts currently unavailable")
+			return
+		}
 		// 没有 gemini 账户，检查是否有 antigravity 账户可用
 		hasAntigravity, _ := h.geminiCompatService.HasAntigravityAccounts(c.Request.Context(), apiKey.GroupID)
 		if hasAntigravity {
@@ -364,7 +375,7 @@ func (h *GatewayHandler) GeminiV1BetaModels(c *gin.Context) {
 	}
 
 	for {
-		selection, err := h.gatewayService.SelectAccountWithLoadAwareness(c.Request.Context(), apiKey.GroupID, sessionKey, modelName, fs.FailedAccountIDs, "", int64(0)) // Gemini 不使用会话限制
+		selection, err := h.gatewayService.SelectAccountWithLoadAwareness(c.Request.Context(), apiKey.GroupID, sessionKey, modelName, fs.FailedAccountIDs, "", apiKey.UserID) // Gemini 不使用会话限制
 		if err != nil {
 			if len(fs.FailedAccountIDs) == 0 {
 				googleError(c, http.StatusServiceUnavailable, "No available Gemini accounts: "+err.Error())

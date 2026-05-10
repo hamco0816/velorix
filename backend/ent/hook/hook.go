@@ -153,6 +153,18 @@ func (f ErrorPassthroughRuleFunc) Mutate(ctx context.Context, m ent.Mutation) (e
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ErrorPassthroughRuleMutation", m)
 }
 
+// The ExclusiveSubscriptionFunc type is an adapter to allow the use of ordinary
+// function as ExclusiveSubscription mutator.
+type ExclusiveSubscriptionFunc func(context.Context, *ent.ExclusiveSubscriptionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ExclusiveSubscriptionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ExclusiveSubscriptionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ExclusiveSubscriptionMutation", m)
+}
+
 // The GroupFunc type is an adapter to allow the use of ordinary
 // function as Group mutator.
 type GroupFunc func(context.Context, *ent.GroupMutation) (ent.Value, error)

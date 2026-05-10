@@ -918,6 +918,7 @@ func (r *accountRepository) ListSchedulable(ctx context.Context) ([]service.Acco
 			notExpiredPredicate(now),
 			dbaccount.Or(dbaccount.OverloadUntilIsNil(), dbaccount.OverloadUntilLTE(now)),
 			dbaccount.Or(dbaccount.RateLimitResetAtIsNil(), dbaccount.RateLimitResetAtLTE(now)),
+			dbaccount.AssignedSeatIDIsNil(), // 排除独享池占用的账号
 		).
 		Order(dbent.Asc(dbaccount.FieldPriority)).
 		All(ctx)
@@ -945,6 +946,8 @@ func (r *accountRepository) ListSchedulableByPlatform(ctx context.Context, platf
 			notExpiredPredicate(now),
 			dbaccount.Or(dbaccount.OverloadUntilIsNil(), dbaccount.OverloadUntilLTE(now)),
 			dbaccount.Or(dbaccount.RateLimitResetAtIsNil(), dbaccount.RateLimitResetAtLTE(now)),
+			// 排除被独享名额占用的账号（防共享池误选）
+			dbaccount.AssignedSeatIDIsNil(),
 		).
 		Order(dbent.Asc(dbaccount.FieldPriority)).
 		All(ctx)
@@ -979,6 +982,7 @@ func (r *accountRepository) ListSchedulableByPlatforms(ctx context.Context, plat
 			notExpiredPredicate(now),
 			dbaccount.Or(dbaccount.OverloadUntilIsNil(), dbaccount.OverloadUntilLTE(now)),
 			dbaccount.Or(dbaccount.RateLimitResetAtIsNil(), dbaccount.RateLimitResetAtLTE(now)),
+			dbaccount.AssignedSeatIDIsNil(), // 排除独享池占用的账号
 		).
 		Order(dbent.Asc(dbaccount.FieldPriority)).
 		All(ctx)
@@ -1000,6 +1004,7 @@ func (r *accountRepository) ListSchedulableUngroupedByPlatform(ctx context.Conte
 			notExpiredPredicate(now),
 			dbaccount.Or(dbaccount.OverloadUntilIsNil(), dbaccount.OverloadUntilLTE(now)),
 			dbaccount.Or(dbaccount.RateLimitResetAtIsNil(), dbaccount.RateLimitResetAtLTE(now)),
+			dbaccount.AssignedSeatIDIsNil(), // 排除独享池占用的账号
 		).
 		Order(dbent.Asc(dbaccount.FieldPriority)).
 		All(ctx)
@@ -1024,6 +1029,7 @@ func (r *accountRepository) ListSchedulableUngroupedByPlatforms(ctx context.Cont
 			notExpiredPredicate(now),
 			dbaccount.Or(dbaccount.OverloadUntilIsNil(), dbaccount.OverloadUntilLTE(now)),
 			dbaccount.Or(dbaccount.RateLimitResetAtIsNil(), dbaccount.RateLimitResetAtLTE(now)),
+			dbaccount.AssignedSeatIDIsNil(), // 排除独享池占用的账号
 		).
 		Order(dbent.Asc(dbaccount.FieldPriority)).
 		All(ctx)
@@ -1504,6 +1510,9 @@ func (r *accountRepository) queryAccountsByGroup(ctx context.Context, groupID in
 			notExpiredPredicate(now),
 			dbaccount.Or(dbaccount.OverloadUntilIsNil(), dbaccount.OverloadUntilLTE(now)),
 			dbaccount.Or(dbaccount.RateLimitResetAtIsNil(), dbaccount.RateLimitResetAtLTE(now)),
+			// 关键：排除已被独享名额绑定的账号 —— 共享池调度选到独占账号会让"独享"承诺失效
+			// 用户买的独享号会被随机分配给共享池其他用户，造成数据/会话串扰
+			dbaccount.AssignedSeatIDIsNil(),
 		)
 	}
 
@@ -1750,6 +1759,7 @@ func accountEntityToService(m *dbent.Account) *service.Account {
 		SessionWindowStart:      m.SessionWindowStart,
 		SessionWindowEnd:        m.SessionWindowEnd,
 		SessionWindowStatus:     derefString(m.SessionWindowStatus),
+		AssignedSeatID:          m.AssignedSeatID,
 	}
 }
 

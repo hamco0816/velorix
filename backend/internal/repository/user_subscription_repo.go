@@ -35,7 +35,11 @@ func (r *userSubscriptionRepository) Create(ctx context.Context, sub *service.Us
 		SetDailyUsageUsd(sub.DailyUsageUSD).
 		SetWeeklyUsageUsd(sub.WeeklyUsageUSD).
 		SetMonthlyUsageUsd(sub.MonthlyUsageUSD).
-		SetNillableAssignedBy(sub.AssignedBy)
+		SetNillableAssignedBy(sub.AssignedBy).
+		SetNillableDailyLimitUsd(sub.DailyLimitUSD).
+		SetNillableWeeklyLimitUsd(sub.WeeklyLimitUSD).
+		SetNillableMonthlyLimitUsd(sub.MonthlyLimitUSD).
+		SetNillableRateMultiplier(sub.RateMultiplier)
 
 	if sub.StartsAt.IsZero() {
 		builder.SetStartsAt(time.Now())
@@ -283,6 +287,36 @@ func (r *userSubscriptionRepository) ExtendExpiry(ctx context.Context, subscript
 	return translatePersistenceError(err, service.ErrSubscriptionNotFound, nil)
 }
 
+// UpdatePlanLimitSnapshot 刷新订阅记录上的限额/倍率快照。
+// 续期时调用：把当前 plan 的限额值同步到 sub（非 nil 则 Set，nil 则 Clear → 调度回落到 group）。
+// migration 138 引入；对应独享池的 applyPlanLimitsToSeatUpdate。
+func (r *userSubscriptionRepository) UpdatePlanLimitSnapshot(ctx context.Context, subscriptionID int64, daily, weekly, monthly, rateMul *float64) error {
+	client := clientFromContext(ctx, r.client)
+	upd := client.UserSubscription.UpdateOneID(subscriptionID)
+	if daily != nil {
+		upd.SetDailyLimitUsd(*daily)
+	} else {
+		upd.ClearDailyLimitUsd()
+	}
+	if weekly != nil {
+		upd.SetWeeklyLimitUsd(*weekly)
+	} else {
+		upd.ClearWeeklyLimitUsd()
+	}
+	if monthly != nil {
+		upd.SetMonthlyLimitUsd(*monthly)
+	} else {
+		upd.ClearMonthlyLimitUsd()
+	}
+	if rateMul != nil {
+		upd.SetRateMultiplier(*rateMul)
+	} else {
+		upd.ClearRateMultiplier()
+	}
+	_, err := upd.Save(ctx)
+	return translatePersistenceError(err, service.ErrSubscriptionNotFound, nil)
+}
+
 func (r *userSubscriptionRepository) UpdateStatus(ctx context.Context, subscriptionID int64, status string) error {
 	client := clientFromContext(ctx, r.client)
 	_, err := client.UserSubscription.UpdateOneID(subscriptionID).
@@ -445,6 +479,10 @@ func userSubscriptionEntityToService(m *dbent.UserSubscription) *service.UserSub
 		AssignedBy:         m.AssignedBy,
 		AssignedAt:         m.AssignedAt,
 		Notes:              derefString(m.Notes),
+		DailyLimitUSD:      m.DailyLimitUsd,
+		WeeklyLimitUSD:     m.WeeklyLimitUsd,
+		MonthlyLimitUSD:    m.MonthlyLimitUsd,
+		RateMultiplier:     m.RateMultiplier,
 		CreatedAt:          m.CreatedAt,
 		UpdatedAt:          m.UpdatedAt,
 	}
