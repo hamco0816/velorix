@@ -340,6 +340,14 @@ func isOpenAICompatResponsesTerminalEvent(eventType string) bool {
 	}
 }
 
+// isOpenAICompatDoneSentinelLine 检测 SSE 数据行是否是 OpenAI compat 的 [DONE] sentinel。
+// 上游 fix: drain OpenAI compat streams for usage（commit 72d5ee4c）引入的 helper，
+// 与 fix: record zero OpenAI usage logs（commit 47fb38bc）配套使用。
+func isOpenAICompatDoneSentinelLine(line string) bool {
+	payload, ok := extractOpenAISSEDataLine(line)
+	return ok && strings.TrimSpace(payload) == "[DONE]"
+}
+
 func (s *OpenAIGatewayService) readOpenAICompatBufferedTerminal(
 	resp *http.Response,
 	logPrefix string,
