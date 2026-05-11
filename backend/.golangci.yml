@@ -57,9 +57,6 @@ linters:
         - G304
         - G306
         - G404
-        # G703 path traversal 误报：项目里几处文件路径都来自 admin 后台配置（非公网用户输入），
-        # 已被 admin RBAC 保护，不属于真正的 path traversal 风险面。
-        - G703
       severity: high
       confidence: high
     errcheck:

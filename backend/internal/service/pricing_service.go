@@ -478,7 +478,8 @@ func (s *PricingService) useFallbackPricing() error {
 	}
 
 	pricingFile := s.getPricingFilePath()
-	if err := os.WriteFile(pricingFile, data, 0644); err != nil {
+	// pricingFile 来自配置（非公网用户输入），gosec G703 误报
+	if err := os.WriteFile(pricingFile, data, 0644); err != nil { //nolint:gosec
 		logger.LegacyPrintf("service.pricing", "[Pricing] Failed to copy fallback: %v", err)
 	}
 
