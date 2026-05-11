@@ -45,6 +45,13 @@
           <span class="text-gray-500 dark:text-gray-400">{{ t('payment.admin.alreadyRefunded') }}</span>
           <span class="font-medium text-red-600 dark:text-red-400">{{ order?.order_type === 'balance' ? '$' : '¥' }}{{ actuallyRefunded.toFixed(2) }}</span>
         </div>
+        <!-- 本次可退上限：单独一行高亮，避免操作员看错为"全单可退"导致超额退款被后端拒 -->
+        <div class="mt-2 flex justify-between border-t border-gray-200 pt-2 text-sm dark:border-dark-600">
+          <span class="font-medium text-gray-700 dark:text-gray-200">{{ t('payment.admin.maxRefundable') }}</span>
+          <span class="font-bold text-emerald-600 dark:text-emerald-400">
+            {{ order?.order_type === 'balance' ? '$' : '¥' }}{{ maxRefundable.toFixed(2) }}
+          </span>
+        </div>
       </div>
 
       <!-- Deduct Balance -->
@@ -147,15 +154,27 @@
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <button type="button" @click="emit('cancel')" class="btn btn-secondary">
+        <button type="button" @click="emit('cancel')" :disabled="submitting" class="btn btn-secondary disabled:cursor-not-allowed disabled:opacity-60">
           {{ t('common.cancel') }}
         </button>
         <button
           type="submit"
           form="refund-form"
           :disabled="submitting || form.amount <= 0 || (requireForce && !form.force)"
-          class="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 dark:focus:ring-offset-dark-800"
+          class="inline-flex items-center rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:focus:ring-offset-dark-800"
         >
+          <!-- 退款是不可逆财务操作：处理中显示转圈 icon + 切换文案，避免运营以为没点上而重复提交 -->
+          <svg
+            v-if="submitting"
+            class="-ml-1 mr-2 h-4 w-4 animate-spin text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+          </svg>
           {{ submitting ? t('common.processing') : t('payment.admin.confirmRefund') }}
         </button>
       </div>

@@ -1,5 +1,5 @@
 <template>
-  <BaseDialog :show="show" :title="title" width="narrow" @close="handleCancel">
+  <BaseDialog :show="show" :title="title" width="narrow" @close="loading ? null : handleCancel()">
     <div class="space-y-4">
       <p class="text-sm text-gray-600 dark:text-gray-400">{{ message }}</p>
       <slot></slot>
@@ -10,21 +10,35 @@
         <button
           @click="handleCancel"
           type="button"
-          class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-dark-600 dark:bg-dark-700 dark:text-gray-200 dark:hover:bg-dark-600 dark:focus:ring-offset-dark-800"
+          :disabled="loading"
+          class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:border-dark-600 dark:bg-dark-700 dark:text-gray-200 dark:hover:bg-dark-600 dark:focus:ring-offset-dark-800"
         >
           {{ cancelText }}
         </button>
         <button
           @click="handleConfirm"
           type="button"
+          :disabled="loading"
           :class="[
-            'rounded-md px-4 py-2 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-dark-800',
+            'inline-flex items-center rounded-md px-4 py-2 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 dark:focus:ring-offset-dark-800',
             danger
               ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
               : 'bg-primary-600 hover:bg-primary-700 focus:ring-primary-500'
           ]"
         >
-          {{ confirmText }}
+          <!-- loading=true 时显示转圈 icon + 切换文案为 common.processing；防双击 + 用户感知"在转" -->
+          <svg
+            v-if="loading"
+            class="-ml-1 mr-2 h-4 w-4 animate-spin text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+          </svg>
+          {{ loading ? processingText : confirmText }}
         </button>
       </div>
     </template>
@@ -45,6 +59,10 @@ interface Props {
   confirmText?: string
   cancelText?: string
   danger?: boolean
+  // 异步确认动作进行中时，disable 两个按钮 + 在确认按钮上显示转圈 icon + 切换文案
+  loading?: boolean
+  // 可选覆盖 loading 文案，默认走 common.processing
+  processingText?: string
 }
 
 interface Emits {
@@ -53,19 +71,23 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  danger: false
+  danger: false,
+  loading: false,
 })
 
 const confirmText = computed(() => props.confirmText || t('common.confirm'))
 const cancelText = computed(() => props.cancelText || t('common.cancel'))
+const processingText = computed(() => props.processingText || t('common.processing'))
 
 const emit = defineEmits<Emits>()
 
 const handleConfirm = () => {
+  if (props.loading) return
   emit('confirm')
 }
 
 const handleCancel = () => {
+  if (props.loading) return
   emit('cancel')
 }
 </script>

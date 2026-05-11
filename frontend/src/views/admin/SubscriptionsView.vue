@@ -411,13 +411,22 @@
                 :disabled="resettingQuota && resettingSubscription?.id === row.id"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-orange-900/20 dark:hover:text-orange-400 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <Icon name="refresh" size="sm" />
-                <span class="text-xs">{{ t('admin.subscriptions.resetQuota') }}</span>
+                <Icon
+                  name="refresh"
+                  size="sm"
+                  :class="resettingQuota && resettingSubscription?.id === row.id ? 'animate-spin' : ''"
+                />
+                <span class="text-xs">
+                  {{ resettingQuota && resettingSubscription?.id === row.id
+                    ? t('common.processing')
+                    : t('admin.subscriptions.resetQuota') }}
+                </span>
               </button>
+              <!-- 取消订阅是不可逆操作：图标和文案常驻红色（不仅 hover），让运营在密集按钮组里能一眼分辨危险动作 -->
               <button
                 v-if="row.status === 'active'"
                 @click="handleRevoke(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-900/20 dark:hover:text-red-300"
               >
                 <Icon name="ban" size="sm" />
                 <span class="text-xs">{{ t('admin.subscriptions.revoke') }}</span>
