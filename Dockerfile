@@ -20,8 +20,10 @@ FROM ${NODE_IMAGE} AS frontend-builder
 
 WORKDIR /app/frontend
 
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Install pnpm — 锁定 pnpm 9 / lockfileVersion 9，跟仓库 frontend/pnpm-lock.yaml 和
+# .github/workflows/security-scan.yml 的 pnpm/action-setup@v4 (version: 9) 保持一致。
+# pnpm@latest 会拉到 11.x，lockfileVersion 跳到 10，导致 --frozen-lockfile 拒绝旧 lock。
+RUN corepack enable && corepack prepare pnpm@9 --activate
 
 # Install dependencies first (better caching)
 COPY frontend/package.json frontend/pnpm-lock.yaml ./
