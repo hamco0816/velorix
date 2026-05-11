@@ -130,7 +130,42 @@
       <div class="space-y-3">
         <div>
           <label class="input-label">{{ t('payment.admin.exclusivePools.targetUserID') }}</label>
-          <input v-model.number="grantForm.user_id" type="number" min="1" class="input mt-1 w-full" />
+          <!-- 用户搜索：输入 ID/邮箱/用户名实时匹配；选中后下方显示标识防送错 -->
+          <div class="relative mt-1">
+            <input
+              v-model="userSearchQuery"
+              type="text"
+              :placeholder="t('payment.admin.exclusivePools.userSearchPlaceholder')"
+              class="input w-full"
+              @input="onUserSearchInput"
+              @focus="userSearchFocused = true"
+              @blur="onUserSearchBlur"
+            />
+            <div
+              v-if="userSearchFocused && userSearchResults.length > 0"
+              class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-gray-200 bg-white shadow-lg dark:border-dark-600 dark:bg-dark-800"
+            >
+              <button
+                v-for="user in userSearchResults"
+                :key="user.id"
+                type="button"
+                class="block w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-dark-700"
+                @mousedown.prevent="selectUser(user)"
+              >
+                <span class="font-mono text-gray-500">#{{ user.id }}</span>
+                <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ user.username || user.email }}</span>
+                <span v-if="user.username && user.email" class="ml-2 text-xs text-gray-500">{{ user.email }}</span>
+              </button>
+            </div>
+          </div>
+          <p v-if="selectedUser" class="mt-1.5 text-xs">
+            <span class="rounded bg-green-100 px-1.5 py-0.5 font-medium text-green-700 dark:bg-green-900/30 dark:text-green-300">
+              ✓ {{ t('payment.admin.exclusivePools.userSearchSelected') }}: #{{ selectedUser.id }} {{ selectedUser.username || selectedUser.email }}
+            </span>
+          </p>
+          <p v-else-if="userSearchQuery && userSearchResults.length === 0 && !userSearchLoading" class="mt-1 text-xs text-amber-600 dark:text-amber-400">
+            {{ t('payment.admin.exclusivePools.userSearchNoMatch') }}
+          </p>
         </div>
         <div>
           <label class="input-label">{{ t('payment.admin.exclusivePools.targetPlanID') }}</label>
@@ -231,8 +266,63 @@ const grantPlanOptions = computed(() => {
   if (!selectedGroupID.value) return []
   return allPlans.value
     .filter(p => p.kind === 'exclusive' && p.group_id === selectedGroupID.value)
-    .map(p => ({ value: p.id, label: `${p.name} — ¥${p.price} / ${p.validity_days}${p.validity_unit}` }))
+    .map(p => ({ value: p.id, label: `#${p.id} · ${p.name} — ¥${p.price} / ${p.validity_days}${p.validity_unit}` }))
 })
+
+// 用户搜索（输入 ID/邮箱/用户名 实时匹配），防止管理员只看 ID 送错人
+const userSearchQuery = ref('')
+const userSearchResults = ref<Array<{ id: number; email?: string; username?: string }>>([])
+const userSearchLoading = ref(false)
+const userSearchFocused = ref(false)
+const selectedUser = ref<{ id: number; email?: string; username?: string } | null>(null)
+let userSearchTimer: ReturnType<typeof setTimeout> | null = null
+let userSearchSeq = 0
+function onUserSearchInput() {
+  // 输入即清空已选用户（重新选）+ 防抖 300ms 调 admin users API
+  selectedUser.value = null
+  grantForm.value.user_id = 0
+  if (userSearchTimer) clearTimeout(userSearchTimer)
+  const q = userSearchQuery.value.trim()
+  if (!q) {
+    userSearchResults.value = []
+    return
+  }
+  userSearchLoading.value = true
+  const seq = ++userSearchSeq
+  userSearchTimer = setTimeout(async () => {
+    try {
+      const res = await adminAPI.users.list(1, 8, { search: q })
+      if (seq === userSearchSeq) {
+        userSearchResults.value = (res?.items || []).map((u) => ({
+          id: u.id,
+          email: u.email,
+          username: u.username,
+        }))
+      }
+    } catch {
+      if (seq === userSearchSeq) userSearchResults.value = []
+    } finally {
+      if (seq === userSearchSeq) userSearchLoading.value = false
+    }
+  }, 300)
+}
+function selectUser(user: { id: number; email?: string; username?: string }) {
+  selectedUser.value = user
+  grantForm.value.user_id = user.id
+  userSearchQuery.value = `#${user.id} ${user.username || user.email || ''}`.trim()
+  userSearchResults.value = []
+  userSearchFocused.value = false
+}
+function onUserSearchBlur() {
+  // 延迟关闭下拉，让 mousedown 选项点击事件先触发
+  setTimeout(() => { userSearchFocused.value = false }, 200)
+}
+function resetGrantForm() {
+  grantForm.value = { user_id: 0, plan_id: 0, validity_days: 30, notes: '' }
+  selectedUser.value = null
+  userSearchQuery.value = ''
+  userSearchResults.value = []
+}
 
 const releaseTarget = ref<AdminExclusiveSeat | null>(null)
 const releaseReason = ref('')
@@ -300,7 +390,7 @@ async function confirmGrant() {
     })
     appStore.showSuccess(t('common.success'))
     grantDialogOpen.value = false
-    grantForm.value = { user_id: 0, plan_id: 0, validity_days: 30, notes: '' }
+    resetGrantForm()
     await loadInventoryAndSeats()
   } catch (err: unknown) {
     appStore.showError(extractI18nErrorMessage(err, t, 'payment.errors', t('common.error')))
