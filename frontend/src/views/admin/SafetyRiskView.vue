@@ -168,19 +168,17 @@
                     <div v-if="item.reviewed_at" class="mt-1 text-xs text-gray-500">{{ formatDate(item.reviewed_at) }}</div>
                   </td>
                   <td class="table-td max-w-[420px] align-top">
-                    <!-- 默认 line-clamp-3 紧凑，点"展开"显示完整 prompt（后端已截断到 1000 字符）。
-                         admin 复核时需要完整内容判断违规，原来只显示头 3 行 + "..." 无法判断 -->
+                    <!-- 行内仍 line-clamp-3 保持表格紧凑；点击"查看完整内容"弹独立 modal 显示
+                         完整 prompt（后端已截到 1000 字符）。比展开整行更不打乱表格布局。 -->
                     <div v-if="item.prompt_preview" class="text-sm text-gray-700 dark:text-gray-300">
-                      <div
-                        :class="expandedRows[item.id] ? 'whitespace-pre-wrap break-words' : 'line-clamp-3'"
-                      >{{ item.prompt_preview }}</div>
+                      <div class="line-clamp-3">{{ item.prompt_preview }}</div>
                       <button
                         v-if="(item.prompt_preview?.length || 0) > 80"
                         type="button"
-                        class="mt-1 text-xs font-medium text-primary-600 hover:text-primary-700 hover:underline dark:text-primary-400"
-                        @click="toggleExpand(item.id)"
+                        class="mt-1 inline-flex items-center gap-0.5 text-xs font-medium text-primary-600 hover:text-primary-700 hover:underline dark:text-primary-400"
+                        @click="openPreviewDialog(item)"
                       >
-                        {{ expandedRows[item.id] ? '收起' : '展开完整内容' }}
+                        <Icon name="eye" size="xs" /> 查看完整内容
                       </button>
                     </div>
                     <div v-else class="text-sm text-gray-400">-</div>
@@ -235,6 +233,61 @@
     @confirm="clearSelectedUser"
     @cancel="clearDialogVisible = false"
   />
+
+  <!-- 请求预览完整内容 modal：复核违规时需要完整 prompt，弹窗比行内展开更不打乱表格布局 -->
+  <BaseDialog
+    :show="!!previewDialogEvent"
+    :title="previewDialogTitle"
+    width="wide"
+    @close="previewDialogEvent = null"
+  >
+    <div v-if="previewDialogEvent" class="space-y-3">
+      <!-- 元信息条 -->
+      <div class="grid grid-cols-1 gap-2 rounded-lg bg-gray-50 p-3 text-xs dark:bg-dark-800 sm:grid-cols-2">
+        <div>
+          <span class="text-gray-500">用户：</span>
+          <span class="font-medium">{{ previewDialogEvent.user_email || '-' }}</span>
+        </div>
+        <div>
+          <span class="text-gray-500">时间：</span>
+          <span class="font-medium">{{ formatDate(previewDialogEvent.created_at) }}</span>
+        </div>
+        <div>
+          <span class="text-gray-500">路径：</span>
+          <span class="font-mono">{{ previewDialogEvent.method }} {{ previewDialogEvent.path }}</span>
+        </div>
+        <div>
+          <span class="text-gray-500">命中规则：</span>
+          <span class="font-medium">{{ previewDialogEvent.rule_word || '-' }}</span>
+          <span v-if="previewDialogEvent.rule_path" class="ml-1 font-mono text-gray-500">{{ previewDialogEvent.rule_path }}</span>
+        </div>
+        <div v-if="previewDialogEvent.request_id || previewDialogEvent.client_request_id" class="sm:col-span-2">
+          <span class="text-gray-500">Request ID：</span>
+          <span class="font-mono">{{ previewDialogEvent.request_id || previewDialogEvent.client_request_id }}</span>
+        </div>
+      </div>
+      <!-- 完整 prompt 内容 -->
+      <div>
+        <div class="mb-1.5 flex items-center justify-between">
+          <label class="text-xs font-medium text-gray-500 dark:text-gray-400">请求内容（后端已截至 1000 字符）</label>
+          <button
+            type="button"
+            class="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400"
+            @click="copyPreviewToClipboard"
+          >
+            <Icon name="copy" size="xs" />
+            {{ previewCopied ? '已复制' : '复制' }}
+          </button>
+        </div>
+        <pre class="max-h-[60vh] overflow-auto whitespace-pre-wrap break-words rounded-lg bg-gray-50 p-3 text-sm text-gray-800 dark:bg-dark-800 dark:text-gray-200">{{ previewDialogEvent.prompt_preview || '-' }}</pre>
+      </div>
+    </div>
+    <template #footer>
+      <div class="flex justify-end">
+        <button class="btn btn-secondary" @click="previewDialogEvent = null">关闭</button>
+      </div>
+    </template>
+  </BaseDialog>
 </template>
 
 <script setup lang="ts">
@@ -242,6 +295,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Pagination from '@/components/common/Pagination.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import BaseDialog from '@/components/common/BaseDialog.vue'
 import Select, { type SelectOption } from '@/components/common/Select.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { useAppStore } from '@/stores/app'
@@ -268,11 +322,27 @@ interface RiskStat {
 const appStore = useAppStore()
 const loading = ref(false)
 const events = ref<SafetyRiskEvent[]>([])
-// 行级 prompt 展开状态：复核时需要看完整内容，但默认 line-clamp-3 保持表格紧凑。
-// 切换 page / filter 时不重置（admin 可能展开了再翻页比较）
-const expandedRows = ref<Record<number, boolean>>({})
-function toggleExpand(id: number) {
-  expandedRows.value[id] = !expandedRows.value[id]
+// 请求预览弹窗：admin 点击行的"查看完整内容"按钮时弹出展示完整 prompt + 关键元信息
+const previewDialogEvent = ref<SafetyRiskEvent | null>(null)
+const previewCopied = ref(false)
+const previewDialogTitle = computed(() => {
+  if (!previewDialogEvent.value) return '请求预览'
+  return `请求预览 · #${previewDialogEvent.value.id}`
+})
+function openPreviewDialog(item: SafetyRiskEvent) {
+  previewDialogEvent.value = item
+  previewCopied.value = false
+}
+async function copyPreviewToClipboard() {
+  const content = previewDialogEvent.value?.prompt_preview || ''
+  if (!content) return
+  try {
+    await navigator.clipboard.writeText(content)
+    previewCopied.value = true
+    setTimeout(() => { previewCopied.value = false }, 1500)
+  } catch {
+    /* clipboard 权限被拒，静默处理 */
+  }
 }
 const selectedClearEvent = ref<SafetyRiskEvent | null>(null)
 const clearDialogVisible = ref(false)
