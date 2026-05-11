@@ -119,6 +119,10 @@ tests
 CLAUDE.md
 .claude
 scripts
+# 例外：frontend/scripts/ 是前端构建辅助脚本（如 clean-dist.mjs prebuild 钩子），
+# 必须随仓库提交，否则 Docker CI 跑 npm run build 会因脚本缺失而 exit 1。
+!frontend/scripts/
+!frontend/scripts/**
 .code-review-state
 #openspec/
 code-reviews/
