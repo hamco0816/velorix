@@ -1063,26 +1063,28 @@ function getAntigravityTierClass(row: any): string {
 
 // All available columns
 const allColumns = computed<Column[]>(() => {
+  // 列对齐策略：文本/复合 chips/多行块 → left；数字 → right（配合 numeric: true 的 tabular-nums）；
+  // 单图标状态/开关/操作按钮组 → center。避免长文本列居中导致每行内容轴线漂移、表头与单元格视觉错位。
   const c: Column[] = [
-    { key: 'select', label: '', sortable: false },
-    { key: 'name', label: t('admin.accounts.columns.name'), sortable: true },
-    { key: 'platform_type', label: t('admin.accounts.columns.platformType'), sortable: false },
-    { key: 'capacity', label: t('admin.accounts.columns.capacity'), sortable: false },
+    { key: 'select', label: '', sortable: false, align: 'center' },
+    { key: 'name', label: t('admin.accounts.columns.name'), sortable: true, align: 'left' },
+    { key: 'platform_type', label: t('admin.accounts.columns.platformType'), sortable: false, align: 'left' },
+    { key: 'capacity', label: t('admin.accounts.columns.capacity'), sortable: false, align: 'center' },
     { key: 'status', label: t('admin.accounts.columns.status'), sortable: true, align: 'center' },
     { key: 'schedulable', label: t('admin.accounts.columns.schedulable'), sortable: true, align: 'center' },
-    { key: 'today_stats', label: t('admin.accounts.columns.todayStats'), sortable: false }
+    { key: 'today_stats', label: t('admin.accounts.columns.todayStats'), sortable: false, align: 'left' }
   ]
   if (!authStore.isSimpleMode) {
-    c.push({ key: 'groups', label: t('admin.accounts.columns.groups'), sortable: false })
+    c.push({ key: 'groups', label: t('admin.accounts.columns.groups'), sortable: false, align: 'left' })
   }
   c.push(
-    { key: 'usage', label: t('admin.accounts.columns.usageWindows'), sortable: false },
-    { key: 'proxy', label: t('admin.accounts.columns.proxy'), sortable: false },
-    { key: 'priority', label: t('admin.accounts.columns.priority'), sortable: true, numeric: true },
-    { key: 'rate_multiplier', label: t('admin.accounts.columns.billingRateMultiplier'), sortable: true, numeric: true },
-    { key: 'last_used_at', label: t('admin.accounts.columns.lastUsed'), sortable: true },
-    { key: 'expires_at', label: t('admin.accounts.columns.expiresAt'), sortable: true },
-    { key: 'notes', label: t('admin.accounts.columns.notes'), sortable: false },
+    { key: 'usage', label: t('admin.accounts.columns.usageWindows'), sortable: false, align: 'left' },
+    { key: 'proxy', label: t('admin.accounts.columns.proxy'), sortable: false, align: 'left' },
+    { key: 'priority', label: t('admin.accounts.columns.priority'), sortable: true, numeric: true, align: 'right' },
+    { key: 'rate_multiplier', label: t('admin.accounts.columns.billingRateMultiplier'), sortable: true, numeric: true, align: 'right' },
+    { key: 'last_used_at', label: t('admin.accounts.columns.lastUsed'), sortable: true, align: 'left' },
+    { key: 'expires_at', label: t('admin.accounts.columns.expiresAt'), sortable: true, align: 'left' },
+    { key: 'notes', label: t('admin.accounts.columns.notes'), sortable: false, align: 'left' },
     { key: 'actions', label: t('admin.accounts.columns.actions'), sortable: false, align: 'center' }
   )
   return c
