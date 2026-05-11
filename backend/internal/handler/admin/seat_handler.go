@@ -138,8 +138,8 @@ func (h *SeatHandler) GrantSeat(c *gin.Context) {
 		return
 	}
 	var req struct {
-		UserID       int64  `json:"user_id"`
-		PlanID       int64  `json:"plan_id"`
+		UserID int64 `json:"user_id"`
+		PlanID int64 `json:"plan_id"`
 		// GroupID 可选：前端"赠送座席"页选中的独享池 ID。后端用它和 plan.GroupID 做一致性校验，
 		// 防止"在 A 池页面手填 B 池套餐"导致管理员看到 A 池库存却实际从 B 池发放（GPT round 19 #3）。
 		GroupID      int64  `json:"group_id"`

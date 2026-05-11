@@ -1112,6 +1112,7 @@ func (k oidcJWK) publicKey() (any, error) {
 		if err != nil {
 			return nil, fmt.Errorf("decode ec y: %w", err)
 		}
+		//nolint:staticcheck // SA1019: 沿用 elliptic 包做点在曲线上检查；迁移到 crypto/ecdh 需要重构这套 JWK 解析逻辑，单独排期
 		if !curve.IsOnCurve(x, y) {
 			return nil, errors.New("ec point is not on curve")
 		}

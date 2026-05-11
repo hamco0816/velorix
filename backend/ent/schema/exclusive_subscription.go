@@ -19,6 +19,7 @@ import (
 // 与 UserSubscription（共享池订阅）的关系：
 //   - UserSubscription 表示「用户在某个共享池内有用量额度」
 //   - ExclusiveSubscription 表示「用户从某个独享池中获得了一个具体账号的独占使用权」
+//
 // 两者并存，调度器优先命中 ExclusiveSubscription，否则回退到共享池。
 type ExclusiveSubscription struct {
 	ent.Schema

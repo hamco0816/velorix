@@ -237,7 +237,7 @@ func (Account) Indexes() []ent.Index {
 		// 调度热路径复合索引（线上由 SQL 迁移创建部分索引，schema 仅用于模型可读性对齐）
 		index.Fields("platform", "priority"),
 		index.Fields("priority", "status"),
-		index.Fields("deleted_at"), // 软删除查询优化
+		index.Fields("deleted_at"),       // 软删除查询优化
 		index.Fields("assigned_seat_id"), // 独享池库存看板查询
 	}
 }

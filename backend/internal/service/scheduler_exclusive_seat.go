@@ -47,19 +47,6 @@ func trySelectExclusiveSeatAccount(
 	return trySelectExclusiveSeatAccountForModelWithCheck(ctx, seatSvc, resolver, groupID, "", excludedIDs, nil)
 }
 
-// trySelectExclusiveSeatAccountForModel 模型感知版本：在多 seat 用户场景过滤掉对该模型限流的账号
-// （比如 Pro 用户买 2 个独享号，账号 A 对 Opus 限流时自动选 B）
-func trySelectExclusiveSeatAccountForModel(
-	ctx context.Context,
-	seatSvc *ExclusiveSeatService,
-	resolver SeatAccountResolver,
-	groupID *int64,
-	requestedModel string,
-	excludedIDs map[int64]struct{},
-) (acc *Account, hit bool, err error) {
-	return trySelectExclusiveSeatAccountForModelWithCheck(ctx, seatSvc, resolver, groupID, requestedModel, excludedIDs, nil)
-}
-
 // SeatEligibilityCheck 调用方注入的账号适配性回调，返回 false 时该账号会被排除。
 // 用于把共享池原有的"账号是否支持该模型 / 是否在同平台 / 是否还有配额 / OpenAI compact 支持"等
 // 适配性判断同样应用到独享路径，避免把不支持该模型的账号发给上游导致 404。

@@ -8,7 +8,6 @@ package service
 
 import (
 	"context"
-	stdsql "database/sql"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -212,7 +211,6 @@ func pickFreeAccountForUpdate(ctx context.Context, tx *dbent.Tx, groupID int64) 
 	//   - rate_limit_reset_at / overload_until / temp_unschedulable_until 必须已过期或未设
 	//   - auto_pause_on_expired + expires_at 已到 → 跳过
 	// 全池都临时不可用时返回 ErrNoFreeAccount → 触发 autoRefund，比"买到 5h 限流账号"体验更好
-	rows := &stdsql.Rows{}
 	rows, err := tx.QueryContext(ctx, `
 		SELECT a.id
 		FROM accounts a
@@ -236,7 +234,7 @@ func pickFreeAccountForUpdate(ctx context.Context, tx *dbent.Tx, groupID int64) 
 	if err != nil {
 		return 0, fmt.Errorf("pick free account: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 	if !rows.Next() {
 		return 0, ErrNoFreeAccount
 	}
@@ -624,6 +622,7 @@ func (s *ExclusiveSeatService) LastPaidPriceForSeat(ctx context.Context, seat *d
 //   - 名额 status=active：直接延期
 //   - 已 expired 但在宽限期内（默认 7 天）：恢复为 active 并延期
 //   - 已 expired 且超过宽限期 / 已 refunded / 已 cancelled：拒绝
+//
 // dbAccountSchedulableForSeatRenewal 判断 seat 想"恢复"的原账号是否还能正常调度。
 // 复用 service.Account.IsSchedulable 的字段口径（status、schedulable、自动暂停、过载、限流、临停），
 // 让"过期 seat 续费"与"实际请求调度"用同一份判定，避免续费成功后请求路径上还是不可用。
