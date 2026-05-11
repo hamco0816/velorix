@@ -44,6 +44,9 @@ type SystemSettings struct {
 	InvitationCodeEnabled            bool     `json:"invitation_code_enabled"`
 	TotpEnabled                      bool     `json:"totp_enabled"`                   // TOTP 双因素认证
 	TotpEncryptionKeyConfigured      bool     `json:"totp_encryption_key_configured"` // TOTP 加密密钥是否已配置
+	// 业务级注册 IP 限流：0=关闭（仅保留 routes 里 5/min 兜底）；>=1 表示窗口内最多 N 次
+	RegisterIPLimitMaxCount      int `json:"register_ip_limit_max_count"`
+	RegisterIPLimitWindowMinutes int `json:"register_ip_limit_window_minutes"`
 
 	SMTPHost               string `json:"smtp_host"`
 	SMTPPort               int    `json:"smtp_port"`

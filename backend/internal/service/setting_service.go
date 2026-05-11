@@ -1072,6 +1072,17 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	updates[SettingKeyFrontendURL] = settings.FrontendURL
 	updates[SettingKeyInvitationCodeEnabled] = strconv.FormatBool(settings.InvitationCodeEnabled)
 	updates[SettingKeyTotpEnabled] = strconv.FormatBool(settings.TotpEnabled)
+	// 注册 IP 限流配置：max=0 表示关闭；window 最小 1 分钟（admin UI 已做下限校验，这里保险再 clamp）
+	maxCount := settings.RegisterIPLimitMaxCount
+	if maxCount < 0 {
+		maxCount = 0
+	}
+	windowMinutes := settings.RegisterIPLimitWindowMinutes
+	if windowMinutes <= 0 {
+		windowMinutes = 60
+	}
+	updates[SettingKeyRegisterIPLimitMaxCount] = strconv.Itoa(maxCount)
+	updates[SettingKeyRegisterIPLimitWindowMinutes] = strconv.Itoa(windowMinutes)
 
 	// 邮件服务设置（只有非空才更新密码）
 	updates[SettingKeySMTPHost] = settings.SMTPHost
@@ -1544,6 +1555,26 @@ func (s *SettingService) IsInvitationCodeEnabled(ctx context.Context) bool {
 	return value == "true"
 }
 
+// GetRegisterIPLimitConfig 读取业务级注册 IP 限流配置。
+//
+//	max  = 0：表示关闭（仅依赖 routes 里硬编码的 5/min 兜底）
+//	max >= 1：表示开启，配合 windowMinutes 形成 sliding 限流
+//	windowMinutes <=0：回退默认 60 分钟（避免误配 0 导致除零或永远过期）
+func (s *SettingService) GetRegisterIPLimitConfig(ctx context.Context) (max int, windowMinutes int) {
+	if maxStr, err := s.settingRepo.GetValue(ctx, SettingKeyRegisterIPLimitMaxCount); err == nil {
+		if v, err := strconv.Atoi(strings.TrimSpace(maxStr)); err == nil && v >= 0 {
+			max = v
+		}
+	}
+	windowMinutes = 60
+	if winStr, err := s.settingRepo.GetValue(ctx, SettingKeyRegisterIPLimitWindowMinutes); err == nil {
+		if v, err := strconv.Atoi(strings.TrimSpace(winStr)); err == nil && v > 0 {
+			windowMinutes = v
+		}
+	}
+	return max, windowMinutes
+}
+
 // IsAffiliateEnabled 检查是否启用邀请返利功能（总开关）
 func (s *SettingService) IsAffiliateEnabled(ctx context.Context) bool {
 	value, err := s.settingRepo.GetValue(ctx, SettingKeyAffiliateEnabled)
@@ -1944,29 +1975,32 @@ func (s *SettingService) parseSettings(settings map[string]string) *SystemSettin
 		FrontendURL:                      settings[SettingKeyFrontendURL],
 		InvitationCodeEnabled:            settings[SettingKeyInvitationCodeEnabled] == "true",
 		TotpEnabled:                      settings[SettingKeyTotpEnabled] == "true",
-		SMTPHost:                         settings[SettingKeySMTPHost],
-		SMTPUsername:                     settings[SettingKeySMTPUsername],
-		SMTPFrom:                         settings[SettingKeySMTPFrom],
-		SMTPFromName:                     settings[SettingKeySMTPFromName],
-		SMTPUseTLS:                       settings[SettingKeySMTPUseTLS] == "true",
-		SMTPPasswordConfigured:           settings[SettingKeySMTPPassword] != "",
-		TurnstileEnabled:                 settings[SettingKeyTurnstileEnabled] == "true",
-		TurnstileSiteKey:                 settings[SettingKeyTurnstileSiteKey],
-		TurnstileSecretKeyConfigured:     settings[SettingKeyTurnstileSecretKey] != "",
-		SiteName:                         s.getStringOrDefault(settings, SettingKeySiteName, "Sub2API"),
-		SiteLogo:                         settings[SettingKeySiteLogo],
-		SiteSubtitle:                     s.getStringOrDefault(settings, SettingKeySiteSubtitle, "Subscription to API Conversion Platform"),
-		APIBaseURL:                       settings[SettingKeyAPIBaseURL],
-		ContactInfo:                      settings[SettingKeyContactInfo],
-		ContactMethods:                   ParseContactMethods(settings[SettingKeyContactMethods], settings[SettingKeyContactInfo]),
-		DocURL:                           settings[SettingKeyDocURL],
-		HomeContent:                      settings[SettingKeyHomeContent],
-		HideCcsImportButton:              settings[SettingKeyHideCcsImportButton] == "true",
-		PurchaseSubscriptionEnabled:      settings[SettingKeyPurchaseSubscriptionEnabled] == "true",
-		PurchaseSubscriptionURL:          strings.TrimSpace(settings[SettingKeyPurchaseSubscriptionURL]),
-		CustomMenuItems:                  settings[SettingKeyCustomMenuItems],
-		CustomEndpoints:                  settings[SettingKeyCustomEndpoints],
-		BackendModeEnabled:               settings[SettingKeyBackendModeEnabled] == "true",
+		// 注册 IP 限流：默认 max=0（关闭）、window=60min；解析失败回退默认
+		RegisterIPLimitMaxCount:      atoiOrDefault(settings[SettingKeyRegisterIPLimitMaxCount], 0, 0),
+		RegisterIPLimitWindowMinutes: atoiOrDefault(settings[SettingKeyRegisterIPLimitWindowMinutes], 60, 1),
+		SMTPHost:                     settings[SettingKeySMTPHost],
+		SMTPUsername:                 settings[SettingKeySMTPUsername],
+		SMTPFrom:                     settings[SettingKeySMTPFrom],
+		SMTPFromName:                 settings[SettingKeySMTPFromName],
+		SMTPUseTLS:                   settings[SettingKeySMTPUseTLS] == "true",
+		SMTPPasswordConfigured:       settings[SettingKeySMTPPassword] != "",
+		TurnstileEnabled:             settings[SettingKeyTurnstileEnabled] == "true",
+		TurnstileSiteKey:             settings[SettingKeyTurnstileSiteKey],
+		TurnstileSecretKeyConfigured: settings[SettingKeyTurnstileSecretKey] != "",
+		SiteName:                     s.getStringOrDefault(settings, SettingKeySiteName, "Sub2API"),
+		SiteLogo:                     settings[SettingKeySiteLogo],
+		SiteSubtitle:                 s.getStringOrDefault(settings, SettingKeySiteSubtitle, "Subscription to API Conversion Platform"),
+		APIBaseURL:                   settings[SettingKeyAPIBaseURL],
+		ContactInfo:                  settings[SettingKeyContactInfo],
+		ContactMethods:               ParseContactMethods(settings[SettingKeyContactMethods], settings[SettingKeyContactInfo]),
+		DocURL:                       settings[SettingKeyDocURL],
+		HomeContent:                  settings[SettingKeyHomeContent],
+		HideCcsImportButton:          settings[SettingKeyHideCcsImportButton] == "true",
+		PurchaseSubscriptionEnabled:  settings[SettingKeyPurchaseSubscriptionEnabled] == "true",
+		PurchaseSubscriptionURL:      strings.TrimSpace(settings[SettingKeyPurchaseSubscriptionURL]),
+		CustomMenuItems:              settings[SettingKeyCustomMenuItems],
+		CustomEndpoints:              settings[SettingKeyCustomEndpoints],
+		BackendModeEnabled:           settings[SettingKeyBackendModeEnabled] == "true",
 	}
 	result.TableDefaultPageSize, result.TablePageSizeOptions = parseTablePreferences(
 		settings[SettingKeyTableDefaultPageSize],
@@ -2435,6 +2469,19 @@ func mergeProviderDefaultGrantSettings(globalDefaults ProviderDefaultGrantSettin
 	}
 
 	return result
+}
+
+// atoiOrDefault 解析整数，失败或低于 minVal 时返回 defaultVal。
+// minVal=0 时不做下限校验（允许任意非负整数包括 0）。
+func atoiOrDefault(raw string, defaultVal, minVal int) int {
+	v, err := strconv.Atoi(strings.TrimSpace(raw))
+	if err != nil {
+		return defaultVal
+	}
+	if v < minVal {
+		return defaultVal
+	}
+	return v
 }
 
 func parseTablePreferences(defaultPageSizeRaw, optionsRaw string) (int, []int) {

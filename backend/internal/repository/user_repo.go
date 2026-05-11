@@ -81,8 +81,10 @@ func (r *userRepository) Create(ctx context.Context, userIn *service.User) error
 		return err
 	}
 
+	// 落库存归一化版本（Gmail 已去 . 去 +xxx），确保 me+1@gmail.com、m.e@gmail.com
+	// 都收敛为同一条记录，避免别名薅羊毛。
 	created, err := txClient.User.Create().
-		SetEmail(userIn.Email).
+		SetEmail(normalizeEmailLookupValue(userIn.Email)).
 		SetUsername(userIn.Username).
 		SetNotes(userIn.Notes).
 		SetPasswordHash(userIn.PasswordHash).
@@ -776,8 +778,41 @@ func userEmailLookupPredicate(email string) predicate.User {
 	})
 }
 
+// normalizeEmailLookupValue 把邮箱归一化为"用于唯一性比较"的形式：
+//  1. 小写 + 去空格（兼容原行为）
+//  2. Gmail / Googlemail 特殊处理：username 去所有 '.'、去 '+xxx' 后缀
+//     —— 利用 Gmail 自身的路由规则（me+1@gmail.com、m.e@gmail.com 都路由到 me@gmail.com），
+//     防止攻击者用一个 Gmail 主账号无限注册不同变体来薅新用户奖励
+//
+// 同时用于：落库的 SetEmail、ExistsByEmail 的 SQL 谓词、注册时的分布式锁 key。
+// 调用者使用：发送验证码时仍用用户原始输入（Gmail 内部路由会把它送到主邮箱），
+// 但 DB 落库 + 查询都比对归一化版本。
 func normalizeEmailLookupValue(email string) string {
-	return strings.ToLower(strings.TrimSpace(email))
+	base := strings.ToLower(strings.TrimSpace(email))
+	if base == "" {
+		return ""
+	}
+	at := strings.IndexByte(base, '@')
+	if at <= 0 {
+		return base
+	}
+	local := base[:at]
+	domain := base[at+1:]
+	if domain != "gmail.com" && domain != "googlemail.com" {
+		return base
+	}
+	// 去 +alias 后缀
+	if plus := strings.IndexByte(local, '+'); plus >= 0 {
+		local = local[:plus]
+	}
+	// 去所有 '.'（Gmail 在 username 部分忽略点号）
+	local = strings.ReplaceAll(local, ".", "")
+	if local == "" {
+		// 极端：用户填了纯点号的 username，回退到原始 base 避免生成无效邮箱
+		return base
+	}
+	// 统一域名（googlemail.com → gmail.com，同一邮箱服务）
+	return local + "@gmail.com"
 }
 
 func normalizedEmailUniquenessLockKey(email string) string {

@@ -155,6 +155,8 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 		InvitationCodeEnabled:                  settings.InvitationCodeEnabled,
 		TotpEnabled:                            settings.TotpEnabled,
 		TotpEncryptionKeyConfigured:            h.settingService.IsTotpEncryptionKeyConfigured(),
+		RegisterIPLimitMaxCount:                settings.RegisterIPLimitMaxCount,
+		RegisterIPLimitWindowMinutes:           settings.RegisterIPLimitWindowMinutes,
 		SMTPHost:                               settings.SMTPHost,
 		SMTPPort:                               settings.SMTPPort,
 		SMTPUsername:                           settings.SMTPUsername,
@@ -347,6 +349,9 @@ type UpdateSettingsRequest struct {
 	FrontendURL                      string   `json:"frontend_url"`
 	InvitationCodeEnabled            bool     `json:"invitation_code_enabled"`
 	TotpEnabled                      bool     `json:"totp_enabled"` // TOTP 双因素认证
+	// 注册业务级 IP 限流（0=关闭仅依赖 routes 5/min 兜底）
+	RegisterIPLimitMaxCount      int `json:"register_ip_limit_max_count"`
+	RegisterIPLimitWindowMinutes int `json:"register_ip_limit_window_minutes"`
 
 	// 邮件服务设置
 	SMTPHost     string `json:"smtp_host"`
@@ -1194,6 +1199,8 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		FrontendURL:                      req.FrontendURL,
 		InvitationCodeEnabled:            req.InvitationCodeEnabled,
 		TotpEnabled:                      req.TotpEnabled,
+		RegisterIPLimitMaxCount:          req.RegisterIPLimitMaxCount,
+		RegisterIPLimitWindowMinutes:     req.RegisterIPLimitWindowMinutes,
 		SMTPHost:                         req.SMTPHost,
 		SMTPPort:                         req.SMTPPort,
 		SMTPUsername:                     req.SMTPUsername,
@@ -1548,6 +1555,8 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		InvitationCodeEnabled:                  updatedSettings.InvitationCodeEnabled,
 		TotpEnabled:                            updatedSettings.TotpEnabled,
 		TotpEncryptionKeyConfigured:            h.settingService.IsTotpEncryptionKeyConfigured(),
+		RegisterIPLimitMaxCount:                updatedSettings.RegisterIPLimitMaxCount,
+		RegisterIPLimitWindowMinutes:           updatedSettings.RegisterIPLimitWindowMinutes,
 		SMTPHost:                               updatedSettings.SMTPHost,
 		SMTPPort:                               updatedSettings.SMTPPort,
 		SMTPUsername:                           updatedSettings.SMTPUsername,

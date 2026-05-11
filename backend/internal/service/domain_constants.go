@@ -102,6 +102,8 @@ const (
 	SettingKeyPasswordResetEnabled             = "password_reset_enabled"              // 是否启用忘记密码功能（需要先开启邮件验证）
 	SettingKeyFrontendURL                      = "frontend_url"                        // 前端基础URL，用于生成邮件中的重置密码链接
 	SettingKeyInvitationCodeEnabled            = "invitation_code_enabled"             // 是否启用邀请码注册
+	SettingKeyRegisterIPLimitMaxCount          = "register_ip_limit_max_count"         // 单 IP 注册业务级限流：窗口内最大次数（0 = 关闭，仅保留 routes 里 5/min 硬编码兜底）
+	SettingKeyRegisterIPLimitWindowMinutes     = "register_ip_limit_window_minutes"    // 单 IP 注册业务级限流：窗口长度（分钟，默认 60）
 	SettingKeyAffiliateEnabled                 = "affiliate_enabled"                   // 邀请返利功能总开关
 	SettingKeyAffiliateRebateRate              = "affiliate_rebate_rate"               // 邀请返利比例（百分比，0-100）
 	SettingKeyAffiliateRebateFreezeHours       = "affiliate_rebate_freeze_hours"       // 返利冻结期（小时，0=不冻结）

@@ -322,6 +322,8 @@ export interface SystemSettings {
   invitation_code_enabled: boolean;
   totp_enabled: boolean; // TOTP 双因素认证
   totp_encryption_key_configured: boolean; // TOTP 加密密钥是否已配置
+  register_ip_limit_max_count: number; // 注册业务级 IP 限流：窗口内最大次数（0=关闭）
+  register_ip_limit_window_minutes: number; // 注册业务级 IP 限流：窗口分钟
   // Default settings
   default_balance: number;
   affiliate_rebate_rate: number;
@@ -519,6 +521,8 @@ export interface UpdateSettingsRequest {
   frontend_url?: string;
   invitation_code_enabled?: boolean;
   totp_enabled?: boolean; // TOTP 双因素认证
+  register_ip_limit_max_count?: number;
+  register_ip_limit_window_minutes?: number;
   default_balance?: number;
   affiliate_rebate_rate?: number;
   affiliate_rebate_freeze_hours?: number;

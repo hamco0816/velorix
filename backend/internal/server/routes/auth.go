@@ -23,23 +23,46 @@ func RegisterAuthRoutes(
 	// 创建速率限制器
 	rateLimiter := middleware.NewRateLimiter(redisClient)
 
+	// registerIPBusinessLimit 在硬编码 5/min 兜底之外，叠加一层从 settings 读取的"业务级"限流，
+	// 用于防止单 IP 在更长窗口内（如 1 小时）通过 Gmail 别名 / 点号变体批量注册薅奖励。
+	// max=0 表示关闭（不影响请求）；>=1 配合 windowMinutes 形成滑动窗口。
+	// Redis 故障策略沿用 fail-close（注册暂拒，不影响其他业务）。
+	registerIPBusinessLimit := func(keyTag string) gin.HandlerFunc {
+		return func(c *gin.Context) {
+			maxCount, windowMinutes := settingService.GetRegisterIPLimitConfig(c.Request.Context())
+			if maxCount <= 0 {
+				c.Next()
+				return
+			}
+			rateLimiter.LimitWithOptions(keyTag, maxCount, time.Duration(windowMinutes)*time.Minute, middleware.RateLimitOptions{
+				FailureMode: middleware.RateLimitFailClose,
+			})(c)
+		}
+	}
+
 	// 公开接口
 	auth := v1.Group("/auth")
 	auth.Use(servermiddleware.BackendModeAuthGuard(settingService))
 	{
 		// 注册/登录/2FA/验证码发送均属于高风险入口，增加服务端兜底限流（Redis 故障时 fail-close）
-		auth.POST("/register", rateLimiter.LimitWithOptions("auth-register", 5, time.Minute, middleware.RateLimitOptions{
-			FailureMode: middleware.RateLimitFailClose,
-		}), h.Auth.Register)
+		auth.POST("/register",
+			rateLimiter.LimitWithOptions("auth-register", 5, time.Minute, middleware.RateLimitOptions{
+				FailureMode: middleware.RateLimitFailClose,
+			}),
+			registerIPBusinessLimit("auth-register-business"),
+			h.Auth.Register)
 		auth.POST("/login", rateLimiter.LimitWithOptions("auth-login", 20, time.Minute, middleware.RateLimitOptions{
 			FailureMode: middleware.RateLimitFailClose,
 		}), h.Auth.Login)
 		auth.POST("/login/2fa", rateLimiter.LimitWithOptions("auth-login-2fa", 20, time.Minute, middleware.RateLimitOptions{
 			FailureMode: middleware.RateLimitFailClose,
 		}), h.Auth.Login2FA)
-		auth.POST("/send-verify-code", rateLimiter.LimitWithOptions("auth-send-verify-code", 5, time.Minute, middleware.RateLimitOptions{
-			FailureMode: middleware.RateLimitFailClose,
-		}), h.Auth.SendVerifyCode)
+		auth.POST("/send-verify-code",
+			rateLimiter.LimitWithOptions("auth-send-verify-code", 5, time.Minute, middleware.RateLimitOptions{
+				FailureMode: middleware.RateLimitFailClose,
+			}),
+			registerIPBusinessLimit("auth-send-verify-code-business"),
+			h.Auth.SendVerifyCode)
 		// Token刷新接口添加速率限制：每分钟最多 30 次（Redis 故障时 fail-close）
 		auth.POST("/refresh", rateLimiter.LimitWithOptions("refresh-token", 30, time.Minute, middleware.RateLimitOptions{
 			FailureMode: middleware.RateLimitFailClose,

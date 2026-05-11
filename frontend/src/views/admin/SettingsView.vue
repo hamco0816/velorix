@@ -1395,6 +1395,52 @@
                 </div>
                 <Toggle v-model="form.invitation_code_enabled" />
               </div>
+              <!-- 注册 IP 限流（反薅羊毛）：在 routes 已有 5/min 兜底之外叠加业务级窗口限流。
+                   max=0 关闭；典型配置 max=3 / window=60 表示每 IP 每小时最多注册 3 次。 -->
+              <div class="border-t border-gray-100 pt-4 dark:border-dark-700">
+                <div class="mb-2">
+                  <label class="font-medium text-gray-900 dark:text-white">
+                    {{ t("admin.settings.registration.ipLimitTitle") }}
+                  </label>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                    {{ t("admin.settings.registration.ipLimitHint") }}
+                  </p>
+                </div>
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div>
+                    <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                      {{ t("admin.settings.registration.ipLimitMaxCount") }}
+                    </label>
+                    <input
+                      v-model.number="form.register_ip_limit_max_count"
+                      type="number"
+                      min="0"
+                      max="100"
+                      class="input text-sm"
+                      :placeholder="t('admin.settings.registration.ipLimitMaxPlaceholder')"
+                    />
+                    <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
+                      {{ t("admin.settings.registration.ipLimitMaxNote") }}
+                    </p>
+                  </div>
+                  <div>
+                    <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                      {{ t("admin.settings.registration.ipLimitWindow") }}
+                    </label>
+                    <input
+                      v-model.number="form.register_ip_limit_window_minutes"
+                      type="number"
+                      min="1"
+                      max="1440"
+                      class="input text-sm"
+                      :placeholder="t('admin.settings.registration.ipLimitWindowPlaceholder')"
+                    />
+                    <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
+                      {{ t("admin.settings.registration.ipLimitWindowNote") }}
+                    </p>
+                  </div>
+                </div>
+              </div>
               <!-- Password Reset - Only show when email verification is enabled -->
               <div
                 v-if="form.email_verify_enabled"
@@ -5985,6 +6031,8 @@ const form = reactive<SettingsForm>({
   registration_email_suffix_whitelist: [],
   promo_code_enabled: true,
   invitation_code_enabled: false,
+  register_ip_limit_max_count: 0, // 0 = 关闭业务级限流（仅依赖 routes 5/min 兜底）
+  register_ip_limit_window_minutes: 60,
   password_reset_enabled: false,
   totp_enabled: false,
   totp_encryption_key_configured: false,
@@ -7140,6 +7188,8 @@ async function saveSettings() {
         ),
       promo_code_enabled: form.promo_code_enabled,
       invitation_code_enabled: form.invitation_code_enabled,
+      register_ip_limit_max_count: Math.max(0, Math.floor(form.register_ip_limit_max_count || 0)),
+      register_ip_limit_window_minutes: Math.max(1, Math.floor(form.register_ip_limit_window_minutes || 60)),
       password_reset_enabled: form.password_reset_enabled,
       totp_enabled: form.totp_enabled,
       default_balance: form.default_balance,

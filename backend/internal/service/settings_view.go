@@ -20,6 +20,9 @@ type SystemSettings struct {
 	FrontendURL                      string
 	InvitationCodeEnabled            bool
 	TotpEnabled                      bool // TOTP 双因素认证
+	// 业务级注册 IP 限流：0=关闭（仅保留 routes 里 5/min 兜底）
+	RegisterIPLimitMaxCount      int
+	RegisterIPLimitWindowMinutes int
 
 	SMTPHost               string
 	SMTPPort               int
