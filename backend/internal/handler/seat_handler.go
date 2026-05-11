@@ -44,12 +44,12 @@ type SeatView struct {
 
 	// 日/周/月窗口用量与上限，用于用户端展示进度条（nil 表示该窗口无上限，
 	// 前端不绘制对应进度条；用量字段始终下发，便于用户看到累计消耗）
-	DailyUsageUsd    float64  `json:"daily_usage_usd"`
-	WeeklyUsageUsd   float64  `json:"weekly_usage_usd"`
-	MonthlyUsageUsd  float64  `json:"monthly_usage_usd"`
-	DailyLimitUsd    *float64 `json:"daily_limit_usd,omitempty"`
-	WeeklyLimitUsd   *float64 `json:"weekly_limit_usd,omitempty"`
-	MonthlyLimitUsd  *float64 `json:"monthly_limit_usd,omitempty"`
+	DailyUsageUsd   float64  `json:"daily_usage_usd"`
+	WeeklyUsageUsd  float64  `json:"weekly_usage_usd"`
+	MonthlyUsageUsd float64  `json:"monthly_usage_usd"`
+	DailyLimitUsd   *float64 `json:"daily_limit_usd,omitempty"`
+	WeeklyLimitUsd  *float64 `json:"weekly_limit_usd,omitempty"`
+	MonthlyLimitUsd *float64 `json:"monthly_limit_usd,omitempty"`
 }
 
 // MyExclusiveSeats GET /api/v1/seats —— 当前用户的所有独享名额（含历史）。
@@ -202,22 +202,22 @@ func (h *SeatHandler) toSeatView(c *gin.Context, s *dbent.ExclusiveSubscription)
 		return SeatView{}
 	}
 	v := SeatView{
-		ID:               s.ID,
-		UserID:           s.UserID,
-		GroupID:          s.GroupID,
-		PlanID:           s.PlanID,
-		AccountLabel:     maskAccountLabel(s.AccountID),
-		Status:           s.Status,
-		StartsAt:         s.StartsAt.Format(time.RFC3339),
-		ExpiresAt:        s.ExpiresAt.Format(time.RFC3339),
-		AssignedAt:       s.AssignedAt.Format(time.RFC3339),
-		UsageUsd:         s.UsageUsd,
-		DailyUsageUsd:    s.DailyUsageUsd,
-		WeeklyUsageUsd:   s.WeeklyUsageUsd,
-		MonthlyUsageUsd:  s.MonthlyUsageUsd,
-		DailyLimitUsd:    s.DailyLimitUsd,
-		WeeklyLimitUsd:   s.WeeklyLimitUsd,
-		MonthlyLimitUsd:  s.MonthlyLimitUsd,
+		ID:              s.ID,
+		UserID:          s.UserID,
+		GroupID:         s.GroupID,
+		PlanID:          s.PlanID,
+		AccountLabel:    maskAccountLabel(s.AccountID),
+		Status:          s.Status,
+		StartsAt:        s.StartsAt.Format(time.RFC3339),
+		ExpiresAt:       s.ExpiresAt.Format(time.RFC3339),
+		AssignedAt:      s.AssignedAt.Format(time.RFC3339),
+		UsageUsd:        s.UsageUsd,
+		DailyUsageUsd:   s.DailyUsageUsd,
+		WeeklyUsageUsd:  s.WeeklyUsageUsd,
+		MonthlyUsageUsd: s.MonthlyUsageUsd,
+		DailyLimitUsd:   s.DailyLimitUsd,
+		WeeklyLimitUsd:  s.WeeklyLimitUsd,
+		MonthlyLimitUsd: s.MonthlyLimitUsd,
 	}
 	if s.LastRenewalAt != nil {
 		v.LastRenewalAt = s.LastRenewalAt.Format(time.RFC3339)
