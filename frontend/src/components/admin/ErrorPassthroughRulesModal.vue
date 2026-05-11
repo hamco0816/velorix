@@ -75,7 +75,9 @@
                 </div>
               </td>
               <td class="px-3 py-2">
-                <div class="flex flex-wrap gap-1 max-w-48">
+                <!-- 错误码 + 关键字 chip 组合：原 max-w-48 (192px) 太窄，多 chip 时强行换行拥挤；
+                     加宽到 max-w-80 (320px) 并补 min-w 让列宽底线稳定，避免与同行其他列挤来挤去 -->
+                <div class="flex min-w-[14rem] max-w-80 flex-wrap gap-1">
                   <span
                     v-for="code in rule.error_codes.slice(0, 3)"
                     :key="code"

@@ -68,13 +68,15 @@
               </div>
             </div>
             <div class="flex items-center gap-2">
+              <!-- 状态 badge 配色：active 绿、expired 琥珀（警示但非危险）、其他（如 cancelled）红
+                   原来 expired 用灰色，跟 "neutral/未激活" 没有区别，用户看不出是"已过期需要续费" -->
               <span
                 :class="[
                   'rounded-full px-2 py-0.5 text-xs font-medium',
                   subscription.status === 'active'
                     ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
                     : subscription.status === 'expired'
-                      ? 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-400'
+                      ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
                       : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'
                 ]"
               >

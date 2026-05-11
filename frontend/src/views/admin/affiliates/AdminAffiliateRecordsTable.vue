@@ -342,14 +342,20 @@ const UserCell = defineComponent({
   setup(cellProps, { emit }) {
     return () => h('div', { class: 'space-y-0.5' }, [
       h('div', { class: 'font-mono text-sm text-gray-900 dark:text-white' }, `#${cellProps.id}`),
+      // 邮箱是用户主要标识：原 max-w-56 (224px) 长邮箱被截断成 "user@very..." 无法识别；
+      // 加宽到 max-w-80 (320px) + title 兜底，鼠标 hover 看完整邮箱
       h(cellProps.clickable ? 'button' : 'div', {
         class: cellProps.clickable
-          ? 'max-w-56 truncate text-left text-sm font-medium text-primary-600 hover:text-primary-700 hover:underline dark:text-primary-400 dark:hover:text-primary-300'
-          : 'max-w-56 truncate text-sm text-gray-700 dark:text-gray-300',
+          ? 'block max-w-80 truncate text-left text-sm font-medium text-primary-600 hover:text-primary-700 hover:underline dark:text-primary-400 dark:hover:text-primary-300'
+          : 'block max-w-80 truncate text-sm text-gray-700 dark:text-gray-300',
         type: cellProps.clickable ? 'button' : undefined,
+        title: cellProps.email || undefined,
         onClick: cellProps.clickable ? () => emit('open', cellProps.id) : undefined,
       }, cellProps.email || '-'),
-      h('div', { class: 'max-w-56 truncate text-sm text-gray-500 dark:text-dark-400' }, cellProps.username || '-'),
+      h('div', {
+        class: 'max-w-80 truncate text-sm text-gray-500 dark:text-dark-400',
+        title: cellProps.username || undefined,
+      }, cellProps.username || '-'),
     ])
   },
 })
