@@ -212,49 +212,26 @@
           </template>
 
           <template #cell-account_count="{ row }">
-            <div class="inline-block space-y-0.5 text-left align-middle text-xs">
-              <div>
-                <span class="text-gray-500 dark:text-gray-400">{{
-                  t("admin.groups.accountsAvailable")
-                }}</span>
-                <span
-                  class="ml-1 font-medium text-emerald-600 dark:text-emerald-400"
-                  >{{
-                    (row.active_account_count || 0) -
-                    (row.rate_limited_account_count || 0)
-                  }}</span
-                >
-                <span
-                  class="ml-1 inline-flex items-center rounded bg-gray-100 px-1.5 py-0.5 font-medium text-gray-800 dark:bg-dark-600 dark:text-gray-300"
-                  >{{ t("admin.groups.accountsUnit") }}</span
-                >
-              </div>
-              <div v-if="row.rate_limited_account_count">
-                <span class="text-gray-500 dark:text-gray-400">{{
-                  t("admin.groups.accountsRateLimited")
-                }}</span>
-                <span
-                  class="ml-1 font-medium text-amber-600 dark:text-amber-400"
-                  >{{ row.rate_limited_account_count }}</span
-                >
-                <span
-                  class="ml-1 inline-flex items-center rounded bg-gray-100 px-1.5 py-0.5 font-medium text-gray-800 dark:bg-dark-600 dark:text-gray-300"
-                  >{{ t("admin.groups.accountsUnit") }}</span
-                >
-              </div>
-              <div>
-                <span class="text-gray-500 dark:text-gray-400">{{
-                  t("admin.groups.accountsTotal")
-                }}</span>
-                <span
-                  class="ml-1 font-medium text-gray-700 dark:text-gray-300"
-                  >{{ row.account_count || 0 }}</span
-                >
-                <span
-                  class="ml-1 inline-flex items-center rounded bg-gray-100 px-1.5 py-0.5 font-medium text-gray-800 dark:bg-dark-600 dark:text-gray-300"
-                  >{{ t("admin.groups.accountsUnit") }}</span
-                >
-              </div>
+            <!-- 用 label/数字两列布局，标签灰色统一宽度，数字 tabular-nums 等宽对齐，
+                 视觉上像迷你的指标面板而不是堆叠的句子；单位放数字旁边小灰角标减少噪音 -->
+            <div class="inline-grid min-w-[8.5rem] grid-cols-[auto_1fr] items-baseline gap-x-2 gap-y-0.5 text-xs">
+              <span class="text-gray-500 dark:text-gray-400">{{ t("admin.groups.accountsAvailable") }}</span>
+              <span class="text-right font-mono tabular-nums font-semibold text-emerald-600 dark:text-emerald-400">
+                {{ (row.active_account_count || 0) - (row.rate_limited_account_count || 0) }}
+                <span class="ml-0.5 text-[10px] font-normal text-gray-400">{{ t("admin.groups.accountsUnit") }}</span>
+              </span>
+              <template v-if="row.rate_limited_account_count">
+                <span class="text-gray-500 dark:text-gray-400">{{ t("admin.groups.accountsRateLimited") }}</span>
+                <span class="text-right font-mono tabular-nums font-semibold text-amber-600 dark:text-amber-400">
+                  {{ row.rate_limited_account_count }}
+                  <span class="ml-0.5 text-[10px] font-normal text-gray-400">{{ t("admin.groups.accountsUnit") }}</span>
+                </span>
+              </template>
+              <span class="text-gray-500 dark:text-gray-400">{{ t("admin.groups.accountsTotal") }}</span>
+              <span class="text-right font-mono tabular-nums font-medium text-gray-700 dark:text-gray-300">
+                {{ row.account_count || 0 }}
+                <span class="ml-0.5 text-[10px] font-normal text-gray-400">{{ t("admin.groups.accountsUnit") }}</span>
+              </span>
             </div>
           </template>
 
@@ -2906,7 +2883,8 @@ const columns = computed<Column[]>(() => [
     key: "rate_multiplier",
     label: t("admin.groups.columns.rateMultiplier"),
     sortable: true,
-    numeric: true,
+    // 倍率是单数字标签（如 0.6x / 1.5x），不像金额需要纵向比较，居中比右对齐更对称美观
+    align: "center",
   },
   {
     key: "is_exclusive",
@@ -2918,7 +2896,9 @@ const columns = computed<Column[]>(() => [
     key: "account_count",
     label: t("admin.groups.columns.accounts"),
     sortable: true,
-    numeric: true,
+    // 账号数列内是"可用 X 个 / 限流 Y / 总量 Z"三行 chip 组合，不是单纯数字；
+    // 设 left 让 chip 块整体贴左对齐，跟其他文本列基线一致
+    align: "left",
   },
   {
     key: "capacity",

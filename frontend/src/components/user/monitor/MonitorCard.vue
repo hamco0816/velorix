@@ -16,14 +16,19 @@
         <div class="text-base font-semibold truncate text-gray-900 dark:text-gray-100">
           {{ item.name }}
         </div>
-        <div class="mt-0.5 flex items-center gap-1.5 min-w-0">
+        <!-- 一行 chip 组：provider + 模型名 + group。把模型名也做成 chip（之前是裸文字），
+             跟其他两个 chip 视觉层级一致，整行有规整韵律 -->
+        <div class="mt-1 flex flex-wrap items-center gap-1.5 min-w-0">
           <span
             class="inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium flex-shrink-0"
             :class="providerBadgeClass(item.provider)"
           >
             {{ providerLabel(item.provider) }}
           </span>
-          <span class="font-mono text-xs truncate text-gray-500 dark:text-gray-400">
+          <span
+            class="inline-flex max-w-[16ch] items-center truncate rounded-md bg-gray-100 px-1.5 py-0.5 font-mono text-[10px] font-medium text-gray-700 dark:bg-dark-700 dark:text-gray-200"
+            :title="item.primary_model"
+          >
             {{ item.primary_model }}
           </span>
           <span

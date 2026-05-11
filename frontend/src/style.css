@@ -16,26 +16,32 @@
     @apply min-h-screen;
   }
 
-  /* 自定义滚动条 - 仅针对 Firefox，避免 Chrome 取消 webkit 的全局定制 */
+  /* 滚动条样式 - Firefox：thumb 始终可见（用淡灰），hover 时加深 */
   @supports (-moz-appearance:none) {
     * {
       scrollbar-width: thin;
-      scrollbar-color: transparent transparent;
+      scrollbar-color: rgba(156, 163, 175, 0.4) transparent;
     }
 
     *:hover,
     *:focus-within {
-      scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+      scrollbar-color: rgba(107, 114, 128, 0.6) transparent;
+    }
+
+    .dark * {
+      scrollbar-color: rgba(75, 85, 99, 0.4) transparent;
     }
 
     .dark *:hover,
     .dark *:focus-within {
-      scrollbar-color: rgba(75, 85, 99, 0.5) transparent;
+      scrollbar-color: rgba(107, 114, 128, 0.7) transparent;
     }
   }
 
+  /* WebKit 滚动条：原 h-2 w-2 + 完全透明 thumb 导致用户根本看不见/选不到滚动条
+     改为 3 = 12px 宽，thumb 默认就有可见颜色，hover 时加深，与 macOS/iOS 体验一致 */
   ::-webkit-scrollbar {
-    @apply h-2 w-2;
+    @apply h-3 w-3;
   }
 
   ::-webkit-scrollbar-track {
@@ -43,16 +49,31 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply rounded-full bg-transparent;
+    @apply rounded-full;
+    background-color: rgba(156, 163, 175, 0.4);
     transition: background-color 0.2s ease;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background-color: rgba(75, 85, 99, 0.5);
   }
 
   *:hover::-webkit-scrollbar-thumb {
-    @apply bg-gray-300/50 dark:bg-dark-600/50;
+    background-color: rgba(107, 114, 128, 0.6);
   }
 
-  *:hover::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400 dark:bg-dark-500;
+  .dark *:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(107, 114, 128, 0.7);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(75, 85, 99, 0.8) !important;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(156, 163, 175, 0.8) !important;
   }
 
   /* 选中文本：用琥珀点睛，避免棕灰底色看上去脏 */
