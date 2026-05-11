@@ -27,8 +27,13 @@ func RegisterAuthRoutes(
 	// 用于防止单 IP 在更长窗口内（如 1 小时）通过 Gmail 别名 / 点号变体批量注册薅奖励。
 	// max=0 表示关闭（不影响请求）；>=1 配合 windowMinutes 形成滑动窗口。
 	// Redis 故障策略沿用 fail-close（注册暂拒，不影响其他业务）。
+	// nil 防御：测试场景下 settingService 可能为 nil，此时直接放行（生产环境永远不为 nil）
 	registerIPBusinessLimit := func(keyTag string) gin.HandlerFunc {
 		return func(c *gin.Context) {
+			if settingService == nil {
+				c.Next()
+				return
+			}
 			maxCount, windowMinutes := settingService.GetRegisterIPLimitConfig(c.Request.Context())
 			if maxCount <= 0 {
 				c.Next()

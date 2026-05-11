@@ -167,8 +167,23 @@
                     <span class="badge" :class="statusClass(item.status)">{{ statusText(item.status) }}</span>
                     <div v-if="item.reviewed_at" class="mt-1 text-xs text-gray-500">{{ formatDate(item.reviewed_at) }}</div>
                   </td>
-                  <td class="table-td max-w-[380px]">
-                    <div class="line-clamp-3 text-sm text-gray-700 dark:text-gray-300">{{ item.prompt_preview || '-' }}</div>
+                  <td class="table-td max-w-[420px] align-top">
+                    <!-- 默认 line-clamp-3 紧凑，点"展开"显示完整 prompt（后端已截断到 1000 字符）。
+                         admin 复核时需要完整内容判断违规，原来只显示头 3 行 + "..." 无法判断 -->
+                    <div v-if="item.prompt_preview" class="text-sm text-gray-700 dark:text-gray-300">
+                      <div
+                        :class="expandedRows[item.id] ? 'whitespace-pre-wrap break-words' : 'line-clamp-3'"
+                      >{{ item.prompt_preview }}</div>
+                      <button
+                        v-if="(item.prompt_preview?.length || 0) > 80"
+                        type="button"
+                        class="mt-1 text-xs font-medium text-primary-600 hover:text-primary-700 hover:underline dark:text-primary-400"
+                        @click="toggleExpand(item.id)"
+                      >
+                        {{ expandedRows[item.id] ? '收起' : '展开完整内容' }}
+                      </button>
+                    </div>
+                    <div v-else class="text-sm text-gray-400">-</div>
                     <div v-if="item.request_id || item.client_request_id" class="mt-1 text-xs text-gray-500">
                       {{ item.request_id || item.client_request_id }}
                     </div>
@@ -253,6 +268,12 @@ interface RiskStat {
 const appStore = useAppStore()
 const loading = ref(false)
 const events = ref<SafetyRiskEvent[]>([])
+// 行级 prompt 展开状态：复核时需要看完整内容，但默认 line-clamp-3 保持表格紧凑。
+// 切换 page / filter 时不重置（admin 可能展开了再翻页比较）
+const expandedRows = ref<Record<number, boolean>>({})
+function toggleExpand(id: number) {
+  expandedRows.value[id] = !expandedRows.value[id]
+}
 const selectedClearEvent = ref<SafetyRiskEvent | null>(null)
 const clearDialogVisible = ref(false)
 const userIdInput = ref('')
