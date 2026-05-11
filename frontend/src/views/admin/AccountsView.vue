@@ -254,6 +254,20 @@
           <template #cell-groups="{ row }">
             <AccountGroupsCell :groups="row.groups" :max-display="4" />
           </template>
+          <template #header-usage="{ column }">
+            <div class="flex items-center gap-1">
+              <span>{{ column.label }}</span>
+              <!-- ❓ 帮助 tooltip：用量窗口数据来自上游订阅配额，运营第一次看到这一列容易跟"平台计费 cost"混为一谈 -->
+              <span class="group relative cursor-help">
+                <Icon name="infoCircle" size="xs" class="h-3.5 w-3.5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
+                <span
+                  class="pointer-events-none absolute left-0 top-full z-50 mt-1 w-80 whitespace-normal break-words rounded bg-gray-900 px-3 py-2 text-xs font-normal normal-case leading-relaxed text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100 dark:bg-gray-700"
+                >
+                  {{ t('admin.accounts.usageWindowHelp') }}
+                </span>
+              </span>
+            </div>
+          </template>
           <template #cell-usage="{ row }">
             <AccountUsageCell
               :account="row"

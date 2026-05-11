@@ -2923,6 +2923,7 @@ export default {
         expiresAt: '过期时间',
         actions: '操作'
       },
+      usageWindowHelp: '此列展示账号在上游（OpenAI / Anthropic / Antigravity 等）订阅自身的剩余配额。5h / 7d 是滚动窗口（不是日历日），passive 表示被动采样（最近请求时顺带捞到的快照），点小刷新 ⟳ 主动查最新值。它跟本平台计费的 token 数 / cost 没有直接换算关系。',
       allPrivacyModes: '全部Privacy状态',
       privacyUnset: '未设置',
       privacyTrainingOff: '已关闭训练数据共享',

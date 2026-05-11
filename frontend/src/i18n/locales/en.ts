@@ -2880,6 +2880,7 @@ export default {
         expiresAt: 'Expires At',
         actions: 'Actions'
       },
+      usageWindowHelp: 'This column shows the account\'s remaining quota on the upstream subscription itself (OpenAI / Anthropic / Antigravity, etc.). 5h / 7d are rolling windows (not calendar days). "passive" means the snapshot was opportunistically captured from recent requests; click the small ⟳ to actively fetch a fresh value. This does NOT directly correspond to tokens or cost billed by this platform.',
       allPrivacyModes: 'All Privacy States',
       privacyUnset: 'Unset',
       privacyTrainingOff: 'Training data sharing disabled',

@@ -7,8 +7,8 @@
   >
     <!-- Platform logo -->
     <PlatformIcon v-if="platform" :platform="platform" size="sm" />
-    <!-- Group name -->
-    <span class="truncate">{{ name }}</span>
+    <!-- Group name：超长仍然 truncate 防止撑爆列；title 兜底让运营 hover 看完整名 -->
+    <span class="truncate" :title="name">{{ name }}</span>
     <!-- Right side label -->
     <span v-if="showLabel" :class="labelClass">
       <template v-if="hasCustomRate">

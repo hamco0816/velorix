@@ -10,7 +10,7 @@
         :subscription-type="group.subscription_type"
         :rate-multiplier="group.rate_multiplier"
         :show-rate="false"
-        class="max-w-24"
+        class="max-w-48"
       />
       <!-- 更多数量徽章 -->
       <button
