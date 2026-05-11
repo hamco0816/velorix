@@ -257,15 +257,11 @@
           <template #header-usage="{ column }">
             <div class="flex items-center gap-1">
               <span>{{ column.label }}</span>
-              <!-- ❓ 帮助 tooltip：用量窗口数据来自上游订阅配额，运营第一次看到这一列容易跟"平台计费 cost"混为一谈 -->
-              <span class="group relative cursor-help">
-                <Icon name="infoCircle" size="xs" class="h-3.5 w-3.5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" />
-                <span
-                  class="pointer-events-none absolute left-0 top-full z-50 mt-1 w-80 whitespace-normal break-words rounded bg-gray-900 px-3 py-2 text-xs font-normal normal-case leading-relaxed text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100 dark:bg-gray-700"
-                >
-                  {{ t('admin.accounts.usageWindowHelp') }}
-                </span>
-              </span>
+              <!-- 用 Teleport 方案的 HelpTooltip 替代原 absolute tooltip：
+                   原来 absolute+w-80 在表头里向右展开 320px 会跨列遮挡下一列数据；
+                   HelpTooltip 用 fixed 浮在 body 顶层、水平居中 trigger、显示在上方带箭头，
+                   不再受 thead 或列宽影响 -->
+              <HelpTooltip :content="t('admin.accounts.usageWindowHelp')" width-class="w-80" />
             </div>
           </template>
           <template #cell-usage="{ row }">
@@ -397,6 +393,7 @@ import DataTable from '@/components/common/DataTable.vue'
 import type { Column } from '@/components/common/types'
 import Pagination from '@/components/common/Pagination.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import HelpTooltip from '@/components/common/HelpTooltip.vue'
 import { CreateAccountModal, EditAccountModal, BulkEditAccountModal, SyncFromCrsModal, TempUnschedStatusModal } from '@/components/account'
 import AccountTableActions from '@/components/admin/account/AccountTableActions.vue'
 import AccountTableFilters from '@/components/admin/account/AccountTableFilters.vue'
