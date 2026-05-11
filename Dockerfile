@@ -31,7 +31,12 @@ RUN pnpm install --frozen-lockfile
 
 # Copy frontend source and build
 COPY frontend/ ./
-RUN pnpm run build
+# 拆分 prebuild / typecheck / vite build 三个独立 RUN，
+# Docker buildx summary 失败时能直接告诉我们是哪一步挂的，便于定位。
+# 完成调试后可以恢复成 `RUN pnpm run build` 一行。
+RUN node scripts/clean-dist.mjs
+RUN pnpm exec vue-tsc --noEmit
+RUN pnpm exec vite build
 
 # -----------------------------------------------------------------------------
 # Stage 2: Backend Builder
