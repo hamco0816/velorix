@@ -2496,6 +2496,8 @@ export default {
       flagPriorityTip: 'Supports priority service tier',
       empty: 'No matching models',
       tableFooter: 'Showing {shown} / {total} models',
+      tabAll: 'All',
+      tabOthers: 'Others',
       errors: {},
     },
     channelMonitor: {

@@ -182,7 +182,7 @@ const columns = computed<Column[]>(() => {
       { key: 'inviter', label: t('admin.affiliates.records.inviter'), sortable: true },
       { key: 'invitee', label: t('admin.affiliates.records.invitee'), sortable: true },
       { key: 'aff_code', label: t('admin.affiliates.records.affCode'), sortable: true },
-      { key: 'total_rebate', label: t('admin.affiliates.records.totalRebate'), sortable: true },
+      { key: 'total_rebate', label: t('admin.affiliates.records.totalRebate'), sortable: true, numeric: true },
       { key: 'created_at', label: t('admin.affiliates.records.invitedAt'), sortable: true },
     ]
   }
@@ -191,21 +191,21 @@ const columns = computed<Column[]>(() => {
       { key: 'order', label: t('admin.affiliates.records.order'), sortable: true },
       { key: 'inviter', label: t('admin.affiliates.records.inviter'), sortable: true },
       { key: 'invitee', label: t('admin.affiliates.records.invitee'), sortable: true },
-      { key: 'order_amount', label: t('admin.affiliates.records.orderAmount'), sortable: true },
-      { key: 'pay_amount', label: t('admin.affiliates.records.payAmount'), sortable: true },
-      { key: 'rebate_amount', label: t('admin.affiliates.records.rebateAmount') },
-      { key: 'payment_type', label: t('admin.affiliates.records.paymentType'), sortable: true },
-      { key: 'order_status', label: t('admin.affiliates.records.orderStatus'), sortable: true },
+      { key: 'order_amount', label: t('admin.affiliates.records.orderAmount'), sortable: true, numeric: true },
+      { key: 'pay_amount', label: t('admin.affiliates.records.payAmount'), sortable: true, numeric: true },
+      { key: 'rebate_amount', label: t('admin.affiliates.records.rebateAmount'), numeric: true },
+      { key: 'payment_type', label: t('admin.affiliates.records.paymentType'), sortable: true, align: 'center' },
+      { key: 'order_status', label: t('admin.affiliates.records.orderStatus'), sortable: true, align: 'center' },
       { key: 'created_at', label: t('admin.affiliates.records.rebatedAt'), sortable: true },
     ]
   }
   return [
     { key: 'user', label: t('admin.affiliates.records.user'), sortable: true },
-    { key: 'amount', label: t('admin.affiliates.records.transferAmount'), sortable: true },
-    { key: 'balance_after', label: t('admin.affiliates.records.balanceAfter'), sortable: true },
-    { key: 'available_quota_after', label: t('admin.affiliates.records.availableQuotaAfter'), sortable: true },
-    { key: 'frozen_quota_after', label: t('admin.affiliates.records.frozenQuotaAfter'), sortable: true },
-    { key: 'history_quota_after', label: t('admin.affiliates.records.historyQuotaAfter'), sortable: true },
+    { key: 'amount', label: t('admin.affiliates.records.transferAmount'), sortable: true, numeric: true },
+    { key: 'balance_after', label: t('admin.affiliates.records.balanceAfter'), sortable: true, numeric: true },
+    { key: 'available_quota_after', label: t('admin.affiliates.records.availableQuotaAfter'), sortable: true, numeric: true },
+    { key: 'frozen_quota_after', label: t('admin.affiliates.records.frozenQuotaAfter'), sortable: true, numeric: true },
+    { key: 'history_quota_after', label: t('admin.affiliates.records.historyQuotaAfter'), sortable: true, numeric: true },
     { key: 'created_at', label: t('admin.affiliates.records.transferredAt'), sortable: true },
   ]
 })

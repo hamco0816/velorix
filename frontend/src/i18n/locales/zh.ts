@@ -2578,6 +2578,8 @@ export default {
       flagPriorityTip: '该模型支持 priority service tier',
       empty: '没有匹配的模型',
       tableFooter: '显示 {shown} / {total} 个模型',
+      tabAll: '全部',
+      tabOthers: '其他',
       errors: {},
     },
     channelMonitor: {

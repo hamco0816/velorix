@@ -668,11 +668,11 @@ interface PlatformSection {
 const columns = computed<Column[]>(() => [
   { key: 'name', label: t('admin.channels.columns.name', 'Name'), sortable: true },
   { key: 'description', label: t('admin.channels.columns.description', 'Description'), sortable: false },
-  { key: 'status', label: t('admin.channels.columns.status', 'Status'), sortable: true },
-  { key: 'group_count', label: t('admin.channels.columns.groups', 'Groups'), sortable: false },
-  { key: 'pricing_count', label: t('admin.channels.columns.pricing', 'Pricing'), sortable: false },
+  { key: 'status', label: t('admin.channels.columns.status', 'Status'), sortable: true, align: 'center' },
+  { key: 'group_count', label: t('admin.channels.columns.groups', 'Groups'), sortable: false, align: 'center' },
+  { key: 'pricing_count', label: t('admin.channels.columns.pricing', 'Pricing'), sortable: false, align: 'center' },
   { key: 'created_at', label: t('admin.channels.columns.createdAt', 'Created'), sortable: true },
-  { key: 'actions', label: t('admin.channels.columns.actions', 'Actions'), sortable: false }
+  { key: 'actions', label: t('admin.channels.columns.actions', 'Actions'), sortable: false, align: 'center' }
 ])
 
 const statusFilterOptions = computed(() => [

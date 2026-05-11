@@ -82,40 +82,74 @@
         </p>
       </div>
 
+      <!-- Provider tabs：187 个模型直接铺平阅读体验差，按上游分桶后单 tab 内只有几十条 -->
+      <div class="flex flex-wrap items-center gap-2">
+        <button
+          v-for="tab in providerTabs"
+          :key="tab.key"
+          type="button"
+          class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors"
+          :class="tab.key === activeProvider
+            ? 'border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-700 dark:bg-amber-900/30 dark:text-amber-200'
+            : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50 dark:border-dark-600 dark:bg-dark-900 dark:text-gray-300 dark:hover:border-dark-500'"
+          @click="activeProvider = tab.key"
+        >
+          {{ tab.label }}
+          <span class="rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-gray-600 dark:bg-dark-700 dark:text-gray-300">
+            {{ tab.count }}
+          </span>
+        </button>
+      </div>
+
       <!-- 表格 -->
       <div class="card overflow-hidden">
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200 dark:divide-dark-700">
-            <thead class="bg-gray-50 dark:bg-dark-800">
+            <!-- sticky thead：长列表滚到中段表头仍可见，比起设固定高度 + 表内滚动更顺手（避免与页面滚动条争夺） -->
+            <thead class="sticky top-0 z-10 bg-gray-50 dark:bg-dark-800">
               <tr>
-                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400">{{ t('admin.pricing.col.model') }}</th>
-                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400">{{ t('admin.pricing.col.provider') }}</th>
-                <th class="px-4 py-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400">{{ t('admin.pricing.col.input') }}</th>
-                <th class="px-4 py-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400">{{ t('admin.pricing.col.output') }}</th>
-                <th class="px-4 py-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400">{{ t('admin.pricing.col.cacheRead') }}</th>
-                <th class="px-4 py-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400">{{ t('admin.pricing.col.cacheWrite') }}</th>
-                <th class="px-4 py-2 text-center text-xs font-semibold text-gray-500 dark:text-gray-400">{{ t('admin.pricing.col.flags') }}</th>
+                <th
+                  v-for="col in tableColumns"
+                  :key="col.key"
+                  :class="[
+                    'px-4 py-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400',
+                    col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left',
+                    col.sortable ? 'cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-dark-700' : '',
+                  ]"
+                  @click="col.sortable ? toggleSort(col.key as SortKey) : undefined"
+                >
+                  <span class="inline-flex items-center gap-1">
+                    {{ col.label }}
+                    <template v-if="col.sortable && sortKey === col.key">
+                      <Icon :name="sortDir === 'asc' ? 'chevronUp' : 'chevronDown'" size="sm" />
+                    </template>
+                    <template v-else-if="col.sortable">
+                      <span class="text-[9px] text-gray-300 dark:text-gray-600">⇅</span>
+                    </template>
+                  </span>
+                </th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 dark:divide-dark-700">
-              <tr v-for="row in filteredRows" :key="row.model" class="text-sm hover:bg-gray-50 dark:hover:bg-dark-800">
-                <td class="px-4 py-2 font-mono text-xs text-gray-900 dark:text-white">{{ row.model }}</td>
-                <td class="px-4 py-2">
+              <!-- align-middle 保证每行内容垂直居中（chips/数字/badge 混排高度不一时不再上下错位） -->
+              <tr v-for="row in sortedRows" :key="row.model" class="align-middle text-sm hover:bg-gray-50 dark:hover:bg-dark-800">
+                <td class="px-4 py-2.5 text-left font-mono text-xs text-gray-900 dark:text-white">{{ row.model }}</td>
+                <td class="px-4 py-2.5 text-left">
                   <span :class="['rounded-full px-2 py-0.5 text-[11px] font-semibold', providerPillClass(row.provider)]">
                     {{ row.provider || '—' }}
                   </span>
                 </td>
-                <td class="px-4 py-2 text-right font-mono tabular-nums text-gray-900 dark:text-gray-100">{{ formatPriceMTok(row.input_cost_per_token) }}</td>
-                <td class="px-4 py-2 text-right font-mono tabular-nums text-gray-900 dark:text-gray-100">{{ formatPriceMTok(row.output_cost_per_token) }}</td>
-                <td class="px-4 py-2 text-right font-mono tabular-nums text-gray-700 dark:text-gray-300">{{ formatPriceMTok(row.cache_read_input_token_cost) }}</td>
-                <td class="px-4 py-2 text-right font-mono tabular-nums text-gray-700 dark:text-gray-300">{{ formatPriceMTok(row.cache_creation_input_token_cost) }}</td>
-                <td class="px-4 py-2 text-center text-xs">
+                <td class="px-4 py-2.5 text-right font-mono tabular-nums text-gray-900 dark:text-gray-100">{{ formatPriceMTok(row.input_cost_per_token) }}</td>
+                <td class="px-4 py-2.5 text-right font-mono tabular-nums text-gray-900 dark:text-gray-100">{{ formatPriceMTok(row.output_cost_per_token) }}</td>
+                <td class="px-4 py-2.5 text-right font-mono tabular-nums text-gray-700 dark:text-gray-300">{{ formatPriceMTok(row.cache_read_input_token_cost) }}</td>
+                <td class="px-4 py-2.5 text-right font-mono tabular-nums text-gray-700 dark:text-gray-300">{{ formatPriceMTok(row.cache_creation_input_token_cost) }}</td>
+                <td class="px-4 py-2.5 text-center text-xs">
                   <span v-if="row.supports_prompt_caching" class="mr-1 inline-block rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300" :title="t('admin.pricing.flagCachingTip')">cache</span>
                   <span v-if="row.supports_service_tier" class="mr-1 inline-block rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-medium text-violet-700 dark:bg-violet-900/30 dark:text-violet-300" :title="t('admin.pricing.flagPriorityTip')">priority</span>
                   <span v-if="row.mode" class="inline-block rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600 dark:bg-dark-700 dark:text-gray-300">{{ row.mode }}</span>
                 </td>
               </tr>
-              <tr v-if="!loading && filteredRows.length === 0">
+              <tr v-if="!loading && sortedRows.length === 0">
                 <td colspan="7" class="py-12 text-center text-sm text-gray-400">
                   {{ t('admin.pricing.empty') }}
                 </td>
@@ -129,8 +163,8 @@
             </tbody>
           </table>
         </div>
-        <div v-if="filteredRows.length > 0" class="border-t border-gray-100 px-4 py-2 text-xs text-gray-500 dark:border-dark-700 dark:text-gray-400">
-          {{ t('admin.pricing.tableFooter', { shown: filteredRows.length, total: pricingRows.length }) }}
+        <div v-if="sortedRows.length > 0" class="border-t border-gray-100 px-4 py-2 text-xs text-gray-500 dark:border-dark-700 dark:text-gray-400">
+          {{ t('admin.pricing.tableFooter', { shown: sortedRows.length, total: pricingRows.length }) }}
         </div>
       </div>
     </div>
@@ -165,6 +199,64 @@ const accounts = ref<Account[]>([])
 const selectedGroupId = ref<number | null>(null)
 const selectedAccountId = ref<number | null>(null)
 const searchQuery = ref('')
+
+// Provider tabs：187 个模型分桶，按 LiteLLM provider 字段聚类
+type ProviderTabKey = 'all' | 'anthropic' | 'openai' | 'google' | 'others'
+const activeProvider = ref<ProviderTabKey>('all')
+
+// 表格排序
+type SortKey = 'model' | 'provider' | 'input' | 'output' | 'cacheRead' | 'cacheWrite'
+const sortKey = ref<SortKey>('model')
+const sortDir = ref<'asc' | 'desc'>('asc')
+
+function toggleSort(key: SortKey) {
+  if (sortKey.value === key) {
+    sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    sortKey.value = key
+    sortDir.value = 'asc'
+  }
+}
+
+interface TableColumn {
+  key: 'model' | 'provider' | 'input' | 'output' | 'cacheRead' | 'cacheWrite' | 'flags'
+  label: string
+  align: 'left' | 'right' | 'center'
+  sortable: boolean
+}
+
+const tableColumns = computed<TableColumn[]>(() => [
+  { key: 'model', label: t('admin.pricing.col.model'), align: 'left', sortable: true },
+  { key: 'provider', label: t('admin.pricing.col.provider'), align: 'left', sortable: true },
+  { key: 'input', label: t('admin.pricing.col.input'), align: 'right', sortable: true },
+  { key: 'output', label: t('admin.pricing.col.output'), align: 'right', sortable: true },
+  { key: 'cacheRead', label: t('admin.pricing.col.cacheRead'), align: 'right', sortable: true },
+  { key: 'cacheWrite', label: t('admin.pricing.col.cacheWrite'), align: 'right', sortable: true },
+  { key: 'flags', label: t('admin.pricing.col.flags'), align: 'center', sortable: false },
+])
+
+// 把 LiteLLM provider 字段聚类到 4 个 tab：anthropic / openai（含 codex）/ google（含 gemini/vertex）/ others
+function providerBucket(provider: string): Exclude<ProviderTabKey, 'all'> {
+  const p = (provider || '').toLowerCase()
+  if (p.includes('anthropic')) return 'anthropic'
+  if (p.includes('openai') || p.includes('codex')) return 'openai'
+  if (p.includes('google') || p.includes('gemini') || p.includes('vertex')) return 'google'
+  return 'others'
+}
+
+const providerTabs = computed(() => {
+  const counts: Record<Exclude<ProviderTabKey, 'all'>, number> = {
+    anthropic: 0, openai: 0, google: 0, others: 0,
+  }
+  for (const r of pricingRows.value) counts[providerBucket(r.provider)]++
+  return [
+    { key: 'all' as ProviderTabKey, label: t('admin.pricing.tabAll'), count: pricingRows.value.length },
+    { key: 'anthropic' as ProviderTabKey, label: 'Anthropic', count: counts.anthropic },
+    { key: 'openai' as ProviderTabKey, label: 'OpenAI', count: counts.openai },
+    { key: 'google' as ProviderTabKey, label: 'Google', count: counts.google },
+    { key: 'others' as ProviderTabKey, label: t('admin.pricing.tabOthers'), count: counts.others },
+  ]
+})
 
 const viewModeOptions = computed(() => [
   { value: 'default', label: t('admin.pricing.viewMode_default') },
@@ -227,12 +319,38 @@ function providerPillClass(provider: string): string {
   return 'bg-gray-50 text-gray-600 ring-1 ring-gray-200 dark:bg-dark-800 dark:text-gray-400 dark:ring-dark-600'
 }
 
+// 先按 provider tab 过滤、再按搜索过滤；最后由 sortedRows 应用排序
 const filteredRows = computed(() => {
+  let rows = pricingRows.value
+  if (activeProvider.value !== 'all') {
+    rows = rows.filter((r) => providerBucket(r.provider) === activeProvider.value)
+  }
   const q = searchQuery.value.trim().toLowerCase()
-  if (!q) return pricingRows.value
-  return pricingRows.value.filter(
-    (r) => r.model.toLowerCase().includes(q) || (r.provider || '').toLowerCase().includes(q),
-  )
+  if (q) {
+    rows = rows.filter((r) => r.model.toLowerCase().includes(q) || (r.provider || '').toLowerCase().includes(q))
+  }
+  return rows
+})
+
+// 排序：model/provider 按字典序；价格列按数值（不应用倍率，因为倍率全表统一）
+const sortedRows = computed(() => {
+  const list = [...filteredRows.value]
+  const dir = sortDir.value === 'asc' ? 1 : -1
+  list.sort((a, b) => {
+    let av: number | string = ''
+    let bv: number | string = ''
+    switch (sortKey.value) {
+      case 'model': av = a.model; bv = b.model; break
+      case 'provider': av = a.provider || ''; bv = b.provider || ''; break
+      case 'input': av = a.input_cost_per_token; bv = b.input_cost_per_token; break
+      case 'output': av = a.output_cost_per_token; bv = b.output_cost_per_token; break
+      case 'cacheRead': av = a.cache_read_input_token_cost; bv = b.cache_read_input_token_cost; break
+      case 'cacheWrite': av = a.cache_creation_input_token_cost; bv = b.cache_creation_input_token_cost; break
+    }
+    if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * dir
+    return String(av).localeCompare(String(bv)) * dir
+  })
+  return list
 })
 
 async function loadPricing() {

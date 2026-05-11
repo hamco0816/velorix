@@ -3,7 +3,7 @@
     <table class="w-full table-fixed border-collapse text-sm">
       <thead>
         <tr class="border-b border-gray-100 bg-gray-50/50 text-xs font-medium uppercase tracking-wide text-gray-500 dark:border-dark-700 dark:bg-dark-800/50 dark:text-gray-400">
-          <th class="w-[180px] px-4 py-3 text-center">{{ columns.name }}</th>
+          <th class="w-[180px] px-4 py-3 text-left">{{ columns.name }}</th>
           <th class="w-[200px] px-4 py-3 text-left">{{ columns.description }}</th>
           <th class="w-[140px] px-4 py-3 text-left">{{ columns.platform }}</th>
           <th class="px-4 py-3 text-left">{{ columns.groups }}</th>
@@ -43,7 +43,7 @@
           <td
             v-if="secIdx === 0"
             :rowspan="channel.platforms.length"
-            class="px-4 py-3 text-center align-middle font-medium text-gray-900 dark:text-white"
+            class="px-4 py-3 text-left align-middle font-medium text-gray-900 dark:text-white"
           >
             {{ channel.name }}
           </td>

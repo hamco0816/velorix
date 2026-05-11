@@ -639,9 +639,14 @@ const getStickyColumnClass = (column: Column, index: number) => {
   return classes.join(' ')
 }
 
-// 解析列对齐方向：显式 align 优先；未声明时统一默认居中
+// 解析列对齐方向：显式 align 优先；numeric: true 默认右对齐；其余默认左对齐。
+// 默认改为 left 的原因：admin 表格多数列是文本/chips/多行块，居中会导致每行内容
+// 相对表头视觉轴线漂移。需要居中的列（操作按钮、单图标状态、开关）请在列定义里显式
+// align: 'center'。numeric 列默认右对齐符合行业惯例（金额/数量靠右便于纵向比较）。
 const resolveColumnAlign = (column: Column): 'left' | 'center' | 'right' => {
-  return column.align ?? 'center'
+  if (column.align) return column.align
+  if (column.numeric) return 'right'
+  return 'left'
 }
 
 // 列对齐：同时作用于表头与单元格的文本对齐；numeric 列叠加 tabular-nums 等宽数字
