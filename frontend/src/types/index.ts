@@ -178,13 +178,15 @@ export interface CustomEndpoint {
   description: string
 }
 
-export type ContactMethodType = 'qq' | 'wechat' | 'custom'
+export type ContactMethodType = 'qq' | 'qq_group' | 'wechat' | 'custom'
 
 export interface ContactMethod {
   type: ContactMethodType | string
   label: string
   value: string
   url?: string
+  // qq_group 等以二维码为主的方式：admin 上传图片后存为 data:image/png;base64,... 字符串
+  image_data?: string
 }
 
 export interface PublicSettings {

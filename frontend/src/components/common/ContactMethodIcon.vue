@@ -75,14 +75,15 @@ const props = withDefaults(defineProps<{
 
 const resolvedType = computed(() => normalizeContactMethodType(props.type))
 
+// qq_group 共用 QQ icon（同品牌），靠 admin 上传的二维码 + label 来区分语义
 const iconDefinition = computed<IconDefinition | null>(() => {
-  if (resolvedType.value === 'qq') return QqCircleFilled
+  if (resolvedType.value === 'qq' || resolvedType.value === 'qq_group') return QqCircleFilled
   if (resolvedType.value === 'wechat') return WechatFilled
   return null
 })
 
 const brandColor = computed(() => {
-  if (resolvedType.value === 'qq') return '#12B7F5'
+  if (resolvedType.value === 'qq' || resolvedType.value === 'qq_group') return '#12B7F5'
   if (resolvedType.value === 'wechat') return '#07C160'
   return '#6B7280'
 })
@@ -93,6 +94,7 @@ const resolvedSize = computed(() =>
 
 const altText = computed(() => {
   if (resolvedType.value === 'qq') return 'QQ'
+  if (resolvedType.value === 'qq_group') return 'QQ Group'
   if (resolvedType.value === 'wechat') return 'WeChat'
   return 'Contact'
 })

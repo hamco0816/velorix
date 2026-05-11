@@ -350,6 +350,12 @@ export default {
     }
   },
 
+  // Contact methods display (用户端联系客服面板)
+  contactMethods: {
+    viewQrCode: '点击查看二维码',
+    scanQrHint: '使用手机扫描二维码以联系/加入',
+  },
+
   // Common
   common: {
     loading: '加载中...',
@@ -5516,6 +5522,7 @@ export default {
         contactInfoPlaceholder: '例如：QQ: 123456789',
         contactInfoHint: '可配置多个客服联系方式，会展示在兑换页面、个人资料和用户菜单等位置。',
         addQQContact: '添加 QQ',
+        addQQGroupContact: '添加 QQ 群',
         addWeChatContact: '添加微信',
         contactMethodsEmpty: '暂未配置客服联系方式，用户侧不会显示客服入口。',
         contactMethodType: '类型',
@@ -5524,8 +5531,18 @@ export default {
         contactMethodUrl: '跳转链接',
         contactMethodUrlPlaceholder: '可选，例如 https://example.com/contact',
         contactValueQQPlaceholder: '输入 QQ 号',
+        contactValueQQGroupPlaceholder: '输入群号（可选，主要靠二维码扫码加入）',
         contactValueWeChatPlaceholder: '输入微信号',
         contactValueCustomPlaceholder: '输入联系方式',
+        contactMethodQrCode: '二维码',
+        contactMethodAddQr: '上传二维码（可选）',
+        contactMethodUploadQr: '上传图片',
+        contactMethodReplaceQr: '更换图片',
+        contactMethodQrHint: '建议 ≤48KB，PNG/JPG/WebP/GIF。直接 base64 存到设置，用户点联系方式时弹出大图扫码。',
+        contactMethodQrTypeError: '仅支持 PNG / JPG / WebP / GIF 图片',
+        contactMethodQrSizeError: '图片 {sizeKb}KB 超过 {maxKb}KB 上限，请先压缩',
+        contactMethodQrTooBigAfterEncode: '图片转 base64 后超过后端 64KB 上限，请压缩后重传',
+        contactMethodQrReadError: '读取图片失败，请重试',
         docUrl: '文档链接',
         docUrlHint: '文档网站的链接。留空则隐藏文档链接。',
         docUrlPlaceholder: 'https://docs.example.com',

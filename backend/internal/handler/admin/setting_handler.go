@@ -43,10 +43,11 @@ func contactMethodsToDTO(methods []service.ContactMethod) []dto.ContactMethod {
 	out := make([]dto.ContactMethod, 0, len(normalized))
 	for _, method := range normalized {
 		out = append(out, dto.ContactMethod{
-			Type:  method.Type,
-			Label: method.Label,
-			Value: method.Value,
-			URL:   method.URL,
+			Type:      method.Type,
+			Label:     method.Label,
+			Value:     method.Value,
+			URL:       method.URL,
+			ImageData: method.ImageData,
 		})
 	}
 	return out
@@ -59,10 +60,11 @@ func contactMethodsFromRequest(methods *[]dto.ContactMethod, fallback string) []
 	out := make([]service.ContactMethod, 0, len(*methods))
 	for _, method := range *methods {
 		out = append(out, service.ContactMethod{
-			Type:  method.Type,
-			Label: method.Label,
-			Value: method.Value,
-			URL:   method.URL,
+			Type:      method.Type,
+			Label:     method.Label,
+			Value:     method.Value,
+			URL:       method.URL,
+			ImageData: method.ImageData,
 		})
 	}
 	return service.NormalizeContactMethods(out, fallback)

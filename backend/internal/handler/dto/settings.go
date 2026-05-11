@@ -23,11 +23,14 @@ type CustomEndpoint struct {
 }
 
 // ContactMethod represents one public customer-service contact channel.
+// ImageData 用于 qq_group 等需要二维码扫码的场景，存为 data:image/...;base64,xxx 字符串。
+// 跟 site_logo 同款 base64 inline 方案，避免引入文件上传服务；前端展示时点 icon 弹出大图。
 type ContactMethod struct {
-	Type  string `json:"type"`
-	Label string `json:"label"`
-	Value string `json:"value"`
-	URL   string `json:"url,omitempty"`
+	Type      string `json:"type"`
+	Label     string `json:"label"`
+	Value     string `json:"value"`
+	URL       string `json:"url,omitempty"`
+	ImageData string `json:"image_data,omitempty"`
 }
 
 // SystemSettings represents the admin settings API response payload.

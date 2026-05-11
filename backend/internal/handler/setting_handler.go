@@ -22,10 +22,11 @@ func serviceContactMethodsToDTO(methods []service.ContactMethod) []dto.ContactMe
 	out := make([]dto.ContactMethod, 0, len(normalized))
 	for _, method := range normalized {
 		out = append(out, dto.ContactMethod{
-			Type:  method.Type,
-			Label: method.Label,
-			Value: method.Value,
-			URL:   method.URL,
+			Type:      method.Type,
+			Label:     method.Label,
+			Value:     method.Value,
+			URL:       method.URL,
+			ImageData: method.ImageData,
 		})
 	}
 	return out

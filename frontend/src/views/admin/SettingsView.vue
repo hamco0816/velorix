@@ -3899,6 +3899,14 @@
                     </button>
                     <button
                       type="button"
+                      class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:border-sky-300 hover:text-sky-700 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-100"
+                      @click="addContactMethod('qq_group')"
+                    >
+                      <ContactMethodIcon type="qq_group" size="18px" />
+                      {{ t("admin.settings.site.addQQGroupContact") }}
+                    </button>
+                    <button
+                      type="button"
                       class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:border-emerald-300 hover:text-emerald-700 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-100"
                       @click="addContactMethod('wechat')"
                     >
@@ -3997,6 +4005,59 @@
                         class="input text-sm"
                         :placeholder="t('admin.settings.site.contactMethodUrlPlaceholder')"
                       />
+                    </div>
+                    <!-- 二维码上传：QQ群类型默认展开；其他类型可点链接展开（有些客户也想给 wechat 客服贴个二维码） -->
+                    <div class="md:col-span-2">
+                      <div v-if="method.type === 'qq_group' || method.image_data || expandedQrIndex === index">
+                        <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                          {{ t("admin.settings.site.contactMethodQrCode") }}
+                        </label>
+                        <div class="flex items-start gap-3">
+                          <div
+                            v-if="method.image_data"
+                            class="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-dark-600"
+                          >
+                            <img :src="method.image_data" alt="QR" class="h-full w-full object-contain" />
+                            <button
+                              type="button"
+                              class="absolute right-0 top-0 rounded-bl bg-red-500 px-1.5 py-0.5 text-[10px] font-medium text-white hover:bg-red-600"
+                              @click="method.image_data = ''"
+                            >
+                              {{ t("common.delete") }}
+                            </button>
+                          </div>
+                          <div class="flex-1 space-y-2">
+                            <input
+                              :id="`contact-qr-upload-${index}`"
+                              type="file"
+                              accept="image/png,image/jpeg,image/webp,image/gif"
+                              class="hidden"
+                              @change="onContactQrFileChange($event, index)"
+                            />
+                            <label
+                              :for="`contact-qr-upload-${index}`"
+                              class="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:border-primary-300 hover:text-primary-700 dark:border-dark-600 dark:bg-dark-700 dark:text-gray-200"
+                            >
+                              <Icon name="plus" size="xs" />
+                              {{ method.image_data ? t("admin.settings.site.contactMethodReplaceQr") : t("admin.settings.site.contactMethodUploadQr") }}
+                            </label>
+                            <p class="text-[11px] text-gray-500 dark:text-gray-400">
+                              {{ t("admin.settings.site.contactMethodQrHint") }}
+                            </p>
+                            <p v-if="contactQrError[index]" class="text-[11px] text-red-600 dark:text-red-400">
+                              {{ contactQrError[index] }}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        v-else
+                        type="button"
+                        class="text-xs text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400"
+                        @click="expandedQrIndex = index"
+                      >
+                        + {{ t("admin.settings.site.contactMethodAddQr") }}
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -6602,11 +6663,59 @@ function contactValuePlaceholder(type: string) {
   switch (normalizeContactMethodType(type)) {
     case "qq":
       return t("admin.settings.site.contactValueQQPlaceholder");
+    case "qq_group":
+      return t("admin.settings.site.contactValueQQGroupPlaceholder");
     case "wechat":
       return t("admin.settings.site.contactValueWeChatPlaceholder");
     default:
       return t("admin.settings.site.contactValueCustomPlaceholder");
   }
+}
+
+// QQ群二维码上传：浏览器端转 base64 dataURL，直接塞进 method.image_data。
+// 限制：≤256KB 原图（base64 约 350KB，留有余量但仍受后端 64KB 上限限制 → 提示用户压缩）；
+// 仅 png/jpeg/webp/gif；MIME 在 accept 已限制，这里二次防御。
+const expandedQrIndex = ref<number | null>(null);
+const contactQrError = ref<Record<number, string>>({});
+const MAX_QR_FILE_BYTES = 48 * 1024; // 48KB 原图 → base64 ≈ 64KB，对齐后端上限
+const MAX_QR_DATAURL_LEN = 65536; // 跟 backend maxContactImageDataLen 一致
+
+function onContactQrFileChange(event: Event, index: number) {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  target.value = ""; // 允许重复选同一文件
+  if (!file) return;
+  delete contactQrError.value[index];
+  if (!/^image\/(png|jpe?g|webp|gif)$/i.test(file.type)) {
+    contactQrError.value[index] = t("admin.settings.site.contactMethodQrTypeError");
+    return;
+  }
+  if (file.size > MAX_QR_FILE_BYTES) {
+    // 给出具体大小，方便用户判断要压缩多少
+    contactQrError.value[index] = t("admin.settings.site.contactMethodQrSizeError", {
+      sizeKb: Math.round(file.size / 1024),
+      maxKb: Math.round(MAX_QR_FILE_BYTES / 1024),
+    });
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    const dataUrl = String(reader.result || "");
+    if (!dataUrl.startsWith("data:image/")) {
+      contactQrError.value[index] = t("admin.settings.site.contactMethodQrTypeError");
+      return;
+    }
+    if (dataUrl.length > MAX_QR_DATAURL_LEN) {
+      contactQrError.value[index] = t("admin.settings.site.contactMethodQrTooBigAfterEncode");
+      return;
+    }
+    const method = form.contact_methods[index];
+    if (method) method.image_data = dataUrl;
+  };
+  reader.onerror = () => {
+    contactQrError.value[index] = t("admin.settings.site.contactMethodQrReadError");
+  };
+  reader.readAsDataURL(file);
 }
 
 function formatTablePageSizeOptions(options: number[]): string {

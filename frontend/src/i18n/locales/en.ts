@@ -345,6 +345,12 @@ export default {
     }
   },
 
+  // Contact methods display (user-facing support panel)
+  contactMethods: {
+    viewQrCode: 'Click to view QR code',
+    scanQrHint: 'Scan the QR code with your phone to contact us / join',
+  },
+
   // Common
   common: {
     loading: 'Loading...',
@@ -5353,6 +5359,7 @@ export default {
         contactInfoPlaceholder: 'e.g., QQ: 123456789',
         contactInfoHint: 'Configure multiple support contact methods. They are shown on redeem, profile, and user menu surfaces.',
         addQQContact: 'Add QQ',
+        addQQGroupContact: 'Add QQ Group',
         addWeChatContact: 'Add WeChat',
         contactMethodsEmpty: 'No support contact method is configured. The user-facing support entry will be hidden.',
         contactMethodType: 'Type',
@@ -5361,8 +5368,18 @@ export default {
         contactMethodUrl: 'Link URL',
         contactMethodUrlPlaceholder: 'Optional, e.g. https://example.com/contact',
         contactValueQQPlaceholder: 'Enter QQ number',
+        contactValueQQGroupPlaceholder: 'Enter group number (optional; the QR is the main way to join)',
         contactValueWeChatPlaceholder: 'Enter WeChat ID',
         contactValueCustomPlaceholder: 'Enter contact info',
+        contactMethodQrCode: 'QR Code',
+        contactMethodAddQr: 'Upload QR (optional)',
+        contactMethodUploadQr: 'Upload image',
+        contactMethodReplaceQr: 'Replace image',
+        contactMethodQrHint: 'Recommend ≤48KB. PNG/JPG/WebP/GIF. Stored inline as base64 in settings; users click the contact entry to view the QR full-size.',
+        contactMethodQrTypeError: 'Only PNG / JPG / WebP / GIF are supported',
+        contactMethodQrSizeError: 'Image {sizeKb}KB exceeds the {maxKb}KB limit, please compress first',
+        contactMethodQrTooBigAfterEncode: 'Base64-encoded size exceeds the backend 64KB limit; please compress and retry',
+        contactMethodQrReadError: 'Failed to read image, please try again',
         docUrl: 'Documentation URL',
         docUrlPlaceholder: 'https://docs.example.com',
         docUrlHint: 'Link to your documentation site. Leave empty to hide the documentation link.',
