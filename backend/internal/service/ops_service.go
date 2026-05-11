@@ -58,6 +58,18 @@ type OpsService struct {
 	// cleanupReloader 由 wire 在 OpsCleanupService 构造完成后通过 SetCleanupReloader 注入。
 	// 解耦避免 OpsService -> OpsCleanupService 的硬依赖（cleanup 也读 settings，会循环）。
 	cleanupReloader CleanupReloader
+
+	// apiKeyRepo 由 wire 构造后通过 SetAPIKeyRepo 注入。
+	// 用于 AI 审核场景下按 admin 配置的 ApiKey ID 查找明文 key，发到本地 gateway 做内容审核。
+	apiKeyRepo APIKeyRepository
+}
+
+// SetAPIKeyRepo 由 wire 注入 apiKeyRepo（避免改 NewOpsService 签名引起的 wire 大改）。
+func (s *OpsService) SetAPIKeyRepo(repo APIKeyRepository) {
+	if s == nil {
+		return
+	}
+	s.apiKeyRepo = repo
 }
 
 // CleanupReloader 由 OpsCleanupService 实现。

@@ -1083,6 +1083,19 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	}
 	updates[SettingKeyRegisterIPLimitMaxCount] = strconv.Itoa(maxCount)
 	updates[SettingKeyRegisterIPLimitWindowMinutes] = strconv.Itoa(windowMinutes)
+	// AI 审核
+	updates[SettingKeyAIReviewEnabled] = strconv.FormatBool(settings.AIReviewEnabled)
+	if settings.AIReviewAPIKeyID > 0 {
+		updates[SettingKeyAIReviewAPIKeyID] = strconv.FormatInt(settings.AIReviewAPIKeyID, 10)
+	} else {
+		updates[SettingKeyAIReviewAPIKeyID] = "0"
+	}
+	if settings.AIReviewGroupID > 0 {
+		updates[SettingKeyAIReviewGroupID] = strconv.FormatInt(settings.AIReviewGroupID, 10)
+	} else {
+		updates[SettingKeyAIReviewGroupID] = "0"
+	}
+	updates[SettingKeyAIReviewModel] = strings.TrimSpace(settings.AIReviewModel)
 
 	// 邮件服务设置（只有非空才更新密码）
 	updates[SettingKeySMTPHost] = settings.SMTPHost
@@ -1978,6 +1991,11 @@ func (s *SettingService) parseSettings(settings map[string]string) *SystemSettin
 		// 注册 IP 限流：默认 max=0（关闭）、window=60min；解析失败回退默认
 		RegisterIPLimitMaxCount:      atoiOrDefault(settings[SettingKeyRegisterIPLimitMaxCount], 0, 0),
 		RegisterIPLimitWindowMinutes: atoiOrDefault(settings[SettingKeyRegisterIPLimitWindowMinutes], 60, 1),
+		// AI 审核：默认全部空/0（关闭状态）
+		AIReviewEnabled:              settings[SettingKeyAIReviewEnabled] == "true",
+		AIReviewAPIKeyID:             int64(atoiOrDefault(settings[SettingKeyAIReviewAPIKeyID], 0, 0)),
+		AIReviewGroupID:              int64(atoiOrDefault(settings[SettingKeyAIReviewGroupID], 0, 0)),
+		AIReviewModel:                strings.TrimSpace(settings[SettingKeyAIReviewModel]),
 		SMTPHost:                     settings[SettingKeySMTPHost],
 		SMTPUsername:                 settings[SettingKeySMTPUsername],
 		SMTPFrom:                     settings[SettingKeySMTPFrom],

@@ -157,6 +157,10 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 		TotpEncryptionKeyConfigured:            h.settingService.IsTotpEncryptionKeyConfigured(),
 		RegisterIPLimitMaxCount:                settings.RegisterIPLimitMaxCount,
 		RegisterIPLimitWindowMinutes:           settings.RegisterIPLimitWindowMinutes,
+		AIReviewEnabled:                        settings.AIReviewEnabled,
+		AIReviewAPIKeyID:                       settings.AIReviewAPIKeyID,
+		AIReviewGroupID:                        settings.AIReviewGroupID,
+		AIReviewModel:                          settings.AIReviewModel,
 		SMTPHost:                               settings.SMTPHost,
 		SMTPPort:                               settings.SMTPPort,
 		SMTPUsername:                           settings.SMTPUsername,
@@ -352,6 +356,11 @@ type UpdateSettingsRequest struct {
 	// 注册业务级 IP 限流（0=关闭仅依赖 routes 5/min 兜底）
 	RegisterIPLimitMaxCount      int `json:"register_ip_limit_max_count"`
 	RegisterIPLimitWindowMinutes int `json:"register_ip_limit_window_minutes"`
+	// AI 审核风控事件
+	AIReviewEnabled  bool   `json:"ai_review_enabled"`
+	AIReviewAPIKeyID int64  `json:"ai_review_api_key_id"`
+	AIReviewGroupID  int64  `json:"ai_review_group_id"`
+	AIReviewModel    string `json:"ai_review_model"`
 
 	// 邮件服务设置
 	SMTPHost     string `json:"smtp_host"`
@@ -1201,6 +1210,10 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		TotpEnabled:                      req.TotpEnabled,
 		RegisterIPLimitMaxCount:          req.RegisterIPLimitMaxCount,
 		RegisterIPLimitWindowMinutes:     req.RegisterIPLimitWindowMinutes,
+		AIReviewEnabled:                  req.AIReviewEnabled,
+		AIReviewAPIKeyID:                 req.AIReviewAPIKeyID,
+		AIReviewGroupID:                  req.AIReviewGroupID,
+		AIReviewModel:                    strings.TrimSpace(req.AIReviewModel),
 		SMTPHost:                         req.SMTPHost,
 		SMTPPort:                         req.SMTPPort,
 		SMTPUsername:                     req.SMTPUsername,
@@ -1557,6 +1570,10 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		TotpEncryptionKeyConfigured:            h.settingService.IsTotpEncryptionKeyConfigured(),
 		RegisterIPLimitMaxCount:                updatedSettings.RegisterIPLimitMaxCount,
 		RegisterIPLimitWindowMinutes:           updatedSettings.RegisterIPLimitWindowMinutes,
+		AIReviewEnabled:                        updatedSettings.AIReviewEnabled,
+		AIReviewAPIKeyID:                       updatedSettings.AIReviewAPIKeyID,
+		AIReviewGroupID:                        updatedSettings.AIReviewGroupID,
+		AIReviewModel:                          updatedSettings.AIReviewModel,
 		SMTPHost:                               updatedSettings.SMTPHost,
 		SMTPPort:                               updatedSettings.SMTPPort,
 		SMTPUsername:                           updatedSettings.SMTPUsername,

@@ -212,12 +212,19 @@ func recordGatewaySensitiveRisk(c *gin.Context, opsService *service.OpsService, 
 		}
 	}
 
-	if _, err := opsService.RecordSafetyRiskEvent(c.Request.Context(), input); err != nil {
+	eventID, err := opsService.RecordSafetyRiskEvent(c.Request.Context(), input)
+	if err != nil {
 		slog.Warn("failed to record gateway sensitive risk event",
 			"error", err,
 			"path", input.Path,
 			"request_id", input.RequestID,
 		)
+		return
+	}
+	// 触发异步 AI 审核（admin 在 settings 配了 enabled + api_key_id + model 才会真跑）。
+	// fire-and-forget；不阻塞用户请求；失败仅记日志，事件保持"未经过 AI"。
+	if eventID > 0 {
+		opsService.TriggerAIReviewAsync(eventID, input.PromptPreview)
 	}
 }
 

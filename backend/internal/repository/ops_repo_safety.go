@@ -259,6 +259,34 @@ WHERE id = $1
 	return nil
 }
 
+// UpdateSafetyRiskEventAIReview AI 异步审核完成后回写结果。
+// 只更新 ai_reviewed / ai_review_provider / ai_review_result 三个字段，不动 status / reviewed_at
+// （那是人工复核的领域）。
+func (r *opsRepository) UpdateSafetyRiskEventAIReview(ctx context.Context, id int64, aiReviewed bool, aiReviewProvider, aiReviewResult string) error {
+	if r == nil || r.db == nil {
+		return fmt.Errorf("nil ops repository")
+	}
+	res, err := r.db.ExecContext(ctx, `
+UPDATE safety_risk_events
+SET
+  ai_reviewed = $2,
+  ai_review_provider = $3,
+  ai_review_result = $4
+WHERE id = $1
+`, id, aiReviewed, aiReviewProvider, aiReviewResult)
+	if err != nil {
+		return err
+	}
+	affected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if affected == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
+}
+
 func (r *opsRepository) ClearSafetyRiskEventsForUser(ctx context.Context, userID int64, reviewedByUserID int64, reviewNote string) (int64, error) {
 	if r == nil || r.db == nil {
 		return 0, fmt.Errorf("nil ops repository")

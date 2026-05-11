@@ -18,6 +18,9 @@ type OpsRepository interface {
 	InsertSafetyRiskEvent(ctx context.Context, input *SafetyRiskEventInput) (int64, error)
 	ListSafetyRiskEvents(ctx context.Context, filter *SafetyRiskEventFilter) (*SafetyRiskEventList, error)
 	UpdateSafetyRiskEventStatus(ctx context.Context, id int64, status string, reviewedByUserID *int64, reviewNote string) error
+	// UpdateSafetyRiskEventAIReview 异步 AI 审核完成后回写结果。
+	// aiReviewResult 推荐格式: "pass" / "flag:<reason>" / "reject:<reason>" / "error:<msg>"
+	UpdateSafetyRiskEventAIReview(ctx context.Context, id int64, aiReviewed bool, aiReviewProvider, aiReviewResult string) error
 	ClearSafetyRiskEventsForUser(ctx context.Context, userID int64, reviewedByUserID int64, reviewNote string) (int64, error)
 
 	InsertRetryAttempt(ctx context.Context, input *OpsInsertRetryAttemptInput) (int64, error)

@@ -104,6 +104,11 @@ const (
 	SettingKeyInvitationCodeEnabled            = "invitation_code_enabled"             // 是否启用邀请码注册
 	SettingKeyRegisterIPLimitMaxCount          = "register_ip_limit_max_count"         // 单 IP 注册业务级限流：窗口内最大次数（0 = 关闭，仅保留 routes 里 5/min 硬编码兜底）
 	SettingKeyRegisterIPLimitWindowMinutes     = "register_ip_limit_window_minutes"    // 单 IP 注册业务级限流：窗口长度（分钟，默认 60）
+	// AI 审核（风控事件触发后异步调 LLM 做内容分类，复用 admin 自己的 ApiKey + 分组 + 模型）
+	SettingKeyAIReviewEnabled  = "ai_review_enabled"   // 是否启用 AI 审核
+	SettingKeyAIReviewAPIKeyID = "ai_review_api_key_id" // 用于走 gateway 的 ApiKey ID（admin 自己的额度）
+	SettingKeyAIReviewGroupID  = "ai_review_group_id"  // 选用哪个分组（决定模型/调度路径）
+	SettingKeyAIReviewModel    = "ai_review_model"     // 选用哪个模型（如 claude-haiku-4-5 / gpt-5-mini）
 	SettingKeyAffiliateEnabled                 = "affiliate_enabled"                   // 邀请返利功能总开关
 	SettingKeyAffiliateRebateRate              = "affiliate_rebate_rate"               // 邀请返利比例（百分比，0-100）
 	SettingKeyAffiliateRebateFreezeHours       = "affiliate_rebate_freeze_hours"       // 返利冻结期（小时，0=不冻结）

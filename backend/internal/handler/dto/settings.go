@@ -47,6 +47,11 @@ type SystemSettings struct {
 	// 业务级注册 IP 限流：0=关闭（仅保留 routes 里 5/min 兜底）；>=1 表示窗口内最多 N 次
 	RegisterIPLimitMaxCount      int `json:"register_ip_limit_max_count"`
 	RegisterIPLimitWindowMinutes int `json:"register_ip_limit_window_minutes"`
+	// AI 审核风控事件
+	AIReviewEnabled  bool   `json:"ai_review_enabled"`
+	AIReviewAPIKeyID int64  `json:"ai_review_api_key_id"`
+	AIReviewGroupID  int64  `json:"ai_review_group_id"`
+	AIReviewModel    string `json:"ai_review_model"`
 
 	SMTPHost               string `json:"smtp_host"`
 	SMTPPort               int    `json:"smtp_port"`

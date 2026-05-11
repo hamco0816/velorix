@@ -190,6 +190,9 @@ func initializeApplication(buildInfo handler.BuildInfo) (*Application, error) {
 	geminiMessagesCompatService := service.NewGeminiMessagesCompatService(accountRepository, groupRepository, gatewayCache, schedulerSnapshotService, geminiTokenProvider, rateLimitService, httpUpstream, antigravityGatewayService, configConfig)
 	opsSystemLogSink := service.ProvideOpsSystemLogSink(opsRepository)
 	opsService := service.NewOpsService(opsRepository, settingRepository, configConfig, accountRepository, userRepository, concurrencyService, gatewayService, openAIGatewayService, geminiMessagesCompatService, antigravityGatewayService, opsSystemLogSink)
+	// AI 审核需要按 ID 查 ApiKey 明文走本地 gateway，手动注入避免改 NewOpsService 签名
+	// (跟 SetCleanupReloader 同款 setter 模式)
+	opsService.SetAPIKeyRepo(apiKeyRepository)
 	encryptionKey, err := payment.ProvideEncryptionKey(configConfig)
 	if err != nil {
 		return nil, err

@@ -89,6 +89,10 @@ func (m *opsRepoMock) UpdateSafetyRiskEventStatus(ctx context.Context, id int64,
 	return nil
 }
 
+func (m *opsRepoMock) UpdateSafetyRiskEventAIReview(ctx context.Context, id int64, aiReviewed bool, aiReviewProvider, aiReviewResult string) error {
+	return nil
+}
+
 func (m *opsRepoMock) ClearSafetyRiskEventsForUser(ctx context.Context, userID int64, reviewedByUserID int64, reviewNote string) (int64, error) {
 	return 0, nil
 }

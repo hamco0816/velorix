@@ -23,6 +23,11 @@ type SystemSettings struct {
 	// 业务级注册 IP 限流：0=关闭（仅保留 routes 里 5/min 兜底）
 	RegisterIPLimitMaxCount      int
 	RegisterIPLimitWindowMinutes int
+	// AI 审核风控事件：复用 admin 自己的 ApiKey + 分组 + 模型
+	AIReviewEnabled  bool
+	AIReviewAPIKeyID int64
+	AIReviewGroupID  int64
+	AIReviewModel    string
 
 	SMTPHost               string
 	SMTPPort               int

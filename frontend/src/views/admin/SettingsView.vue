@@ -1441,6 +1441,70 @@
                   </div>
                 </div>
               </div>
+              <!-- AI 审核风控事件：复用 admin 自己的 ApiKey + 分组 + 模型，sensitive_filter 拦截后异步调本地 gateway。
+                   会消耗对应 ApiKey 的额度（admin 自己的池），完全本地化，不依赖外部 Moderation API -->
+              <div class="border-t border-gray-100 pt-4 dark:border-dark-700">
+                <div class="mb-3 flex items-center justify-between">
+                  <div>
+                    <label class="font-medium text-gray-900 dark:text-white">
+                      {{ t("admin.settings.registration.aiReviewTitle") }}
+                    </label>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                      {{ t("admin.settings.registration.aiReviewHint") }}
+                    </p>
+                  </div>
+                  <Toggle v-model="form.ai_review_enabled" />
+                </div>
+                <div v-if="form.ai_review_enabled" class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  <div>
+                    <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                      {{ t("admin.settings.registration.aiReviewApiKeyId") }}
+                    </label>
+                    <input
+                      v-model.number="form.ai_review_api_key_id"
+                      type="number"
+                      min="0"
+                      class="input text-sm"
+                      placeholder="123"
+                    />
+                    <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
+                      {{ t("admin.settings.registration.aiReviewApiKeyIdNote") }}
+                    </p>
+                  </div>
+                  <div>
+                    <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                      {{ t("admin.settings.registration.aiReviewGroupId") }}
+                    </label>
+                    <input
+                      v-model.number="form.ai_review_group_id"
+                      type="number"
+                      min="0"
+                      class="input text-sm"
+                      placeholder="1"
+                    />
+                    <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
+                      {{ t("admin.settings.registration.aiReviewGroupIdNote") }}
+                    </p>
+                  </div>
+                  <div>
+                    <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                      {{ t("admin.settings.registration.aiReviewModel") }}
+                    </label>
+                    <input
+                      v-model="form.ai_review_model"
+                      type="text"
+                      class="input text-sm"
+                      placeholder="claude-haiku-4-5"
+                    />
+                    <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
+                      {{ t("admin.settings.registration.aiReviewModelNote") }}
+                    </p>
+                  </div>
+                </div>
+                <p v-if="form.ai_review_enabled" class="mt-3 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+                  ⚠️ {{ t("admin.settings.registration.aiReviewBillingWarn") }}
+                </p>
+              </div>
               <!-- Password Reset - Only show when email verification is enabled -->
               <div
                 v-if="form.email_verify_enabled"
@@ -6033,6 +6097,10 @@ const form = reactive<SettingsForm>({
   invitation_code_enabled: false,
   register_ip_limit_max_count: 0, // 0 = 关闭业务级限流（仅依赖 routes 5/min 兜底）
   register_ip_limit_window_minutes: 60,
+  ai_review_enabled: false,
+  ai_review_api_key_id: 0,
+  ai_review_group_id: 0,
+  ai_review_model: "",
   password_reset_enabled: false,
   totp_enabled: false,
   totp_encryption_key_configured: false,
@@ -7190,6 +7258,10 @@ async function saveSettings() {
       invitation_code_enabled: form.invitation_code_enabled,
       register_ip_limit_max_count: Math.max(0, Math.floor(form.register_ip_limit_max_count || 0)),
       register_ip_limit_window_minutes: Math.max(1, Math.floor(form.register_ip_limit_window_minutes || 60)),
+      ai_review_enabled: form.ai_review_enabled,
+      ai_review_api_key_id: Math.max(0, Math.floor(form.ai_review_api_key_id || 0)),
+      ai_review_group_id: Math.max(0, Math.floor(form.ai_review_group_id || 0)),
+      ai_review_model: (form.ai_review_model || "").trim(),
       password_reset_enabled: form.password_reset_enabled,
       totp_enabled: form.totp_enabled,
       default_balance: form.default_balance,
