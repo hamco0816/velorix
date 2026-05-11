@@ -81,10 +81,10 @@ func (r *userRepository) Create(ctx context.Context, userIn *service.User) error
 		return err
 	}
 
-	// 落库存归一化版本（Gmail 已去 . 去 +xxx），确保 me+1@gmail.com、m.e@gmail.com
-	// 都收敛为同一条记录，避免别名薅羊毛。
+	// 落库：仅对 Gmail/Googlemail 做归一化（去 . 去 +xxx），其他邮箱完全保留原始
+	// 字符串（包含空格和大小写），保持与历史行为兼容、不破坏现有测试期望。
 	created, err := txClient.User.Create().
-		SetEmail(normalizeEmailLookupValue(userIn.Email)).
+		SetEmail(emailForStorage(userIn.Email)).
 		SetUsername(userIn.Username).
 		SetNotes(userIn.Notes).
 		SetPasswordHash(userIn.PasswordHash).
@@ -210,7 +210,7 @@ func (r *userRepository) Update(ctx context.Context, userIn *service.User) error
 	oldEmail := existing.Email
 
 	updateOp := txClient.User.UpdateOneID(userIn.ID).
-		SetEmail(userIn.Email).
+		SetEmail(emailForStorage(userIn.Email)).
 		SetUsername(userIn.Username).
 		SetNotes(userIn.Notes).
 		SetPasswordHash(userIn.PasswordHash).
@@ -768,14 +768,53 @@ func userEmailLookupPredicate(email string) predicate.User {
 	if normalized == "" {
 		return dbuser.EmailEQ(email)
 	}
+	rawLower := strings.ToLower(strings.TrimSpace(email))
+	// 非 Gmail 邮箱（或不带点号/别名的 Gmail）：normalized == rawLower，单条件查询足够
+	if normalized == rawLower {
+		return predicate.User(func(s *entsql.Selector) {
+			s.Where(entsql.P(func(b *entsql.Builder) {
+				b.WriteString("LOWER(TRIM(").
+					Ident(s.C(dbuser.FieldEmail)).
+					WriteString(")) = ").
+					Arg(normalized)
+			}))
+		})
+	}
+	// Gmail + 点号/别名变体：用 OR 兼容历史数据
+	//   - 新写入的用户：DB 存的是 normalized 形式（me@gmail.com）
+	//   - 历史用户：DB 可能存的是 raw 形式（m.e@gmail.com）
+	// 同时查这两种形式，保证历史用户用任意变体仍能登录。
 	return predicate.User(func(s *entsql.Selector) {
 		s.Where(entsql.P(func(b *entsql.Builder) {
-			b.WriteString("LOWER(TRIM(").
+			b.WriteString("(LOWER(TRIM(").
 				Ident(s.C(dbuser.FieldEmail)).
 				WriteString(")) = ").
-				Arg(normalized)
+				Arg(normalized).
+				WriteString(" OR LOWER(TRIM(").
+				Ident(s.C(dbuser.FieldEmail)).
+				WriteString(")) = ").
+				Arg(rawLower).
+				WriteString(")")
 		}))
 	})
+}
+
+// emailForStorage 决定写入 DB 的 email 字段值：
+//   - Gmail / Googlemail：存归一化版本（去 . 去 +xxx），收敛同主邮箱的所有变体
+//   - 其他邮箱：完全保留原始字符串（包含前后空格和大小写），跟历史行为兼容
+//
+// 这避免破坏"DB 保留用户原始输入"的现有测试期望，同时只在易被薅的 Gmail 域做归一化。
+func emailForStorage(raw string) string {
+	lower := strings.ToLower(strings.TrimSpace(raw))
+	at := strings.IndexByte(lower, '@')
+	if at <= 0 {
+		return raw
+	}
+	domain := lower[at+1:]
+	if domain == "gmail.com" || domain == "googlemail.com" {
+		return normalizeEmailLookupValue(raw)
+	}
+	return raw
 }
 
 // normalizeEmailLookupValue 把邮箱归一化为"用于唯一性比较"的形式：
