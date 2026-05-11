@@ -54,29 +54,28 @@ var gatewaySensitiveFilterCache atomic.Value // *cachedGatewaySensitiveFilterSet
 var gatewaySensitiveFilterSF singleflight.Group
 
 var gatewaySensitiveContainerKeys = map[string]struct{}{
-	"messages":     {},
-	"message":      {},
-	"contents":     {},
-	"content":      {},
-	"parts":        {},
-	"input":        {},
-	"prompt":       {},
-	"instructions": {},
-	"system":       {},
-	"text":         {},
-	"query":        {},
+	"messages": {},
+	"message":  {},
+	"contents": {},
+	"content":  {},
+	"parts":    {},
+	"input":    {},
+	"prompt":   {},
+	"text":     {},
+	"query":    {},
 }
 
 var gatewaySensitiveStringKeys = map[string]struct{}{
-	"content":      {},
-	"text":         {},
-	"input":        {},
-	"prompt":       {},
-	"instructions": {},
-	"system":       {},
-	"query":        {},
+	"content": {},
+	"text":    {},
+	"input":   {},
+	"prompt":  {},
+	"query":   {},
 }
 
+// system / instructions 这类字段属于开发者 / IDE 配置（Claude Code、VSCode、Cursor 等都会
+// 自带固定 system prompt），用户无法在 user message 之外注入。把它们彻底跳过避免误报：
+// 真正的 prompt injection 攻击载体只能落在 user role 的 content 里，那才是要查的。
 var gatewaySensitiveSkipKeys = map[string]struct{}{
 	"model":        {},
 	"role":         {},
@@ -93,6 +92,8 @@ var gatewaySensitiveSkipKeys = map[string]struct{}{
 	"filename":     {},
 	"mime_type":    {},
 	"content_type": {},
+	"system":       {}, // Anthropic 顶层 system 字段 + OpenAI messages[].role=system 容器
+	"instructions": {}, // OpenAI Responses API instructions 字段
 }
 
 var gatewaySensitiveBuiltInWords = []string{
@@ -284,6 +285,16 @@ func CheckGatewaySensitiveJSON(body []byte, settings *GatewaySensitiveFilterSett
 func findGatewaySensitiveMatch(value any, rules []gatewaySensitiveRule, path string, forced bool) *GatewaySensitiveMatch {
 	switch v := value.(type) {
 	case map[string]any:
+		// 跳过 OpenAI / Anthropic 的 system / developer / assistant role 消息：
+		// role=system/developer 是 IDE 或开发者配置，不是用户能注入的攻击载体（避免 VSCode/Claude
+		// Code 等工具自带的 system prompt 触发"prompt injection"误报）；assistant 是模型上一轮
+		// 的输出，admin 风控也不应该针对它。只查用户能直接控制的 user role 内容。
+		if roleVal, ok := v["role"].(string); ok {
+			role := strings.ToLower(strings.TrimSpace(roleVal))
+			if role == "system" || role == "developer" || role == "assistant" {
+				return nil
+			}
+		}
 		for key, item := range v {
 			normalizedKey := strings.ToLower(strings.TrimSpace(key))
 			if _, skip := gatewaySensitiveSkipKeys[normalizedKey]; skip {
