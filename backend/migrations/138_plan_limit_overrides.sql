@@ -10,7 +10,6 @@
 --   - 全部 nullable，NULL = "使用 group 默认值"，向后兼容存量
 --   - 快照在订阅记录上，避免日后 plan 改限额影响已购买用户
 
-BEGIN;
 
 -- subscription_plans: 套餐自身可覆盖的限额/倍率
 ALTER TABLE subscription_plans
@@ -33,4 +32,3 @@ ALTER TABLE exclusive_subscriptions
     ADD COLUMN IF NOT EXISTS monthly_limit_usd DECIMAL(20, 8),
     ADD COLUMN IF NOT EXISTS rate_multiplier   DECIMAL(10, 4);
 
-COMMIT;

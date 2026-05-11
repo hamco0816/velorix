@@ -11,7 +11,6 @@
 --   - 窗口用量默认 0；窗口起点 nullable，service 第一次写入时设置
 --   - 与 user_subscriptions 同款字段命名/类型，保持一致
 
-BEGIN;
 
 ALTER TABLE exclusive_subscriptions
     ADD COLUMN IF NOT EXISTS daily_window_start   TIMESTAMPTZ,
@@ -21,4 +20,3 @@ ALTER TABLE exclusive_subscriptions
     ADD COLUMN IF NOT EXISTS weekly_usage_usd     DECIMAL(20, 10) NOT NULL DEFAULT 0,
     ADD COLUMN IF NOT EXISTS monthly_usage_usd    DECIMAL(20, 10) NOT NULL DEFAULT 0;
 
-COMMIT;

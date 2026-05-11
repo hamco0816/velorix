@@ -4,7 +4,6 @@
 -- 同一账号同时只能被一份 active 名额占用（部分唯一索引保证）。
 -- 用户可以同时持有多份独享名额（同池或跨池），调度器在用户名下的多个名额之间负载均衡。
 
-BEGIN;
 
 -- 1. 主表
 CREATE TABLE IF NOT EXISTS exclusive_subscriptions (
@@ -70,4 +69,3 @@ CREATE INDEX IF NOT EXISTS idx_accounts_assigned_seat
     ON accounts (assigned_seat_id)
     WHERE assigned_seat_id IS NOT NULL AND deleted_at IS NULL;
 
-COMMIT;

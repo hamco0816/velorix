@@ -6,7 +6,6 @@
 --
 -- 该字段为空（NULL）的订单是普通新购订单（独享/共享均可）。
 
-BEGIN;
 
 ALTER TABLE payment_orders
     ADD COLUMN IF NOT EXISTS renewal_seat_id BIGINT;
@@ -15,4 +14,3 @@ CREATE INDEX IF NOT EXISTS idx_payment_orders_renewal_seat
     ON payment_orders (renewal_seat_id)
     WHERE renewal_seat_id IS NOT NULL;
 
-COMMIT;

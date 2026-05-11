@@ -11,10 +11,8 @@
 --     让管理员手工赠送（source_order_id NULL）和软删除记录互不干扰
 --   - 跟现有 idx_exclusive_subscription_source_order 不冲突（CREATE 语句是 IF NOT EXISTS）
 
-BEGIN;
 
 CREATE UNIQUE INDEX IF NOT EXISTS uk_exclusive_subscription_source_order_active
     ON exclusive_subscriptions (source_order_id)
     WHERE source_order_id IS NOT NULL AND deleted_at IS NULL;
 
-COMMIT;
