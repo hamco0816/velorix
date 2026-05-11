@@ -156,6 +156,14 @@ export interface ExclusiveSeat {
   last_renewal_at?: string
   usage_usd: number
   notes?: string
+  // 日/周/月窗口用量与上限（来自 SeatView）。limit 为空 = 该窗口不限额，
+  // 前端按"有 limit 才画进度条 / 无 limit 只显示累计值"决定 UI。
+  daily_usage_usd?: number
+  weekly_usage_usd?: number
+  monthly_usage_usd?: number
+  daily_limit_usd?: number | null
+  weekly_limit_usd?: number | null
+  monthly_limit_usd?: number | null
 }
 
 // 后台视角：管理员接口（AdminSeatView）下发完整 account_id 用于运维操作（释放/换号等）。

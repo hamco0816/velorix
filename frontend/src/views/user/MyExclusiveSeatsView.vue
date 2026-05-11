@@ -92,6 +92,28 @@
               <span class="text-gray-500 dark:text-gray-400">{{ t('exclusiveSeats.usage') }}</span>
               <span class="text-gray-900 dark:text-white">${{ seat.usage_usd.toFixed(4) }}</span>
             </div>
+
+            <!-- 日/周/月窗口用量进度条：有 limit 才画条，没有 limit 则跳过 -->
+            <div
+              v-if="usageWindows(seat).length > 0"
+              class="mt-2 space-y-1.5 rounded-lg bg-gray-50 p-2.5 dark:bg-dark-800/60"
+            >
+              <div v-for="w in usageWindows(seat)" :key="w.key">
+                <div class="flex items-baseline justify-between text-xs">
+                  <span class="text-gray-500 dark:text-gray-400">{{ w.label }}</span>
+                  <span class="font-mono tabular-nums" :class="usageTextColor(w.ratio)">
+                    ${{ w.used.toFixed(4) }} / ${{ w.limit.toFixed(2) }}
+                  </span>
+                </div>
+                <div class="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-dark-700">
+                  <div
+                    class="h-full rounded-full transition-all"
+                    :class="usageBarColor(w.ratio)"
+                    :style="{ width: Math.min(100, Math.max(0, w.ratio * 100)).toFixed(1) + '%' }"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Footer actions -->
@@ -329,6 +351,33 @@ function formatDate(s: string): string {
   const d = new Date(s)
   if (isNaN(d.getTime())) return s
   return d.toLocaleString()
+}
+
+// 用量窗口聚合：只输出"有 limit 且 > 0"的窗口，避免无限额池上画一条 0% 条
+type UsageWindow = { key: 'daily' | 'weekly' | 'monthly'; label: string; used: number; limit: number; ratio: number }
+function usageWindows(seat: ExclusiveSeat): UsageWindow[] {
+  const out: UsageWindow[] = []
+  const push = (key: UsageWindow['key'], label: string, used: number | undefined, limit: number | null | undefined) => {
+    if (!limit || limit <= 0) return
+    const u = used || 0
+    out.push({ key, label, used: u, limit, ratio: u / limit })
+  }
+  push('daily', t('exclusiveSeats.usageDaily'), seat.daily_usage_usd, seat.daily_limit_usd)
+  push('weekly', t('exclusiveSeats.usageWeekly'), seat.weekly_usage_usd, seat.weekly_limit_usd)
+  push('monthly', t('exclusiveSeats.usageMonthly'), seat.monthly_usage_usd, seat.monthly_limit_usd)
+  return out
+}
+
+// 进度条颜色：ratio < 0.7 emerald；0.7-0.9 amber；>=0.9 red
+function usageBarColor(ratio: number): string {
+  if (ratio >= 0.9) return 'bg-red-500'
+  if (ratio >= 0.7) return 'bg-amber-500'
+  return 'bg-emerald-500'
+}
+function usageTextColor(ratio: number): string {
+  if (ratio >= 0.9) return 'text-red-600 dark:text-red-400'
+  if (ratio >= 0.7) return 'text-amber-600 dark:text-amber-400'
+  return 'text-gray-700 dark:text-gray-200'
 }
 
 onMounted(loadSeats)
