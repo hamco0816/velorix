@@ -247,6 +247,20 @@ func pickFreeAccountForUpdate(ctx context.Context, tx *dbent.Tx, groupID int64) 
 	return id, nil
 }
 
+// lockSeatRowForUpdate 在 PG 下用 SELECT ... FOR UPDATE 行锁串行化并发写者；
+// 在 SQLite（unit test 环境）等不支持 FOR UPDATE 语法的 dialect 上自动降级
+// 为普通 Only 查询，避免测试环境因 dialect 不兼容直接报错 SEAT_NOT_FOUND。
+//
+// 生产 PG 行为不变（仍然 ForUpdate 锁行），仅 SQLite 测试时退化为快照读
+// （单连接 SQLite 本身没有真并发，无需 FOR UPDATE 也安全）。
+func lockSeatRowForUpdate(ctx context.Context, tx *dbent.Tx, seatID int64) (*dbent.ExclusiveSubscription, error) {
+	q := tx.ExclusiveSubscription.Query().Where(exclusivesubscription.IDEQ(seatID))
+	if d, ok := tx.Client().Driver().(interface{ Dialect() string }); ok && d.Dialect() == dialect.Postgres {
+		q = q.ForUpdate()
+	}
+	return q.Only(ctx)
+}
+
 // pickFreeAccountFallback 非 PG 数据库（如 SQLite 测试环境）的回退实现。
 // 没有 SKIP LOCKED，并发安全靠 exclusive_subscriptions.account_id 部分唯一索引兜底。
 func pickFreeAccountFallback(ctx context.Context, tx *dbent.Tx, groupID int64) (int64, error) {
@@ -374,10 +388,7 @@ func (s *ExclusiveSeatService) IncrementSeatUsage(ctx context.Context, seatID in
 		}
 	}()
 
-	seat, err := tx.ExclusiveSubscription.Query().
-		Where(exclusivesubscription.IDEQ(seatID)).
-		ForUpdate().
-		Only(ctx)
+	seat, err := lockSeatRowForUpdate(ctx, tx, seatID)
 	if err != nil {
 		return fmt.Errorf("lock seat for usage increment: %w", err)
 	}
@@ -888,10 +899,7 @@ func (s *ExclusiveSeatService) RevokeRenewal(ctx context.Context, seatID int64, 
 	// 事务内 ForUpdate 重新读 seat（GPT round 31 #2）：与并发 SwapSeatAccount 互斥，
 	// 拿到最新的 seat.AccountID 再清反向索引；不然事务外的旧 AccountID 会清错账号，
 	// 让新换绑账号的 assigned_seat_id 残留指向已 expired 的 seat、库存卡住。
-	latest, lerr := tx.ExclusiveSubscription.Query().
-		Where(exclusivesubscription.IDEQ(seatID)).
-		ForUpdate().
-		Only(ctx)
+	latest, lerr := lockSeatRowForUpdate(ctx, tx, seatID)
 	if lerr != nil {
 		_ = tx.Rollback()
 		return nil, fmt.Errorf("lock seat: %w", lerr)
@@ -1086,10 +1094,7 @@ func (s *ExclusiveSeatService) ReleaseSeat(ctx context.Context, seatID int64, te
 	// SELECT ... FOR UPDATE：阻塞与 SwapSeatAccount 等并发写者，确保读到的 AccountID
 	// 是事务串行化后的最新值。否则 GPT round 31 #2 场景：换绑刚把 seat.AccountID 改到 B，
 	// 这里仍按事务前快照里的旧 A 清反向索引，B 上的 assigned_seat_id 残留指向已 expired 的 seat。
-	seat, err := tx.ExclusiveSubscription.Query().
-		Where(exclusivesubscription.IDEQ(seatID)).
-		ForUpdate().
-		Only(ctx)
+	seat, err := lockSeatRowForUpdate(ctx, tx, seatID)
 	if err != nil {
 		return infraerrors.NotFound("SEAT_NOT_FOUND", "exclusive subscription not found")
 	}
