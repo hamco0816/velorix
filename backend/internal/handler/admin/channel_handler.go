@@ -500,3 +500,22 @@ func (h *ChannelHandler) GetModelDefaultPricing(c *gin.Context) {
 		"image_output_price": pricing.ImageOutputPricePerToken,
 	})
 }
+
+// ListAllModelPricing 返回当前 PricingService 已加载的全部模型定价（含元信息）。
+// 用途：admin 在没有自定义渠道定价时也能看到"GitHub 拉的默认定价"，
+// 配合前端在页面上叠加 group/account 倍率，直观看到"乘完倍率的最终成交价"。
+// GET /api/v1/admin/pricing/models
+func (h *ChannelHandler) ListAllModelPricing(c *gin.Context) {
+	pricingSvc := h.billingService.PricingService()
+	if pricingSvc == nil {
+		// 理论不会发生：BillingService 构造时强依赖 PricingService
+		response.Success(c, gin.H{"models": []any{}, "metadata": gin.H{}})
+		return
+	}
+	models := pricingSvc.ListAllModels()
+	meta := pricingSvc.GetMetadata()
+	response.Success(c, gin.H{
+		"models":   models,
+		"metadata": meta,
+	})
+}

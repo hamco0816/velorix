@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -875,6 +876,72 @@ func (s *PricingService) generateOpenAIModelVariants(model string, datePattern *
 	}
 
 	return variants
+}
+
+// PricingListEntry 是 admin 端"模型定价总览"页面单行数据。
+// 暴露的字段都是 admin 查看用，不包含上游 LiteLLM 全部内部字段。
+type PricingListEntry struct {
+	Model                       string  `json:"model"`
+	Provider                    string  `json:"provider"`
+	Mode                        string  `json:"mode"`
+	InputCostPerToken           float64 `json:"input_cost_per_token"`
+	OutputCostPerToken          float64 `json:"output_cost_per_token"`
+	CacheReadInputTokenCost     float64 `json:"cache_read_input_token_cost"`
+	CacheCreationInputTokenCost float64 `json:"cache_creation_input_token_cost"`
+	OutputCostPerImage          float64 `json:"output_cost_per_image"`
+	SupportsPromptCaching       bool    `json:"supports_prompt_caching"`
+	SupportsServiceTier         bool    `json:"supports_service_tier"`
+}
+
+// ListAllModels 返回全量已加载的模型定价列表（按 model name 字典序），用于 admin 模型定价总览页面。
+// 价格单位：美元/单 token（USD per token），前端按需换算为 $/MTok 展示。
+func (s *PricingService) ListAllModels() []PricingListEntry {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	list := make([]PricingListEntry, 0, len(s.pricingData))
+	for name, p := range s.pricingData {
+		if p == nil {
+			continue
+		}
+		list = append(list, PricingListEntry{
+			Model:                       name,
+			Provider:                    p.LiteLLMProvider,
+			Mode:                        p.Mode,
+			InputCostPerToken:           p.InputCostPerToken,
+			OutputCostPerToken:          p.OutputCostPerToken,
+			CacheReadInputTokenCost:     p.CacheReadInputTokenCost,
+			CacheCreationInputTokenCost: p.CacheCreationInputTokenCost,
+			OutputCostPerImage:          p.OutputCostPerImage,
+			SupportsPromptCaching:       p.SupportsPromptCaching,
+			SupportsServiceTier:         p.SupportsServiceTier,
+		})
+	}
+	// 字典序方便表格稳定排序；前端可再按 provider/价格二次排序
+	sort.Slice(list, func(i, j int) bool { return list[i].Model < list[j].Model })
+	return list
+}
+
+// PricingMetadata 暴露给 admin 的定价数据元信息（来源、最后更新时间、模型数）。
+type PricingMetadata struct {
+	RemoteURL   string    `json:"remote_url"`
+	HashURL     string    `json:"hash_url"`
+	LastUpdated time.Time `json:"last_updated"`
+	LocalHash   string    `json:"local_hash"`
+	ModelCount  int       `json:"model_count"`
+}
+
+// GetMetadata 返回当前定价数据来源信息，供 admin 页面展示"数据从哪儿来 / 上次更新何时"。
+func (s *PricingService) GetMetadata() PricingMetadata {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return PricingMetadata{
+		RemoteURL:   s.cfg.Pricing.RemoteURL,
+		HashURL:     s.cfg.Pricing.HashURL,
+		LastUpdated: s.lastUpdated,
+		LocalHash:   s.localHash,
+		ModelCount:  len(s.pricingData),
+	}
 }
 
 // GetStatus 获取服务状态

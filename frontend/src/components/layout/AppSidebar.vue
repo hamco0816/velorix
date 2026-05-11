@@ -786,6 +786,8 @@ const adminNavItems = computed((): NavItem[] => {
         { path: '/admin/channels/monitor', label: t('nav.channelMonitor'), icon: SignalIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', featureFlag: flagChannelMonitor },
       ],
     },
+    // 模型定价总览：admin 没有自定义渠道定价时也能看到 GitHub 拉的默认价格 + 倍率换算
+    { path: '/admin/pricing/models', label: t('nav.modelPricing'), icon: PriceTagIcon, iconColor: 'text-amber-500 dark:text-amber-400', hideInSimpleMode: true },
     { path: '/admin/subscriptions', label: t('nav.subscriptions'), icon: CreditCardIcon, iconColor: 'text-teal-500 dark:text-teal-400', hideInSimpleMode: true },
     { path: '/admin/accounts', label: t('nav.accounts'), icon: GlobeIcon, iconColor: 'text-violet-500 dark:text-violet-400' },
     { path: '/admin/announcements', label: t('nav.announcements'), icon: BellIcon, iconColor: 'text-rose-500 dark:text-rose-400' },

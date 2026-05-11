@@ -117,6 +117,12 @@ type BillingService struct {
 	fallbackPrices map[string]*ModelPricing // 硬编码回退价格
 }
 
+// PricingService 暴露内部 pricingService 供同包 handler/上层模块只读访问。
+// 避免在 wire 里再单独注入 PricingService 到 ChannelHandler 而触发 wire_gen 重新生成。
+func (b *BillingService) PricingService() *PricingService {
+	return b.pricingService
+}
+
 // NewBillingService 创建计费服务实例
 func NewBillingService(cfg *config.Config, pricingService *PricingService) *BillingService {
 	s := &BillingService{

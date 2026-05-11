@@ -86,6 +86,9 @@ func RegisterAdminRoutes(
 		// 渠道管理
 		registerChannelRoutes(admin, h)
 
+		// 模型定价总览（admin 没有自定义渠道定价时也能看到 GitHub 拉的默认价格 + 倍率换算）
+		registerPricingRoutes(admin, h)
+
 		// 渠道监控
 		registerChannelMonitorRoutes(admin, h)
 
@@ -562,6 +565,14 @@ func registerChannelRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 		channels.POST("", h.Admin.Channel.Create)
 		channels.PUT("/:id", h.Admin.Channel.Update)
 		channels.DELETE("/:id", h.Admin.Channel.Delete)
+	}
+}
+
+// registerPricingRoutes 注册"模型定价总览"路由。这里复用 ChannelHandler 上的方法（无需新建独立 handler）。
+func registerPricingRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
+	pricing := admin.Group("/pricing")
+	{
+		pricing.GET("/models", h.Admin.Channel.ListAllModelPricing)
 	}
 }
 
