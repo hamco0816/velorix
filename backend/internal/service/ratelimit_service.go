@@ -55,6 +55,11 @@ type geminiUsageTotalsBatchProvider interface {
 
 const geminiPrecheckCacheTTL = time.Minute
 
+// rateLimit429FallbackCooldown 上游返回 429 但没带 reset 时间 / reset 头解析失败时使用的回避时长。
+// 上游 sub2api 把硬编码 5 分钟改成 5 秒，避免账号长时间不可调度时误伤用户体验；
+// 上游一度做成 admin 可配置但后来又删了配置入口（GPT round 31 借鉴），这里只采纳"5 秒"这个核心结论。
+const rateLimit429FallbackCooldown = 5 * time.Second
+
 const (
 	openAI403CooldownMinutesDefault = 10
 	openAI403DisableThreshold       = 3
@@ -891,12 +896,8 @@ func (s *RateLimitService) handle429(ctx context.Context, account *Account, head
 			return
 		}
 
-		// 其他平台：没有重置时间，使用默认5分钟
-		resetAt := time.Now().Add(5 * time.Minute)
-		slog.Warn("rate_limit_no_reset_time", "account_id", account.ID, "platform", account.Platform, "using_default", "5m")
-		if err := s.accountRepo.SetRateLimited(ctx, account.ID, resetAt); err != nil {
-			slog.Warn("rate_limit_set_failed", "account_id", account.ID, "error", err)
-		}
+		// 其他平台：没有重置时间，用秒级回避（不再 5 分钟硬等，避免长时间不可调度）
+		s.apply429FallbackRateLimit(ctx, account, "no_reset_time")
 		return
 	}
 
@@ -904,10 +905,7 @@ func (s *RateLimitService) handle429(ctx context.Context, account *Account, head
 	ts, err := strconv.ParseInt(resetTimestamp, 10, 64)
 	if err != nil {
 		slog.Warn("rate_limit_reset_parse_failed", "reset_timestamp", resetTimestamp, "error", err)
-		resetAt := time.Now().Add(5 * time.Minute)
-		if err := s.accountRepo.SetRateLimited(ctx, account.ID, resetAt); err != nil {
-			slog.Warn("rate_limit_set_failed", "account_id", account.ID, "error", err)
-		}
+		s.apply429FallbackRateLimit(ctx, account, "reset_parse_failed")
 		return
 	}
 
@@ -927,6 +925,21 @@ func (s *RateLimitService) handle429(ctx context.Context, account *Account, head
 	}
 
 	slog.Info("account_rate_limited", "account_id", account.ID, "reset_at", resetAt)
+}
+
+// apply429FallbackRateLimit 上游返回 429 但缺少可解析的 reset 头时，统一走"秒级回避"。
+// 拆出来是因为 handle429 里有两处 fallback 调用，避免重复 SetRateLimited + warn 模板。
+func (s *RateLimitService) apply429FallbackRateLimit(ctx context.Context, account *Account, reason string) {
+	resetAt := time.Now().Add(rateLimit429FallbackCooldown)
+	slog.Warn("rate_limit_429_fallback_used",
+		"account_id", account.ID,
+		"platform", account.Platform,
+		"reason", reason,
+		"cooldown", rateLimit429FallbackCooldown.String(),
+	)
+	if err := s.accountRepo.SetRateLimited(ctx, account.ID, resetAt); err != nil {
+		slog.Warn("rate_limit_set_failed", "account_id", account.ID, "error", err)
+	}
 }
 
 // calculateOpenAI429ResetTime 从 OpenAI 429 响应头计算正确的重置时间
