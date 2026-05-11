@@ -57,11 +57,14 @@ func RegisterAuthRoutes(
 		auth.POST("/login/2fa", rateLimiter.LimitWithOptions("auth-login-2fa", 20, time.Minute, middleware.RateLimitOptions{
 			FailureMode: middleware.RateLimitFailClose,
 		}), h.Auth.Login2FA)
+		// 注意：send-verify-code 不挂业务级限流。
+		// 攻击者薅奖励必须完成 /register 一步，业务级限流加在 register 上已能完全拦截；
+		// 正常用户填错邮箱后会重发 2-3 次验证码，若这里也按"每小时 3 次"严格拦截会误伤。
+		// 保留 5次/分钟硬编码兜底（防滥用发邮件）即可。
 		auth.POST("/send-verify-code",
 			rateLimiter.LimitWithOptions("auth-send-verify-code", 5, time.Minute, middleware.RateLimitOptions{
 				FailureMode: middleware.RateLimitFailClose,
 			}),
-			registerIPBusinessLimit("auth-send-verify-code-business"),
 			h.Auth.SendVerifyCode)
 		// Token刷新接口添加速率限制：每分钟最多 30 次（Redis 故障时 fail-close）
 		auth.POST("/refresh", rateLimiter.LimitWithOptions("refresh-token", 30, time.Minute, middleware.RateLimitOptions{
