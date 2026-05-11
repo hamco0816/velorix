@@ -31,7 +31,20 @@ RUN pnpm install --frozen-lockfile
 
 # Copy frontend source and build
 COPY frontend/ ./
-RUN pnpm run build
+# 调试增强：分步跑 prebuild/vue-tsc/vite build，失败时把上下文打出来便于 CI 日志定位
+# 找到根因后可以恢复成单行 `RUN pnpm run build`
+RUN set -e; \
+    echo "=== node / pnpm versions ==="; node --version; pnpm --version; \
+    echo "=== ls frontend root ==="; ls -la; \
+    echo "=== ls frontend/scripts ==="; ls -la scripts || true; \
+    echo "=== run prebuild (clean-dist) ==="; \
+    node scripts/clean-dist.mjs; \
+    echo "=== ls /app structure ==="; ls -la /app; ls -la /app/backend 2>/dev/null || echo "/app/backend not present yet"; \
+    echo "=== run vue-tsc -b ==="; \
+    pnpm exec vue-tsc -b --pretty 2>&1; \
+    echo "=== run vite build ==="; \
+    pnpm exec vite build 2>&1; \
+    echo "=== dist content ==="; ls -la /app/backend/internal/web/dist | head -20
 
 # -----------------------------------------------------------------------------
 # Stage 2: Backend Builder
