@@ -1175,7 +1175,10 @@ export default {
     billingToken: '按量计费',
     billingPerRequest: '按次计费',
     billingImage: '按图片计费',
-    standardPriceHint: '当前显示标准价格（未应用任何分组倍率）。选择左侧分组以查看专属价格。'
+    standardPriceHint: '当前显示标准价格（未应用任何分组倍率）。选择左侧分组以查看专属价格。',
+    cnyHint: '按 $1 ≈ ¥{rate} 换算',
+    standardModel: '标准',
+    standardModelHint: '来自系统全量定价（自动同步），未在任何渠道单独配置'
   },
 
   affiliate: {

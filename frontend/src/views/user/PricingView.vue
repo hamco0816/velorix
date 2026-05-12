@@ -1,7 +1,7 @@
 <template>
   <AppLayout wide>
     <div class="space-y-5">
-      <!-- 顶部 toolbar：概览 chip + 搜索 + 刷新 -->
+      <!-- 顶部 toolbar：概览 chip + 搜索 + 刷新 + 汇率切换 -->
       <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div class="flex flex-wrap items-center gap-2">
           <span
@@ -29,6 +29,34 @@
           </span>
         </div>
         <div class="flex items-center gap-2">
+          <!-- 货币切换：USD 标准价 / CNY 换算后价 -->
+          <div class="inline-flex rounded-lg border border-gray-200/70 bg-white p-0.5 text-xs dark:border-dark-700/60 dark:bg-dark-800/40">
+            <button
+              type="button"
+              class="rounded-md px-2.5 py-1 font-medium transition-colors"
+              :class="
+                currency === 'USD'
+                  ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
+                  : 'text-gray-500 hover:text-gray-900 dark:text-dark-400 dark:hover:text-white'
+              "
+              @click="currency = 'USD'"
+            >
+              USD
+            </button>
+            <button
+              type="button"
+              class="rounded-md px-2.5 py-1 font-medium transition-colors"
+              :class="
+                currency === 'CNY'
+                  ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
+                  : 'text-gray-500 hover:text-gray-900 dark:text-dark-400 dark:hover:text-white'
+              "
+              @click="currency = 'CNY'"
+              :title="t('pricing.cnyHint', { rate: usdToCny.toFixed(2) })"
+            >
+              CNY
+            </button>
+          </div>
           <div class="relative w-full sm:w-72">
             <Icon
               name="search"
@@ -56,20 +84,20 @@
       </div>
 
       <!-- 主体：左侧筛选 + 右侧网格 -->
-      <div class="grid gap-5 lg:grid-cols-[280px_minmax(0,1fr)]">
-        <!-- 左侧筛选 panel：sticky 跟随滚动 -->
+      <div class="grid gap-5 lg:grid-cols-[300px_minmax(0,1fr)]">
+        <!-- 左侧筛选 panel：sticky 跟随滚动；字号 + 间距增大 -->
         <aside class="lg:sticky lg:top-20 lg:self-start">
-          <div class="space-y-5 rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40">
+          <div class="space-y-5 rounded-2xl border border-gray-200/70 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40">
             <!-- 我可用的分组 -->
             <section>
-              <div class="mb-2 flex items-center justify-between">
-                <h3 class="text-[12px] font-semibold tracking-tight text-gray-900 dark:text-white">
+              <div class="mb-2.5 flex items-center justify-between">
+                <h3 class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white">
                   {{ t('pricing.filterGroups') }}
                 </h3>
                 <button
                   v-if="selectedGroupId !== null"
                   type="button"
-                  class="text-[11px] font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400"
+                  class="text-xs font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400"
                   @click="selectedGroupId = null"
                 >
                   {{ t('common.reset') }}
@@ -79,7 +107,7 @@
                 <!-- "全部分组"：选中时显示原价（×1） -->
                 <button
                   type="button"
-                  class="group flex items-center justify-between rounded-lg border px-2.5 py-1.5 text-left text-[12px] transition-colors"
+                  class="group flex items-center justify-between rounded-lg border px-3 py-2 text-left text-sm transition-colors"
                   :class="
                     selectedGroupId === null
                       ? 'border-brand-300 bg-brand-50 text-brand-700 dark:border-brand-500/40 dark:bg-brand-500/10 dark:text-brand-300'
@@ -88,14 +116,14 @@
                   @click="selectedGroupId = null"
                 >
                   <span class="font-medium">{{ t('pricing.allGroups') }}</span>
-                  <span class="text-[11px] opacity-70">{{ availableGroups.length }}</span>
+                  <span class="text-xs opacity-70 tabular-nums">{{ availableGroups.length }}</span>
                 </button>
 
                 <button
                   v-for="group in availableGroups"
                   :key="group.id"
                   type="button"
-                  class="group flex items-center justify-between rounded-lg border px-2.5 py-1.5 text-left text-[12px] transition-colors"
+                  class="group flex items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors"
                   :class="
                     selectedGroupId === group.id
                       ? 'border-brand-300 bg-brand-50 text-brand-700 dark:border-brand-500/40 dark:bg-brand-500/10 dark:text-brand-300'
@@ -115,7 +143,7 @@
                     <span class="truncate font-medium">{{ group.name }}</span>
                   </span>
                   <span
-                    class="ml-2 inline-flex shrink-0 items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold tabular-nums ring-1 ring-inset"
+                    class="ml-1 inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-semibold tabular-nums ring-1 ring-inset"
                     :class="
                       selectedGroupId === group.id
                         ? 'bg-brand-100 text-brand-700 ring-brand-200/70 dark:bg-brand-500/20 dark:text-brand-200 dark:ring-brand-500/30'
@@ -128,7 +156,7 @@
 
                 <p
                   v-if="!loading && availableGroups.length === 0"
-                  class="text-[12px] text-gray-500 dark:text-dark-400"
+                  class="text-xs text-gray-500 dark:text-dark-400"
                 >
                   {{ t('pricing.noGroups') }}
                 </p>
@@ -137,13 +165,13 @@
 
             <!-- 平台筛选 -->
             <section v-if="availablePlatforms.length > 1">
-              <h3 class="mb-2 text-[12px] font-semibold tracking-tight text-gray-900 dark:text-white">
+              <h3 class="mb-2.5 text-sm font-semibold tracking-tight text-gray-900 dark:text-white">
                 {{ t('pricing.filterPlatform') }}
               </h3>
               <div class="flex flex-wrap gap-1.5">
                 <button
                   type="button"
-                  class="rounded-full border px-2.5 py-0.5 text-[11px] font-medium transition-colors"
+                  class="rounded-full border px-3 py-1 text-xs font-medium transition-colors"
                   :class="
                     selectedPlatform === null
                       ? 'border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-gray-900'
@@ -157,7 +185,7 @@
                   v-for="p in availablePlatforms"
                   :key="p"
                   type="button"
-                  class="inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-medium transition-colors"
+                  class="inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium transition-colors"
                   :class="
                     selectedPlatform === p
                       ? 'border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-gray-900'
@@ -173,13 +201,13 @@
 
             <!-- 计费类型筛选 -->
             <section v-if="availableBillingModes.length > 1">
-              <h3 class="mb-2 text-[12px] font-semibold tracking-tight text-gray-900 dark:text-white">
+              <h3 class="mb-2.5 text-sm font-semibold tracking-tight text-gray-900 dark:text-white">
                 {{ t('pricing.filterBillingMode') }}
               </h3>
               <div class="flex flex-wrap gap-1.5">
                 <button
                   type="button"
-                  class="rounded-full border px-2.5 py-0.5 text-[11px] font-medium transition-colors"
+                  class="rounded-full border px-3 py-1 text-xs font-medium transition-colors"
                   :class="
                     selectedBillingMode === null
                       ? 'border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-gray-900'
@@ -193,7 +221,7 @@
                   v-for="m in availableBillingModes"
                   :key="m"
                   type="button"
-                  class="rounded-full border px-2.5 py-0.5 text-[11px] font-medium transition-colors"
+                  class="rounded-full border px-3 py-1 text-xs font-medium transition-colors"
                   :class="
                     selectedBillingMode === m
                       ? 'border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-gray-900'
@@ -253,46 +281,45 @@
                     <span
                       :class="[
                         'inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset',
-                        billingModeChipClass(model.pricing?.billing_mode),
+                        billingModeChipClass(model.billingMode),
                       ]"
                     >
-                      {{ billingModeLabel(model.pricing?.billing_mode || 'token') }}
+                      {{ billingModeLabel(model.billingMode) }}
                     </span>
-                    <!-- 阶梯定价 chip：仅当有 intervals 时显示 -->
                     <span
-                      v-if="model.pricing?.intervals && model.pricing.intervals.length > 0"
-                      class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-medium text-indigo-700 ring-1 ring-inset ring-indigo-200/70 dark:bg-indigo-500/15 dark:text-indigo-300 dark:ring-indigo-500/30"
-                      :title="t('pricing.tieredHint')"
+                      v-if="!model.fromChannel"
+                      class="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2 py-0.5 text-[11px] font-medium text-gray-500 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60"
+                      :title="t('pricing.standardModelHint')"
                     >
-                      <Icon name="chart" size="xs" />
-                      {{ t('pricing.tiered') }}
+                      <Icon name="database" size="xs" />
+                      {{ t('pricing.standardModel') }}
                     </span>
                   </div>
                 </div>
               </div>
 
-              <!-- 价格主体：根据计费模式分支；text-sm + space-y-2 让信息更舒展 -->
+              <!-- 价格主体：按计费模式分支 -->
               <div class="mt-4 flex-1 space-y-2 text-sm">
-                <template v-if="!model.pricing">
+                <template v-if="!model.hasPricing">
                   <p class="text-gray-400 dark:text-dark-500">{{ t('pricing.noPricing') }}</p>
                 </template>
 
                 <!-- Per-request 计费 -->
-                <template v-else-if="model.pricing.billing_mode === 'per_request'">
+                <template v-else-if="model.billingMode === 'per_request'">
                   <div class="flex items-center justify-between">
                     <span class="text-gray-500 dark:text-dark-400">{{ t('pricing.perRequest') }}</span>
                     <span class="text-base font-semibold tabular-nums text-gray-900 dark:text-white">
-                      {{ formatPrice(applyRate(model.pricing.per_request_price)) }}
+                      {{ formatPrice(applyRate(model.perRequestPrice)) }}
                     </span>
                   </div>
                 </template>
 
                 <!-- Image 计费 -->
-                <template v-else-if="model.pricing.billing_mode === 'image'">
+                <template v-else-if="model.billingMode === 'image'">
                   <div class="flex items-center justify-between">
                     <span class="text-gray-500 dark:text-dark-400">{{ t('pricing.imageOutput') }}</span>
                     <span class="text-base font-semibold tabular-nums text-gray-900 dark:text-white">
-                      {{ formatPrice(applyRate(model.pricing.image_output_price)) }}
+                      {{ formatPrice(applyRate(model.imageOutputPrice)) }}
                     </span>
                   </div>
                 </template>
@@ -305,7 +332,7 @@
                       {{ t('pricing.input') }}
                     </span>
                     <span class="font-semibold tabular-nums text-gray-900 dark:text-white">
-                      {{ formatPricePerM(applyRate(model.pricing.input_price)) }}
+                      {{ formatPricePerM(applyRate(model.inputPrice)) }}
                     </span>
                   </div>
                   <div class="flex items-center justify-between">
@@ -314,36 +341,36 @@
                       {{ t('pricing.output') }}
                     </span>
                     <span class="font-semibold tabular-nums text-gray-900 dark:text-white">
-                      {{ formatPricePerM(applyRate(model.pricing.output_price)) }}
+                      {{ formatPricePerM(applyRate(model.outputPrice)) }}
                     </span>
                   </div>
-                  <div v-if="model.pricing.cache_read_price != null" class="flex items-center justify-between">
+                  <div v-if="model.cacheReadPrice != null && model.cacheReadPrice > 0" class="flex items-center justify-between">
                     <span class="inline-flex items-center gap-1.5 text-gray-500 dark:text-dark-400">
                       <Icon name="inbox" size="sm" class="text-sky-500" />
                       {{ t('pricing.cacheRead') }}
                     </span>
                     <span class="font-medium tabular-nums text-sky-700 dark:text-sky-300">
-                      {{ formatPricePerM(applyRate(model.pricing.cache_read_price)) }}
+                      {{ formatPricePerM(applyRate(model.cacheReadPrice)) }}
                     </span>
                   </div>
-                  <div v-if="model.pricing.cache_write_price != null" class="flex items-center justify-between">
+                  <div v-if="model.cacheWritePrice != null && model.cacheWritePrice > 0" class="flex items-center justify-between">
                     <span class="inline-flex items-center gap-1.5 text-gray-500 dark:text-dark-400">
                       <Icon name="edit" size="sm" class="text-amber-500" />
                       {{ t('pricing.cacheWrite') }}
                     </span>
                     <span class="font-medium tabular-nums text-amber-700 dark:text-amber-300">
-                      {{ formatPricePerM(applyRate(model.pricing.cache_write_price)) }}
+                      {{ formatPricePerM(applyRate(model.cacheWritePrice)) }}
                     </span>
                   </div>
                 </template>
               </div>
 
-              <!-- 模型可访问分组：分组名完整显示（不截断），最便宜的高亮 -->
+              <!-- 可用分组：完整显示 + 可点击切换 -->
               <div
                 v-if="model.accessibleGroups.length > 0"
                 class="mt-4 border-t border-gray-100 pt-3 dark:border-dark-700/60"
               >
-                <p class="mb-1.5 text-[11px] font-medium text-gray-500 dark:text-dark-400">
+                <p class="mb-1.5 text-xs font-medium text-gray-500 dark:text-dark-400">
                   {{ t('pricing.availableIn') }}
                 </p>
                 <div class="flex flex-wrap gap-1.5">
@@ -392,7 +419,7 @@ import PlatformIcon from '@/components/common/PlatformIcon.vue'
 import userChannelsAPI, {
   type UserAvailableChannel,
   type UserAvailableGroup,
-  type UserSupportedModel,
+  type PricingListEntry,
 } from '@/api/channels'
 import userGroupsAPI from '@/api/groups'
 import { useAppStore } from '@/stores/app'
@@ -406,6 +433,7 @@ const appStore = useAppStore()
 // ============ 原始数据 ============
 const channels = ref<UserAvailableChannel[]>([])
 const userGroupRates = ref<Record<number, number>>({})
+const allPricingEntries = ref<PricingListEntry[]>([])
 const loading = ref(false)
 
 // ============ 筛选状态 ============
@@ -414,18 +442,30 @@ const selectedGroupId = ref<number | null>(null)
 const selectedPlatform = ref<string | null>(null)
 const selectedBillingMode = ref<BillingMode | null>(null)
 
+// ============ 货币 ============
+// 默认显示 CNY（中国用户更习惯）；USD 按钮切回美元原价
+const currency = ref<'USD' | 'CNY'>('CNY')
+
+// USD → CNY 汇率：默认 7.2；后续可从 public settings 加 `usd_to_cny_rate` 字段覆盖
+const usdToCny = computed(() => {
+  const fromSettings = appStore.cachedPublicSettings as { usd_to_cny_rate?: number } | null
+  const rate = fromSettings?.usd_to_cny_rate
+  return typeof rate === 'number' && rate > 0 ? rate : 7.2
+})
+
 // ============ 数据加载 ============
 async function loadAll() {
   loading.value = true
   try {
-    const [list, rates] = await Promise.all([
+    const [list, rates, pricingResp] = await Promise.all([
       userChannelsAPI.getAvailable(),
       userGroupsAPI.getUserGroupRates().catch(() => ({}) as Record<number, number>),
+      userChannelsAPI.listAllPricing().catch(() => ({ models: [], metadata: {} as never })),
     ])
     channels.value = list
     userGroupRates.value = rates
-    // 默认选中最便宜的分组（按 effectiveRate 升序后第一个），让用户一打开就看到自己的实际价格
-    // 仅在用户尚未手动选择且有可用分组时设置
+    allPricingEntries.value = pricingResp.models || []
+    // 默认选中最便宜的分组（按 effectiveRate 升序后第一个）
     if (selectedGroupId.value === null && availableGroups.value.length > 0) {
       selectedGroupId.value = availableGroups.value[0].id
     }
@@ -436,18 +476,18 @@ async function loadAll() {
   }
 }
 
-// 按 effectiveRate 升序排列分组（便宜的放前面，让模型卡上的 chip 列表一眼看到最优选项）
-function sortGroupsByRate(groups: UserAvailableGroup[]): UserAvailableGroup[] {
-  return [...groups].sort((a, b) => effectiveRate(a) - effectiveRate(b))
-}
-
 // 实际倍率：用户专属 > 分组默认
 function effectiveRate(group: UserAvailableGroup): number {
   const custom = userGroupRates.value[group.id]
   return typeof custom === 'number' ? custom : group.rate_multiplier
 }
 
-// ============ 派生：所有可访问分组（按 platform 内去重） ============
+// 按 effectiveRate 升序排列分组
+function sortGroupsByRate(groups: UserAvailableGroup[]): UserAvailableGroup[] {
+  return [...groups].sort((a, b) => effectiveRate(a) - effectiveRate(b))
+}
+
+// ============ 派生：所有可访问分组 ============
 const availableGroups = computed<UserAvailableGroup[]>(() => {
   const seen = new Set<number>()
   const out: UserAvailableGroup[] = []
@@ -460,7 +500,6 @@ const availableGroups = computed<UserAvailableGroup[]>(() => {
       }
     }
   }
-  // 排序：专属在前 + 倍率从小到大（更便宜的分组放前面）
   return out.sort((a, b) => {
     if (a.is_exclusive !== b.is_exclusive) return a.is_exclusive ? -1 : 1
     return effectiveRate(a) - effectiveRate(b)
@@ -472,33 +511,90 @@ const selectedGroup = computed<UserAvailableGroup | null>(() => {
   return availableGroups.value.find(g => g.id === selectedGroupId.value) ?? null
 })
 
-// ============ 派生：所有可用平台 ============
+// ============ 平台 mapping ============
+// LiteLLM 的 provider 字段（如 "anthropic" / "openai" / "vertex_ai-anthropic_models"）
+// 与系统平台（anthropic / openai / gemini / antigravity）的映射
+function providerToPlatform(provider: string, modelName: string): string | null {
+  const p = (provider || '').toLowerCase()
+  const m = (modelName || '').toLowerCase()
+  if (p.includes('anthropic') || m.startsWith('claude')) return 'anthropic'
+  if (p === 'openai' || p === 'azure' || p.startsWith('text-completion-openai') || m.startsWith('gpt') || /^o[1-9]/.test(m)) return 'openai'
+  if (p.includes('gemini') || p.includes('vertex_ai-language-models') || p === 'google' || m.startsWith('gemini')) return 'gemini'
+  return null
+}
+
 const availablePlatforms = computed<string[]>(() => {
   const set = new Set<string>()
-  for (const ch of channels.value) {
-    for (const sec of ch.platforms) set.add(sec.platform)
+  // 从用户可访问分组得到
+  for (const g of availableGroups.value) {
+    if (g.platform) set.add(g.platform)
   }
   return Array.from(set).sort()
 })
 
+// 可访问平台集合（用户能用的）
+const accessiblePlatformSet = computed<Set<string>>(() => new Set(availablePlatforms.value))
+
+// platform → 可访问分组列表（用于反向关联模型 → 分组）
+const platformToGroups = computed<Map<string, UserAvailableGroup[]>>(() => {
+  const map = new Map<string, UserAvailableGroup[]>()
+  for (const g of availableGroups.value) {
+    if (!g.platform) continue
+    const arr = map.get(g.platform) ?? []
+    arr.push(g)
+    map.set(g.platform, arr)
+  }
+  return map
+})
+
 // ============ 派生：模型聚合 ============
-interface FlatModel extends UserSupportedModel {
+// 合并两个来源：
+//   1) admin 渠道里手动加的支持模型（fromChannel=true，可能有自定义定价 / intervals）
+//   2) LiteLLM 全量定价（fromChannel=false，使用标准定价；这是用户期望的"自动列全"）
+//
+// 同名同平台优先使用 1（admin 自定义）。
+interface FlatModel {
+  name: string
+  platform: string
+  fromChannel: boolean
+  hasPricing: boolean
+  billingMode: BillingMode
+  inputPrice: number | null
+  outputPrice: number | null
+  cacheReadPrice: number | null
+  cacheWritePrice: number | null
+  perRequestPrice: number | null
+  imageOutputPrice: number | null
   accessibleGroups: UserAvailableGroup[]
 }
 
-// 聚合所有 unique 模型（按 platform+name），关联可访问分组
 const allModels = computed<FlatModel[]>(() => {
   const map = new Map<string, FlatModel>()
+
+  // ── Step 1: 先放 admin 渠道自定义的模型（优先级最高）
   for (const ch of channels.value) {
     for (const sec of ch.platforms) {
       for (const m of sec.supported_models) {
         const key = `${m.platform}|${m.name}`
         let entry = map.get(key)
         if (!entry) {
-          entry = { ...m, accessibleGroups: [] }
+          const p = m.pricing
+          entry = {
+            name: m.name,
+            platform: m.platform,
+            fromChannel: true,
+            hasPricing: !!p,
+            billingMode: (p?.billing_mode as BillingMode) || 'token',
+            inputPrice: p?.input_price ?? null,
+            outputPrice: p?.output_price ?? null,
+            cacheReadPrice: p?.cache_read_price ?? null,
+            cacheWritePrice: p?.cache_write_price ?? null,
+            perRequestPrice: p?.per_request_price ?? null,
+            imageOutputPrice: p?.image_output_price ?? null,
+            accessibleGroups: [],
+          }
           map.set(key, entry)
         }
-        // 合并该 section 的分组进入此模型的可访问列表（去重）
         for (const g of sec.groups) {
           if (!entry.accessibleGroups.some(eg => eg.id === g.id)) {
             entry.accessibleGroups.push(g)
@@ -507,35 +603,57 @@ const allModels = computed<FlatModel[]>(() => {
       }
     }
   }
-  // 排序：先按平台、再按名字（让卡片排列稳定）
+
+  // ── Step 2: 再加 LiteLLM 全量模型（仅限用户可访问平台，不覆盖 Step 1 已存在的 key）
+  for (const entry of allPricingEntries.value) {
+    const platform = providerToPlatform(entry.provider, entry.model)
+    if (!platform) continue
+    if (!accessiblePlatformSet.value.has(platform)) continue
+    const key = `${platform}|${entry.model}`
+    if (map.has(key)) continue
+
+    // 推断 billing mode：mode === 'image_generation' → image，其它都按 token
+    const mode: BillingMode = entry.mode === 'image_generation' ? 'image' : 'token'
+
+    map.set(key, {
+      name: entry.model,
+      platform,
+      fromChannel: false,
+      hasPricing: entry.input_cost_per_token > 0 || entry.output_cost_per_token > 0 || entry.output_cost_per_image > 0,
+      billingMode: mode,
+      inputPrice: entry.input_cost_per_token || null,
+      outputPrice: entry.output_cost_per_token || null,
+      cacheReadPrice: entry.cache_read_input_token_cost || null,
+      cacheWritePrice: entry.cache_creation_input_token_cost || null,
+      perRequestPrice: null,
+      imageOutputPrice: entry.output_cost_per_image || null,
+      // 全量模型自动关联该平台的所有可访问分组
+      accessibleGroups: platformToGroups.value.get(platform) ?? [],
+    })
+  }
+
   return Array.from(map.values()).sort((a, b) => {
     if (a.platform !== b.platform) return a.platform.localeCompare(b.platform)
     return a.name.localeCompare(b.name)
   })
 })
 
-// ============ 派生：所有计费类型 ============
 const availableBillingModes = computed<BillingMode[]>(() => {
   const set = new Set<BillingMode>()
   for (const m of allModels.value) {
-    if (m.pricing?.billing_mode) set.add(m.pricing.billing_mode)
+    if (m.billingMode) set.add(m.billingMode)
   }
   return Array.from(set).sort()
 })
 
-// ============ 派生：过滤后的模型 ============
 const filteredModels = computed<FlatModel[]>(() => {
   const q = searchQuery.value.trim().toLowerCase()
   return allModels.value.filter(m => {
-    // 选中分组时：模型必须属于该分组
     if (selectedGroupId.value !== null) {
       if (!m.accessibleGroups.some(g => g.id === selectedGroupId.value)) return false
     }
-    // 平台
     if (selectedPlatform.value !== null && m.platform !== selectedPlatform.value) return false
-    // 计费类型
-    if (selectedBillingMode.value !== null && m.pricing?.billing_mode !== selectedBillingMode.value) return false
-    // 搜索
+    if (selectedBillingMode.value !== null && m.billingMode !== selectedBillingMode.value) return false
     if (q && !m.name.toLowerCase().includes(q) && !m.platform.toLowerCase().includes(q)) return false
     return true
   })
@@ -550,31 +668,35 @@ function applyRate(price: number | null | undefined): number | null {
   return price * activeRate.value
 }
 
-// 后端 pricing 字段单位说明：
-//   - token 计费：input/output/cache_read/cache_write 是「USD per token」（如 0.000003 = $3/M tokens）
-//     展示时需 × 1_000_000 才是 per-million 单位
-//   - per_request / image：直接是「USD per request/image」
-// 货币符号统一用 $（后端原生单位是 USD）
-
+// 单位说明：API 返回的是 USD per token；CNY 模式下再 × usdToCny 汇率
 const PER_MILLION = 1_000_000
 
-// 智能 toFixed：大额 2 位小数，小额 4 位，避免显示 "$0.0000" 这种无信息量字符串
 function smartFixed(n: number): string {
   if (n === 0) return '0'
-  if (n >= 1) return n.toFixed(2)
+  if (n >= 100) return n.toFixed(2)
+  if (n >= 1) return n.toFixed(3)
   return n.toFixed(4)
+}
+
+function applyCurrency(usdPrice: number): { value: number; symbol: string } {
+  if (currency.value === 'CNY') {
+    return { value: usdPrice * usdToCny.value, symbol: '¥' }
+  }
+  return { value: usdPrice, symbol: '$' }
 }
 
 // 单次价格（per_request / image）
 function formatPrice(price: number | null | undefined): string {
   if (price == null) return '-'
-  return `$${smartFixed(price)}`
+  const { value, symbol } = applyCurrency(price)
+  return `${symbol}${smartFixed(value)}`
 }
 
 // 每百万 token 价格
 function formatPricePerM(price: number | null | undefined): string {
   if (price == null) return '-'
-  return `$${smartFixed(price * PER_MILLION)}/M`
+  const { value, symbol } = applyCurrency(price * PER_MILLION)
+  return `${symbol}${smartFixed(value)}/M`
 }
 
 // ============ 计费类型 chip 配色 ============

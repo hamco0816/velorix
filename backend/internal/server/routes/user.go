@@ -76,6 +76,14 @@ func RegisterUserRoutes(
 			channels.GET("/available", h.AvailableChannel.List)
 		}
 
+		// 用户端「计费标准」总览：返回 PricingService 已加载的全量模型定价。
+		// 复用 admin handler 的方法 — 这是只读全局定价数据（无 admin 专属字段），
+		// 可安全暴露给已登录用户。前端用「用户可访问平台」过滤后展示。
+		pricing := authenticated.Group("/pricing")
+		{
+			pricing.GET("/models", h.Admin.Channel.ListAllModelPricing)
+		}
+
 		// 使用记录
 		usage := authenticated.Group("/usage")
 		{

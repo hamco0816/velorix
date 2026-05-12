@@ -707,21 +707,23 @@ const flagAdminPayment = () => adminSettingsStore.paymentEnabled
 // buildSelfNavItems 构造用户自己的导航项（用户端主菜单和管理员的"我的账户"子菜单共享这组声明）。
 // withDashboard=true 时包含仪表盘（用户端），false 时不含（管理员的个人区已经有独立仪表盘入口）。
 //
-// 条目顺序：密钥 → 用量 → 可用渠道 → 渠道状态 → 订阅/支付 → 兑换/资料。
-// 可用渠道紧挨渠道状态之上，让用户"先看自己能用什么、再看对应状态"。
+// 条目顺序（用户主菜单核心 7 项）：API密钥 → 我的订阅 → 我的独享号 → 使用记录 → 计费标准 → 渠道状态 → 使用文档。
+// 紧接着是次要/支付相关：充值订阅 → 订单 → 兑换码 → 邀请返利 → 个人资料。
 function buildSelfNavItems(withDashboard: boolean): NavItem[] {
   const items: NavItem[] = []
   if (withDashboard) {
     items.push({ path: '/dashboard', label: t('nav.dashboard'), icon: DashboardIcon, iconColor: 'text-sky-500 dark:text-sky-400' })
   }
   items.push(
+    // —— 用户期望的核心 7 项（按使用频率排序） ——
     { path: '/keys', label: t('nav.apiKeys'), icon: KeyIcon, iconColor: 'text-sky-500 dark:text-sky-400' },
-    { path: '/usage', label: t('nav.usage'), icon: ChartIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true },
-    { path: '/pricing', label: t('nav.pricing'), icon: ChannelIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true, featureFlag: flagAvailableChannels },
-    { path: '/docs', label: t('nav.docs'), icon: BookIcon, iconColor: 'text-indigo-500 dark:text-indigo-400', hideInSimpleMode: true },
-    { path: '/monitor', label: t('nav.channelStatus'), icon: SignalIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', featureFlag: flagChannelMonitor },
     { path: '/subscriptions', label: t('nav.mySubscriptions'), icon: CreditCardIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true },
     { path: '/seats', label: t('nav.mySeats'), icon: BadgeIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true, featureFlag: flagPayment },
+    { path: '/usage', label: t('nav.usage'), icon: ChartIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true },
+    { path: '/pricing', label: t('nav.pricing'), icon: ChannelIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true, featureFlag: flagAvailableChannels },
+    { path: '/monitor', label: t('nav.channelStatus'), icon: SignalIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', featureFlag: flagChannelMonitor },
+    { path: '/docs', label: t('nav.docs'), icon: BookIcon, iconColor: 'text-indigo-500 dark:text-indigo-400', hideInSimpleMode: true },
+    // —— 次要 / 支付相关 ——
     { path: '/purchase', label: t('nav.buySubscription'), icon: RechargeSubscriptionIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true, featureFlag: flagPayment },
     { path: '/orders', label: t('nav.myOrders'), icon: OrderListIcon, iconColor: 'text-amber-500 dark:text-amber-400', hideInSimpleMode: true, featureFlag: flagPayment },
     { path: '/redeem', label: t('nav.redeem'), icon: GiftIcon, iconColor: 'text-rose-500 dark:text-rose-400', hideInSimpleMode: true },
@@ -766,14 +768,26 @@ const customMenuItemsForAdmin = computed(() => {
 })
 
 // Admin navigation items
+//
+// 顺序（17 项，与用户期望对齐）：
+//   仪表盘 → 运维监控 → 风控日志 → 管理员文档
+//   → 用户管理 → 分组管理 → 账号管理
+//   → 渠道管理（折叠：渠道定价 / 渠道监控） → IP管理
+//   → 订单管理（折叠：支付概览 / 订单 / 套餐 / 独享池） → 订阅管理 → 模型定价
+//   → 使用记录 → 兑换码 → 优惠码 → 公告 → 邀请返利管理（用户未列出但功能需要）
+//   → 系统设置（统一压后，逻辑在 baseItems 之外追加）
 const adminNavItems = computed((): NavItem[] => {
   const baseItems: NavItem[] = [
+    // —— 概览 / 监控 / 安全 / 文档 ——
     { path: '/admin/dashboard', label: t('nav.dashboard'), icon: DashboardIcon, iconColor: 'text-sky-500 dark:text-sky-400' },
     { path: '/admin/ops', label: t('nav.ops'), icon: ChartIcon, iconColor: 'text-violet-500 dark:text-violet-400', featureFlag: flagOpsMonitoring },
     { path: '/admin/safety-risk', label: t('nav.safetyRisk'), icon: ShieldIcon, iconColor: 'text-amber-500 dark:text-amber-400' },
     { path: '/admin/docs', label: t('nav.adminDocs'), icon: BookIcon, iconColor: 'text-indigo-500 dark:text-indigo-400', hideInSimpleMode: true },
+    // —— 主体业务：用户 / 分组 / 账号 ——
     { path: '/admin/users', label: t('nav.users'), icon: UsersIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true },
     { path: '/admin/groups', label: t('nav.groups'), icon: FolderIcon, iconColor: 'text-indigo-500 dark:text-indigo-400', hideInSimpleMode: true },
+    { path: '/admin/accounts', label: t('nav.accounts'), icon: GlobeIcon, iconColor: 'text-violet-500 dark:text-violet-400' },
+    // —— 渠道 / IP ——
     {
       path: '/admin/channels',
       label: t('nav.channelManagement'),
@@ -786,27 +800,8 @@ const adminNavItems = computed((): NavItem[] => {
         { path: '/admin/channels/monitor', label: t('nav.channelMonitor'), icon: SignalIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', featureFlag: flagChannelMonitor },
       ],
     },
-    // 模型定价总览：admin 没有自定义渠道定价时也能看到 GitHub 拉的默认价格 + 倍率换算
-    { path: '/admin/pricing/models', label: t('nav.modelPricing'), icon: PriceTagIcon, iconColor: 'text-amber-500 dark:text-amber-400', hideInSimpleMode: true },
-    { path: '/admin/subscriptions', label: t('nav.subscriptions'), icon: CreditCardIcon, iconColor: 'text-teal-500 dark:text-teal-400', hideInSimpleMode: true },
-    { path: '/admin/accounts', label: t('nav.accounts'), icon: GlobeIcon, iconColor: 'text-violet-500 dark:text-violet-400' },
-    { path: '/admin/announcements', label: t('nav.announcements'), icon: BellIcon, iconColor: 'text-rose-500 dark:text-rose-400' },
     { path: '/admin/proxies', label: t('nav.proxies'), icon: ServerIcon, iconColor: 'text-rose-500 dark:text-rose-400' },
-    { path: '/admin/redeem', label: t('nav.redeemCodes'), icon: TicketIcon, iconColor: 'text-sky-500 dark:text-sky-400', hideInSimpleMode: true },
-    { path: '/admin/promo-codes', label: t('nav.promoCodes'), icon: GiftIcon, iconColor: 'text-rose-500 dark:text-rose-400', hideInSimpleMode: true },
-    {
-      path: '/admin/affiliates',
-      label: t('nav.affiliateManagement'),
-      icon: UsersIcon,
-      hideInSimpleMode: true,
-      expandOnly: true,
-      featureFlag: flagAffiliate,
-      children: [
-        { path: '/admin/affiliates/invites', label: t('nav.affiliateInviteRecords'), icon: UsersIcon },
-        { path: '/admin/affiliates/rebates', label: t('nav.affiliateRebateRecords'), icon: OrderIcon },
-        { path: '/admin/affiliates/transfers', label: t('nav.affiliateTransferRecords'), icon: CreditCardIcon },
-      ],
-    },
+    // —— 订单 / 订阅 / 定价 ——
     {
       path: '/admin/orders',
       label: t('nav.orderManagement'),
@@ -822,7 +817,27 @@ const adminNavItems = computed((): NavItem[] => {
         { path: '/admin/orders/exclusive-pools', label: t('nav.exclusivePools'), icon: BadgeIcon, iconColor: 'text-violet-500 dark:text-violet-400' },
       ],
     },
-    { path: '/admin/usage', label: t('nav.usage'), icon: ChartIcon, iconColor: 'text-violet-500 dark:text-violet-400' }
+    { path: '/admin/subscriptions', label: t('nav.subscriptions'), icon: CreditCardIcon, iconColor: 'text-teal-500 dark:text-teal-400', hideInSimpleMode: true },
+    // 模型定价总览：admin 没有自定义渠道定价时也能看到 GitHub 拉的默认价格 + 倍率换算
+    { path: '/admin/pricing/models', label: t('nav.modelPricing'), icon: PriceTagIcon, iconColor: 'text-amber-500 dark:text-amber-400', hideInSimpleMode: true },
+    // —— 运营：使用记录 / 兑换码 / 优惠码 / 公告 / 邀请 ——
+    { path: '/admin/usage', label: t('nav.usage'), icon: ChartIcon, iconColor: 'text-violet-500 dark:text-violet-400' },
+    { path: '/admin/redeem', label: t('nav.redeemCodes'), icon: TicketIcon, iconColor: 'text-sky-500 dark:text-sky-400', hideInSimpleMode: true },
+    { path: '/admin/promo-codes', label: t('nav.promoCodes'), icon: GiftIcon, iconColor: 'text-rose-500 dark:text-rose-400', hideInSimpleMode: true },
+    { path: '/admin/announcements', label: t('nav.announcements'), icon: BellIcon, iconColor: 'text-rose-500 dark:text-rose-400' },
+    {
+      path: '/admin/affiliates',
+      label: t('nav.affiliateManagement'),
+      icon: UsersIcon,
+      hideInSimpleMode: true,
+      expandOnly: true,
+      featureFlag: flagAffiliate,
+      children: [
+        { path: '/admin/affiliates/invites', label: t('nav.affiliateInviteRecords'), icon: UsersIcon },
+        { path: '/admin/affiliates/rebates', label: t('nav.affiliateRebateRecords'), icon: OrderIcon },
+        { path: '/admin/affiliates/transfers', label: t('nav.affiliateTransferRecords'), icon: CreditCardIcon },
+      ],
+    },
   ]
 
   const visible = applyFeatureFlags(baseItems)

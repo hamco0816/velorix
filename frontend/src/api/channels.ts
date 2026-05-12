@@ -71,6 +71,45 @@ export async function getAvailable(options?: { signal?: AbortSignal }): Promise<
   return data
 }
 
-export const userChannelsAPI = { getAvailable }
+/**
+ * 「计费标准」总览：返回当前 PricingService 已加载的全量模型定价（从 LiteLLM 同步）。
+ * 用户端可直接使用此接口列出所有平台的所有可定价模型，不依赖 admin 手动维护渠道的 supported_models。
+ *
+ * 价格单位：USD per token（与 admin /admin/pricing/models 一致），前端按需换算为 $/MTok。
+ */
+export interface PricingListEntry {
+  model: string
+  provider: string
+  mode: string
+  input_cost_per_token: number
+  output_cost_per_token: number
+  cache_read_input_token_cost: number
+  cache_creation_input_token_cost: number
+  output_cost_per_image: number
+  supports_prompt_caching: boolean
+  supports_service_tier: boolean
+}
+
+export interface PricingMetadata {
+  remote_url: string
+  hash_url: string
+  last_updated: string
+  local_hash: string
+  model_count: number
+}
+
+export interface ListPricingResponse {
+  models: PricingListEntry[]
+  metadata: PricingMetadata
+}
+
+export async function listAllPricing(options?: { signal?: AbortSignal }): Promise<ListPricingResponse> {
+  const { data } = await apiClient.get<ListPricingResponse>('/pricing/models', {
+    signal: options?.signal,
+  })
+  return data
+}
+
+export const userChannelsAPI = { getAvailable, listAllPricing }
 
 export default userChannelsAPI

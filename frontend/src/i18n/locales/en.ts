@@ -1166,7 +1166,10 @@ export default {
     billingToken: 'Per token',
     billingPerRequest: 'Per request',
     billingImage: 'Per image',
-    standardPriceHint: 'Showing standard (×1) price. Pick a group on the left to see your effective price.'
+    standardPriceHint: 'Showing standard (×1) price. Pick a group on the left to see your effective price.',
+    cnyHint: 'At $1 ≈ ¥{rate}',
+    standardModel: 'Standard',
+    standardModelHint: 'From the system-wide pricing catalog (auto-synced); not customized by any channel'
   },
 
   affiliate: {
