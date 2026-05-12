@@ -536,16 +536,31 @@ function applyRate(price: number | null | undefined): number | null {
   return price * activeRate.value
 }
 
-// 单价（per_request / image）：4 位小数
-function formatPrice(price: number | null | undefined): string {
-  if (price == null) return '-'
-  return `¥${price.toFixed(4)}`
+// 后端 pricing 字段单位说明：
+//   - token 计费：input/output/cache_read/cache_write 是「USD per token」（如 0.000003 = $3/M tokens）
+//     展示时需 × 1_000_000 才是 per-million 单位
+//   - per_request / image：直接是「USD per request/image」
+// 货币符号统一用 $（后端原生单位是 USD）
+
+const PER_MILLION = 1_000_000
+
+// 智能 toFixed：大额 2 位小数，小额 4 位，避免显示 "$0.0000" 这种无信息量字符串
+function smartFixed(n: number): string {
+  if (n === 0) return '0'
+  if (n >= 1) return n.toFixed(2)
+  return n.toFixed(4)
 }
 
-// 每百万 token 价格：4 位小数 + /M 后缀
+// 单次价格（per_request / image）
+function formatPrice(price: number | null | undefined): string {
+  if (price == null) return '-'
+  return `$${smartFixed(price)}`
+}
+
+// 每百万 token 价格
 function formatPricePerM(price: number | null | undefined): string {
   if (price == null) return '-'
-  return `¥${price.toFixed(4)}/M`
+  return `$${smartFixed(price * PER_MILLION)}/M`
 }
 
 // ============ 计费类型 chip 配色 ============
