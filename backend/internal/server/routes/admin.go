@@ -182,6 +182,10 @@ func registerOpsRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 		ops.GET("/safety-risk-events", h.Admin.Ops.ListSafetyRiskEvents)
 		ops.PUT("/safety-risk-events/:id/review", h.Admin.Ops.ReviewSafetyRiskEvent)
 		ops.POST("/safety-risk-events/clear-user", h.Admin.Ops.ClearSafetyRiskEventsForUser)
+		// Safety risk 用户白名单：在名单内的用户跳过 sensitive_filter 检测
+		ops.GET("/safety-risk/allowlist", h.Admin.Setting.ListSafetyAllowlist)
+		ops.POST("/safety-risk/allowlist", h.Admin.Setting.AddSafetyAllowlist)
+		ops.DELETE("/safety-risk/allowlist/:user_id", h.Admin.Setting.RemoveSafetyAllowlist)
 
 		// Indexed system logs
 		ops.GET("/system-logs", h.Admin.Ops.ListSystemLogs)

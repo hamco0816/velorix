@@ -70,10 +70,26 @@ export async function clearSafetyRiskEventsForUser(userId: number, reviewNote?: 
   return data
 }
 
+export async function listSafetyAllowlist(): Promise<number[]> {
+  const { data } = await apiClient.get<{ user_ids: number[] }>('/admin/ops/safety-risk/allowlist')
+  return data?.user_ids || []
+}
+
+export async function addSafetyAllowlist(userId: number): Promise<void> {
+  await apiClient.post('/admin/ops/safety-risk/allowlist', { user_id: userId })
+}
+
+export async function removeSafetyAllowlist(userId: number): Promise<void> {
+  await apiClient.delete(`/admin/ops/safety-risk/allowlist/${userId}`)
+}
+
 export const safetyRiskAPI = {
   listSafetyRiskEvents,
   reviewSafetyRiskEvent,
   clearSafetyRiskEventsForUser,
+  listSafetyAllowlist,
+  addSafetyAllowlist,
+  removeSafetyAllowlist,
 }
 
 export default safetyRiskAPI

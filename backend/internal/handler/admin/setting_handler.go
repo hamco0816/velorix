@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"reflect"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/Wei-Shaw/sub2api/internal/config"
@@ -2854,4 +2855,50 @@ func (h *SettingHandler) TestWebSearchEmulation(c *gin.Context) {
 		return
 	}
 	response.Success(c, result)
+}
+
+// ListSafetyAllowlist 列出当前风控用户白名单（admin 配置页展示用）。
+// GET /api/v1/admin/safety-risk/allowlist
+func (h *SettingHandler) ListSafetyAllowlist(c *gin.Context) {
+	ids := h.settingService.GetSafetyAllowlist(c.Request.Context())
+	response.Success(c, gin.H{"user_ids": ids})
+}
+
+type safetyAllowlistAddRequest struct {
+	UserID int64 `json:"user_id"`
+}
+
+// AddSafetyAllowlist 将 user_id 加入风控用户白名单（去重）。
+// POST /api/v1/admin/safety-risk/allowlist
+func (h *SettingHandler) AddSafetyAllowlist(c *gin.Context) {
+	var req safetyAllowlistAddRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, "Invalid request: "+err.Error())
+		return
+	}
+	if req.UserID <= 0 {
+		response.BadRequest(c, "user_id must be > 0")
+		return
+	}
+	if err := h.settingService.AddUserToSafetyAllowlist(c.Request.Context(), req.UserID); err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+	response.Success(c, gin.H{"ok": true})
+}
+
+// RemoveSafetyAllowlist 从风控用户白名单移除 user_id。
+// DELETE /api/v1/admin/safety-risk/allowlist/:user_id
+func (h *SettingHandler) RemoveSafetyAllowlist(c *gin.Context) {
+	idStr := strings.TrimSpace(c.Param("user_id"))
+	userID, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil || userID <= 0 {
+		response.BadRequest(c, "Invalid user_id")
+		return
+	}
+	if err := h.settingService.RemoveUserFromSafetyAllowlist(c.Request.Context(), userID); err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+	response.Success(c, gin.H{"ok": true})
 }

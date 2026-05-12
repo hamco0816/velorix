@@ -29,6 +29,22 @@ func GatewaySensitiveFilter(settingService *service.SettingService, opsService *
 			c.Next()
 			return
 		}
+
+		// 白名单用户跳过敏感词检测：admin 在风控页面对合法用户加白名单后，
+		// 该用户的所有后续请求直接放行，不再走 sensitive_filter（防止反复误拦）。
+		if apiKey, ok := GetAPIKeyFromContext(c); ok && apiKey != nil {
+			var userID int64
+			if apiKey.User != nil && apiKey.User.ID > 0 {
+				userID = apiKey.User.ID
+			} else if apiKey.UserID > 0 {
+				userID = apiKey.UserID
+			}
+			if userID > 0 && settingService.IsUserSafetyAllowlisted(c.Request.Context(), userID) {
+				c.Next()
+				return
+			}
+		}
+
 		body, err := io.ReadAll(c.Request.Body)
 		if err != nil {
 			writeError(c, http.StatusRequestEntityTooLarge, "request body is too large")
@@ -44,13 +60,27 @@ func GatewaySensitiveFilter(settingService *service.SettingService, opsService *
 			return
 		}
 
-		slog.Warn("gateway sensitive filter blocked request",
+		// Action 分级：
+		//  - "blocked"：硬拦截（高危 builtin + custom 词）
+		//  - "warned"：软命中，仅记录事件不拦截请求（容易误报的 builtin 词）
+		// 这样合法用户讨论"prompt injection / 逆向工程"等学术话题不被误伤，
+		// admin 仍能在风控页面看到事件、必要时升级为 block 规则。
+		action := match.Action
+		if action == "" {
+			action = service.SafetyRiskActionBlocked
+		}
+		slog.Warn("gateway sensitive filter triggered",
 			"path", c.Request.URL.Path,
 			"field", match.Path,
 			"word", match.Word,
 			"source", match.Source,
+			"action", action,
 		)
 		recordGatewaySensitiveRisk(c, opsService, match)
+		if action == service.SafetyRiskActionWarned {
+			c.Next()
+			return
+		}
 		writeError(c, http.StatusForbidden, gatewaySensitiveFilterUserMessage)
 		c.Abort()
 	}
@@ -168,6 +198,15 @@ func recordGatewaySensitiveRisk(c *gin.Context, opsService *service.OpsService, 
 		return
 	}
 
+	// Action 沿用 match.Action（block / warn），让 admin 在事件列表能区分硬拦截还是软提醒
+	action := match.Action
+	if action == "" {
+		action = service.SafetyRiskActionBlocked
+	}
+	severity := "warning"
+	if action == service.SafetyRiskActionBlocked {
+		severity = "danger"
+	}
 	input := &service.SafetyRiskEventInput{
 		Method:          c.Request.Method,
 		Path:            c.Request.URL.Path,
@@ -177,8 +216,8 @@ func recordGatewaySensitiveRisk(c *gin.Context, opsService *service.OpsService, 
 		RuleWord:        match.Word,
 		RulePath:        match.Path,
 		Category:        "content_safety",
-		Severity:        "warning",
-		Action:          service.SafetyRiskActionBlocked,
+		Severity:        severity,
+		Action:          action,
 		AIReviewed:      false,
 		AIReviewResult:  "not_used",
 		Status:          service.SafetyRiskStatusPending,

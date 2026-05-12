@@ -1568,6 +1568,107 @@ func (s *SettingService) IsInvitationCodeEnabled(ctx context.Context) bool {
 	return value == "true"
 }
 
+// IsUserSafetyAllowlisted 检查 userID 是否在风控白名单（admin 配置）。
+// 在白名单的用户走 sensitive_filter 时直接跳过，避免合法用户被反复误拦。
+// 配置存为 JSON 数组（如 "[1,5,42]"），单次解析+遍历，规模 < 1000 用户 OK。
+func (s *SettingService) IsUserSafetyAllowlisted(ctx context.Context, userID int64) bool {
+	if s == nil || s.settingRepo == nil || userID <= 0 {
+		return false
+	}
+	raw, err := s.settingRepo.GetValue(ctx, SettingKeySafetyRiskUserAllowlist)
+	if err != nil || strings.TrimSpace(raw) == "" {
+		return false
+	}
+	ids := parseSafetyAllowlist(raw)
+	for _, id := range ids {
+		if id == userID {
+			return true
+		}
+	}
+	return false
+}
+
+// AddUserToSafetyAllowlist 把 user_id 加入白名单（去重）。
+// admin 在风控页面点"加入白名单"按钮触发。
+func (s *SettingService) AddUserToSafetyAllowlist(ctx context.Context, userID int64) error {
+	if s == nil || s.settingRepo == nil {
+		return fmt.Errorf("setting service unavailable")
+	}
+	if userID <= 0 {
+		return fmt.Errorf("invalid user id")
+	}
+	raw, _ := s.settingRepo.GetValue(ctx, SettingKeySafetyRiskUserAllowlist)
+	ids := parseSafetyAllowlist(raw)
+	for _, id := range ids {
+		if id == userID {
+			return nil // 已存在
+		}
+	}
+	ids = append(ids, userID)
+	data, err := json.Marshal(ids)
+	if err != nil {
+		return err
+	}
+	return s.settingRepo.Set(ctx, SettingKeySafetyRiskUserAllowlist, string(data))
+}
+
+// RemoveUserFromSafetyAllowlist 从白名单移除 user_id。
+func (s *SettingService) RemoveUserFromSafetyAllowlist(ctx context.Context, userID int64) error {
+	if s == nil || s.settingRepo == nil {
+		return fmt.Errorf("setting service unavailable")
+	}
+	raw, _ := s.settingRepo.GetValue(ctx, SettingKeySafetyRiskUserAllowlist)
+	ids := parseSafetyAllowlist(raw)
+	out := make([]int64, 0, len(ids))
+	for _, id := range ids {
+		if id != userID {
+			out = append(out, id)
+		}
+	}
+	if len(out) == len(ids) {
+		return nil // 不存在
+	}
+	data, err := json.Marshal(out)
+	if err != nil {
+		return err
+	}
+	return s.settingRepo.Set(ctx, SettingKeySafetyRiskUserAllowlist, string(data))
+}
+
+// GetSafetyAllowlist 读取白名单完整列表（admin 配置页展示用）。
+func (s *SettingService) GetSafetyAllowlist(ctx context.Context) []int64 {
+	if s == nil || s.settingRepo == nil {
+		return nil
+	}
+	raw, _ := s.settingRepo.GetValue(ctx, SettingKeySafetyRiskUserAllowlist)
+	return parseSafetyAllowlist(raw)
+}
+
+// parseSafetyAllowlist 容忍非法/空 JSON，返回去重的正整数列表。
+func parseSafetyAllowlist(raw string) []int64 {
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return nil
+	}
+	var ids []int64
+	if err := json.Unmarshal([]byte(raw), &ids); err != nil {
+		return nil
+	}
+	seen := make(map[int64]struct{}, len(ids))
+	out := make([]int64, 0, len(ids))
+	for _, id := range ids {
+		if id <= 0 {
+			continue
+		}
+		if _, ok := seen[id]; ok {
+			continue
+		}
+		seen[id] = struct{}{}
+		out = append(out, id)
+	}
+	return out
+}
+
 // GetRegisterIPLimitConfig 读取业务级注册 IP 限流配置。
 //
 //	max  = 0：表示关闭（仅依赖 routes 里硬编码的 5/min 兜底）

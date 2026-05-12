@@ -33,16 +33,27 @@ type GatewaySensitiveFilterSettings struct {
 	Words   []string
 }
 
+// 注：SafetyRiskActionBlocked / SafetyRiskActionWarneded 在 safety_risk.go 已定义。
+// warn 模式 = 事件入库但请求放行，避免内置规则误伤合法讨论。
+
 type GatewaySensitiveMatch struct {
 	Word    string
 	Path    string
 	Source  string
 	Preview string
+	// Action 标记本次命中应该 block 还是 warn。
+	// 路由侧 middleware 根据 Action 决定是否拒绝请求；warn 只记录事件不影响业务流。
+	Action string
 }
 
 type gatewaySensitiveRule struct {
 	Word   string
 	Source string
+	// Severity 分级：
+	//  - "block"：命中即拦截（用于明确恶意意图的词，如 ransomware / phishing kit / ignore previous instructions）
+	//  - "warn"：仅记录事件不拦截（用于易误报的"防御性/学术性"词，如 prompt injection / 逆向工程 / 越狱模式）
+	// 自定义词（admin 在 settings 添加的）一律 block，符合"我加的就是要拦"的预期。
+	Severity string
 }
 
 type cachedGatewaySensitiveFilterSettings struct {
@@ -96,23 +107,55 @@ var gatewaySensitiveSkipKeys = map[string]struct{}{
 	"instructions": {}, // OpenAI Responses API instructions 字段
 }
 
-var gatewaySensitiveBuiltInWords = []string{
+// gatewaySensitiveBuiltInBlockWords 内置高危词：明确恶意意图，命中即拦截。
+// 分级原则：词面本身就指向工具或攻击行为，正常用户极少在 user content 出现。
+var gatewaySensitiveBuiltInBlockWords = []string{
+	// 明确的 prompt 注入攻击指令（"忽略之前的指令"等）
 	"ignore previous instructions",
 	"ignore all previous instructions",
+	"do anything now",
+	"act as dan",
+	"无视之前的指令",
+	"忽略之前的指令",
+	"忽略所有指令",
+	// 明确的恶意工具 / 攻击载荷
+	"钓鱼网站",
+	"钓鱼邮件模板",
+	"盗取密码",
+	"窃取凭据",
+	"木马程序",
+	"勒索软件",
+	"免杀",
+	"绕过杀软",
+	"远控木马",
+	"c2 server",
+	"command and control",
+	"credential stealer",
+	"password stealer",
+	"phishing kit",
+	"ransomware",
+	"malware loader",
+	"注册码生成器",
+	"sql injection payload",
+	"xss payload",
+	"exploit chain",
+	"privilege escalation exploit",
+}
+
+// gatewaySensitiveBuiltInWarnWords 内置警告词：可能是攻击也可能是合法讨论。
+// admin 在风控页面看到 warn 类事件可据此判断是否需要追加自定义 block 规则。
+// 不直接拦截以避免大量误伤（如 VSCode/Claude Code 的 system prompt 含 "prompt injection"
+// 是防御性指示；研究人员讨论"逆向工程""越狱"是合法学术话题）。
+var gatewaySensitiveBuiltInWarnWords = []string{
+	"prompt injection",
+	"system prompt leak",
+	"reveal your system prompt",
 	"ignore system prompt",
 	"ignore safety policy",
 	"bypass safety",
 	"bypass restrictions",
 	"jailbreak mode",
 	"developer mode",
-	"do anything now",
-	"prompt injection",
-	"system prompt leak",
-	"reveal your system prompt",
-	"act as dan",
-	"无视之前的指令",
-	"忽略之前的指令",
-	"忽略所有指令",
 	"忽略系统提示",
 	"绕过安全策略",
 	"绕过限制",
@@ -122,33 +165,12 @@ var gatewaySensitiveBuiltInWords = []string{
 	"提示词注入",
 	"泄露系统提示词",
 	"输出系统提示词",
-	"钓鱼网站",
-	"钓鱼邮件模板",
-	"盗取密码",
-	"窃取凭据",
-	"木马程序",
-	"勒索软件",
-	"后门程序",
-	"免杀",
-	"绕过杀软",
 	"恶意软件",
-	"远控木马",
-	"c2 server",
-	"command and control",
-	"credential stealer",
-	"password stealer",
-	"phishing kit",
-	"ransomware",
-	"malware loader",
+	"后门程序",
 	"反编译源码",
 	"逆向工程",
 	"绕过授权",
 	"破解软件",
-	"注册码生成器",
-	"exploit chain",
-	"sql injection payload",
-	"xss payload",
-	"privilege escalation exploit",
 }
 
 func ParseGatewaySensitiveWords(raw string) []string {
@@ -343,8 +365,8 @@ func matchGatewaySensitiveText(text string, rules []gatewaySensitiveRule, path s
 	return nil
 }
 
-// buildSensitiveMatch 命中后回填 Source（区分 builtin / custom）：AC 扫的是规范化后的 word，
-// 通过 lowerWord 或 compactWord 反查原 rule，保留原 word 字面给上游告警。
+// buildSensitiveMatch 命中后回填 Source（builtin/custom）+ Action（block/warn）：
+// AC 扫的是规范化后的 word，通过 lowerWord 或 compactWord 反查原 rule。
 func buildSensitiveMatch(hitWord string, rules []gatewaySensitiveRule, path, original string) *GatewaySensitiveMatch {
 	preview := sanitizeGatewaySensitivePreview(original)
 	for _, rule := range rules {
@@ -355,11 +377,15 @@ func buildSensitiveMatch(hitWord string, rules []gatewaySensitiveRule, path, ori
 		if strings.EqualFold(word, hitWord) ||
 			strings.EqualFold(strings.ToLower(word), hitWord) ||
 			compactGatewaySensitiveText(word) == hitWord {
-			return &GatewaySensitiveMatch{Word: word, Path: path, Source: rule.Source, Preview: preview}
+			action := rule.Severity
+			if action == "" {
+				action = SafetyRiskActionBlocked
+			}
+			return &GatewaySensitiveMatch{Word: word, Path: path, Source: rule.Source, Preview: preview, Action: action}
 		}
 	}
-	// 兜底（理论上 rules 必含此词）
-	return &GatewaySensitiveMatch{Word: hitWord, Path: path, Source: "builtin", Preview: preview}
+	// 兜底（理论上 rules 必含此词）—— 不确定的回退到 block 保护
+	return &GatewaySensitiveMatch{Word: hitWord, Path: path, Source: "builtin", Preview: preview, Action: SafetyRiskActionBlocked}
 }
 
 // --- AC 自动机缓存（按词典+模式 fnv hash 复用实例）---
@@ -478,38 +504,30 @@ func compactGatewaySensitiveText(value string) string {
 }
 
 func gatewaySensitiveEffectiveRules(custom []string) []gatewaySensitiveRule {
-	if len(custom) == 0 {
-		rules := make([]gatewaySensitiveRule, 0, len(gatewaySensitiveBuiltInWords))
-		for _, word := range gatewaySensitiveBuiltInWords {
-			rules = append(rules, gatewaySensitiveRule{Word: word, Source: "builtin"})
-		}
-		return rules
-	}
-	seen := make(map[string]struct{}, len(gatewaySensitiveBuiltInWords)+len(custom))
-	rules := make([]gatewaySensitiveRule, 0, len(gatewaySensitiveBuiltInWords)+len(custom))
-	for _, word := range gatewaySensitiveBuiltInWords {
+	totalCap := len(gatewaySensitiveBuiltInBlockWords) + len(gatewaySensitiveBuiltInWarnWords) + len(custom)
+	seen := make(map[string]struct{}, totalCap)
+	rules := make([]gatewaySensitiveRule, 0, totalCap)
+	appendWord := func(word, source, severity string) {
 		word = strings.TrimSpace(word)
 		key := compactGatewaySensitiveText(word)
 		if word == "" || key == "" {
-			continue
+			return
 		}
 		if _, ok := seen[key]; ok {
-			continue
+			return
 		}
 		seen[key] = struct{}{}
-		rules = append(rules, gatewaySensitiveRule{Word: word, Source: "builtin"})
+		rules = append(rules, gatewaySensitiveRule{Word: word, Source: source, Severity: severity})
+	}
+	// 顺序：block 内置 → warn 内置 → custom（custom 一律 block，admin 加的就是要拦）
+	for _, word := range gatewaySensitiveBuiltInBlockWords {
+		appendWord(word, "builtin", SafetyRiskActionBlocked)
+	}
+	for _, word := range gatewaySensitiveBuiltInWarnWords {
+		appendWord(word, "builtin", SafetyRiskActionWarned)
 	}
 	for _, word := range custom {
-		word = strings.TrimSpace(word)
-		key := compactGatewaySensitiveText(word)
-		if word == "" || key == "" {
-			continue
-		}
-		if _, ok := seen[key]; ok {
-			continue
-		}
-		seen[key] = struct{}{}
-		rules = append(rules, gatewaySensitiveRule{Word: word, Source: "custom"})
+		appendWord(word, "custom", SafetyRiskActionBlocked)
 	}
 	return rules
 }

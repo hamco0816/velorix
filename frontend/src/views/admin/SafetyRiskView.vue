@@ -196,6 +196,22 @@
                       标记复核
                     </button>
                     <button
+                      v-if="item.user_id && !allowlistedUserIds.has(item.user_id)"
+                      class="btn btn-secondary btn-sm mr-2"
+                      :disabled="loading"
+                      :title="'加入白名单：该用户后续请求跳过敏感词检测'"
+                      @click="addToAllowlist(item)"
+                    >
+                      加入白名单
+                    </button>
+                    <span
+                      v-else-if="item.user_id && allowlistedUserIds.has(item.user_id)"
+                      class="mr-2 inline-flex items-center rounded bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
+                      title="该用户已在风控白名单"
+                    >
+                      ✓ 已白名单
+                    </span>
+                    <button
                       v-if="item.user_id && item.status !== 'cleared'"
                       class="btn btn-danger btn-sm"
                       :disabled="loading"
@@ -303,6 +319,8 @@ import {
   clearSafetyRiskEventsForUser,
   listSafetyRiskEvents,
   reviewSafetyRiskEvent,
+  listSafetyAllowlist,
+  addSafetyAllowlist,
   type SafetyRiskEvent,
   type SafetyRiskQueryParams,
 } from '@/api/admin/safetyRisk'
@@ -342,6 +360,27 @@ async function copyPreviewToClipboard() {
     setTimeout(() => { previewCopied.value = false }, 1500)
   } catch {
     /* clipboard 权限被拒，静默处理 */
+  }
+}
+// 风控白名单缓存：在白名单的 user 后续请求直接跳过 sensitive_filter；
+// 列表中行级 "加入白名单" / "✓已白名单" 角标基于这个 Set 渲染
+const allowlistedUserIds = ref<Set<number>>(new Set())
+async function refreshAllowlist() {
+  try {
+    const ids = await listSafetyAllowlist()
+    allowlistedUserIds.value = new Set(ids)
+  } catch {
+    /* 拉失败不阻断主流程；事件列表本身仍能用 */
+  }
+}
+async function addToAllowlist(event: SafetyRiskEvent) {
+  if (!event.user_id || event.user_id <= 0) return
+  try {
+    await addSafetyAllowlist(event.user_id)
+    allowlistedUserIds.value = new Set([...allowlistedUserIds.value, event.user_id])
+    appStore.showSuccess(`已把 ${event.user_email || `用户#${event.user_id}`} 加入风控白名单，后续请求将跳过敏感词检测`)
+  } catch (err) {
+    appStore.showError('加入白名单失败：' + (err as Error).message)
   }
 }
 const selectedClearEvent = ref<SafetyRiskEvent | null>(null)
@@ -624,7 +663,10 @@ function statusClass(status: string): string {
   }
 }
 
-onMounted(loadEvents)
+onMounted(() => {
+  loadEvents()
+  refreshAllowlist()
+})
 </script>
 
 <style scoped>

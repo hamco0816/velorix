@@ -109,6 +109,7 @@ const (
 	SettingKeyAIReviewAPIKeyID             = "ai_review_api_key_id"             // 用于走 gateway 的 ApiKey ID（admin 自己的额度）
 	SettingKeyAIReviewGroupID              = "ai_review_group_id"               // 选用哪个分组（决定模型/调度路径）
 	SettingKeyAIReviewModel                = "ai_review_model"                  // 选用哪个模型（如 claude-haiku-4-5 / gpt-5-mini）
+	SettingKeySafetyRiskUserAllowlist      = "safety_risk_user_allowlist"       // 风控用户白名单（JSON 数组 of user_id）：在列表里的用户跳过敏感词检测
 	SettingKeyAffiliateEnabled             = "affiliate_enabled"                // 邀请返利功能总开关
 	SettingKeyAffiliateRebateRate          = "affiliate_rebate_rate"            // 邀请返利比例（百分比，0-100）
 	SettingKeyAffiliateRebateFreezeHours   = "affiliate_rebate_freeze_hours"    // 返利冻结期（小时，0=不冻结）
