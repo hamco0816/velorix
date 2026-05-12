@@ -292,6 +292,43 @@ func (s *OpsService) writeAIReviewResult(ctx context.Context, eventID int64, aiR
 	}
 }
 
+// ReviewEventWithAI admin 在风控列表点"AI 复核"按钮时调用：对一条历史事件同步跑 AI 审核
+// 并把结果回写到该事件，verdict=pass 时自动归档。
+//
+// 跟新事件触发的 TriggerAIReviewAsync 的区别：
+//   - 这个是 admin 主动对历史事件触发（之前事件在 AI 审核启用前入库的）
+//   - 同步等结果，让前端立刻刷新展示
+//   - 复用 TestAIReview 的 LLM 调用 + 现有的回写/归档逻辑
+func (s *OpsService) ReviewEventWithAI(ctx context.Context, eventID int64) (*AIReviewResult, error) {
+	if s == nil || s.opsRepo == nil {
+		return nil, fmt.Errorf("ops service unavailable")
+	}
+	if eventID <= 0 {
+		return nil, fmt.Errorf("invalid event id")
+	}
+	event, err := s.opsRepo.GetSafetyRiskEvent(ctx, eventID)
+	if err != nil {
+		return nil, fmt.Errorf("get event: %w", err)
+	}
+	if event == nil {
+		return nil, fmt.Errorf("event not found")
+	}
+	if strings.TrimSpace(event.PromptPreview) == "" {
+		return nil, fmt.Errorf("event has no prompt content to review")
+	}
+	// 复用 TestAIReview 的 LLM 调用链路（前置 cfg 校验 + apiKey 查询 + callAIReviewLLM）
+	result, err := s.TestAIReview(ctx, event.PromptPreview)
+	if err != nil {
+		return nil, err
+	}
+	// 写回事件 + 自动归档（pass 时）
+	s.writeAIReviewResult(ctx, eventID, true, "anthropic-compat", *result)
+	if result.Verdict == "pass" {
+		s.tryAutoArchiveEvent(ctx, eventID, fmt.Sprintf("ai_auto_cleared: %s", result.Reason))
+	}
+	return result, nil
+}
+
 // TestAIReview 同步跑一次 AI 审核（admin 配置页"测试"按钮调用），不入库、不归档，
 // 直接返回判定结果。让 admin 在保存配置前能验证模型+prompt 是否能正确分类典型样本。
 //

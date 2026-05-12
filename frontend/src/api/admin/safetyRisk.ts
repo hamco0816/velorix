@@ -95,6 +95,12 @@ export async function testSafetyAIReview(prompt: string): Promise<AIReviewTestRe
   return data
 }
 
+// 对单条事件触发 AI 复核（同步），用于 admin 在风控列表点"AI 复核"按钮补审历史事件
+export async function reviewSafetyRiskEventWithAI(eventId: number): Promise<AIReviewTestResult> {
+  const { data } = await apiClient.post<AIReviewTestResult>(`/admin/ops/safety-risk-events/${eventId}/ai-review`)
+  return data
+}
+
 export interface SafetyRiskRuleStat {
   rule_word: string
   rule_source: string
@@ -128,6 +134,7 @@ export const safetyRiskAPI = {
   addSafetyAllowlist,
   removeSafetyAllowlist,
   testSafetyAIReview,
+  reviewSafetyRiskEventWithAI,
   listSafetyRiskRuleStats,
 }
 

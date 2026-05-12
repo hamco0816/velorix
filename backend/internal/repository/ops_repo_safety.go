@@ -259,6 +259,74 @@ WHERE id = $1
 	return nil
 }
 
+// GetSafetyRiskEvent 按 ID 查单条事件，admin 触发"AI 复核"按钮时用来拿 prompt_preview。
+// 只 SELECT 必要字段（避免拉无关 JOIN 性能浪费）。
+func (r *opsRepository) GetSafetyRiskEvent(ctx context.Context, id int64) (*service.SafetyRiskEvent, error) {
+	if r == nil || r.db == nil {
+		return nil, fmt.Errorf("nil ops repository")
+	}
+	row := r.db.QueryRowContext(ctx, `
+SELECT
+  id, created_at, user_id, api_key_id, COALESCE(api_key_name, ''), group_id, COALESCE(group_name, ''),
+  COALESCE(request_id, ''), COALESCE(client_request_id, ''),
+  COALESCE(method, ''), COALESCE(path, ''), COALESCE(client_ip, ''), COALESCE(user_agent, ''),
+  COALESCE(rule_source, ''), COALESCE(rule_word, ''), COALESCE(rule_path, ''),
+  COALESCE(category, ''), COALESCE(severity, ''), COALESCE(action, ''),
+  ai_reviewed, COALESCE(ai_review_provider, ''), COALESCE(ai_review_result, ''),
+  COALESCE(status, ''), COALESCE(prompt_preview, ''), reviewed_by_user_id, reviewed_at,
+  COALESCE(review_note, ''), cleared_at
+FROM safety_risk_events
+WHERE id = $1
+`, id)
+	var e service.SafetyRiskEvent
+	var userID, apiKeyID, groupID, reviewedBy sql.NullInt64
+	var createdAt sql.NullTime
+	var reviewedAt, clearedAt sql.NullTime
+	if err := row.Scan(
+		&e.ID, &createdAt, &userID, &apiKeyID, &e.APIKeyName, &groupID, &e.GroupName,
+		&e.RequestID, &e.ClientRequestID,
+		&e.Method, &e.Path, &e.ClientIP, &e.UserAgent,
+		&e.RuleSource, &e.RuleWord, &e.RulePath,
+		&e.Category, &e.Severity, &e.Action,
+		&e.AIReviewed, &e.AIReviewProvider, &e.AIReviewResult,
+		&e.Status, &e.PromptPreview, &reviewedBy, &reviewedAt,
+		&e.ReviewNote, &clearedAt,
+	); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	if createdAt.Valid {
+		e.CreatedAt = createdAt.Time
+	}
+	if userID.Valid {
+		v := userID.Int64
+		e.UserID = &v
+	}
+	if apiKeyID.Valid {
+		v := apiKeyID.Int64
+		e.APIKeyID = &v
+	}
+	if groupID.Valid {
+		v := groupID.Int64
+		e.GroupID = &v
+	}
+	if reviewedBy.Valid {
+		v := reviewedBy.Int64
+		e.ReviewedByID = &v
+	}
+	if reviewedAt.Valid {
+		t := reviewedAt.Time
+		e.ReviewedAt = &t
+	}
+	if clearedAt.Valid {
+		t := clearedAt.Time
+		e.ClearedAt = &t
+	}
+	return &e, nil
+}
+
 // SafetyRiskRuleStats 聚合时间窗口内每条规则的命中分布。
 // 用 PG 字符串 LIKE 检测 AI verdict（ai_review_result 是 JSON 字符串），
 // 不引入 jsonb 转换（保持 SQLite/PG 兼容性，虽然此 SQL 是 PG 专用）。

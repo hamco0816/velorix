@@ -127,6 +127,27 @@ type safetyRiskAIReviewTestRequest struct {
 	Prompt string `json:"prompt"`
 }
 
+// ReviewSafetyRiskEventWithAI 对单条历史事件触发 AI 复核（同步）。
+// 用于 AI 审核启用前的历史"未经过 AI"事件，让 admin 手动补审。
+// POST /api/v1/admin/ops/safety-risk-events/:id/ai-review
+func (h *OpsHandler) ReviewSafetyRiskEventWithAI(c *gin.Context) {
+	if h.opsService == nil {
+		response.Error(c, http.StatusServiceUnavailable, "Ops service not available")
+		return
+	}
+	id, err := strconv.ParseInt(strings.TrimSpace(c.Param("id")), 10, 64)
+	if err != nil || id <= 0 {
+		response.BadRequest(c, "Invalid event id")
+		return
+	}
+	result, err := h.opsService.ReviewEventWithAI(c.Request.Context(), id)
+	if err != nil {
+		response.Error(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	response.Success(c, result)
+}
+
 // ListSafetyRiskRuleStats 返回时间窗口内每条规则的命中聚合统计，admin 用于排查误报源。
 // GET /api/v1/admin/ops/safety-risk/rule-stats?hours=168&limit=50
 func (h *OpsHandler) ListSafetyRiskRuleStats(c *gin.Context) {

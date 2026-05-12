@@ -181,6 +181,7 @@ func registerOpsRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 		// Safety risk logs
 		ops.GET("/safety-risk-events", h.Admin.Ops.ListSafetyRiskEvents)
 		ops.PUT("/safety-risk-events/:id/review", h.Admin.Ops.ReviewSafetyRiskEvent)
+		ops.POST("/safety-risk-events/:id/ai-review", h.Admin.Ops.ReviewSafetyRiskEventWithAI)
 		ops.POST("/safety-risk-events/clear-user", h.Admin.Ops.ClearSafetyRiskEventsForUser)
 		// Safety risk 用户白名单：在名单内的用户跳过 sensitive_filter 检测
 		ops.GET("/safety-risk/allowlist", h.Admin.Setting.ListSafetyAllowlist)

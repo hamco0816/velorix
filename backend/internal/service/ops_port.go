@@ -16,6 +16,7 @@ type OpsRepository interface {
 	DeleteSystemLogs(ctx context.Context, filter *OpsSystemLogCleanupFilter) (int64, error)
 	InsertSystemLogCleanupAudit(ctx context.Context, input *OpsSystemLogCleanupAudit) error
 	InsertSafetyRiskEvent(ctx context.Context, input *SafetyRiskEventInput) (int64, error)
+	GetSafetyRiskEvent(ctx context.Context, id int64) (*SafetyRiskEvent, error)
 	ListSafetyRiskEvents(ctx context.Context, filter *SafetyRiskEventFilter) (*SafetyRiskEventList, error)
 	UpdateSafetyRiskEventStatus(ctx context.Context, id int64, status string, reviewedByUserID *int64, reviewNote string) error
 	// UpdateSafetyRiskEventAIReview 异步 AI 审核完成后回写结果。

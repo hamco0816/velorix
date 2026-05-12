@@ -118,6 +118,17 @@
           >
             📊 规则命中统计
           </button>
+          <!-- 批量 AI 复核：把当前列表里所有 ai_reviewed=false 的事件依次同步复核 -->
+          <button
+            v-if="pendingAIReviewCount > 0"
+            type="button"
+            class="rounded-md bg-violet-100 px-3 py-1.5 text-sm font-medium text-violet-700 hover:bg-violet-200 disabled:opacity-50 dark:bg-violet-900/30 dark:text-violet-300 dark:hover:bg-violet-900/50"
+            :disabled="batchAIReviewing"
+            title="对当前页所有未经过 AI 的事件依次跑 AI 审核（顺序执行避免限流）"
+            @click="batchAIReview"
+          >
+            {{ batchAIReviewing ? `AI 复核中… ${batchProgress.done}/${batchProgress.total}` : `🤖 批量 AI 复核当前页 (${pendingAIReviewCount})` }}
+          </button>
           <button
             v-if="activePanel"
             type="button"
@@ -342,6 +353,17 @@
                     >
                       标记复核
                     </button>
+                    <!-- AI 复核：仅对"未经过 AI"事件显示，admin 点击后同步跑一次审核
+                         结果直接写回事件，pass 自动归档；进行中按钮 disabled + 文案切换 -->
+                    <button
+                      v-if="!item.ai_reviewed"
+                      class="btn btn-secondary btn-sm mr-2"
+                      :disabled="loading || aiReviewingIds.has(item.id)"
+                      :title="'用 AI 模型对该事件做二次审核（消耗配置的 ApiKey 额度）'"
+                      @click="triggerAIReview(item)"
+                    >
+                      {{ aiReviewingIds.has(item.id) ? 'AI 审核中…' : '🤖 AI 复核' }}
+                    </button>
                     <button
                       v-if="item.user_id && !allowlistedUserIds.has(item.user_id)"
                       class="btn btn-secondary btn-sm mr-2"
@@ -470,6 +492,7 @@ import {
   addSafetyAllowlist,
   removeSafetyAllowlist,
   listSafetyRiskRuleStats,
+  reviewSafetyRiskEventWithAI,
   type SafetyRiskEvent,
   type SafetyRiskQueryParams,
   type SafetyRiskRuleStat,
@@ -534,6 +557,53 @@ async function addToAllowlist(event: SafetyRiskEvent) {
     appStore.showError('加入白名单失败：' + (err as Error).message)
   }
 }
+// 行级 AI 复核：admin 在事件列表点"AI 复核"按钮同步触发，期间该行 disabled
+const aiReviewingIds = ref<Set<number>>(new Set())
+const batchAIReviewing = ref(false)
+const batchProgress = ref({ done: 0, total: 0 })
+
+// 当前页内还没经过 AI 复核的事件数（驱动顶部"批量复核"按钮显示和计数）
+const pendingAIReviewCount = computed(() => events.value.filter((e) => !e.ai_reviewed).length)
+
+async function triggerAIReview(item: SafetyRiskEvent) {
+  if (aiReviewingIds.value.has(item.id)) return
+  aiReviewingIds.value = new Set([...aiReviewingIds.value, item.id])
+  try {
+    const result = await reviewSafetyRiskEventWithAI(item.id)
+    // 局部更新该行，避免重新拉整页
+    item.ai_reviewed = true
+    item.ai_review_result = JSON.stringify(result)
+    if (result.verdict === 'pass') {
+      item.status = 'cleared'
+    }
+    appStore.showSuccess(`AI 判定：${result.verdict}${result.reason ? '（' + result.reason + '）' : ''}`)
+  } catch (err) {
+    const e = err as { response?: { data?: { message?: string } }; message?: string }
+    appStore.showError('AI 复核失败：' + (e.response?.data?.message || e.message || '未知错误'))
+  } finally {
+    const next = new Set(aiReviewingIds.value)
+    next.delete(item.id)
+    aiReviewingIds.value = next
+  }
+}
+
+// 批量 AI 复核：顺序执行（不并发），避免触发 ApiKey 并发限流，每条之间 500ms 间隔
+async function batchAIReview() {
+  const pending = events.value.filter((e) => !e.ai_reviewed)
+  if (pending.length === 0 || batchAIReviewing.value) return
+  batchAIReviewing.value = true
+  batchProgress.value = { done: 0, total: pending.length }
+  for (const item of pending) {
+    await triggerAIReview(item)
+    batchProgress.value.done += 1
+    if (batchProgress.value.done < batchProgress.value.total) {
+      await new Promise((r) => setTimeout(r, 500))
+    }
+  }
+  batchAIReviewing.value = false
+  appStore.showSuccess(`批量 AI 复核完成，共处理 ${batchProgress.value.total} 条`)
+}
+
 // 折叠面板：'' 表示都收起，'allowlist' / 'stats' 分别打开两个管理面板。
 // 切换 panel 时按需 lazy load 数据，避免每次进风控页就拉多个 API。
 type AdminPanel = '' | 'allowlist' | 'stats'
