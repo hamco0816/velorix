@@ -186,6 +186,9 @@ func registerOpsRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 		ops.GET("/safety-risk/allowlist", h.Admin.Setting.ListSafetyAllowlist)
 		ops.POST("/safety-risk/allowlist", h.Admin.Setting.AddSafetyAllowlist)
 		ops.DELETE("/safety-risk/allowlist/:user_id", h.Admin.Setting.RemoveSafetyAllowlist)
+		// Safety risk AI 审核测试（同步，不入库）和规则统计
+		ops.POST("/safety-risk/ai-review/test", h.Admin.Ops.TestSafetyAIReview)
+		ops.GET("/safety-risk/rule-stats", h.Admin.Ops.ListSafetyRiskRuleStats)
 
 		// Indexed system logs
 		ops.GET("/system-logs", h.Admin.Ops.ListSystemLogs)

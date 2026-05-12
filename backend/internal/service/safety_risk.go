@@ -135,6 +135,44 @@ type SafetyRiskClearUserResult struct {
 	Cleared int64 `json:"cleared"`
 }
 
+// SafetyRiskRuleStat 单条规则的聚合统计，admin 用于判断哪条规则误报多。
+//   - TotalHits / BlockedCount / WarnedCount：命中数与拦截动作分布
+//   - ClearedCount：admin 或 AI 已归档（多数说明误报）
+//   - AIPassCount / AIRejectCount / AIFlagCount：AI 判定分布
+type SafetyRiskRuleStat struct {
+	RuleWord      string `json:"rule_word"`
+	RuleSource    string `json:"rule_source"`
+	TotalHits     int64  `json:"total_hits"`
+	BlockedCount  int64  `json:"blocked_count"`
+	WarnedCount   int64  `json:"warned_count"`
+	ClearedCount  int64  `json:"cleared_count"`
+	AIPassCount   int64  `json:"ai_pass_count"`
+	AIRejectCount int64  `json:"ai_reject_count"`
+	AIFlagCount   int64  `json:"ai_flag_count"`
+	LastHitAt     string `json:"last_hit_at,omitempty"`
+}
+
+// GetSafetyRiskRuleStats 返回时间窗口内的规则命中聚合统计。
+// sinceHours <=0 默认 168（7 天）；limit <=0 默认 50；按 TotalHits 降序。
+func (s *OpsService) GetSafetyRiskRuleStats(ctx context.Context, sinceHours, limit int) ([]*SafetyRiskRuleStat, error) {
+	if s == nil || s.opsRepo == nil {
+		return nil, infraerrors.ServiceUnavailable("OPS_REPO_UNAVAILABLE", "Ops repository not available")
+	}
+	if sinceHours <= 0 {
+		sinceHours = 168
+	}
+	if sinceHours > 24*30 {
+		sinceHours = 24 * 30 // 上限 30 天
+	}
+	if limit <= 0 {
+		limit = 50
+	}
+	if limit > 500 {
+		limit = 500
+	}
+	return s.opsRepo.SafetyRiskRuleStats(ctx, sinceHours, limit)
+}
+
 func (s *OpsService) RecordSafetyRiskEvent(ctx context.Context, input *SafetyRiskEventInput) (int64, error) {
 	if s == nil || s.opsRepo == nil || input == nil {
 		return 0, nil

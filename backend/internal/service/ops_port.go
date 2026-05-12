@@ -22,6 +22,8 @@ type OpsRepository interface {
 	// aiReviewResult 推荐格式: "pass" / "flag:<reason>" / "reject:<reason>" / "error:<msg>"
 	UpdateSafetyRiskEventAIReview(ctx context.Context, id int64, aiReviewed bool, aiReviewProvider, aiReviewResult string) error
 	ClearSafetyRiskEventsForUser(ctx context.Context, userID int64, reviewedByUserID int64, reviewNote string) (int64, error)
+	// SafetyRiskRuleStats 聚合每条规则在时间窗口内的命中分布，帮助 admin 找误报源
+	SafetyRiskRuleStats(ctx context.Context, sinceHours int, limit int) ([]*SafetyRiskRuleStat, error)
 
 	InsertRetryAttempt(ctx context.Context, input *OpsInsertRetryAttemptInput) (int64, error)
 	UpdateRetryAttempt(ctx context.Context, input *OpsUpdateRetryAttemptInput) error

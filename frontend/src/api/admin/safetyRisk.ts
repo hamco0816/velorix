@@ -83,6 +83,43 @@ export async function removeSafetyAllowlist(userId: number): Promise<void> {
   await apiClient.delete(`/admin/ops/safety-risk/allowlist/${userId}`)
 }
 
+export interface AIReviewTestResult {
+  verdict: string
+  category: string
+  reason: string
+  raw?: string
+}
+
+export async function testSafetyAIReview(prompt: string): Promise<AIReviewTestResult> {
+  const { data } = await apiClient.post<AIReviewTestResult>('/admin/ops/safety-risk/ai-review/test', { prompt })
+  return data
+}
+
+export interface SafetyRiskRuleStat {
+  rule_word: string
+  rule_source: string
+  total_hits: number
+  blocked_count: number
+  warned_count: number
+  cleared_count: number
+  ai_pass_count: number
+  ai_reject_count: number
+  ai_flag_count: number
+  last_hit_at?: string
+}
+
+export interface SafetyRiskRuleStatsResponse {
+  stats: SafetyRiskRuleStat[]
+  hours: number
+}
+
+export async function listSafetyRiskRuleStats(hours = 168, limit = 50): Promise<SafetyRiskRuleStatsResponse> {
+  const { data } = await apiClient.get<SafetyRiskRuleStatsResponse>('/admin/ops/safety-risk/rule-stats', {
+    params: { hours, limit },
+  })
+  return data
+}
+
 export const safetyRiskAPI = {
   listSafetyRiskEvents,
   reviewSafetyRiskEvent,
@@ -90,6 +127,8 @@ export const safetyRiskAPI = {
   listSafetyAllowlist,
   addSafetyAllowlist,
   removeSafetyAllowlist,
+  testSafetyAIReview,
+  listSafetyRiskRuleStats,
 }
 
 export default safetyRiskAPI

@@ -259,6 +259,58 @@ WHERE id = $1
 	return nil
 }
 
+// SafetyRiskRuleStats 聚合时间窗口内每条规则的命中分布。
+// 用 PG 字符串 LIKE 检测 AI verdict（ai_review_result 是 JSON 字符串），
+// 不引入 jsonb 转换（保持 SQLite/PG 兼容性，虽然此 SQL 是 PG 专用）。
+func (r *opsRepository) SafetyRiskRuleStats(ctx context.Context, sinceHours int, limit int) ([]*service.SafetyRiskRuleStat, error) {
+	if r == nil || r.db == nil {
+		return nil, fmt.Errorf("nil ops repository")
+	}
+	if sinceHours <= 0 {
+		sinceHours = 168
+	}
+	if limit <= 0 {
+		limit = 50
+	}
+	query := `
+SELECT
+  rule_word,
+  COALESCE(rule_source, 'builtin') AS rule_source,
+  COUNT(*) AS total_hits,
+  SUM(CASE WHEN action = 'blocked' THEN 1 ELSE 0 END) AS blocked,
+  SUM(CASE WHEN action = 'warned' THEN 1 ELSE 0 END) AS warned,
+  SUM(CASE WHEN status = 'cleared' THEN 1 ELSE 0 END) AS cleared,
+  SUM(CASE WHEN ai_reviewed = true AND ai_review_result LIKE '%"verdict":"pass"%' THEN 1 ELSE 0 END) AS ai_pass,
+  SUM(CASE WHEN ai_reviewed = true AND ai_review_result LIKE '%"verdict":"reject"%' THEN 1 ELSE 0 END) AS ai_reject,
+  SUM(CASE WHEN ai_reviewed = true AND ai_review_result LIKE '%"verdict":"flag"%' THEN 1 ELSE 0 END) AS ai_flag,
+  MAX(created_at) AS last_hit_at
+FROM safety_risk_events
+WHERE created_at >= NOW() - ($1 || ' hours')::interval
+  AND rule_word IS NOT NULL
+  AND rule_word <> ''
+GROUP BY rule_word, rule_source
+ORDER BY total_hits DESC
+LIMIT $2`
+	rows, err := r.db.QueryContext(ctx, query, sinceHours, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = rows.Close() }()
+	out := make([]*service.SafetyRiskRuleStat, 0)
+	for rows.Next() {
+		var s service.SafetyRiskRuleStat
+		var lastHit sql.NullTime
+		if err := rows.Scan(&s.RuleWord, &s.RuleSource, &s.TotalHits, &s.BlockedCount, &s.WarnedCount, &s.ClearedCount, &s.AIPassCount, &s.AIRejectCount, &s.AIFlagCount, &lastHit); err != nil {
+			return nil, err
+		}
+		if lastHit.Valid {
+			s.LastHitAt = lastHit.Time.UTC().Format("2006-01-02T15:04:05Z")
+		}
+		out = append(out, &s)
+	}
+	return out, rows.Err()
+}
+
 // UpdateSafetyRiskEventAIReview AI 异步审核完成后回写结果。
 // 只更新 ai_reviewed / ai_review_provider / ai_review_result 三个字段，不动 status / reviewed_at
 // （那是人工复核的领域）。

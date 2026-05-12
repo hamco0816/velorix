@@ -292,6 +292,43 @@ func (s *OpsService) writeAIReviewResult(ctx context.Context, eventID int64, aiR
 	}
 }
 
+// TestAIReview 同步跑一次 AI 审核（admin 配置页"测试"按钮调用），不入库、不归档，
+// 直接返回判定结果。让 admin 在保存配置前能验证模型+prompt 是否能正确分类典型样本。
+//
+// 失败时返回 (nil, error)；其它情况下 result.Verdict 可能是 pass/flag/reject/raw。
+func (s *OpsService) TestAIReview(ctx context.Context, prompt string) (*AIReviewResult, error) {
+	if s == nil {
+		return nil, fmt.Errorf("ops service unavailable")
+	}
+	prompt = strings.TrimSpace(prompt)
+	if prompt == "" {
+		return nil, fmt.Errorf("prompt is empty")
+	}
+	cfg := s.loadAIReviewConfig(ctx)
+	if !cfg.enabled {
+		return nil, fmt.Errorf("AI 审核未启用，请先在设置里勾选启用并填写配置")
+	}
+	if cfg.apiKeyID <= 0 || cfg.model == "" {
+		return nil, fmt.Errorf("AI 审核配置不完整：缺少 api_key_id 或 model")
+	}
+	if s.apiKeyRepo == nil {
+		return nil, fmt.Errorf("apiKeyRepo 未注入")
+	}
+	apiKey, err := s.apiKeyRepo.GetByID(ctx, cfg.apiKeyID)
+	if err != nil || apiKey == nil || apiKey.Key == "" {
+		return nil, fmt.Errorf("ApiKey id=%d 不可用：%v", cfg.apiKeyID, err)
+	}
+	truncated := prompt
+	if len(truncated) > aiReviewMaxPromptLen {
+		truncated = truncated[:aiReviewMaxPromptLen]
+	}
+	result, _, callErr := s.callAIReviewLLM(ctx, s.buildLocalGatewayURL(), apiKey.Key, cfg.model, truncated)
+	if callErr != nil {
+		return nil, callErr
+	}
+	return &result, nil
+}
+
 // tryAutoArchiveEvent AI 判定 pass 时把事件标记为 cleared。
 // 失败仅记日志，不影响主流程（事件仍保持 pending，admin 可手动放过）。
 // reviewedByUserID 传 0 表示"系统自动归档"（区别于人工复核）。

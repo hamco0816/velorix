@@ -99,6 +99,140 @@
         </div>
       </section>
 
+      <!-- 白名单管理 + 规则统计：默认折叠，admin 可点开 -->
+      <section class="card overflow-hidden">
+        <div class="flex flex-wrap items-center gap-2 border-b border-gray-100 px-4 py-3 dark:border-dark-700">
+          <button
+            type="button"
+            class="rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
+            :class="activePanel === 'allowlist' ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700'"
+            @click="togglePanel('allowlist')"
+          >
+            🟢 白名单管理 ({{ allowlistDetail.length }})
+          </button>
+          <button
+            type="button"
+            class="rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
+            :class="activePanel === 'stats' ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700'"
+            @click="togglePanel('stats')"
+          >
+            📊 规则命中统计
+          </button>
+          <button
+            v-if="activePanel"
+            type="button"
+            class="ml-auto rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-dark-700 dark:hover:text-gray-200"
+            title="收起"
+            @click="activePanel = ''"
+          >
+            <Icon name="x" size="sm" />
+          </button>
+        </div>
+
+        <!-- 白名单管理面板 -->
+        <div v-if="activePanel === 'allowlist'" class="px-4 py-4">
+          <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">
+            在白名单的用户所有请求会跳过敏感词检测。从事件列表点击"加入白名单"可添加。
+          </p>
+          <div v-if="allowlistLoading" class="py-4 text-center text-sm text-gray-400">加载中...</div>
+          <div v-else-if="allowlistDetail.length === 0" class="rounded-lg border border-dashed border-gray-300 py-8 text-center text-sm text-gray-500 dark:border-dark-600">
+            白名单为空
+          </div>
+          <div v-else class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-dark-700">
+              <thead class="bg-gray-50 dark:bg-dark-800">
+                <tr>
+                  <th class="table-th">User ID</th>
+                  <th class="table-th">邮箱</th>
+                  <th class="table-th text-right">操作</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100 dark:divide-dark-700">
+                <tr v-for="entry in allowlistDetail" :key="entry.user_id" class="text-sm hover:bg-gray-50 dark:hover:bg-dark-800">
+                  <td class="table-td font-mono">#{{ entry.user_id }}</td>
+                  <td class="table-td">{{ entry.email || '-' }}</td>
+                  <td class="table-td text-right">
+                    <button class="btn btn-secondary btn-sm" @click="removeFromAllowlist(entry.user_id)">
+                      移除
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 规则统计面板 -->
+        <div v-if="activePanel === 'stats'" class="px-4 py-4">
+          <div class="mb-3 flex flex-wrap items-center gap-2">
+            <span class="text-xs text-gray-500 dark:text-gray-400">时间窗口：</span>
+            <button
+              v-for="opt in ruleStatsRangeOptions"
+              :key="opt.hours"
+              type="button"
+              class="rounded-md px-2.5 py-1 text-xs font-medium"
+              :class="ruleStatsHours === opt.hours ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-300'"
+              @click="setRuleStatsHours(opt.hours)"
+            >
+              {{ opt.label }}
+            </button>
+            <span class="ml-auto text-xs text-gray-400">显示 top {{ ruleStats.length }}，按命中数降序</span>
+          </div>
+          <p class="mb-3 rounded-md bg-blue-50 px-3 py-2 text-xs text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
+            💡 如果某条规则的 AI Pass 率很高 → 大概率是误报源头，建议把它从 block 改为 warn 或删除
+          </p>
+          <div v-if="ruleStatsLoading" class="py-4 text-center text-sm text-gray-400">加载中...</div>
+          <div v-else-if="ruleStats.length === 0" class="rounded-lg border border-dashed border-gray-300 py-8 text-center text-sm text-gray-500 dark:border-dark-600">
+            时间窗口内无规则命中数据
+          </div>
+          <div v-else class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-dark-700">
+              <thead class="bg-gray-50 dark:bg-dark-800">
+                <tr>
+                  <th class="table-th">规则词</th>
+                  <th class="table-th">来源</th>
+                  <th class="table-th text-right">命中</th>
+                  <th class="table-th text-right">block</th>
+                  <th class="table-th text-right">warn</th>
+                  <th class="table-th text-right">已归档</th>
+                  <th class="table-th text-right">AI pass</th>
+                  <th class="table-th text-right">AI reject</th>
+                  <th class="table-th text-right">AI flag</th>
+                  <th class="table-th text-right">误报率*</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100 dark:divide-dark-700">
+                <tr v-for="row in ruleStats" :key="row.rule_word + row.rule_source" class="text-sm hover:bg-gray-50 dark:hover:bg-dark-800">
+                  <td class="table-td">
+                    <div class="font-mono text-xs">{{ row.rule_word }}</div>
+                  </td>
+                  <td class="table-td">
+                    <span class="badge" :class="row.rule_source === 'custom' ? 'badge-blue' : 'badge-gray'">
+                      {{ row.rule_source === 'custom' ? '自定义' : '内置' }}
+                    </span>
+                  </td>
+                  <td class="table-td text-right font-mono tabular-nums">{{ row.total_hits }}</td>
+                  <td class="table-td text-right font-mono tabular-nums">{{ row.blocked_count }}</td>
+                  <td class="table-td text-right font-mono tabular-nums">{{ row.warned_count }}</td>
+                  <td class="table-td text-right font-mono tabular-nums">{{ row.cleared_count }}</td>
+                  <td class="table-td text-right font-mono tabular-nums text-emerald-600 dark:text-emerald-400">{{ row.ai_pass_count }}</td>
+                  <td class="table-td text-right font-mono tabular-nums text-red-600 dark:text-red-400">{{ row.ai_reject_count }}</td>
+                  <td class="table-td text-right font-mono tabular-nums text-amber-600 dark:text-amber-400">{{ row.ai_flag_count }}</td>
+                  <td class="table-td text-right">
+                    <span :class="['font-mono tabular-nums', falseRateClass(row)]">
+                      {{ falseRate(row) }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="mt-2 text-[11px] text-gray-400">
+              * 误报率 = AI pass / 总命中。30%+ 说明该规则容易误报；启用 AI 审核后才有数据。
+            </p>
+          </div>
+        </div>
+      </section>
+
       <section class="card overflow-hidden p-0">
         <div class="overflow-x-auto px-4 pt-4">
           <table class="min-w-full divide-y divide-gray-200 dark:divide-dark-700">
@@ -334,9 +468,13 @@ import {
   reviewSafetyRiskEvent,
   listSafetyAllowlist,
   addSafetyAllowlist,
+  removeSafetyAllowlist,
+  listSafetyRiskRuleStats,
   type SafetyRiskEvent,
   type SafetyRiskQueryParams,
+  type SafetyRiskRuleStat,
 } from '@/api/admin/safetyRisk'
+import { adminAPI } from '@/api/admin'
 import { getPersistedPageSize } from '@/composables/usePersistedPageSize'
 
 type StatIcon = 'document' | 'shield' | 'brain' | 'checkCircle' | 'xCircle'
@@ -396,6 +534,109 @@ async function addToAllowlist(event: SafetyRiskEvent) {
     appStore.showError('加入白名单失败：' + (err as Error).message)
   }
 }
+// 折叠面板：'' 表示都收起，'allowlist' / 'stats' 分别打开两个管理面板。
+// 切换 panel 时按需 lazy load 数据，避免每次进风控页就拉多个 API。
+type AdminPanel = '' | 'allowlist' | 'stats'
+const activePanel = ref<AdminPanel>('')
+const allowlistDetail = ref<Array<{ user_id: number; email: string }>>([])
+const allowlistLoading = ref(false)
+const ruleStats = ref<SafetyRiskRuleStat[]>([])
+const ruleStatsLoading = ref(false)
+const ruleStatsHours = ref(168)
+const ruleStatsRangeOptions = [
+  { hours: 24, label: '24h' },
+  { hours: 72, label: '3d' },
+  { hours: 168, label: '7d' },
+  { hours: 720, label: '30d' },
+]
+
+function togglePanel(panel: AdminPanel) {
+  if (activePanel.value === panel) {
+    activePanel.value = ''
+    return
+  }
+  activePanel.value = panel
+  if (panel === 'allowlist') {
+    loadAllowlistDetail()
+  } else if (panel === 'stats') {
+    loadRuleStats()
+  }
+}
+
+// 拉白名单的详细信息：先 listSafetyAllowlist 拿 user_id 数组，
+// 再用 admin users API 批量取邮箱（per-id 单独查，简单实现；规模 < 100 用户 OK）
+async function loadAllowlistDetail() {
+  allowlistLoading.value = true
+  try {
+    const ids = await listSafetyAllowlist()
+    allowlistedUserIds.value = new Set(ids)
+    if (ids.length === 0) {
+      allowlistDetail.value = []
+      return
+    }
+    const results = await Promise.allSettled(
+      ids.map((id) => adminAPI.users.getById(id)),
+    )
+    allowlistDetail.value = ids.map((id, idx) => {
+      const res = results[idx]
+      const email = res.status === 'fulfilled' ? res.value?.email || '' : ''
+      return { user_id: id, email }
+    })
+  } catch {
+    allowlistDetail.value = []
+  } finally {
+    allowlistLoading.value = false
+  }
+}
+
+async function removeFromAllowlist(userId: number) {
+  try {
+    await removeSafetyAllowlist(userId)
+    allowlistDetail.value = allowlistDetail.value.filter((e) => e.user_id !== userId)
+    const next = new Set(allowlistedUserIds.value)
+    next.delete(userId)
+    allowlistedUserIds.value = next
+    appStore.showSuccess(`已把用户 #${userId} 从白名单移除`)
+  } catch (err) {
+    appStore.showError('移除失败：' + (err as Error).message)
+  }
+}
+
+// 规则统计：按时间窗口拉
+async function loadRuleStats() {
+  ruleStatsLoading.value = true
+  try {
+    const res = await listSafetyRiskRuleStats(ruleStatsHours.value, 50)
+    ruleStats.value = res.stats || []
+  } catch {
+    ruleStats.value = []
+  } finally {
+    ruleStatsLoading.value = false
+  }
+}
+function setRuleStatsHours(hours: number) {
+  ruleStatsHours.value = hours
+  loadRuleStats()
+}
+
+// 误报率：AI pass / 总命中。30%+ 标红，10-30% 标黄，< 10% 灰
+function falseRate(row: SafetyRiskRuleStat): string {
+  if (!row.total_hits) return '-'
+  const aiTotal = row.ai_pass_count + row.ai_reject_count + row.ai_flag_count
+  if (aiTotal === 0) return '—（未启用 AI）'
+  const rate = row.ai_pass_count / aiTotal
+  return `${(rate * 100).toFixed(0)}%`
+}
+function falseRateClass(row: SafetyRiskRuleStat): string {
+  if (!row.total_hits) return 'text-gray-400'
+  const aiTotal = row.ai_pass_count + row.ai_reject_count + row.ai_flag_count
+  if (aiTotal === 0) return 'text-gray-400'
+  const rate = row.ai_pass_count / aiTotal
+  if (rate >= 0.3) return 'text-red-600 dark:text-red-400 font-semibold'
+  if (rate >= 0.1) return 'text-amber-600 dark:text-amber-400'
+  return 'text-gray-500 dark:text-gray-400'
+}
+
 const selectedClearEvent = ref<SafetyRiskEvent | null>(null)
 const clearDialogVisible = ref(false)
 const userIdInput = ref('')

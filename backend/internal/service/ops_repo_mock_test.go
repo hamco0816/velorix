@@ -93,6 +93,10 @@ func (m *opsRepoMock) UpdateSafetyRiskEventAIReview(ctx context.Context, id int6
 	return nil
 }
 
+func (m *opsRepoMock) SafetyRiskRuleStats(ctx context.Context, sinceHours int, limit int) ([]*SafetyRiskRuleStat, error) {
+	return nil, nil
+}
+
 func (m *opsRepoMock) ClearSafetyRiskEventsForUser(ctx context.Context, userID int64, reviewedByUserID int64, reviewNote string) (int64, error) {
 	return 0, nil
 }

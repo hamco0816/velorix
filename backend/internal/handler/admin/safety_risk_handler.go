@@ -123,6 +123,61 @@ func (h *OpsHandler) ReviewSafetyRiskEvent(c *gin.Context) {
 	response.Success(c, gin.H{"ok": true})
 }
 
+type safetyRiskAIReviewTestRequest struct {
+	Prompt string `json:"prompt"`
+}
+
+// ListSafetyRiskRuleStats 返回时间窗口内每条规则的命中聚合统计，admin 用于排查误报源。
+// GET /api/v1/admin/ops/safety-risk/rule-stats?hours=168&limit=50
+func (h *OpsHandler) ListSafetyRiskRuleStats(c *gin.Context) {
+	if h.opsService == nil {
+		response.Error(c, http.StatusServiceUnavailable, "Ops service not available")
+		return
+	}
+	hours := 168
+	if v := strings.TrimSpace(c.Query("hours")); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+			hours = n
+		}
+	}
+	limit := 50
+	if v := strings.TrimSpace(c.Query("limit")); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+			limit = n
+		}
+	}
+	stats, err := h.opsService.GetSafetyRiskRuleStats(c.Request.Context(), hours, limit)
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+	response.Success(c, gin.H{"stats": stats, "hours": hours})
+}
+
+// TestSafetyAIReview 同步跑一次 AI 审核，不入库，给 admin 验证模型 + prompt 用。
+// POST /api/v1/admin/ops/safety-risk/ai-review/test
+func (h *OpsHandler) TestSafetyAIReview(c *gin.Context) {
+	if h.opsService == nil {
+		response.Error(c, http.StatusServiceUnavailable, "Ops service not available")
+		return
+	}
+	var req safetyRiskAIReviewTestRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, "Invalid request: "+err.Error())
+		return
+	}
+	if strings.TrimSpace(req.Prompt) == "" {
+		response.BadRequest(c, "prompt is required")
+		return
+	}
+	result, err := h.opsService.TestAIReview(c.Request.Context(), req.Prompt)
+	if err != nil {
+		response.Error(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	response.Success(c, result)
+}
+
 // ClearSafetyRiskEventsForUser clears active warning records for one user.
 // POST /api/v1/admin/ops/safety-risk-events/clear-user
 func (h *OpsHandler) ClearSafetyRiskEventsForUser(c *gin.Context) {
