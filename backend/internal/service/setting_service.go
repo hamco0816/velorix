@@ -114,6 +114,8 @@ type SettingService struct {
 	onUpdate                func() // Callback when settings are updated (for cache invalidation)
 	version                 string // Application version
 	webSearchManagerBuilder WebSearchManagerBuilder
+	// 风控白名单进程内缓存，60s TTL，热路径零锁
+	safetyAllowlistCache atomic.Value // *safetyAllowlistSnapshot
 }
 
 type ProviderDefaultGrantSettings struct {
@@ -1568,24 +1570,51 @@ func (s *SettingService) IsInvitationCodeEnabled(ctx context.Context) bool {
 	return value == "true"
 }
 
-// IsUserSafetyAllowlisted 检查 userID 是否在风控白名单（admin 配置）。
-// 在白名单的用户走 sensitive_filter 时直接跳过，避免合法用户被反复误拦。
-// 配置存为 JSON 数组（如 "[1,5,42]"），单次解析+遍历，规模 < 1000 用户 OK。
+// safetyAllowlistCache 用 atomic.Value 存"白名单 Set 快照 + 过期时间"。
+// 每个 gateway 请求都会调用 IsUserSafetyAllowlisted，DB 查询会成为热点；
+// 用 60s in-memory cache 避免每请求 1 次 DB；写入（add/remove）后主动失效。
+type safetyAllowlistSnapshot struct {
+	ids       map[int64]struct{}
+	expiresAt int64 // UnixNano
+}
+
+const safetyAllowlistCacheTTL = 60 * time.Second
+
+func (s *SettingService) safetyAllowlistSnapshot(ctx context.Context) map[int64]struct{} {
+	if v, ok := s.safetyAllowlistCache.Load().(*safetyAllowlistSnapshot); ok && v != nil {
+		if time.Now().UnixNano() < v.expiresAt {
+			return v.ids
+		}
+	}
+	raw, _ := s.settingRepo.GetValue(ctx, SettingKeySafetyRiskUserAllowlist)
+	ids := parseSafetyAllowlist(raw)
+	set := make(map[int64]struct{}, len(ids))
+	for _, id := range ids {
+		set[id] = struct{}{}
+	}
+	s.safetyAllowlistCache.Store(&safetyAllowlistSnapshot{
+		ids:       set,
+		expiresAt: time.Now().Add(safetyAllowlistCacheTTL).UnixNano(),
+	})
+	return set
+}
+
+func (s *SettingService) invalidateSafetyAllowlistCache() {
+	s.safetyAllowlistCache.Store(&safetyAllowlistSnapshot{ids: nil, expiresAt: 0})
+}
+
+// IsUserSafetyAllowlisted 检查 userID 是否在风控白名单。
+// 走 60s in-memory cache（避免每个 gateway 请求都查 DB）。
 func (s *SettingService) IsUserSafetyAllowlisted(ctx context.Context, userID int64) bool {
 	if s == nil || s.settingRepo == nil || userID <= 0 {
 		return false
 	}
-	raw, err := s.settingRepo.GetValue(ctx, SettingKeySafetyRiskUserAllowlist)
-	if err != nil || strings.TrimSpace(raw) == "" {
+	ids := s.safetyAllowlistSnapshot(ctx)
+	if len(ids) == 0 {
 		return false
 	}
-	ids := parseSafetyAllowlist(raw)
-	for _, id := range ids {
-		if id == userID {
-			return true
-		}
-	}
-	return false
+	_, ok := ids[userID]
+	return ok
 }
 
 // AddUserToSafetyAllowlist 把 user_id 加入白名单（去重）。
@@ -1609,7 +1638,11 @@ func (s *SettingService) AddUserToSafetyAllowlist(ctx context.Context, userID in
 	if err != nil {
 		return err
 	}
-	return s.settingRepo.Set(ctx, SettingKeySafetyRiskUserAllowlist, string(data))
+	if err := s.settingRepo.Set(ctx, SettingKeySafetyRiskUserAllowlist, string(data)); err != nil {
+		return err
+	}
+	s.invalidateSafetyAllowlistCache()
+	return nil
 }
 
 // RemoveUserFromSafetyAllowlist 从白名单移除 user_id。
@@ -1632,7 +1665,11 @@ func (s *SettingService) RemoveUserFromSafetyAllowlist(ctx context.Context, user
 	if err != nil {
 		return err
 	}
-	return s.settingRepo.Set(ctx, SettingKeySafetyRiskUserAllowlist, string(data))
+	if err := s.settingRepo.Set(ctx, SettingKeySafetyRiskUserAllowlist, string(data)); err != nil {
+		return err
+	}
+	s.invalidateSafetyAllowlistCache()
+	return nil
 }
 
 // GetSafetyAllowlist 读取白名单完整列表（admin 配置页展示用）。

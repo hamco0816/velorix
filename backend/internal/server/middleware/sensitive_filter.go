@@ -18,7 +18,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const gatewaySensitiveFilterUserMessage = "请求包含可能触发上游账号风控的内容，已被本地安全策略拦截。请改写为防御、学习或合规用途后重试。"
+const gatewaySensitiveFilterUserMessage = "请求包含可能触发上游账号风控的内容，已被本地安全策略拦截。请改写为防御、学习或合规用途后重试。如确认为误报，请联系管理员并提供下方 Request ID。"
 
 const gatewaySensitiveFormFieldMaxBytes = 256 * 1024
 
@@ -81,7 +81,12 @@ func GatewaySensitiveFilter(settingService *service.SettingService, opsService *
 			c.Next()
 			return
 		}
-		writeError(c, http.StatusForbidden, gatewaySensitiveFilterUserMessage)
+		// 给用户面向的错误信息加 Request ID，方便用户联系 admin 复核时引用具体事件
+		userMsg := gatewaySensitiveFilterUserMessage
+		if reqID := contextString(c, ctxkey.RequestID); reqID != "" {
+			userMsg += " Request ID: " + reqID
+		}
+		writeError(c, http.StatusForbidden, userMsg)
 		c.Abort()
 	}
 }

@@ -158,10 +158,23 @@
                     <div class="text-xs text-gray-500 dark:text-gray-400">{{ item.rule_path || '-' }}</div>
                   </td>
                   <td class="table-td whitespace-nowrap">
-                    <span class="badge" :class="item.ai_reviewed ? 'badge-green' : 'badge-gray'">
-                      {{ item.ai_reviewed ? '已经过 AI' : '未经过 AI' }}
-                    </span>
-                    <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ item.ai_review_result || 'not_used' }}</div>
+                    <!-- AI 审核结果：未审核显示灰；已审核解析 ai_review_result JSON 显示彩色 verdict badge
+                         pass=绿 / flag=黄 / reject=红 / raw=灰 / error=红边框
+                         hover 时通过 title 显示完整 reason -->
+                    <template v-if="!item.ai_reviewed">
+                      <span class="badge badge-gray">未经过 AI</span>
+                    </template>
+                    <template v-else>
+                      <span :class="['badge', aiVerdictBadgeClass(aiParse(item.ai_review_result).verdict)]" :title="aiParse(item.ai_review_result).reason">
+                        {{ aiVerdictLabel(aiParse(item.ai_review_result).verdict) }}
+                      </span>
+                      <div v-if="aiParse(item.ai_review_result).reason" class="mt-1 max-w-[180px] truncate text-xs text-gray-500 dark:text-gray-400" :title="aiParse(item.ai_review_result).reason">
+                        {{ aiParse(item.ai_review_result).reason }}
+                      </div>
+                      <div v-if="aiParse(item.ai_review_result).category" class="text-[10px] text-gray-400">
+                        {{ aiParse(item.ai_review_result).category }}
+                      </div>
+                    </template>
                   </td>
                   <td class="table-td whitespace-nowrap">
                     <span class="badge" :class="statusClass(item.status)">{{ statusText(item.status) }}</span>
@@ -657,6 +670,78 @@ function statusClass(status: string): string {
     case 'passed':
       return 'badge-green'
     case 'rejected':
+      return 'badge-red'
+    default:
+      return 'badge-gray'
+  }
+}
+
+// aiParse 解析 ai_review_result（JSON 字符串）为对象。
+// 兼容：1) 新格式 {"verdict","category","reason"} 2) 旧格式 raw 字符串（兜底显示）
+// 失败时 verdict='' 表示未识别
+interface AIReviewParsed {
+  verdict: string
+  category: string
+  reason: string
+  raw?: string
+}
+function aiParse(raw: string | null | undefined): AIReviewParsed {
+  if (!raw) return { verdict: '', category: '', reason: '' }
+  const s = raw.trim()
+  if (!s || s === 'not_used') return { verdict: '', category: '', reason: '' }
+  // 尝试 JSON 解析
+  if (s.startsWith('{')) {
+    try {
+      const obj = JSON.parse(s)
+      return {
+        verdict: String(obj.verdict || '').toLowerCase(),
+        category: String(obj.category || ''),
+        reason: String(obj.reason || ''),
+        raw: obj.raw,
+      }
+    } catch {
+      /* 落到 fallback */
+    }
+  }
+  // 旧格式 fallback：'pass|category|reason' 拼接（之前版本格式）
+  if (s.includes('|')) {
+    const [verdict, category, ...rest] = s.split('|')
+    return {
+      verdict: (verdict || '').toLowerCase(),
+      category: category || '',
+      reason: rest.join('|') || '',
+    }
+  }
+  // 兜底：错误信息 / raw string
+  return { verdict: 'raw', category: '', reason: s }
+}
+
+function aiVerdictLabel(verdict: string): string {
+  switch (verdict) {
+    case 'pass':
+      return '✓ 通过'
+    case 'flag':
+      return '⚠ 需复核'
+    case 'reject':
+      return '✗ 违规'
+    case 'raw':
+      return '原始'
+    case 'error':
+      return '错误'
+    default:
+      return '已经过 AI'
+  }
+}
+
+function aiVerdictBadgeClass(verdict: string): string {
+  switch (verdict) {
+    case 'pass':
+      return 'badge-green'
+    case 'flag':
+      return 'badge-amber'
+    case 'reject':
+      return 'badge-red'
+    case 'error':
       return 'badge-red'
     default:
       return 'badge-gray'
