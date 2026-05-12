@@ -143,8 +143,51 @@
         <!-- 白名单管理面板 -->
         <div v-if="activePanel === 'allowlist'" class="px-4 py-4">
           <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">
-            在白名单的用户所有请求会跳过敏感词检测。从事件列表点击"加入白名单"可添加。
+            在白名单的用户所有请求会跳过敏感词检测。可从下方搜索框直接添加用户，或在事件列表点击"加入白名单"。
           </p>
+          <!-- 直接添加用户：输入 ID / 邮箱 / 用户名实时搜索 → 点击列表项添加 -->
+          <div class="mb-4 rounded-lg border border-gray-200 bg-gray-50/50 p-3 dark:border-dark-700 dark:bg-dark-800/40">
+            <label class="mb-1.5 block text-xs font-medium text-gray-600 dark:text-gray-300">
+              添加用户到白名单
+            </label>
+            <div class="relative">
+              <input
+                v-model="allowlistSearchQuery"
+                type="text"
+                placeholder="输入用户 ID / 邮箱 / 用户名 搜索"
+                class="input w-full text-sm"
+                @input="onAllowlistSearchInput"
+                @focus="allowlistSearchFocused = true"
+                @blur="onAllowlistSearchBlur"
+              />
+              <!-- 搜索下拉 -->
+              <div
+                v-if="allowlistSearchFocused && allowlistSearchResults.length > 0"
+                class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border border-gray-200 bg-white shadow-lg dark:border-dark-600 dark:bg-dark-800"
+              >
+                <button
+                  v-for="user in allowlistSearchResults"
+                  :key="user.id"
+                  type="button"
+                  class="block w-full px-3 py-2 text-left text-sm hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-dark-700"
+                  :disabled="allowlistedUserIds.has(user.id) || allowlistAddingId === user.id"
+                  @mousedown.prevent="addAllowlistFromSearch(user)"
+                >
+                  <span class="font-mono text-gray-500">#{{ user.id }}</span>
+                  <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ user.username || user.email }}</span>
+                  <span v-if="user.username && user.email" class="ml-2 text-xs text-gray-500">{{ user.email }}</span>
+                  <span v-if="allowlistedUserIds.has(user.id)" class="ml-2 text-xs text-emerald-600 dark:text-emerald-400">✓ 已在白名单</span>
+                  <span v-else-if="allowlistAddingId === user.id" class="ml-2 text-xs text-gray-500">添加中…</span>
+                </button>
+              </div>
+            </div>
+            <p v-if="allowlistSearchQuery && allowlistSearchResults.length === 0 && !allowlistSearchLoading" class="mt-1 text-xs text-amber-600 dark:text-amber-400">
+              没有匹配的用户
+            </p>
+            <p v-else class="mt-1 text-[11px] text-gray-400">
+              点击搜索结果直接加入白名单；白名单用户后续所有请求跳过敏感词检测
+            </p>
+          </div>
           <div v-if="allowlistLoading" class="py-4 text-center text-sm text-gray-400">加载中...</div>
           <div v-else-if="allowlistDetail.length === 0" class="rounded-lg border border-dashed border-gray-300 py-8 text-center text-sm text-gray-500 dark:border-dark-600">
             白名单为空
@@ -630,6 +673,70 @@ function togglePanel(panel: AdminPanel) {
     loadAllowlistDetail()
   } else if (panel === 'stats') {
     loadRuleStats()
+  }
+}
+
+// 白名单"直接添加用户"搜索：输入 ID/邮箱/用户名 → 防抖 300ms → 拉 admin users API
+// 复用独享池赠送同款 UX（dropdown 列表 + 已在白名单状态提示）
+const allowlistSearchQuery = ref('')
+const allowlistSearchResults = ref<Array<{ id: number; email?: string; username?: string }>>([])
+const allowlistSearchLoading = ref(false)
+const allowlistSearchFocused = ref(false)
+const allowlistAddingId = ref<number | null>(null)
+let allowlistSearchTimer: ReturnType<typeof setTimeout> | null = null
+let allowlistSearchSeq = 0
+
+function onAllowlistSearchInput() {
+  if (allowlistSearchTimer) clearTimeout(allowlistSearchTimer)
+  const q = allowlistSearchQuery.value.trim()
+  if (!q) {
+    allowlistSearchResults.value = []
+    return
+  }
+  allowlistSearchLoading.value = true
+  const seq = ++allowlistSearchSeq
+  allowlistSearchTimer = setTimeout(async () => {
+    try {
+      const res = await adminAPI.users.list(1, 8, { search: q })
+      if (seq === allowlistSearchSeq) {
+        allowlistSearchResults.value = (res?.items || []).map((u) => ({
+          id: u.id,
+          email: u.email,
+          username: u.username,
+        }))
+      }
+    } catch {
+      if (seq === allowlistSearchSeq) allowlistSearchResults.value = []
+    } finally {
+      if (seq === allowlistSearchSeq) allowlistSearchLoading.value = false
+    }
+  }, 300)
+}
+
+function onAllowlistSearchBlur() {
+  // 延迟关闭让 mousedown 选项点击事件先触发
+  setTimeout(() => { allowlistSearchFocused.value = false }, 200)
+}
+
+async function addAllowlistFromSearch(user: { id: number; email?: string; username?: string }) {
+  if (allowlistedUserIds.value.has(user.id) || allowlistAddingId.value === user.id) return
+  allowlistAddingId.value = user.id
+  try {
+    await addSafetyAllowlist(user.id)
+    allowlistedUserIds.value = new Set([...allowlistedUserIds.value, user.id])
+    // 局部更新列表，不重新拉整个 detail（避免抖动）
+    allowlistDetail.value = [
+      ...allowlistDetail.value,
+      { user_id: user.id, email: user.email || '' },
+    ]
+    appStore.showSuccess(`已把 ${user.username || user.email || `用户#${user.id}`} 加入风控白名单`)
+    // 清空搜索状态方便继续加下一个
+    allowlistSearchQuery.value = ''
+    allowlistSearchResults.value = []
+  } catch (err) {
+    appStore.showError('加入白名单失败：' + (err as Error).message)
+  } finally {
+    allowlistAddingId.value = null
   }
 }
 
