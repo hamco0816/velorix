@@ -134,55 +134,55 @@
                   v-for="group in availableGroups"
                   :key="group.id"
                   type="button"
-                  class="group flex items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors"
+                  class="group relative flex flex-col gap-1 rounded-xl border px-3 py-2 text-left text-sm transition-colors"
                   :class="
                     selectedGroupId === group.id
                       ? 'border-brand-300 bg-brand-50 text-brand-700 dark:border-brand-500/40 dark:bg-brand-500/10 dark:text-brand-300'
                       : 'border-gray-200/70 bg-white text-gray-700 hover:border-gray-300 dark:border-dark-700/60 dark:bg-dark-800/40 dark:text-dark-200 dark:hover:border-dark-500'
                   "
+                  :title="group.name"
                   @click="selectedGroupId = group.id"
                 >
-                  <span class="flex min-w-0 items-center gap-1.5">
-                    <Icon
-                      v-if="group.is_exclusive"
-                      name="shield"
-                      size="xs"
-                      class="shrink-0 text-violet-500"
-                      :title="t('pricing.exclusiveGroup')"
-                    />
-                    <Icon
-                      v-if="promoActive(group)"
-                      name="fire"
-                      size="xs"
-                      class="shrink-0 text-rose-500 animate-pulse"
-                      :title="group.promo_label || t('pricing.promoActive')"
-                    />
-                    <PlatformIcon :platform="group.platform as GroupPlatform" size="xs" class="shrink-0" />
-                    <span class="truncate font-medium">{{ group.name }}</span>
-                  </span>
-                  <!-- 倍率标记：限时窗口内 → 原 ×N 划线 + ×M 高亮；否则单一 ×N -->
-                  <span
-                    v-if="promoActive(group)"
-                    class="ml-1 inline-flex shrink-0 items-center gap-1 text-[11px] font-semibold tabular-nums"
-                  >
-                    <span class="line-through opacity-40">×{{ baseRate(group).toFixed(2) }}</span>
+                  <!-- 主行：标识图标 + 分组名（可换行）+ 右侧倍率 chip -->
+                  <div class="flex items-center justify-between gap-2">
+                    <div class="flex min-w-0 flex-1 items-center gap-1.5">
+                      <Icon
+                        v-if="group.is_exclusive"
+                        name="shield"
+                        size="xs"
+                        class="shrink-0 text-violet-500"
+                        :title="t('pricing.exclusiveGroup')"
+                      />
+                      <PlatformIcon :platform="group.platform as GroupPlatform" size="xs" class="shrink-0" />
+                      <span class="break-all font-medium leading-tight">{{ group.name }}</span>
+                    </div>
                     <span
-                      class="rounded-full bg-rose-50 px-2 py-0.5 text-rose-700 ring-1 ring-inset ring-rose-200/70 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/30"
+                      class="inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-semibold tabular-nums ring-1 ring-inset"
+                      :class="
+                        promoActive(group)
+                          ? 'bg-rose-50 text-rose-700 ring-rose-200/70 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/30'
+                          : selectedGroupId === group.id
+                            ? 'bg-brand-100 text-brand-700 ring-brand-200/70 dark:bg-brand-500/20 dark:text-brand-200 dark:ring-brand-500/30'
+                            : 'bg-gray-100 text-gray-600 ring-gray-200/70 dark:bg-dark-700/40 dark:text-dark-200 dark:ring-dark-600/60'
+                      "
                     >
                       ×{{ effectiveRate(group).toFixed(2) }}
                     </span>
-                  </span>
-                  <span
-                    v-else
-                    class="ml-1 inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-semibold tabular-nums ring-1 ring-inset"
-                    :class="
-                      selectedGroupId === group.id
-                        ? 'bg-brand-100 text-brand-700 ring-brand-200/70 dark:bg-brand-500/20 dark:text-brand-200 dark:ring-brand-500/30'
-                        : 'bg-gray-100 text-gray-600 ring-gray-200/70 dark:bg-dark-700/40 dark:text-dark-200 dark:ring-dark-600/60'
-                    "
+                  </div>
+
+                  <!-- 副行：仅在 promo 激活时显示 — fire 图标 + 倒计时 + 原价划线 -->
+                  <div
+                    v-if="promoActive(group)"
+                    class="flex items-center justify-between gap-2 text-[10px] tabular-nums"
                   >
-                    ×{{ effectiveRate(group).toFixed(2) }}
-                  </span>
+                    <span class="inline-flex items-center gap-1 text-rose-600 dark:text-rose-400">
+                      <Icon name="fire" size="xs" class="animate-pulse" />
+                      <span class="font-medium">{{ countdownLabel(group) }}</span>
+                    </span>
+                    <span class="text-gray-400 line-through dark:text-dark-500">
+                      ×{{ baseRate(group).toFixed(2) }}
+                    </span>
+                  </div>
                 </button>
 
                 <p
@@ -422,33 +422,29 @@
                 </template>
               </div>
 
-              <!-- 可用分组：完整显示 + 可点击切换 -->
+              <!-- 可用分组：精简后只在 >1 时显示作为快速切换器；=1 时省略避免噪音 -->
               <div
-                v-if="model.accessibleGroups.length > 0"
-                class="mt-4 border-t border-gray-100 pt-3 dark:border-dark-700/60"
+                v-if="model.accessibleGroups.length > 1"
+                class="mt-4 flex flex-wrap items-center gap-1.5 border-t border-gray-100 pt-3 dark:border-dark-700/60"
               >
-                <p class="mb-1.5 text-xs font-medium text-gray-500 dark:text-dark-400">
-                  {{ t('pricing.availableIn') }}
-                </p>
-                <div class="flex flex-wrap gap-1.5">
-                  <button
-                    v-for="g in sortGroupsByRate(model.accessibleGroups)"
-                    :key="g.id"
-                    type="button"
-                    class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset transition-colors"
-                    :class="
-                      selectedGroupId === g.id
-                        ? 'bg-brand-50 text-brand-700 ring-brand-200/70 dark:bg-brand-500/15 dark:text-brand-300 dark:ring-brand-500/30'
-                        : 'bg-gray-50 text-gray-600 ring-gray-200/70 hover:bg-gray-100 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60 dark:hover:bg-dark-700/60'
-                    "
-                    :title="t('pricing.switchToGroup', { name: g.name })"
-                    @click="selectedGroupId = g.id"
-                  >
-                    <Icon v-if="g.is_exclusive" name="shield" size="xs" class="text-violet-500" />
-                    <span>{{ g.name }}</span>
-                    <span class="tabular-nums opacity-70">×{{ effectiveRate(g).toFixed(2) }}</span>
-                  </button>
-                </div>
+                <button
+                  v-for="g in sortGroupsByRate(model.accessibleGroups)"
+                  :key="g.id"
+                  type="button"
+                  class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset transition-colors"
+                  :class="
+                    selectedGroupId === g.id
+                      ? 'bg-brand-50 text-brand-700 ring-brand-200/70 dark:bg-brand-500/15 dark:text-brand-300 dark:ring-brand-500/30'
+                      : 'bg-gray-50 text-gray-600 ring-gray-200/70 hover:bg-gray-100 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60 dark:hover:bg-dark-700/60'
+                  "
+                  :title="t('pricing.switchToGroup', { name: g.name })"
+                  @click="selectedGroupId = g.id"
+                >
+                  <Icon v-if="g.is_exclusive" name="shield" size="xs" class="text-violet-500" />
+                  <Icon v-if="promoActive(g)" name="fire" size="xs" class="text-rose-500 animate-pulse" />
+                  <span>{{ g.name }}</span>
+                  <span class="tabular-nums opacity-70">×{{ effectiveRate(g).toFixed(2) }}</span>
+                </button>
               </div>
             </div>
           </div>

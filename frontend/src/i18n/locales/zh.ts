@@ -6655,6 +6655,7 @@ export default {
   // Payment System
   payment: {
     title: '充值/订阅',
+    heroDescription: '为账户充值或选购订阅套餐，多种支付渠道，到账即时生效。',
     amountLabel: '充值金额',
     paymentAmount: '支付金额',
     creditedBalance: '到账余额',
@@ -6722,6 +6723,8 @@ export default {
     },
     orders: {
       title: '我的订单',
+      heroTitle: '订单与支付记录',
+      heroDescription: '查看您的所有订单记录、支付状态、退款进度与到账详情。',
       empty: '暂无订单',
       orderId: '订单 ID',
       orderNo: '订单编号',

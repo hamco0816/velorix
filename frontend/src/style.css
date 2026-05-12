@@ -438,18 +438,147 @@
   }
 
   /* ============ 卡片：去过度圆角与浮起动画，靠极淡阴影 + 中性边框区分层级 ============ */
+  /* ============================================================
+   * 卡片基础类：所有卡片都不再是"纯白色"，而是带极淡多色渐变 + 微妙径向光晕，
+   * 让白色框有"纸感温度"。每个色系变体（card-amber/sky/emerald/...）
+   * 在基础渐变上叠加对应色调的 radial gradient，让页面可选不同主题。
+   *
+   * 默认 .card 用极淡 gray 渐变（中性，所有页面都能用）。
+   * 页面想要强调主题色时可加 `.card-amber` 等变体类。
+   * ============================================================ */
   .card {
-    @apply bg-white dark:bg-dark-800/50;
     @apply rounded-lg;
     @apply border border-gray-200 dark:border-dark-700/60;
-    @apply shadow-card;
     @apply transition-colors duration-200;
+    background:
+      radial-gradient(circle at 100% 0%, rgb(148 163 184 / 0.05), transparent 38%),
+      radial-gradient(circle at 0% 100%, rgb(148 163 184 / 0.04), transparent 42%),
+      linear-gradient(135deg, rgb(255 255 255), rgb(252 252 253) 55%, rgb(248 250 252));
+    box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 0 0 1px rgb(255 255 255 / 0.6) inset;
   }
 
-  /* surface-card：Notion 风温和宽阔卡片，仪表盘/运维监控等数据面板专用 */
+  :root.dark .card {
+    background:
+      radial-gradient(circle at 100% 0%, rgb(148 163 184 / 0.04), transparent 38%),
+      radial-gradient(circle at 0% 100%, rgb(148 163 184 / 0.03), transparent 42%),
+      linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+  }
+
+  /* surface-card：Notion 风温和宽阔卡片，与 .card 走同色调但更圆润 */
   .surface-card {
-    @apply rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all;
-    @apply dark:border-dark-700/60 dark:bg-dark-800/40;
+    @apply rounded-2xl border border-gray-200/70 transition-all;
+    @apply dark:border-dark-700/60;
+    background:
+      radial-gradient(circle at 100% 0%, rgb(148 163 184 / 0.05), transparent 38%),
+      radial-gradient(circle at 0% 100%, rgb(148 163 184 / 0.04), transparent 42%),
+      linear-gradient(135deg, rgb(255 255 255), rgb(252 252 253) 55%, rgb(248 250 252));
+    box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+  }
+
+  :root.dark .surface-card {
+    background:
+      radial-gradient(circle at 100% 0%, rgb(148 163 184 / 0.04), transparent 38%),
+      radial-gradient(circle at 0% 100%, rgb(148 163 184 / 0.03), transparent 42%),
+      linear-gradient(135deg, rgb(30 41 59 / 0.5), rgb(17 24 39 / 0.4));
+  }
+
+  /* —— 主题色卡片变体 —— 用于强调页面主题色，叠加在 .card / .surface-card 上 */
+
+  /* amber：钱包 / 充值氛围（PaymentView） */
+  .card-amber {
+    border-color: rgb(254 215 170 / 0.7);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(245 158 11 / 0.12), transparent 32%),
+      radial-gradient(circle at 0% 100%, rgb(249 115 22 / 0.06), transparent 38%),
+      linear-gradient(135deg, rgb(255 251 235), rgb(255 255 255) 55%, rgb(254 243 199));
+  }
+  :root.dark .card-amber {
+    border-color: rgb(120 53 15 / 0.4);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(245 158 11 / 0.10), transparent 32%),
+      radial-gradient(circle at 0% 100%, rgb(249 115 22 / 0.06), transparent 38%),
+      linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
+  }
+
+  /* sky：信息 / 文档 / 渠道氛围 */
+  .card-sky {
+    border-color: rgb(186 230 253 / 0.7);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(14 165 233 / 0.12), transparent 32%),
+      radial-gradient(circle at 0% 100%, rgb(59 130 246 / 0.06), transparent 38%),
+      linear-gradient(135deg, rgb(240 249 255), rgb(255 255 255) 55%, rgb(224 242 254));
+  }
+  :root.dark .card-sky {
+    border-color: rgb(7 89 133 / 0.4);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(14 165 233 / 0.10), transparent 32%),
+      radial-gradient(circle at 0% 100%, rgb(59 130 246 / 0.06), transparent 38%),
+      linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
+  }
+
+  /* emerald：订单 / 计费 / 完成氛围 */
+  .card-emerald {
+    border-color: rgb(167 243 208 / 0.7);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(16 185 129 / 0.12), transparent 32%),
+      radial-gradient(circle at 0% 100%, rgb(20 184 166 / 0.06), transparent 38%),
+      linear-gradient(135deg, rgb(236 253 245), rgb(255 255 255) 55%, rgb(204 251 241));
+  }
+  :root.dark .card-emerald {
+    border-color: rgb(6 78 59 / 0.4);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(16 185 129 / 0.10), transparent 32%),
+      radial-gradient(circle at 0% 100%, rgb(20 184 166 / 0.06), transparent 38%),
+      linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
+  }
+
+  /* violet：订阅 / 独享号 / 仪表盘氛围 */
+  .card-violet {
+    border-color: rgb(221 214 254 / 0.7);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(139 92 246 / 0.12), transparent 32%),
+      radial-gradient(circle at 0% 100%, rgb(168 85 247 / 0.06), transparent 38%),
+      linear-gradient(135deg, rgb(245 243 255), rgb(255 255 255) 55%, rgb(243 232 255));
+  }
+  :root.dark .card-violet {
+    border-color: rgb(76 29 149 / 0.4);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(139 92 246 / 0.10), transparent 32%),
+      radial-gradient(circle at 0% 100%, rgb(168 85 247 / 0.06), transparent 38%),
+      linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
+  }
+
+  /* rose：兑换 / 提示 / 营销氛围 */
+  .card-rose {
+    border-color: rgb(254 205 211 / 0.7);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(244 63 94 / 0.12), transparent 32%),
+      radial-gradient(circle at 0% 100%, rgb(236 72 153 / 0.06), transparent 38%),
+      linear-gradient(135deg, rgb(255 241 242), rgb(255 255 255) 55%, rgb(252 231 243));
+  }
+  :root.dark .card-rose {
+    border-color: rgb(136 19 55 / 0.4);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(244 63 94 / 0.10), transparent 32%),
+      radial-gradient(circle at 0% 100%, rgb(236 72 153 / 0.06), transparent 38%),
+      linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
+  }
+
+  /* indigo：API 密钥 / 文档 氛围 */
+  .card-indigo {
+    border-color: rgb(199 210 254 / 0.7);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(99 102 241 / 0.12), transparent 32%),
+      radial-gradient(circle at 0% 100%, rgb(79 70 229 / 0.06), transparent 38%),
+      linear-gradient(135deg, rgb(238 242 255), rgb(255 255 255) 55%, rgb(224 231 255));
+  }
+  :root.dark .card-indigo {
+    border-color: rgb(55 48 163 / 0.4);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(99 102 241 / 0.10), transparent 32%),
+      radial-gradient(circle at 0% 100%, rgb(79 70 229 / 0.06), transparent 38%),
+      linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
   }
 
   .card-hover {

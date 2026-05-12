@@ -707,26 +707,39 @@ const flagAdminPayment = () => adminSettingsStore.paymentEnabled
 // buildSelfNavItems 构造用户自己的导航项（用户端主菜单和管理员的"我的账户"子菜单共享这组声明）。
 // withDashboard=true 时包含仪表盘（用户端），false 时不含（管理员的个人区已经有独立仪表盘入口）。
 //
-// 条目顺序（用户主菜单核心 7 项）：API密钥 → 我的订阅 → 我的独享号 → 使用记录 → 计费标准 → 渠道状态 → 使用文档。
-// 紧接着是次要/支付相关：充值订阅 → 订单 → 兑换码 → 邀请返利 → 个人资料。
+// 顺序（除仪表盘外按绝对位置计）：
+//   1. 充值/订阅（首要付费入口）
+//   2. 兑换（高频运营场景）
+//   3. 我的订单（紧随支付）
+//   4. API密钥
+//   5. 我的订阅
+//   6. 我的独享号
+//   7. 使用记录
+//   8. 计费标准
+//   9. 渠道状态
+//  10. 使用文档
+//  11. 邀请返利
+//  12. 个人资料
 function buildSelfNavItems(withDashboard: boolean): NavItem[] {
   const items: NavItem[] = []
   if (withDashboard) {
     items.push({ path: '/dashboard', label: t('nav.dashboard'), icon: DashboardIcon, iconColor: 'text-sky-500 dark:text-sky-400' })
   }
   items.push(
-    // —— 用户期望的核心 7 项（按使用频率排序） ——
+    // —— 支付 / 兑换：高频付费场景前置 ——
+    { path: '/purchase', label: t('nav.buySubscription'), icon: RechargeSubscriptionIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true, featureFlag: flagPayment },
+    { path: '/redeem', label: t('nav.redeem'), icon: GiftIcon, iconColor: 'text-rose-500 dark:text-rose-400', hideInSimpleMode: true },
+    { path: '/orders', label: t('nav.myOrders'), icon: OrderListIcon, iconColor: 'text-amber-500 dark:text-amber-400', hideInSimpleMode: true, featureFlag: flagPayment },
+    // —— 核心使用：密钥 / 订阅 / 独享号 / 用量 ——
     { path: '/keys', label: t('nav.apiKeys'), icon: KeyIcon, iconColor: 'text-sky-500 dark:text-sky-400' },
     { path: '/subscriptions', label: t('nav.mySubscriptions'), icon: CreditCardIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true },
     { path: '/seats', label: t('nav.mySeats'), icon: BadgeIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true, featureFlag: flagPayment },
     { path: '/usage', label: t('nav.usage'), icon: ChartIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true },
+    // —— 参考信息：定价 / 状态 / 文档 ——
     { path: '/pricing', label: t('nav.pricing'), icon: ChannelIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true, featureFlag: flagAvailableChannels },
     { path: '/monitor', label: t('nav.channelStatus'), icon: SignalIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', featureFlag: flagChannelMonitor },
     { path: '/docs', label: t('nav.docs'), icon: BookIcon, iconColor: 'text-indigo-500 dark:text-indigo-400', hideInSimpleMode: true },
-    // —— 次要 / 支付相关 ——
-    { path: '/purchase', label: t('nav.buySubscription'), icon: RechargeSubscriptionIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true, featureFlag: flagPayment },
-    { path: '/orders', label: t('nav.myOrders'), icon: OrderListIcon, iconColor: 'text-amber-500 dark:text-amber-400', hideInSimpleMode: true, featureFlag: flagPayment },
-    { path: '/redeem', label: t('nav.redeem'), icon: GiftIcon, iconColor: 'text-rose-500 dark:text-rose-400', hideInSimpleMode: true },
+    // —— 账户相关：邀请 / 个人资料 ——
     { path: '/affiliate', label: t('nav.affiliate'), icon: UsersIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true, featureFlag: flagAffiliate },
     { path: '/profile', label: t('nav.profile'), icon: UserIcon, iconColor: 'text-sky-500 dark:text-sky-400' },
     ...customMenuItemsForUser.value.map((item): NavItem => ({

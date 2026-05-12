@@ -60,7 +60,7 @@
               </div>
             </div>
 
-            <!-- 今日 Token -->
+            <!-- 今日 Token：拆解显示 input / output / cache R/W，让总数验证一致 -->
             <div class="kpi-card">
               <div class="kpi-card-header">
                 <div class="metric-icon metric-icon-violet">
@@ -70,10 +70,22 @@
               </div>
               <p class="kpi-card-label">{{ t('admin.dashboard.todayTokens') }}</p>
               <p class="kpi-card-value">{{ formatTokens(stats.today_tokens) }}</p>
-              <p class="kpi-card-hint">
-                {{ t('common.total') }}
-                <span class="font-medium text-gray-700 dark:text-gray-300">{{ formatTokens(stats.total_tokens) }}</span>
-              </p>
+              <div class="kpi-card-hint space-y-0.5 tabular-nums">
+                <p>
+                  <Icon name="arrowDown" size="xs" class="mr-0.5 inline-block text-emerald-500" />
+                  <span>{{ formatTokens(stats.today_input_tokens) }}</span>
+                  <span class="mx-1 text-gray-300 dark:text-dark-600">·</span>
+                  <Icon name="arrowUp" size="xs" class="mr-0.5 inline-block text-violet-500" />
+                  <span>{{ formatTokens(stats.today_output_tokens) }}</span>
+                </p>
+                <p v-if="hasTodayCache">
+                  <Icon name="inbox" size="xs" class="mr-0.5 inline-block text-sky-500" />
+                  <span>{{ formatTokens(stats.today_cache_read_tokens) }}</span>
+                  <span class="mx-1 text-gray-300 dark:text-dark-600">·</span>
+                  <Icon name="edit" size="xs" class="mr-0.5 inline-block text-amber-500" />
+                  <span>{{ formatTokens(stats.today_cache_creation_tokens) }}</span>
+                </p>
+              </div>
               <div v-if="hasSparkData(tokensSeries)" class="kpi-card-spark">
                 <SparklineMini :data="tokensSeries" color="#8b5cf6" :height="40" />
               </div>
@@ -244,8 +256,28 @@
                   {{ t('admin.dashboard.todayDelta') }} +{{ formatTokens(stats.today_tokens) }}
                 </span>
               </p>
-              <div class="mt-3 text-xs text-gray-500 dark:text-dark-400">
-                {{ t('admin.dashboard.tokenStats') }}
+              <!-- 累计 Token 分解：input + output + cache 加起来等于总数 -->
+              <div class="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-xs tabular-nums text-gray-500 dark:text-dark-400">
+                <span class="inline-flex items-center gap-1">
+                  <Icon name="arrowDown" size="xs" class="text-emerald-500" />
+                  <span>{{ formatTokens(stats.total_input_tokens) }}</span>
+                  <span class="opacity-70">{{ t('dashboard.input') }}</span>
+                </span>
+                <span class="inline-flex items-center gap-1">
+                  <Icon name="arrowUp" size="xs" class="text-violet-500" />
+                  <span>{{ formatTokens(stats.total_output_tokens) }}</span>
+                  <span class="opacity-70">{{ t('dashboard.output') }}</span>
+                </span>
+                <span v-if="hasTotalCache" class="inline-flex items-center gap-1">
+                  <Icon name="inbox" size="xs" class="text-sky-500" />
+                  <span>{{ formatTokens(stats.total_cache_read_tokens) }}</span>
+                  <span class="opacity-70">{{ t('pricing.cacheRead') }}</span>
+                </span>
+                <span v-if="hasTotalCache" class="inline-flex items-center gap-1">
+                  <Icon name="edit" size="xs" class="text-amber-500" />
+                  <span>{{ formatTokens(stats.total_cache_creation_tokens) }}</span>
+                  <span class="opacity-70">{{ t('pricing.cacheWrite') }}</span>
+                </span>
               </div>
             </div>
           </div>
@@ -427,6 +459,18 @@ const costTrend = computed(() => calcTrend(costSeries.value))
 const hasSparkData = (series: number[]): boolean => {
   return series.length >= 2 && series.some((v) => v > 0)
 }
+
+// 缓存 token 是否有数据：任一字段 > 0 才展示 cache 行，避免显示 "0 · 0"
+const hasTodayCache = computed(() => {
+  const s = stats.value
+  if (!s) return false
+  return (s.today_cache_read_tokens || 0) > 0 || (s.today_cache_creation_tokens || 0) > 0
+})
+const hasTotalCache = computed(() => {
+  const s = stats.value
+  if (!s) return false
+  return (s.total_cache_read_tokens || 0) > 0 || (s.total_cache_creation_tokens || 0) > 0
+})
 
 // 新增用户占总用户的百分比（给"用户" KPI 卡的占比条做数据）
 const userGrowthPercent = computed(() => {

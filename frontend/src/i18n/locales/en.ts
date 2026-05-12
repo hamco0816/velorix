@@ -6465,6 +6465,7 @@ export default {
   // Payment System
   payment: {
     title: 'Recharge / Subscription',
+    heroDescription: 'Top up your balance or buy a subscription. Multiple payment methods, instant credit.',
     amountLabel: 'Amount',
     paymentAmount: 'Payment Amount',
     creditedBalance: 'Credited Balance',
@@ -6532,6 +6533,8 @@ export default {
     },
     orders: {
       title: 'My Orders',
+      heroTitle: 'Orders & Payment Records',
+      heroDescription: 'Review your orders, payment status, refund progress, and crediting details.',
       empty: 'No orders yet',
       orderId: 'Order ID',
       orderNo: 'Order No.',

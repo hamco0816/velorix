@@ -1,6 +1,6 @@
 <template>
-  <AppLayout wide>
-    <div class="payment-page space-y-5">
+  <AppLayout>
+    <div class="payment-page mx-auto max-w-[1440px] space-y-5">
       <div v-if="loading" class="flex items-center justify-center py-20">
         <div class="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
       </div>
@@ -43,15 +43,16 @@
               <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('payment.notAvailable') }}</p>
             </div>
             <template v-else>
-            <section class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40">
+            <!-- 充值主卡：amber 主题色（钱包氛围） — 全局 .surface-card 基础 + .card-amber 色调 -->
+            <section class="surface-card card-amber relative overflow-hidden">
               <div class="grid lg:grid-cols-[minmax(0,1fr)_340px]">
                 <div class="space-y-5 p-5 sm:p-6">
-                  <div class="flex items-start justify-between gap-4 border-b border-gray-100 pb-4 dark:border-dark-700/60">
+                  <div class="flex items-start justify-between gap-4 border-b border-amber-200/40 pb-4 dark:border-amber-500/20">
                     <div>
                       <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ t('payment.rechargeAccount') }}</p>
                       <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{{ user?.username || '' }}</p>
                     </div>
-                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-inset ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600 ring-1 ring-inset ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30">
                       <Icon name="creditCard" size="md" />
                     </div>
                   </div>
@@ -74,13 +75,18 @@
                   />
                 </div>
 
-                <aside class="border-t border-gray-100 bg-gray-50/60 p-5 dark:border-dark-700/60 dark:bg-dark-800/30 lg:border-l lg:border-t-0">
+                <aside class="border-t border-gray-100 bg-gradient-to-br from-amber-50/60 via-orange-50/30 to-white p-5 dark:border-dark-700/60 dark:from-amber-500/[0.04] dark:via-orange-500/[0.02] dark:to-dark-800/30 lg:border-l lg:border-t-0">
                   <div class="space-y-4">
-                    <div class="rounded-xl border border-gray-200/70 bg-white p-4 dark:border-dark-700/60 dark:bg-dark-800/40">
-                      <p class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.currentBalance') }}</p>
+                    <!-- 当前余额：amber chip 装饰 -->
+                    <div class="relative overflow-hidden rounded-xl border border-amber-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-amber-500/30 dark:bg-dark-800/40">
+                      <div class="flex items-center gap-2">
+                        <Icon name="creditCard" size="xs" class="text-amber-500" />
+                        <p class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.currentBalance') }}</p>
+                      </div>
                       <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400">${{ user?.balance?.toFixed(2) || '0.00' }}</p>
                     </div>
 
+                    <!-- 费用明细 -->
                     <div class="rounded-xl border border-gray-200/70 bg-white p-4 text-sm dark:border-dark-700/60 dark:bg-dark-800/40">
                       <div class="space-y-3">
                         <div class="flex justify-between">
@@ -105,7 +111,12 @@
                       </div>
                     </div>
 
-                    <button :class="['btn w-full py-3 text-base font-semibold', paymentButtonClass]" :disabled="!canSubmit || submitting" @click="handleSubmitRecharge">
+                    <!-- 确认支付：限宽居中，避免在 340px aside 上撑得太宽 -->
+                    <button
+                      :class="['btn mx-auto block w-full max-w-[280px] py-2.5 text-sm font-semibold', paymentButtonClass]"
+                      :disabled="!canSubmit || submitting"
+                      @click="handleSubmitRecharge"
+                    >
                       <span v-if="submitting" class="flex items-center justify-center gap-2">
                         <span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
                         {{ t('common.processing') }}

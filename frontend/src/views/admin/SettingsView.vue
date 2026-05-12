@@ -4036,83 +4036,93 @@
                   {{ t("admin.settings.site.contactMethodsEmpty") }}
                 </div>
 
-                <div v-else class="space-y-3">
+                <div v-else class="space-y-2.5">
+                  <!-- 单条联系方式：紧凑双行布局
+                       第 1 行：[类型 180] [账号 280] [跳转链接 自适应 max 420] [trash auto]
+                       第 2 行：二维码区（可选） -->
                   <div
                     v-for="(method, index) in form.contact_methods"
                     :key="`contact-${index}`"
-                    class="grid grid-cols-1 gap-3 rounded-lg border border-gray-200 p-3 md:grid-cols-[160px_minmax(0,1fr)_auto] dark:border-dark-600"
+                    class="rounded-xl border border-gray-200/70 bg-gray-50/40 p-3 dark:border-dark-700/60 dark:bg-dark-800/30"
                   >
-                    <div>
-                      <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
-                        {{ t("admin.settings.site.contactMethodType") }}
-                      </label>
-                      <Select
-                        :modelValue="method.type"
-                        :options="contactTypeOptions"
-                        class="contact-method-type-select"
-                        @update:modelValue="updateContactMethodType(index, $event)"
+                    <div class="flex flex-wrap items-end gap-3">
+                      <!-- 类型：固定 180px -->
+                      <div class="w-[180px] shrink-0">
+                        <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                          {{ t("admin.settings.site.contactMethodType") }}
+                        </label>
+                        <Select
+                          :modelValue="method.type"
+                          :options="contactTypeOptions"
+                          class="contact-method-type-select"
+                          @update:modelValue="updateContactMethodType(index, $event)"
+                        >
+                          <template #selected="{ option }">
+                            <span class="flex min-w-0 items-center gap-2">
+                              <ContactMethodIcon
+                                :type="contactOptionType(option, method.type)"
+                                size="18px"
+                              />
+                              <span class="truncate">
+                                {{ contactOptionLabel(option, method.type) }}
+                              </span>
+                            </span>
+                          </template>
+                          <template #option="{ option, selected }">
+                            <div class="flex min-w-0 items-center gap-2">
+                              <ContactMethodIcon
+                                :type="contactOptionType(option, method.type)"
+                                size="18px"
+                              />
+                              <span class="truncate font-medium">
+                                {{ contactOptionLabel(option, method.type) }}
+                              </span>
+                            </div>
+                            <Icon
+                              v-if="selected"
+                              name="check"
+                              size="sm"
+                              class="text-primary-500"
+                            />
+                          </template>
+                        </Select>
+                      </div>
+                      <!-- 账号：固定 240px（QQ/微信号最多 20 字符够用） -->
+                      <div class="w-[240px] shrink-0">
+                        <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                          {{ t("admin.settings.site.contactMethodValue") }}
+                        </label>
+                        <input
+                          v-model="method.value"
+                          type="text"
+                          class="input text-sm"
+                          :placeholder="contactValuePlaceholder(method.type)"
+                        />
+                      </div>
+                      <!-- 跳转链接：自适应，但 max-w-[420px] 防止超宽 -->
+                      <div class="min-w-[240px] flex-1 max-w-[420px]">
+                        <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+                          {{ t("admin.settings.site.contactMethodUrl") }}
+                        </label>
+                        <input
+                          v-model="method.url"
+                          type="url"
+                          class="input text-sm"
+                          :placeholder="t('admin.settings.site.contactMethodUrlPlaceholder')"
+                        />
+                      </div>
+                      <!-- 删除按钮：贴底对齐 -->
+                      <button
+                        type="button"
+                        class="ml-auto h-[38px] shrink-0 rounded-lg p-2 text-gray-400 transition-colors hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/15 dark:hover:text-rose-300"
+                        :title="t('common.delete')"
+                        @click="removeContactMethod(index)"
                       >
-                        <template #selected="{ option }">
-                          <span class="flex min-w-0 items-center gap-2">
-                            <ContactMethodIcon
-                              :type="contactOptionType(option, method.type)"
-                              size="18px"
-                            />
-                            <span class="truncate">
-                              {{ contactOptionLabel(option, method.type) }}
-                            </span>
-                          </span>
-                        </template>
-                        <template #option="{ option, selected }">
-                          <div class="flex min-w-0 items-center gap-2">
-                            <ContactMethodIcon
-                              :type="contactOptionType(option, method.type)"
-                              size="18px"
-                            />
-                            <span class="truncate font-medium">
-                              {{ contactOptionLabel(option, method.type) }}
-                            </span>
-                          </div>
-                          <Icon
-                            v-if="selected"
-                            name="check"
-                            size="sm"
-                            class="text-primary-500"
-                          />
-                        </template>
-                      </Select>
+                        <Icon name="trash" size="sm" />
+                      </button>
                     </div>
-                    <div>
-                      <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
-                        {{ t("admin.settings.site.contactMethodValue") }}
-                      </label>
-                      <input
-                        v-model="method.value"
-                        type="text"
-                        class="input text-sm"
-                        :placeholder="contactValuePlaceholder(method.type)"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      class="self-end rounded p-2 text-red-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
-                      @click="removeContactMethod(index)"
-                    >
-                      <Icon name="trash" size="sm" />
-                    </button>
-                    <div class="md:col-span-2">
-                      <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
-                        {{ t("admin.settings.site.contactMethodUrl") }}
-                      </label>
-                      <input
-                        v-model="method.url"
-                        type="url"
-                        class="input text-sm"
-                        :placeholder="t('admin.settings.site.contactMethodUrlPlaceholder')"
-                      />
-                    </div>
-                    <!-- 二维码上传：QQ群类型默认展开；其他类型可点链接展开（有些客户也想给 wechat 客服贴个二维码） -->
-                    <div class="md:col-span-2">
+                    <!-- 二维码上传：QQ群类型默认展开；其他类型可点链接展开。单独一行，与上方 flex 行用 border-t 分隔 -->
+                    <div class="mt-3 border-t border-gray-200/60 pt-3 dark:border-dark-700/60">
                       <div v-if="method.type === 'qq_group' || method.image_data || expandedQrIndex === index">
                         <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
                           {{ t("admin.settings.site.contactMethodQrCode") }}
@@ -4158,10 +4168,11 @@
                       <button
                         v-else
                         type="button"
-                        class="text-xs text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400"
+                        class="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400"
                         @click="expandedQrIndex = index"
                       >
-                        + {{ t("admin.settings.site.contactMethodAddQr") }}
+                        <Icon name="plus" size="xs" />
+                        {{ t("admin.settings.site.contactMethodAddQr") }}
                       </button>
                     </div>
                   </div>

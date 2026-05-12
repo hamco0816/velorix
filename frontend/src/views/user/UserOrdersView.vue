@@ -1,31 +1,18 @@
 <template>
   <AppLayout>
-    <div class="space-y-5">
-      <!-- Hero：amber 渐变标题区，标识订单业务色 -->
-      <header class="page-hero page-hero-amber">
-        <div class="relative z-10 max-w-3xl">
-          <span class="page-hero-tag page-hero-tag-amber">
-            <Icon name="document" size="sm" />
-            {{ t('payment.orders.title') }}
-          </span>
-          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-            {{ t('payment.orders.title') }}
-          </h1>
-          <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-            查看您的所有订单记录、支付状态与到账详情。
-          </p>
-        </div>
-      </header>
-
-      <!-- Filters -->
-      <div class="card p-4">
+    <div class="mx-auto max-w-[1440px] space-y-5">
+      <!-- Filters：emerald 主题（订单 / 完成氛围），用全局 .surface-card + .card-emerald 组合 -->
+      <div class="surface-card card-emerald p-4">
         <div class="flex flex-wrap items-center gap-3">
           <Select v-model="currentFilter" :options="statusFilters" class="min-w-[10rem]" @change="fetchOrders" />
           <div class="flex flex-1 items-center justify-end gap-2">
-            <button @click="fetchOrders" :disabled="loading" class="btn btn-secondary" :title="t('common.refresh')">
-              <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
+            <button @click="fetchOrders" :disabled="loading" class="btn btn-secondary btn-sm" :title="t('common.refresh')">
+              <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
             </button>
-            <button class="btn btn-primary" @click="router.push('/purchase')">{{ t('payment.result.backToRecharge') }}</button>
+            <button class="btn btn-primary btn-sm" @click="router.push('/purchase')">
+              <Icon name="plus" size="sm" class="mr-1.5" />
+              {{ t('payment.result.backToRecharge') }}
+            </button>
           </div>
         </div>
       </div>
