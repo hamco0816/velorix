@@ -9,19 +9,19 @@
       <!-- Account Info Card -->
       <div
         v-if="account"
-        class="flex items-center justify-between rounded-xl border border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-3 dark:border-dark-500 dark:from-dark-700 dark:to-dark-600"
+        class="flex items-center justify-between rounded-xl border border-gray-200/70 bg-gray-50/40 p-3 dark:border-dark-700/60 dark:bg-dark-800/30"
       >
         <div class="flex items-center gap-3">
           <div
-            class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-primary-600"
+            class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-50 text-primary-600 ring-1 ring-inset ring-primary-200/70 dark:bg-primary-500/15 dark:text-primary-300 dark:ring-primary-500/30"
           >
-            <Icon name="play" size="md" class="text-white" :stroke-width="2" />
+            <Icon name="play" size="md" :stroke-width="2" />
           </div>
           <div>
             <div class="font-semibold text-gray-900 dark:text-gray-100">{{ account.name }}</div>
             <div class="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
               <span
-                class="rounded bg-gray-200 px-1.5 py-0.5 text-[10px] font-medium uppercase dark:bg-dark-500"
+                class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide dark:bg-dark-700"
               >
                 {{ account.type }}
               </span>
@@ -31,12 +31,16 @@
         </div>
         <span
           :class="[
-            'rounded-full px-2.5 py-1 text-xs font-semibold',
+            'inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset',
             account.status === 'active'
-              ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400'
-              : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+              ? 'bg-emerald-50 text-emerald-700 ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30'
+              : 'bg-gray-50 text-gray-600 ring-gray-200/70 dark:bg-dark-700/40 dark:text-dark-200 dark:ring-dark-600/60'
           ]"
         >
+          <span
+            class="h-1.5 w-1.5 rounded-full"
+            :class="account.status === 'active' ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'"
+          ></span>
           {{ account.status }}
         </span>
       </div>

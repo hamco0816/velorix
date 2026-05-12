@@ -1,20 +1,23 @@
 <template>
   <div class="fixed inset-0 z-50 overflow-y-auto" @click.self="$emit('close')">
     <div class="flex min-h-full items-center justify-center p-4">
-      <div class="fixed inset-0 bg-black/50 transition-opacity" @click="$emit('close')"></div>
+      <div class="fixed inset-0 bg-gray-950/55 backdrop-blur-md transition-opacity" @click="$emit('close')"></div>
 
-      <div class="relative w-full max-w-md transform rounded-xl bg-white p-6 shadow-xl transition-all dark:bg-dark-800">
+      <div
+        class="relative w-full max-w-md transform rounded-2xl border border-gray-200/70 bg-white p-6 transition-all dark:border-dark-700/60 dark:bg-dark-800"
+        style="box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -8px rgb(15 23 42 / 0.18), 0 24px 60px -28px rgb(15 23 42 / 0.32);"
+      >
         <!-- Header -->
         <div class="mb-6">
-          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
-            <svg class="h-6 w-6 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-600 ring-1 ring-inset ring-rose-200/70 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/30">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
             </svg>
           </div>
-          <h3 class="mt-4 text-center text-xl font-semibold text-gray-900 dark:text-white">
+          <h3 class="mt-4 text-center text-base font-semibold tracking-tight text-gray-900 dark:text-white">
             {{ t('profile.totp.disableTitle') }}
           </h3>
-          <p class="mt-2 text-center text-sm text-gray-500 dark:text-gray-400">
+          <p class="mt-2 text-center text-sm leading-relaxed text-gray-500 dark:text-gray-400">
             {{ t('profile.totp.disableWarning') }}
           </p>
         </div>

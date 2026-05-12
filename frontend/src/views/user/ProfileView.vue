@@ -1,25 +1,9 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <div
       data-testid="profile-shell"
       class="space-y-5 pb-10"
     >
-      <!-- Hero：sky 渐变标题区，作为个人中心入口 -->
-      <header class="page-hero page-hero-sky">
-        <div class="relative z-10 max-w-3xl">
-          <span class="page-hero-tag page-hero-tag-sky">
-            <Icon name="user" size="sm" />
-            {{ t('profile.title') }}
-          </span>
-          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-            {{ t('profile.title') }}
-          </h1>
-          <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-            {{ t('profile.description') }}
-          </p>
-        </div>
-      </header>
-
       <ProfileInfoCard
         :user="user"
         :linuxdo-enabled="linuxdoOAuthEnabled"
@@ -31,34 +15,32 @@
       />
 
       <section data-testid="profile-security-panel" class="space-y-4">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <div class="flex items-center gap-3">
-              <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300">
-                <Icon name="shield" size="md" />
-              </div>
-              <div>
-                <h2 class="text-xl font-bold text-gray-900 dark:text-white">
-                  {{ t('profile.securityTitle') }}
-                </h2>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  {{ t('profile.securityDescription') }}
-                </p>
-              </div>
-            </div>
+        <!-- Section header：克制的水平 divider 风，与 AppHeader 标题不重复 -->
+        <div class="flex items-center gap-3">
+          <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-inset ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30">
+            <Icon name="shield" size="sm" />
           </div>
-          <div class="rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-500 shadow-sm ring-1 ring-gray-200 dark:bg-dark-900 dark:text-gray-300 dark:ring-dark-700">
+          <div class="min-w-0 flex-1">
+            <h2 class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white">
+              {{ t('profile.securityTitle') }}
+            </h2>
+            <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+              {{ t('profile.securityDescription') }}
+            </p>
+          </div>
+          <div class="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-gray-50 px-2.5 py-1 text-[11px] font-medium text-gray-500 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60">
+            <Icon name="lock" size="xs" class="text-gray-400" />
             Password · 2FA
           </div>
         </div>
 
-        <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
           <ProfilePasswordForm embedded />
           <ProfileTotpCard />
         </div>
       </section>
 
-      <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+      <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
         <ProfileBalanceNotifyCard
           v-if="user && balanceLowNotifyEnabled"
           :enabled="user.balance_notify_enabled ?? true"
@@ -70,17 +52,15 @@
 
         <div
           v-if="hasContactMethods"
-          class="card overflow-hidden border border-primary-100 bg-white dark:border-primary-900/40 dark:bg-dark-900/70"
+          class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40"
         >
-          <div class="border-b border-primary-100 bg-primary-50/80 px-5 py-4 dark:border-primary-900/40 dark:bg-primary-950/20">
-            <div class="flex items-center gap-3">
-              <div class="rounded-xl bg-primary-100 p-2.5 text-primary-600 dark:bg-primary-900/50 dark:text-primary-300">
-                <Icon name="chat" size="md" />
-              </div>
-              <h3 class="font-semibold text-primary-800 dark:text-primary-200">
-                {{ t('common.contactSupport') }}
-              </h3>
+          <div class="flex items-center gap-3 border-b border-gray-100 bg-gray-50/60 px-5 py-4 dark:border-dark-700/60 dark:bg-dark-800/30">
+            <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-primary-50 text-primary-600 ring-1 ring-inset ring-primary-200/70 dark:bg-primary-500/15 dark:text-primary-300 dark:ring-primary-500/30">
+              <Icon name="chat" size="sm" />
             </div>
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
+              {{ t('common.contactSupport') }}
+            </h3>
           </div>
           <div class="px-5 py-4">
             <ContactMethodsDisplay

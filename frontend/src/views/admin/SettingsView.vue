@@ -1,5 +1,5 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <div class="settings-page">
       <!-- Loading State -->
       <div v-if="loading" class="flex items-center justify-center py-12">
@@ -9,25 +9,9 @@
       </div>
 
       <!-- Settings Form -->
-      <form v-else @submit.prevent="saveSettings" class="space-y-6" novalidate>
-        <!-- Page Hero：与兑换码 / 文档同款渐变标题区 -->
-        <header class="page-hero page-hero-sky">
-          <div class="relative z-10 max-w-3xl">
-            <span class="page-hero-tag page-hero-tag-sky">
-              <Icon name="shield" size="sm" />
-              系统管理
-            </span>
-            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-              {{ t("admin.settings.title") }}
-            </h1>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-              {{ t("admin.settings.description") }}
-            </p>
-          </div>
-        </header>
-
-        <!-- Tab Navigation：sticky 顶部分类切换 -->
-        <div class="settings-tabs-bar sticky top-0 z-10 overflow-x-auto settings-tabs-scroll">
+      <form v-else @submit.prevent="saveSettings" class="space-y-5" novalidate>
+        <!-- Tab Navigation：sticky 顶部分类切换（顶到 AppHeader 下沿） -->
+        <div class="settings-tabs-bar sticky top-16 z-10 overflow-x-auto settings-tabs-scroll">
           <nav class="settings-tabs">
             <button
               v-for="tab in settingsTabs"
@@ -1501,8 +1485,9 @@
                     </p>
                   </div>
                 </div>
-                <p v-if="form.ai_review_enabled" class="mt-3 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
-                  ⚠️ {{ t("admin.settings.registration.aiReviewBillingWarn") }}
+                <p v-if="form.ai_review_enabled" class="mt-3 flex items-start gap-2 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+                  <Icon name="exclamationTriangle" size="xs" class="mt-0.5 flex-shrink-0" />
+                  <span>{{ t("admin.settings.registration.aiReviewBillingWarn") }}</span>
                 </p>
                 <!-- 测试 AI 审核：admin 输一段典型文本立即看模型怎么判，验证 prompt 是否准 -->
                 <div v-if="form.ai_review_enabled" class="mt-3">
@@ -5940,8 +5925,9 @@
               原文片段：{{ aiReviewTestResult.raw }}
             </p>
           </div>
-          <div v-if="aiReviewTestError" class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-300">
-            ❌ {{ aiReviewTestError }}
+          <div v-if="aiReviewTestError" class="flex items-start gap-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-300">
+            <Icon name="xCircle" size="sm" class="mt-0.5 flex-shrink-0" />
+            <span>{{ aiReviewTestError }}</span>
           </div>
         </div>
         <template #footer>
@@ -6905,9 +6891,9 @@ async function runAIReviewTest() {
 const aiTestResultLabel = computed(() => {
   const v = aiReviewTestResult.value?.verdict || "";
   switch (v) {
-    case "pass": return "✓ 通过";
-    case "flag": return "⚠ 需复核";
-    case "reject": return "✗ 违规";
+    case "pass": return "通过";
+    case "flag": return "需复核";
+    case "reject": return "违规";
     case "raw": return "原始（LLM 未按格式返回）";
     case "error": return "错误";
     default: return v || "-";
@@ -8838,40 +8824,27 @@ watch(
   @apply mt-1 text-sm text-gray-500 dark:text-dark-400;
 }
 
-/* 卡片：弱边框 + 微妙 1px 阴影，让卡片在浅色页面上"浮"出来 */
+/* 卡片：Notion 风格 — 圆润 2xl + 半透明柔边 + 极轻阴影 */
 .settings-page :deep(.card) {
   position: relative;
-  @apply overflow-hidden rounded-lg border border-gray-200 bg-white;
-  box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
+  @apply overflow-hidden rounded-2xl border border-gray-200/70 bg-white;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -18px rgb(15 23 42 / 0.18);
 }
 
 :root.dark .settings-page :deep(.card) {
-  @apply border-dark-700 bg-dark-800;
+  @apply border-dark-700/80 bg-dark-800;
   box-shadow: none;
 }
 
-/* 卡片左侧渐变色条：sky→violet 视觉锚点，与全站 hero 主调统一 */
-.settings-page :deep(.card)::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 3px;
-  background: linear-gradient(to bottom, rgb(56 189 248), rgb(168 85 247));
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* 卡片头部：纯色背景 + 单边线分隔，标题克制 */
+/* 卡片头部：克制的 gray-50 背景 + hairline 分隔，标题不抢戏 */
 .settings-page :deep(.card > div:first-child) {
-  @apply border-b border-sky-100/70 bg-sky-50/60;
+  @apply border-b border-gray-100 bg-gray-50/60;
   @apply px-6 py-5;
 }
 
 :root.dark .settings-page :deep(.card > div:first-child) {
-  border-color: rgb(55 65 81);
-  background-color: rgb(14 165 233 / 0.08);
+  border-color: rgb(55 65 81 / 0.6);
+  background-color: rgb(255 255 255 / 0.02);
 }
 
 .settings-page :deep(.card > div:first-child h2) {
@@ -8988,13 +8961,13 @@ watch(
   @apply mt-0.5 text-xs leading-relaxed text-gray-500 dark:text-dark-400;
 }
 
-/* save bar：贴底的 sticky 条，弱边框 + 微 shadow 让保存按钮的位置感更稳 */
+/* save bar：贴底的 sticky 条，与 Notion 风格的卡片一致 */
 .settings-save-bar {
-  @apply sticky bottom-0 z-10 flex justify-end gap-3;
-  @apply rounded-lg border border-gray-200/70 dark:border-dark-700/80;
-  @apply bg-white/95 backdrop-blur-sm dark:bg-dark-900/95;
+  @apply sticky bottom-4 z-10 flex justify-end gap-3;
+  @apply rounded-2xl border border-gray-200/70 dark:border-dark-700/80;
+  @apply bg-white/95 backdrop-blur-md dark:bg-dark-900/95;
   @apply px-5 py-3.5;
-  box-shadow: 0 -1px 2px rgb(0 0 0 / 0.04), 0 1px 2px rgb(0 0 0 / 0.04);
+  box-shadow: 0 -1px 2px rgb(15 23 42 / 0.04), 0 12px 32px -20px rgb(15 23 42 / 0.22);
 }
 
 :root.dark .settings-save-bar {
@@ -9026,10 +8999,10 @@ watch(
 
 /* ============ Tab 导航：下划线式 ============ */
 
-/* sticky tab 容器：磨砂背景 + 与 page header 留白；滚动时不透底，遮挡内容 */
+/* sticky tab 容器：磨砂玻璃背景 + 圆润边线，温和不压迫 */
 .settings-tabs-bar {
-  @apply pt-1;
-  @apply bg-white/85 backdrop-blur-sm;
+  @apply -mx-1 px-1 py-1;
+  @apply bg-white/80 backdrop-blur-md;
 }
 
 :root.dark .settings-tabs-bar {

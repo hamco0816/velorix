@@ -1,32 +1,15 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <TablePageLayout>
-      <!-- Hero：emerald 渐变标题区，标识可用渠道业务色调 -->
-      <template #hero>
-        <header class="page-hero page-hero-emerald">
-          <div class="relative z-10 max-w-3xl">
-            <span class="page-hero-tag page-hero-tag-emerald">
-              <Icon name="server" size="sm" />
-              {{ t('availableChannels.title') }}
-            </span>
-            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-              {{ t('availableChannels.title') }}
-            </h1>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-              {{ t('availableChannels.description') }}
-            </p>
-          </div>
-        </header>
-      </template>
-
       <template #filters>
-        <div class="flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
+        <div class="flex flex-col justify-between gap-3 lg:flex-row lg:items-center">
+          <!-- 左侧：搜索 + 概览 chip -->
           <div class="flex flex-1 flex-wrap items-center gap-3">
             <div class="relative w-full sm:w-80">
               <Icon
                 name="search"
                 size="md"
-                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"
+                class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"
               />
               <input
                 v-model="searchQuery"
@@ -35,16 +18,44 @@
                 class="input pl-10"
               />
             </div>
+            <!-- 概览数字：渠道数 / 独享 / 公共，让用户一眼看到自己的访问面 -->
+            <div class="flex flex-wrap items-center gap-2 text-xs">
+              <span
+                class="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2.5 py-1 font-medium text-gray-600 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60"
+              >
+                <Icon name="server" size="xs" class="text-gray-400" />
+                <span class="tabular-nums">{{ filteredChannels.length }}</span>
+                <span class="text-gray-400 dark:text-dark-400">{{ t('availableChannels.statChannels') }}</span>
+              </span>
+              <span
+                v-if="exclusiveCount > 0"
+                class="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2.5 py-1 font-medium text-violet-700 ring-1 ring-inset ring-violet-200/70 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30"
+              >
+                <Icon name="shield" size="xs" />
+                <span class="tabular-nums">{{ exclusiveCount }}</span>
+                <span class="opacity-70">{{ t('availableChannels.exclusive') }}</span>
+              </span>
+              <span
+                v-if="publicCount > 0"
+                class="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2.5 py-1 font-medium text-gray-600 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60"
+              >
+                <Icon name="globe" size="xs" class="text-gray-400" />
+                <span class="tabular-nums">{{ publicCount }}</span>
+                <span class="opacity-70">{{ t('availableChannels.public') }}</span>
+              </span>
+            </div>
           </div>
 
-          <div class="flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
+          <div class="flex flex-shrink-0 items-center gap-2">
             <button
+              type="button"
               @click="loadChannels"
               :disabled="loading"
-              class="btn btn-secondary"
+              class="btn btn-secondary btn-sm"
               :title="t('common.refresh', 'Refresh')"
+              :aria-label="t('common.refresh', 'Refresh')"
             >
-              <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
+              <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
             </button>
           </div>
         </div>
@@ -118,6 +129,27 @@ const filteredChannels = computed(() => {
       return { ...ch, platforms: matchingSections }
     })
     .filter((ch): ch is UserAvailableChannel => ch !== null)
+})
+
+// 独享 / 公共分组数量统计 — 用于 hero 概览 chip
+const exclusiveCount = computed(() => {
+  let n = 0
+  for (const ch of filteredChannels.value) {
+    for (const sec of ch.platforms) {
+      n += sec.groups.filter((g) => g.is_exclusive).length
+    }
+  }
+  return n
+})
+
+const publicCount = computed(() => {
+  let n = 0
+  for (const ch of filteredChannels.value) {
+    for (const sec of ch.platforms) {
+      n += sec.groups.filter((g) => !g.is_exclusive).length
+    }
+  }
+  return n
 })
 
 async function loadChannels() {

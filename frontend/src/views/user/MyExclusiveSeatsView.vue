@@ -1,21 +1,53 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <div class="space-y-5">
-      <!-- Hero -->
-      <header class="page-hero page-hero-violet">
-        <div class="relative z-10 max-w-3xl">
-          <span class="page-hero-tag page-hero-tag-violet">
-            <Icon name="badge" size="sm" />
-            {{ t('exclusiveSeats.title') }}
+      <!-- 工具栏：左侧概览 chip / 右侧操作 -->
+      <div v-if="!loading && seats.length > 0" class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <span
+            class="inline-flex items-center gap-1.5 rounded-full bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60"
+          >
+            <Icon name="badge" size="xs" class="text-gray-400" />
+            <span class="tabular-nums">{{ seats.length }}</span>
+            <span class="text-gray-400 dark:text-dark-400">{{ t('exclusiveSeats.statTotal') }}</span>
           </span>
-          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-            {{ t('exclusiveSeats.title') }}
-          </h1>
-          <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-            {{ t('exclusiveSeats.subtitle') }}
-          </p>
+          <span
+            v-if="activeCount > 0"
+            class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30"
+          >
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="tabular-nums">{{ activeCount }}</span>
+            <span class="opacity-70">{{ t('exclusiveSeats.statActive') }}</span>
+          </span>
+          <span
+            v-if="expiringSoonCount > 0"
+            class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30"
+          >
+            <Icon name="clock" size="xs" />
+            <span class="tabular-nums">{{ expiringSoonCount }}</span>
+            <span class="opacity-70">{{ t('exclusiveSeats.statExpiringSoon') }}</span>
+          </span>
         </div>
-      </header>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            class="btn btn-secondary btn-sm"
+            :title="t('common.refresh')"
+            :aria-label="t('common.refresh')"
+            @click="loadSeats"
+          >
+            <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary btn-sm"
+            @click="router.push('/purchase')"
+          >
+            <Icon name="plus" size="sm" class="mr-1.5" />
+            {{ t('exclusiveSeats.browsePlans') }}
+          </button>
+        </div>
+      </div>
 
       <!-- Loading -->
       <div v-if="loading" class="flex items-center justify-center py-20">
@@ -23,48 +55,56 @@
       </div>
 
       <!-- Empty -->
-      <div v-else-if="seats.length === 0" class="card py-16 text-center">
-        <Icon name="badge" size="xl" class="mx-auto mb-3 text-gray-300 dark:text-dark-600" />
-        <p class="text-gray-500 dark:text-gray-400">{{ t('exclusiveSeats.empty') }}</p>
-        <button class="btn btn-primary mt-4" @click="router.push('/purchase')">
+      <div
+        v-else-if="seats.length === 0"
+        class="rounded-2xl border border-gray-200/70 bg-white p-12 text-center dark:border-dark-700/60 dark:bg-dark-800/40"
+      >
+        <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-50 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-700/40 dark:ring-dark-600/60">
+          <Icon name="badge" size="lg" class="text-gray-400" />
+        </div>
+        <p class="mb-5 text-sm text-gray-500 dark:text-gray-400">{{ t('exclusiveSeats.empty') }}</p>
+        <button class="btn btn-primary btn-sm" @click="router.push('/purchase')">
+          <Icon name="plus" size="sm" class="mr-1.5" />
           {{ t('exclusiveSeats.browsePlans') }}
         </button>
       </div>
 
-      <!-- 使用引导：用户有 active seat 时提醒需要 ApiKey -->
-      <div v-else-if="hasActiveSeats"
-        class="flex items-start gap-3 rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-sky-50 px-5 py-3.5 dark:border-blue-900/50 dark:from-blue-950/30 dark:to-sky-950/20">
-        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-300">
-          <Icon name="infoCircle" size="md" :stroke-width="2.2" />
+      <!-- 使用引导：用户有 active seat 时提醒需要 ApiKey；Notion 风克制 -->
+      <div
+        v-else-if="hasActiveSeats"
+        class="flex items-start gap-3 rounded-2xl border border-sky-200/70 bg-sky-50/60 px-5 py-3.5 dark:border-sky-500/30 dark:bg-sky-500/10"
+      >
+        <div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/80 text-sky-600 ring-1 ring-inset ring-sky-200/70 dark:bg-sky-500/15 dark:text-sky-300 dark:ring-sky-500/30">
+          <Icon name="infoCircle" size="sm" :stroke-width="2.2" />
         </div>
-        <div class="flex-1 text-sm text-blue-800 dark:text-blue-200">
+        <div class="flex-1 text-sm text-sky-900 dark:text-sky-100">
           <p class="font-semibold">{{ t('exclusiveSeats.usageGuideTitle') }}</p>
-          <p class="mt-0.5 text-xs text-blue-700/80 dark:text-blue-300/80">
+          <p class="mt-0.5 text-xs text-sky-700/80 dark:text-sky-200/80">
             {{ t('exclusiveSeats.usageGuideHint') }}
           </p>
         </div>
         <button
-          class="shrink-0 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-blue-700"
+          class="shrink-0 rounded-lg bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-sky-700"
           @click="router.push('/keys')">
           {{ t('exclusiveSeats.goToKeys') }}
         </button>
       </div>
 
       <!-- Seats list -->
-      <div v-if="seats.length > 0" class="grid gap-3 lg:grid-cols-2">
+      <div v-if="seats.length > 0" class="grid gap-4 lg:grid-cols-2">
         <div v-for="seat in seats" :key="seat.id"
-          class="overflow-hidden rounded-2xl border bg-white shadow-sm dark:bg-dark-900"
-          :class="seat.status === 'active' ? 'border-emerald-200 dark:border-emerald-900/50' : 'border-gray-200 dark:border-dark-700'">
+          class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-shadow hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-18px_rgba(15,23,42,0.22)] dark:border-dark-700/60 dark:bg-dark-800/40">
           <!-- Header -->
-          <div class="flex items-center gap-3 border-b border-gray-100 px-4 py-3 dark:border-dark-700">
-            <div :class="['flex h-10 w-10 items-center justify-center rounded-xl', statusBadgeClass(seat.status)]">
+          <div class="flex items-center gap-3 border-b border-gray-100 px-4 py-3 dark:border-dark-700/60">
+            <div :class="['flex h-10 w-10 items-center justify-center rounded-xl', statusIconClass(seat.status)]">
               <Icon name="badge" size="md" />
             </div>
             <div class="min-w-0 flex-1">
-              <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ seat.plan_name || `Plan #${seat.plan_id}` }}</p>
-              <p class="text-xs text-gray-500 dark:text-gray-400">{{ seat.account_label }}</p>
+              <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ seat.plan_name || `Plan #${seat.plan_id}` }}</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ seat.account_label }}</p>
             </div>
-            <span :class="['rounded-full px-2 py-1 text-[11px] font-semibold', statusPillClass(seat.status)]">
+            <span :class="['inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset', statusPillClass(seat.status)]">
+              <span class="h-1.5 w-1.5 rounded-full" :class="statusDotClass(seat.status)"></span>
               {{ t(`exclusiveSeats.status.${seat.status}`) }}
             </span>
           </div>
@@ -117,8 +157,8 @@
           </div>
 
           <!-- Footer actions -->
-          <div v-if="canRenew(seat)" class="flex border-t border-gray-100 dark:border-dark-700">
-            <button class="flex-1 py-3 text-sm font-medium text-emerald-600 transition hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/20"
+          <div v-if="canRenew(seat)" class="flex border-t border-gray-100 dark:border-dark-700/60">
+            <button class="flex-1 py-2.5 text-sm font-medium text-emerald-600 transition-colors hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10"
               @click="openRenew(seat)">
               <Icon name="refresh" size="sm" class="mr-1 inline-block" />
               {{ t('exclusiveSeats.renew') }}
@@ -313,29 +353,40 @@ function goToRenewPayment() {
   renewTarget.value = null
 }
 
-function statusBadgeClass(status: string): string {
+// 状态左侧大图标筐配色：克制软底 + 主题色文字
+function statusIconClass(status: string): string {
   switch (status) {
-    case 'active': return 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300'
-    case 'expired': return 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300'
-    case 'refunded': return 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300'
-    default: return 'bg-gray-100 text-gray-500 dark:bg-dark-700 dark:text-gray-400'
+    case 'active': return 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300'
+    case 'expired': return 'bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300'
+    case 'refunded': return 'bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300'
+    default: return 'bg-gray-50 text-gray-500 dark:bg-dark-700/40 dark:text-gray-400'
   }
 }
 
+// 状态 chip：与全站 ring inset 软色调统一
 function statusPillClass(status: string): string {
   switch (status) {
-    case 'active': return 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:ring-emerald-900/50'
-    case 'expired': return 'bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:ring-amber-900/50'
-    case 'refunded': return 'bg-purple-50 text-purple-700 ring-1 ring-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:ring-purple-900/50'
-    default: return 'bg-gray-50 text-gray-600 ring-1 ring-gray-200 dark:bg-dark-800 dark:text-gray-400 dark:ring-dark-600'
+    case 'active': return 'bg-emerald-50 text-emerald-700 ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30'
+    case 'expired': return 'bg-amber-50 text-amber-700 ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30'
+    case 'refunded': return 'bg-violet-50 text-violet-700 ring-violet-200/70 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30'
+    default: return 'bg-gray-50 text-gray-600 ring-gray-200/70 dark:bg-dark-700/40 dark:text-gray-400 dark:ring-dark-600/60'
+  }
+}
+
+function statusDotClass(status: string): string {
+  switch (status) {
+    case 'active': return 'bg-emerald-500 animate-pulse'
+    case 'expired': return 'bg-amber-500'
+    case 'refunded': return 'bg-violet-500'
+    default: return 'bg-gray-400'
   }
 }
 
 function expiryColor(seat: ExclusiveSeat): string {
   if (seat.status !== 'active') return 'text-gray-500 dark:text-gray-400'
   const remainingMs = Date.parse(seat.expires_at) - Date.now()
-  if (remainingMs <= 24 * 60 * 60 * 1000) return 'text-red-500 dark:text-red-400'
-  if (remainingMs <= 7 * 24 * 60 * 60 * 1000) return 'text-amber-500 dark:text-amber-400'
+  if (remainingMs <= 24 * 60 * 60 * 1000) return 'text-rose-600 dark:text-rose-400'
+  if (remainingMs <= 7 * 24 * 60 * 60 * 1000) return 'text-amber-600 dark:text-amber-400'
   return 'text-gray-900 dark:text-white'
 }
 
@@ -368,17 +419,32 @@ function usageWindows(seat: ExclusiveSeat): UsageWindow[] {
   return out
 }
 
-// 进度条颜色：ratio < 0.7 emerald；0.7-0.9 amber；>=0.9 red
+// 用量进度色阶（与全站统一）：<80% emerald / 80–100% amber / ≥100% rose
 function usageBarColor(ratio: number): string {
-  if (ratio >= 0.9) return 'bg-red-500'
-  if (ratio >= 0.7) return 'bg-amber-500'
+  if (ratio >= 1) return 'bg-rose-500'
+  if (ratio >= 0.8) return 'bg-amber-500'
   return 'bg-emerald-500'
 }
 function usageTextColor(ratio: number): string {
-  if (ratio >= 0.9) return 'text-red-600 dark:text-red-400'
-  if (ratio >= 0.7) return 'text-amber-600 dark:text-amber-400'
+  if (ratio >= 1) return 'text-rose-600 dark:text-rose-400'
+  if (ratio >= 0.8) return 'text-amber-600 dark:text-amber-400'
   return 'text-gray-700 dark:text-gray-200'
 }
+
+// 概览统计：active 数量 / 即将过期 (≤7 天) 数量 — 用于工具栏概览 chip
+const activeCount = computed(
+  () => seats.value.filter(s => s.status === 'active').length,
+)
+
+const expiringSoonCount = computed(() => {
+  const now = Date.now()
+  const sevenDaysMs = 7 * 24 * 60 * 60 * 1000
+  return seats.value.filter(s => {
+    if (s.status !== 'active' || !s.expires_at) return false
+    const diff = Date.parse(s.expires_at) - now
+    return diff > 0 && diff <= sevenDaysMs
+  }).length
+})
 
 onMounted(loadSeats)
 </script>

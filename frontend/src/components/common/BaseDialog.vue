@@ -19,10 +19,10 @@
             </h3>
             <button
               @click="emit('close')"
-              class="-mr-2 rounded-xl p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:text-dark-500 dark:hover:bg-dark-700 dark:hover:text-dark-300"
+              class="-mr-1.5 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-dark-500 dark:hover:bg-dark-700 dark:hover:text-dark-200"
               aria-label="Close modal"
             >
-              <Icon name="x" size="md" />
+              <Icon name="x" size="sm" />
             </button>
           </div>
 

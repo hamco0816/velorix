@@ -1,24 +1,6 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <TablePageLayout>
-      <!-- Hero：rose 渐变标题区，标识 IP/代理业务色调 -->
-      <template #hero>
-        <header class="page-hero page-hero-rose">
-          <div class="relative z-10 max-w-3xl">
-            <span class="page-hero-tag page-hero-tag-rose">
-              <Icon name="shield" size="sm" />
-              {{ t('admin.proxies.title') }}
-            </span>
-            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-              {{ t('admin.proxies.title') }}
-            </h1>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-              {{ t('admin.proxies.description') }}
-            </p>
-          </div>
-        </header>
-      </template>
-
       <template #filters>
         <div class="flex flex-wrap items-center gap-3">
           <!-- Left: Search + Filters -->
@@ -235,16 +217,23 @@
 
           <template #cell-latency="{ row }">
             <div class="flex flex-col gap-1">
+              <!-- 延迟：< 200 emerald / 200-500 amber / >= 500 rose / failed rose chip -->
               <span
                 v-if="row.latency_status === 'failed'"
-                class="badge badge-danger"
+                class="inline-flex w-fit items-center gap-1 rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 dark:bg-rose-500/15 dark:text-rose-300"
                 :title="row.latency_message || undefined"
               >
+                <Icon name="xCircle" size="xs" />
                 {{ t('admin.proxies.latencyFailed') }}
               </span>
               <span
                 v-else-if="typeof row.latency_ms === 'number'"
-                :class="['badge', row.latency_ms < 200 ? 'badge-success' : 'badge-warning']"
+                class="inline-flex w-fit items-center rounded-md px-2 py-0.5 text-xs font-medium tabular-nums"
+                :class="row.latency_ms < 200
+                  ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                  : row.latency_ms < 500
+                    ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+                    : 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'"
               >
                 {{ row.latency_ms }}ms
               </span>
@@ -255,7 +244,7 @@
                 :title="row.quality_summary || undefined"
               >
                 <span>{{ t('admin.proxies.qualityInline', { grade: row.quality_grade || '-', score: row.quality_score ?? '-' }) }}</span>
-                <span class="badge" :class="qualityOverallClass(row.quality_status)">
+                <span class="inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium" :class="qualityOverallClass(row.quality_status)">
                   {{ qualityOverallLabel(row.quality_status) }}
                 </span>
               </div>
@@ -263,7 +252,22 @@
           </template>
 
           <template #cell-status="{ value }">
-            <span :class="['badge', value === 'active' ? 'badge-success' : 'badge-danger']">
+            <span
+              class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium"
+              :class="value === 'active'
+                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                : 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'"
+            >
+              <span class="relative flex h-1.5 w-1.5">
+                <span
+                  v-if="value === 'active'"
+                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70"
+                ></span>
+                <span
+                  class="relative inline-flex h-1.5 w-1.5 rounded-full"
+                  :class="value === 'active' ? 'bg-emerald-500' : 'bg-rose-500'"
+                ></span>
+              </span>
               {{ t('admin.accounts.status.' + value) }}
             </span>
           </template>
@@ -1588,10 +1592,9 @@ const qualityStatusLabel = (status: string) => {
 }
 
 const qualityOverallClass = (status?: string) => {
-  if (status === 'healthy') return 'badge-success'
-  if (status === 'warn') return 'badge-warning'
-  if (status === 'challenge') return 'badge-danger'
-  return 'badge-danger'
+  if (status === 'healthy') return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+  if (status === 'warn') return 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+  return 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'
 }
 
 const qualityOverallLabel = (status?: string) => {

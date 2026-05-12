@@ -1,20 +1,20 @@
 <template>
   <BaseDialog :show="!!order" :title="t('payment.orders.refundDetailsTitle')" width="narrow" @close="$emit('close')">
     <div v-if="order" class="space-y-4">
-      <!-- 顶部：金额大字 + 状态徽章 -->
-      <div class="-mx-4 -mt-4 overflow-hidden rounded-t-2xl bg-gradient-to-br from-rose-50 to-purple-50 px-5 py-6 dark:from-rose-950/30 dark:to-purple-950/20">
+      <!-- 顶部：金额大字 + 状态徽章；克制的 rose 软底替代彩虹渐变 -->
+      <div class="rounded-xl border border-rose-200/70 bg-rose-50/60 px-5 py-4 dark:border-rose-500/30 dark:bg-rose-500/10">
         <div class="flex items-start justify-between gap-4">
           <div>
-            <p class="text-xs font-medium uppercase tracking-wide text-rose-600/80 dark:text-rose-300/80">
+            <p class="text-[12px] font-medium text-rose-600/80 dark:text-rose-300/80">
               {{ t('payment.orders.refundAmountLabel') }}
             </p>
             <div class="mt-1 flex items-end gap-1">
-              <span class="text-sm font-bold text-rose-600 dark:text-rose-300">¥</span>
-              <span class="text-3xl font-black leading-none tracking-tight text-rose-600 dark:text-rose-300">
+              <span class="text-sm font-semibold text-rose-600 dark:text-rose-300">¥</span>
+              <span class="text-3xl font-semibold leading-none tabular-nums tracking-tight text-rose-600 dark:text-rose-300">
                 {{ (order.refund_amount || 0).toFixed(2) }}
               </span>
             </div>
-            <p v-if="isPartial" class="mt-1 text-[11px] text-rose-500/80 dark:text-rose-300/70">
+            <p v-if="isPartial" class="mt-1.5 text-[11px] text-rose-500/80 dark:text-rose-300/70">
               {{ t('payment.orders.refundPartialNote', { paid: order.pay_amount.toFixed(2) }) }}
             </p>
           </div>
@@ -23,11 +23,11 @@
       </div>
 
       <!-- 详情列表 -->
-      <div class="rounded-xl border border-gray-100 bg-white px-4 py-3 dark:border-dark-700 dark:bg-dark-800/50">
-        <dl class="divide-y divide-gray-100 text-sm dark:divide-dark-700">
+      <div class="rounded-xl border border-gray-200/70 bg-gray-50/40 px-4 py-3 dark:border-dark-700/60 dark:bg-dark-800/30">
+        <dl class="divide-y divide-gray-100 text-sm dark:divide-dark-700/60">
           <div class="flex justify-between py-2.5">
             <dt class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.orderId') }}</dt>
-            <dd class="font-mono font-medium text-gray-900 dark:text-white">#{{ order.id }}</dd>
+            <dd class="font-mono font-medium tabular-nums text-gray-900 dark:text-white">#{{ order.id }}</dd>
           </div>
           <div v-if="order.out_trade_no" class="flex justify-between gap-3 py-2.5">
             <dt class="shrink-0 text-gray-500 dark:text-gray-400">{{ t('payment.orders.orderNo') }}</dt>
@@ -43,23 +43,23 @@
           </div>
           <div v-if="refundedAtDisplay" class="flex justify-between py-2.5">
             <dt class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.refundedAt') }}</dt>
-            <dd class="text-gray-900 dark:text-white">{{ refundedAtDisplay }}</dd>
+            <dd class="tabular-nums text-gray-900 dark:text-white">{{ refundedAtDisplay }}</dd>
           </div>
           <div v-if="requestedAtDisplay" class="flex justify-between py-2.5">
             <dt class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.refundRequestedAt') }}</dt>
-            <dd class="text-gray-900 dark:text-white">{{ requestedAtDisplay }}</dd>
+            <dd class="tabular-nums text-gray-900 dark:text-white">{{ requestedAtDisplay }}</dd>
           </div>
         </dl>
       </div>
 
       <!-- 退款原因 -->
       <div v-if="reasonText">
-        <p class="mb-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">
+        <p class="mb-1.5 text-[12px] font-medium text-gray-500 dark:text-gray-400">
           {{ t('payment.orders.refundReason') }}
         </p>
-        <div class="rounded-xl border border-amber-100 bg-amber-50/50 px-4 py-3 text-sm leading-relaxed text-amber-900 dark:border-amber-900/30 dark:bg-amber-900/10 dark:text-amber-200">
-          <div class="flex items-start gap-2">
-            <Icon name="infoCircle" size="sm" class="mt-0.5 shrink-0 text-amber-500 dark:text-amber-400" :stroke-width="2" />
+        <div class="rounded-xl border border-amber-200/70 bg-amber-50/60 px-4 py-3 text-sm leading-relaxed text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+          <div class="flex items-start gap-2.5">
+            <Icon name="infoCircle" size="sm" class="mt-0.5 shrink-0 text-amber-500 dark:text-amber-400" :stroke-width="2.2" />
             <div>
               <span class="font-medium">{{ reasonHumanLabel }}</span>
               <p v-if="reasonHumanLabel !== reasonText" class="mt-1 text-xs text-amber-700/80 dark:text-amber-300/70">
@@ -76,11 +76,9 @@
       </p>
     </div>
     <template #footer>
-      <div class="flex justify-end">
-        <button class="btn btn-secondary" @click="$emit('close')">
-          {{ t('common.close') }}
-        </button>
-      </div>
+      <button class="btn btn-secondary" @click="$emit('close')">
+        {{ t('common.close') }}
+      </button>
     </template>
   </BaseDialog>
 </template>

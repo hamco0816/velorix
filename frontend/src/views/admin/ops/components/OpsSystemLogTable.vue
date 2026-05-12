@@ -3,6 +3,7 @@ import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { opsAPI, type OpsRuntimeLogConfig, type OpsSystemLog, type OpsSystemLogSinkHealth } from '@/api/admin/ops'
 import Pagination from '@/components/common/Pagination.vue'
 import Select from '@/components/common/Select.vue'
+import Icon from '@/components/icons/Icon.vue'
 import { useAppStore } from '@/stores'
 
 const appStore = useAppStore()
@@ -357,10 +358,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-dark-700 dark:bg-dark-900/60">
+  <section class="surface-card p-6">
     <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
       <div>
-        <h3 class="text-sm font-bold text-gray-900 dark:text-white">系统日志</h3>
+        <h3 class="text-[15px] font-semibold text-gray-900 dark:text-white">系统日志</h3>
         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">默认按最新时间倒序，支持筛选搜索与按条件清理。</p>
       </div>
       <div class="flex flex-wrap items-center gap-2 text-xs">
@@ -371,12 +372,19 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div class="mb-4 rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-dark-700 dark:bg-dark-800/70">
-      <div class="mb-2 flex items-center justify-between">
-        <div class="text-xs font-semibold text-gray-700 dark:text-gray-200">运行时日志配置（实时生效）</div>
-        <span v-if="runtimeLoading" class="text-xs text-gray-500">加载中...</span>
-      </div>
-      <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-6">
+    <details class="group mb-4 rounded-xl border border-gray-200/70 bg-gray-50/40 px-4 py-3 dark:border-dark-700/60 dark:bg-dark-800/40">
+      <summary class="flex cursor-pointer items-center justify-between gap-2 list-none [&::-webkit-details-marker]:hidden">
+        <div class="flex items-center gap-2">
+          <Icon name="cog" size="sm" class="text-gray-500 dark:text-dark-400" />
+          <span class="text-sm font-medium text-gray-700 dark:text-gray-200">运行时日志配置</span>
+          <span class="rounded-full bg-gray-200 px-2 py-0.5 text-[10px] font-medium text-gray-600 dark:bg-dark-700 dark:text-dark-300">实时生效</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span v-if="runtimeLoading" class="text-xs text-gray-500">加载中...</span>
+          <Icon name="chevronDown" size="sm" class="text-gray-400 transition-transform group-open:rotate-180" />
+        </div>
+      </summary>
+      <div class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-6">
         <label class="text-xs text-gray-600 dark:text-gray-300">
           级别
           <Select v-model="runtimeConfig.level" class="mt-1" :options="runtimeLevelOptions" />
@@ -421,9 +429,9 @@ onMounted(async () => {
         </div>
       </div>
       <p v-if="health.last_error" class="mt-2 text-xs text-red-600 dark:text-red-400">最近写入错误：{{ health.last_error }}</p>
-    </div>
+    </details>
 
-    <div class="mb-4 grid grid-cols-1 gap-3 md:grid-cols-5">
+    <div class="mb-4 grid grid-cols-1 gap-3 md:grid-cols-3 xl:grid-cols-6">
       <label class="text-xs text-gray-600 dark:text-gray-300">
         时间范围
         <Select v-model="filters.time_range" class="mt-1" :options="timeRangeOptions" />

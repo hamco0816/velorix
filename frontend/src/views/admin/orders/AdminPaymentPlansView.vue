@@ -1,29 +1,16 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <div class="space-y-5">
-      <!-- Hero：teal 渐变标题区，标识订阅套餐业务色（与订阅管理同色系） -->
-      <header class="page-hero page-hero-teal">
-        <div class="relative z-10 flex flex-wrap items-end justify-between gap-4">
-          <div class="max-w-3xl">
-            <span class="page-hero-tag page-hero-tag-teal">
-              <Icon name="badge" size="sm" />
-              {{ t('payment.admin.plansPageTitle') }}
-            </span>
-            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-              {{ t('payment.admin.plansPageTitle') }}
-            </h1>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-              {{ t('payment.admin.plansPageDesc') }}
-            </p>
-          </div>
-          <div class="flex items-center gap-2">
-            <button @click="loadPlans" :disabled="plansLoading" class="btn btn-secondary" :title="t('common.refresh')">
-              <Icon name="refresh" size="md" :class="plansLoading ? 'animate-spin' : ''" />
-            </button>
-            <button @click="openPlanEdit(null)" class="btn btn-primary">{{ t('payment.admin.createPlan') }}</button>
-          </div>
-        </div>
-      </header>
+      <!-- 工具栏：右侧刷新 + 创建按钮 -->
+      <div class="flex items-center justify-end gap-2">
+        <button @click="loadPlans" :disabled="plansLoading" class="btn btn-secondary btn-sm" :title="t('common.refresh')">
+          <Icon name="refresh" size="sm" :class="plansLoading ? 'animate-spin' : ''" />
+        </button>
+        <button @click="openPlanEdit(null)" class="btn btn-primary">
+          <Icon name="plus" size="sm" class="mr-1.5" />
+          {{ t('payment.admin.createPlan') }}
+        </button>
+      </div>
 
       <!-- Plans Table -->
       <DataTable :columns="planColumns" :data="plans" :loading="plansLoading">
@@ -58,9 +45,12 @@
           </div>
         </template>
         <template #cell-group_id="{ value }">
-          <span v-if="isGroupMissing(value)" class="text-sm">
+          <span v-if="isGroupMissing(value)" class="inline-flex items-center gap-1 text-sm">
             <span class="text-gray-400">#{{ value }}</span>
-            <span class="ml-1 badge badge-danger">{{ t('payment.admin.groupMissing') }}</span>
+            <span class="ml-1 inline-flex items-center gap-1 rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 dark:bg-rose-500/15 dark:text-rose-300">
+              <span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span>
+              {{ t('payment.admin.groupMissing') }}
+            </span>
           </span>
           <GroupBadge
             v-else-if="getGroup(value)"

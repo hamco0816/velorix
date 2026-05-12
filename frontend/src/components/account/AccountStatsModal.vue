@@ -9,13 +9,13 @@
       <!-- Account Info Header -->
       <div
         v-if="account"
-        class="flex items-center justify-between rounded-xl border border-primary-200 bg-gradient-to-r from-primary-50 to-primary-100 p-3 dark:border-primary-700/50 dark:from-primary-900/20 dark:to-primary-800/20"
+        class="flex items-center justify-between rounded-xl border border-gray-200/70 bg-gray-50/40 p-3 dark:border-dark-700/60 dark:bg-dark-800/30"
       >
         <div class="flex items-center gap-3">
           <div
-            class="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-primary-600"
+            class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-50 text-primary-600 ring-1 ring-inset ring-primary-200/70 dark:bg-primary-500/15 dark:text-primary-300 dark:ring-primary-500/30"
           >
-            <Icon name="chartBar" size="md" class="text-white" :stroke-width="2" />
+            <Icon name="chartBar" size="md" :stroke-width="2" />
           </div>
           <div>
             <div class="font-semibold text-gray-900 dark:text-gray-100">{{ account.name }}</div>
@@ -26,12 +26,16 @@
         </div>
         <span
           :class="[
-            'rounded-full px-2.5 py-1 text-xs font-semibold',
+            'inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset',
             account.status === 'active'
-              ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400'
-              : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+              ? 'bg-emerald-50 text-emerald-700 ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30'
+              : 'bg-gray-50 text-gray-600 ring-gray-200/70 dark:bg-dark-700/40 dark:text-dark-200 dark:ring-dark-600/60'
           ]"
         >
+          <span
+            class="h-1.5 w-1.5 rounded-full"
+            :class="account.status === 'active' ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'"
+          ></span>
           {{ account.status }}
         </span>
       </div>
@@ -45,16 +49,14 @@
         <!-- Row 1: Main Stats Cards -->
         <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <!-- 30-Day Total Cost -->
-          <div
-            class="card border-emerald-200 bg-gradient-to-br from-emerald-50 to-white p-4 dark:border-emerald-800/30 dark:from-emerald-900/10 dark:to-dark-700"
-          >
+          <div class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40">
             <div class="mb-2 flex items-center justify-between">
-              <span class="text-xs font-medium text-gray-500 dark:text-gray-400">{{
+              <span class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{
                 t('admin.accounts.stats.totalCost')
               }}</span>
-              <div class="rounded-lg bg-emerald-100 p-1.5 dark:bg-emerald-900/30">
+              <div class="rounded-lg bg-emerald-50 p-1.5 ring-1 ring-inset ring-emerald-200/70 dark:bg-emerald-500/15 dark:ring-emerald-500/30">
                 <svg
-                  class="h-4 w-4 text-emerald-600 dark:text-emerald-400"
+                  class="h-4 w-4 text-emerald-600 dark:text-emerald-300"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -68,10 +70,10 @@
                 </svg>
               </div>
             </div>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">
+            <p class="text-xl font-semibold tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400">
               ${{ formatCost(stats.summary.total_cost) }}
             </p>
-            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <p class="mt-1 text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
               {{ t('admin.accounts.stats.accumulatedCost') }}
               <span class="text-gray-400 dark:text-gray-500">
                 ({{ t('usage.userBilled') }}: ${{ formatCost(stats.summary.total_user_cost) }} ·
@@ -83,43 +85,39 @@
           </div>
 
           <!-- 30-Day Total Requests -->
-          <div
-            class="card border-blue-200 bg-gradient-to-br from-blue-50 to-white p-4 dark:border-blue-800/30 dark:from-blue-900/10 dark:to-dark-700"
-          >
+          <div class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40">
             <div class="mb-2 flex items-center justify-between">
-              <span class="text-xs font-medium text-gray-500 dark:text-gray-400">{{
+              <span class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{
                 t('admin.accounts.stats.totalRequests')
               }}</span>
-              <div class="rounded-lg bg-blue-100 p-1.5 dark:bg-blue-900/30">
-                <Icon name="bolt" size="sm" class="text-blue-600 dark:text-blue-400" :stroke-width="2" />
+              <div class="rounded-lg bg-sky-50 p-1.5 ring-1 ring-inset ring-sky-200/70 dark:bg-sky-500/15 dark:ring-sky-500/30">
+                <Icon name="bolt" size="sm" class="text-sky-600 dark:text-sky-300" :stroke-width="2" />
               </div>
             </div>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">
+            <p class="text-xl font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">
               {{ formatNumber(stats.summary.total_requests) }}
             </p>
-            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
               {{ t('admin.accounts.stats.totalCalls') }}
             </p>
           </div>
 
           <!-- Daily Average Cost -->
-          <div
-            class="card border-amber-200 bg-gradient-to-br from-amber-50 to-white p-4 dark:border-amber-800/30 dark:from-amber-900/10 dark:to-dark-700"
-          >
+          <div class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40">
             <div class="mb-2 flex items-center justify-between">
-              <span class="text-xs font-medium text-gray-500 dark:text-gray-400">{{
+              <span class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{
                 t('admin.accounts.stats.avgDailyCost')
               }}</span>
-              <div class="rounded-lg bg-amber-100 p-1.5 dark:bg-amber-900/30">
+              <div class="rounded-lg bg-amber-50 p-1.5 ring-1 ring-inset ring-amber-200/70 dark:bg-amber-500/15 dark:ring-amber-500/30">
                 <Icon
                   name="calculator"
                   size="sm"
-                  class="text-amber-600 dark:text-amber-400"
+                  class="text-amber-600 dark:text-amber-300"
                   :stroke-width="2"
                 />
               </div>
             </div>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">
+            <p class="text-xl font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">
               ${{ formatCost(stats.summary.avg_daily_cost) }}
             </p>
              <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
@@ -135,16 +133,14 @@
           </div>
 
           <!-- Daily Average Requests -->
-          <div
-            class="card border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-800"
-          >
+          <div class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40">
             <div class="mb-2 flex items-center justify-between">
-              <span class="text-xs font-medium text-gray-500 dark:text-gray-400">{{
+              <span class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{
                 t('admin.accounts.stats.avgDailyRequests')
               }}</span>
-              <div class="rounded bg-gray-100 p-1.5 dark:bg-dark-700">
+              <div class="rounded-lg bg-violet-50 p-1.5 ring-1 ring-inset ring-violet-200/70 dark:bg-violet-500/15 dark:ring-violet-500/30">
                 <svg
-                  class="h-4 w-4 text-gray-600 dark:text-gray-300"
+                  class="h-4 w-4 text-violet-600 dark:text-violet-300"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -158,10 +154,10 @@
                 </svg>
               </div>
             </div>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">
+            <p class="text-xl font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">
               {{ formatNumber(Math.round(stats.summary.avg_daily_requests)) }}
             </p>
-            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
               {{ t('admin.accounts.stats.avgDailyUsage') }}
             </p>
           </div>

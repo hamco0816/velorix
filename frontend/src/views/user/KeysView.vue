@@ -1,24 +1,6 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <TablePageLayout>
-      <!-- Hero：sky 渐变标题区，标识 API 密钥业务色调 -->
-      <template #hero>
-        <header class="page-hero page-hero-sky">
-          <div class="relative z-10 max-w-3xl">
-            <span class="page-hero-tag page-hero-tag-sky">
-              <Icon name="key" size="sm" />
-              {{ t('keys.title') }}
-            </span>
-            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-              {{ t('keys.title') }}
-            </h1>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-              {{ t('keys.description') }}
-            </p>
-          </div>
-        </header>
-      </template>
-
       <template #filters>
         <div class="flex flex-col gap-3">
           <div class="flex flex-wrap items-center gap-3">
@@ -153,40 +135,38 @@
           </template>
 
           <template #cell-usage="{ row }">
-            <div class="text-sm">
-              <div class="flex items-center gap-1.5">
-                <span class="text-gray-500 dark:text-gray-400">{{ t('keys.today') }}:</span>
-                <span class="font-medium text-gray-900 dark:text-white">
+            <div class="min-w-[180px] text-sm">
+              <div class="flex items-baseline gap-1 tabular-nums">
+                <span class="font-semibold text-gray-900 dark:text-white">
                   ${{ (usageStats[row.id]?.today_actual_cost ?? 0).toFixed(4) }}
                 </span>
+                <span class="text-[11px] text-gray-400 dark:text-dark-500">{{ t('keys.today') }}</span>
               </div>
-              <div class="mt-0.5 flex items-center gap-1.5">
-                <span class="text-gray-500 dark:text-gray-400">{{ t('keys.total') }}:</span>
-                <span class="font-medium text-gray-900 dark:text-white">
+              <div class="mt-0.5 flex items-baseline gap-1 tabular-nums text-xs">
+                <span class="font-medium text-gray-500 dark:text-dark-400">
                   ${{ (usageStats[row.id]?.total_actual_cost ?? 0).toFixed(4) }}
                 </span>
+                <span class="text-[11px] text-gray-400 dark:text-dark-500">{{ t('keys.total') }}</span>
               </div>
-              <!-- Quota progress (if quota is set) -->
-              <div v-if="row.quota > 0" class="mt-1.5">
-                <div class="flex items-center gap-1.5">
-                  <span class="text-gray-500 dark:text-gray-400">{{ t('keys.quota') }}:</span>
+              <!-- Quota 进度条：< 80% emerald / 80-100% amber / >= 100% red -->
+              <div v-if="row.quota > 0" class="mt-2">
+                <div class="flex items-baseline justify-between text-[11px] tabular-nums">
+                  <span class="text-gray-400 dark:text-dark-500">{{ t('keys.quota') }}</span>
                   <span :class="[
                     'font-medium',
-                    row.quota_used >= row.quota ? 'text-red-500' :
-                    row.quota_used >= row.quota * 0.8 ? 'text-yellow-500' :
-                    'text-gray-900 dark:text-white'
+                    row.quota_used >= row.quota ? 'text-red-600 dark:text-red-400' :
+                    row.quota_used >= row.quota * 0.8 ? 'text-amber-600 dark:text-amber-400' :
+                    'text-gray-700 dark:text-gray-300'
                   ]">
                     ${{ row.quota_used?.toFixed(2) || '0.00' }} / ${{ row.quota?.toFixed(2) }}
                   </span>
                 </div>
-                <div class="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-dark-600">
+                <div class="mt-1 h-1 w-full overflow-hidden rounded-full bg-gray-200/70 dark:bg-dark-700">
                   <div
-                    :class="[
-                      'h-full rounded-full transition-all',
-                      row.quota_used >= row.quota ? 'bg-red-500' :
-                      row.quota_used >= row.quota * 0.8 ? 'bg-yellow-500' :
-                      'bg-primary-500'
-                    ]"
+                    class="h-full rounded-full transition-all"
+                    :class="row.quota_used >= row.quota ? 'bg-red-500' :
+                      row.quota_used >= row.quota * 0.8 ? 'bg-amber-500' :
+                      'bg-emerald-500'"
                     :style="{ width: Math.min((row.quota_used / row.quota) * 100, 100) + '%' }"
                   />
                 </div>
@@ -202,8 +182,8 @@
                   <span class="text-gray-500 dark:text-gray-400">5h</span>
                   <span :class="[
                     'font-medium tabular-nums',
-                    row.usage_5h >= row.rate_limit_5h ? 'text-red-500' :
-                    row.usage_5h >= row.rate_limit_5h * 0.8 ? 'text-yellow-500' :
+                    row.usage_5h >= row.rate_limit_5h ? 'text-red-600 dark:text-red-400' :
+                    row.usage_5h >= row.rate_limit_5h * 0.8 ? 'text-amber-600 dark:text-amber-400' :
                     'text-gray-700 dark:text-gray-300'
                   ]">
                     ${{ row.usage_5h?.toFixed(2) || '0.00' }}/${{ row.rate_limit_5h?.toFixed(2) }}
@@ -214,7 +194,7 @@
                     :class="[
                       'h-full rounded-full transition-all',
                       row.usage_5h >= row.rate_limit_5h ? 'bg-red-500' :
-                      row.usage_5h >= row.rate_limit_5h * 0.8 ? 'bg-yellow-500' :
+                      row.usage_5h >= row.rate_limit_5h * 0.8 ? 'bg-amber-500' :
                       'bg-emerald-500'
                     ]"
                     :style="{ width: Math.min((row.usage_5h / row.rate_limit_5h) * 100, 100) + '%' }"
@@ -230,8 +210,8 @@
                   <span class="text-gray-500 dark:text-gray-400">1d</span>
                   <span :class="[
                     'font-medium tabular-nums',
-                    row.usage_1d >= row.rate_limit_1d ? 'text-red-500' :
-                    row.usage_1d >= row.rate_limit_1d * 0.8 ? 'text-yellow-500' :
+                    row.usage_1d >= row.rate_limit_1d ? 'text-red-600 dark:text-red-400' :
+                    row.usage_1d >= row.rate_limit_1d * 0.8 ? 'text-amber-600 dark:text-amber-400' :
                     'text-gray-700 dark:text-gray-300'
                   ]">
                     ${{ row.usage_1d?.toFixed(2) || '0.00' }}/${{ row.rate_limit_1d?.toFixed(2) }}
@@ -242,7 +222,7 @@
                     :class="[
                       'h-full rounded-full transition-all',
                       row.usage_1d >= row.rate_limit_1d ? 'bg-red-500' :
-                      row.usage_1d >= row.rate_limit_1d * 0.8 ? 'bg-yellow-500' :
+                      row.usage_1d >= row.rate_limit_1d * 0.8 ? 'bg-amber-500' :
                       'bg-emerald-500'
                     ]"
                     :style="{ width: Math.min((row.usage_1d / row.rate_limit_1d) * 100, 100) + '%' }"
@@ -258,8 +238,8 @@
                   <span class="text-gray-500 dark:text-gray-400">7d</span>
                   <span :class="[
                     'font-medium tabular-nums',
-                    row.usage_7d >= row.rate_limit_7d ? 'text-red-500' :
-                    row.usage_7d >= row.rate_limit_7d * 0.8 ? 'text-yellow-500' :
+                    row.usage_7d >= row.rate_limit_7d ? 'text-red-600 dark:text-red-400' :
+                    row.usage_7d >= row.rate_limit_7d * 0.8 ? 'text-amber-600 dark:text-amber-400' :
                     'text-gray-700 dark:text-gray-300'
                   ]">
                     ${{ row.usage_7d?.toFixed(2) || '0.00' }}/${{ row.rate_limit_7d?.toFixed(2) }}
@@ -270,7 +250,7 @@
                     :class="[
                       'h-full rounded-full transition-all',
                       row.usage_7d >= row.rate_limit_7d ? 'bg-red-500' :
-                      row.usage_7d >= row.rate_limit_7d * 0.8 ? 'bg-yellow-500' :
+                      row.usage_7d >= row.rate_limit_7d * 0.8 ? 'bg-amber-500' :
                       'bg-emerald-500'
                     ]"
                     :style="{ width: Math.min((row.usage_7d / row.rate_limit_7d) * 100, 100) + '%' }"
@@ -295,23 +275,40 @@
           </template>
 
           <template #cell-expires_at="{ value }">
-            <span v-if="value" :class="[
-              'text-sm',
-              new Date(value) < new Date() ? 'text-red-500 dark:text-red-400' : 'text-gray-500 dark:text-dark-400'
-            ]">
-              {{ formatDateTime(value) }}
-            </span>
+            <div v-if="value" class="flex flex-col items-start gap-1">
+              <span class="text-sm text-gray-500 dark:text-dark-400">{{ formatDateTime(value) }}</span>
+              <span
+                v-if="new Date(value) < new Date()"
+                class="inline-flex items-center gap-1 rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 dark:bg-rose-500/15 dark:text-rose-300"
+              >
+                <span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span>
+                {{ t('keys.expired') || '已过期' }}
+              </span>
+            </div>
             <span v-else class="text-sm text-gray-400 dark:text-dark-500">{{ t('keys.noExpiration') }}</span>
           </template>
 
           <template #cell-status="{ value }">
-            <span :class="[
-              'badge',
-              value === 'active' ? 'badge-success' :
-              value === 'quota_exhausted' ? 'badge-warning' :
-              value === 'expired' ? 'badge-danger' :
-              'badge-gray'
-            ]">
+            <span
+              class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium"
+              :class="value === 'active'
+                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                : value === 'quota_exhausted'
+                  ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+                  : value === 'expired'
+                    ? 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'
+                    : 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'"
+            >
+              <span class="relative flex h-1.5 w-1.5">
+                <span
+                  v-if="value === 'active'"
+                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70"
+                ></span>
+                <span
+                  class="relative inline-flex h-1.5 w-1.5 rounded-full"
+                  :class="value === 'active' ? 'bg-emerald-500' : value === 'quota_exhausted' ? 'bg-amber-500' : value === 'expired' ? 'bg-rose-500' : 'bg-gray-400'"
+                ></span>
+              </span>
               {{ t('keys.status.' + value) }}
             </span>
           </template>
@@ -485,7 +482,7 @@
               :placeholder="t('keys.customKeyPlaceholder')"
               :class="{ 'border-red-500 dark:border-red-500': customKeyError }"
             />
-            <p v-if="customKeyError" class="mt-1 text-sm text-red-500">{{ customKeyError }}</p>
+            <p v-if="customKeyError" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ customKeyError }}</p>
             <p v-else class="input-hint">{{ t('keys.customKeyHint') }}</p>
           </div>
         </div>
@@ -654,8 +651,8 @@
                   <div class="flex-1 rounded-lg bg-gray-100 px-3 py-2 dark:bg-dark-700 text-sm">
                     <span :class="[
                       'font-medium',
-                      selectedKey.usage_5h >= selectedKey.rate_limit_5h ? 'text-red-500' :
-                      selectedKey.usage_5h >= selectedKey.rate_limit_5h * 0.8 ? 'text-yellow-500' :
+                      selectedKey.usage_5h >= selectedKey.rate_limit_5h ? 'text-red-600 dark:text-red-400' :
+                      selectedKey.usage_5h >= selectedKey.rate_limit_5h * 0.8 ? 'text-amber-600 dark:text-amber-400' :
                       'text-gray-900 dark:text-white'
                     ]">
                       ${{ selectedKey.usage_5h?.toFixed(4) || '0.0000' }}
@@ -671,7 +668,7 @@
                     :class="[
                       'h-full rounded-full transition-all',
                       selectedKey.usage_5h >= selectedKey.rate_limit_5h ? 'bg-red-500' :
-                      selectedKey.usage_5h >= selectedKey.rate_limit_5h * 0.8 ? 'bg-yellow-500' :
+                      selectedKey.usage_5h >= selectedKey.rate_limit_5h * 0.8 ? 'bg-amber-500' :
                       'bg-green-500'
                     ]"
                     :style="{ width: Math.min((selectedKey.usage_5h / selectedKey.rate_limit_5h) * 100, 100) + '%' }"
@@ -700,8 +697,8 @@
                   <div class="flex-1 rounded-lg bg-gray-100 px-3 py-2 dark:bg-dark-700 text-sm">
                     <span :class="[
                       'font-medium',
-                      selectedKey.usage_1d >= selectedKey.rate_limit_1d ? 'text-red-500' :
-                      selectedKey.usage_1d >= selectedKey.rate_limit_1d * 0.8 ? 'text-yellow-500' :
+                      selectedKey.usage_1d >= selectedKey.rate_limit_1d ? 'text-red-600 dark:text-red-400' :
+                      selectedKey.usage_1d >= selectedKey.rate_limit_1d * 0.8 ? 'text-amber-600 dark:text-amber-400' :
                       'text-gray-900 dark:text-white'
                     ]">
                       ${{ selectedKey.usage_1d?.toFixed(4) || '0.0000' }}
@@ -717,7 +714,7 @@
                     :class="[
                       'h-full rounded-full transition-all',
                       selectedKey.usage_1d >= selectedKey.rate_limit_1d ? 'bg-red-500' :
-                      selectedKey.usage_1d >= selectedKey.rate_limit_1d * 0.8 ? 'bg-yellow-500' :
+                      selectedKey.usage_1d >= selectedKey.rate_limit_1d * 0.8 ? 'bg-amber-500' :
                       'bg-green-500'
                     ]"
                     :style="{ width: Math.min((selectedKey.usage_1d / selectedKey.rate_limit_1d) * 100, 100) + '%' }"
@@ -746,8 +743,8 @@
                   <div class="flex-1 rounded-lg bg-gray-100 px-3 py-2 dark:bg-dark-700 text-sm">
                     <span :class="[
                       'font-medium',
-                      selectedKey.usage_7d >= selectedKey.rate_limit_7d ? 'text-red-500' :
-                      selectedKey.usage_7d >= selectedKey.rate_limit_7d * 0.8 ? 'text-yellow-500' :
+                      selectedKey.usage_7d >= selectedKey.rate_limit_7d ? 'text-red-600 dark:text-red-400' :
+                      selectedKey.usage_7d >= selectedKey.rate_limit_7d * 0.8 ? 'text-amber-600 dark:text-amber-400' :
                       'text-gray-900 dark:text-white'
                     ]">
                       ${{ selectedKey.usage_7d?.toFixed(4) || '0.0000' }}
@@ -763,7 +760,7 @@
                     :class="[
                       'h-full rounded-full transition-all',
                       selectedKey.usage_7d >= selectedKey.rate_limit_7d ? 'bg-red-500' :
-                      selectedKey.usage_7d >= selectedKey.rate_limit_7d * 0.8 ? 'bg-yellow-500' :
+                      selectedKey.usage_7d >= selectedKey.rate_limit_7d * 0.8 ? 'bg-amber-500' :
                       'bg-green-500'
                     ]"
                     :style="{ width: Math.min((selectedKey.usage_7d / selectedKey.rate_limit_7d) * 100, 100) + '%' }"

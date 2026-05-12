@@ -1,7 +1,7 @@
 <template>
-  <div class="card p-4">
+  <div class="surface-card overflow-hidden p-6">
     <div class="mb-4 flex items-center justify-between gap-3">
-      <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
+      <h3 class="text-[15px] font-semibold text-gray-900 dark:text-white">
         {{ !enableRankingView || activeView === 'model_distribution'
           ? t('admin.dashboard.modelDistribution')
           : t('admin.dashboard.spendingRankingTitle') }}
@@ -507,3 +507,10 @@ const formatCost = (value: number | null | undefined): string => {
   return value.toFixed(4)
 }
 </script>
+
+<style scoped>
+.surface-card {
+  @apply rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)];
+  @apply dark:border-dark-700/60 dark:bg-dark-800/40;
+}
+</style>

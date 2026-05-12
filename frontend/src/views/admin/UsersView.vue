@@ -1,23 +1,6 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <TablePageLayout>
-      <!-- Hero：emerald 渐变标题区，标识用户业务色 -->
-      <template #hero>
-        <header class="page-hero page-hero-emerald">
-          <div class="relative z-10 max-w-3xl">
-            <span class="page-hero-tag page-hero-tag-emerald">
-              <Icon name="user" size="sm" />
-              用户管理
-            </span>
-            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-              {{ t('admin.users.title') }}
-            </h1>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-              {{ t('admin.users.description') }}
-            </p>
-          </div>
-        </header>
-      </template>
 
       <!-- Single Row: Search, Filters, and Actions -->
       <template #filters>
@@ -143,15 +126,14 @@
               >
                 <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
               </button>
-              <!-- Filter Settings Dropdown -->
+              <!-- Filter Settings Dropdown：icon-only 节省空间，用 title 提示 -->
               <div class="relative" ref="filterDropdownRef">
                 <button
                   @click="showFilterDropdown = !showFilterDropdown"
-                  class="btn btn-secondary px-2 md:px-3"
+                  class="btn btn-secondary px-2"
                   :title="t('admin.users.filterSettings')"
                 >
-                  <Icon name="filter" size="sm" class="md:mr-1.5" />
-                  <span class="hidden md:inline">{{ t('admin.users.filterSettings') }}</span>
+                  <Icon name="filter" size="sm" />
                 </button>
                 <!-- Dropdown menu -->
                 <div
@@ -197,17 +179,16 @@
                   </button>
                 </div>
               </div>
-              <!-- Column Settings Dropdown -->
+              <!-- Column Settings Dropdown：icon-only 节省空间 -->
               <div class="relative" ref="columnDropdownRef">
                 <button
                   @click="showColumnDropdown = !showColumnDropdown"
-                  class="btn btn-secondary px-2 md:px-3"
+                  class="btn btn-secondary px-2"
                   :title="t('admin.users.columnSettings')"
                 >
-                  <svg class="h-4 w-4 md:mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125z" />
                   </svg>
-                  <span class="hidden md:inline">{{ t('admin.users.columnSettings') }}</span>
                 </button>
                 <!-- Dropdown menu -->
                 <div
@@ -231,14 +212,13 @@
                   </button>
                 </div>
               </div>
-              <!-- Attributes Config Button -->
+              <!-- Attributes Config Button：icon-only -->
               <button
                 @click="showAttributesModal = true"
-                class="btn btn-secondary px-2 md:px-3"
+                class="btn btn-secondary px-2"
                 :title="t('admin.users.attributes.configButton')"
               >
-                <Icon name="cog" size="sm" class="md:mr-1.5" />
-                <span class="hidden md:inline">{{ t('admin.users.attributes.configButton') }}</span>
+                <Icon name="cog" size="sm" />
               </button>
             </div>
 
@@ -265,9 +245,10 @@
           @sort="handleSort"
         >
           <template #cell-email="{ value, row }">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2.5">
               <div
-                class="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary-100 dark:bg-primary-900/30"
+                class="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full ring-2 ring-white dark:ring-dark-800"
+                :class="avatarBgClass(value || row.username || '')"
               >
                 <img
                   v-if="row.avatar_url"
@@ -275,11 +256,14 @@
                   :alt="row.username || value"
                   class="h-full w-full object-cover"
                 />
-                <span v-else class="text-sm font-medium text-primary-700 dark:text-primary-300">
+                <span v-else class="text-sm font-semibold">
                   {{ (value || row.username || '?').charAt(0).toUpperCase() }}
                 </span>
               </div>
-              <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+              <div class="min-w-0">
+                <div class="truncate font-medium text-gray-900 dark:text-white">{{ value }}</div>
+                <div v-if="row.username" class="truncate text-xs text-gray-500 dark:text-dark-400">@{{ row.username }}</div>
+              </div>
             </div>
           </template>
 
@@ -317,7 +301,17 @@
           </template>
 
           <template #cell-role="{ value }">
-            <span :class="['badge', value === 'admin' ? 'badge-purple' : 'badge-gray']">
+            <span
+              v-if="value === 'admin'"
+              class="inline-flex items-center gap-1 rounded-md bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700 dark:bg-brand-500/15 dark:text-brand-300"
+            >
+              <Icon name="shield" size="xs" />
+              {{ t('admin.users.roles.admin') }}
+            </span>
+            <span
+              v-else
+              class="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700 dark:bg-dark-700 dark:text-gray-300"
+            >
               {{ t('admin.users.roles.' + value) }}
             </span>
           </template>
@@ -348,7 +342,7 @@
                   v-if="expandedGroupUserId === row.id"
                   class="absolute left-0 top-full z-50 mt-1.5 min-w-[160px] overflow-hidden rounded-lg border border-gray-200 bg-white py-1 text-xs shadow-xl dark:border-dark-600 dark:bg-dark-700"
                 >
-                  <div class="border-b border-gray-100 px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider text-gray-400 dark:border-dark-600 dark:text-dark-400">
+                  <div class="border-b border-gray-100 px-3 py-1.5 text-[11px] font-medium text-gray-500 dark:border-dark-600 dark:text-dark-400">
                     {{ t('admin.users.clickToReplace') }}
                   </div>
                   <div
@@ -416,12 +410,12 @@
             <div class="flex items-center gap-2">
               <div class="group relative">
                 <button
-                  class="font-medium text-gray-900 underline decoration-dashed decoration-gray-300 underline-offset-4 transition-colors hover:text-primary-600 dark:text-white dark:decoration-dark-500 dark:hover:text-primary-400"
+                  class="font-semibold tabular-nums underline decoration-dashed decoration-gray-300 underline-offset-4 transition-colors hover:opacity-80 dark:decoration-dark-500"
+                  :class="balanceColorClass(value)"
                   @click="handleBalanceHistory(row)"
                 >
                   ${{ value.toFixed(2) }}
                 </button>
-                <!-- Instant tooltip -->
                 <div class="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-xs text-white opacity-0 shadow-lg transition-opacity duration-75 group-hover:opacity-100 dark:bg-dark-600">
                   {{ t('admin.users.balanceHistoryTip') }}
                   <div class="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-dark-600"></div>
@@ -429,7 +423,7 @@
               </div>
               <button
                 @click.stop="handleDeposit(row)"
-                class="rounded px-2 py-0.5 text-xs font-medium text-emerald-600 transition-colors hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/20"
+                class="rounded-md px-2 py-0.5 text-xs font-medium text-emerald-600 transition-colors hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/20"
                 :title="t('admin.users.deposit')"
               >
                 {{ t('admin.users.deposit') }}
@@ -439,17 +433,17 @@
 
           <template #cell-usage="{ row }">
             <div class="text-sm">
-              <div class="flex items-center gap-1.5">
-                <span class="text-gray-500 dark:text-gray-400">{{ t('admin.users.today') }}:</span>
-                <span class="font-medium text-gray-900 dark:text-white">
+              <div class="flex items-baseline gap-1 tabular-nums">
+                <span class="font-semibold text-gray-900 dark:text-white">
                   ${{ (usageStats[row.id]?.today_actual_cost ?? 0).toFixed(4) }}
                 </span>
+                <span class="text-[11px] text-gray-400 dark:text-dark-500">{{ t('admin.users.today') }}</span>
               </div>
-              <div class="mt-0.5 flex items-center gap-1.5">
-                <span class="text-gray-500 dark:text-gray-400">{{ t('admin.users.total') }}:</span>
-                <span class="font-medium text-gray-900 dark:text-white">
+              <div class="mt-0.5 flex items-baseline gap-1 tabular-nums text-xs">
+                <span class="font-medium text-gray-500 dark:text-dark-400">
                   ${{ (usageStats[row.id]?.total_actual_cost ?? 0).toFixed(4) }}
                 </span>
+                <span class="text-[11px] text-gray-400 dark:text-dark-500">{{ t('admin.users.total') }}</span>
               </div>
             </div>
           </template>
@@ -462,17 +456,27 @@
           </template>
 
           <template #cell-status="{ value }">
-            <div class="flex items-center gap-1.5">
+            <span
+              class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium"
+              :class="value === 'active'
+                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                : 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-dark-300'"
+            >
               <span
-                :class="[
-                  'inline-block h-2 w-2 rounded-full',
-                  value === 'active' ? 'bg-green-500' : 'bg-red-500'
-                ]"
-              ></span>
-              <span class="text-sm text-gray-700 dark:text-gray-300">
-                {{ value === 'active' ? t('common.active') : t('admin.users.disabled') }}
+                class="relative flex h-1.5 w-1.5"
+                :class="value === 'active' ? '' : 'opacity-60'"
+              >
+                <span
+                  v-if="value === 'active'"
+                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70"
+                ></span>
+                <span
+                  class="relative inline-flex h-1.5 w-1.5 rounded-full"
+                  :class="value === 'active' ? 'bg-emerald-500' : 'bg-gray-400'"
+                ></span>
               </span>
-            </div>
+              {{ value === 'active' ? t('common.active') : t('admin.users.disabled') }}
+            </span>
           </template>
 
           <template #cell-created_at="{ value }">
@@ -674,6 +678,31 @@ import UserBalanceHistoryModal from '@/components/admin/user/UserBalanceHistoryM
 import GroupReplaceModal from '@/components/admin/user/GroupReplaceModal.vue'
 
 const appStore = useAppStore()
+
+// 头像背景色：根据邮箱/用户名首字符 hash 到 8 种柔和的 colored bg，让用户列表有"丰富但克制"的视觉
+const AVATAR_PALETTES = [
+  'bg-brand-100 text-brand-700 dark:bg-brand-500/20 dark:text-brand-300',
+  'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300',
+  'bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300',
+  'bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300',
+  'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300',
+  'bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300',
+  'bg-teal-100 text-teal-700 dark:bg-teal-500/20 dark:text-teal-300',
+  'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300'
+]
+const avatarBgClass = (key: string): string => {
+  if (!key) return AVATAR_PALETTES[0]
+  let hash = 0
+  for (let i = 0; i < key.length; i++) hash = (hash * 31 + key.charCodeAt(i)) | 0
+  return AVATAR_PALETTES[Math.abs(hash) % AVATAR_PALETTES.length]
+}
+
+// 余额色编码：负数红警示、低余额（<1）amber、正常 emerald
+const balanceColorClass = (v: number): string => {
+  if (v < 0) return 'text-red-600 dark:text-red-400'
+  if (v < 1) return 'text-amber-600 dark:text-amber-400'
+  return 'text-emerald-600 dark:text-emerald-400'
+}
 
 // Generate dynamic attribute columns from enabled definitions
 const attributeColumns = computed<Column[]>(() =>

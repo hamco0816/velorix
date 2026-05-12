@@ -1,24 +1,6 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <TablePageLayout>
-      <!-- Hero：teal 渐变标题区，标识订阅管理业务色 -->
-      <template #hero>
-        <header class="page-hero page-hero-teal">
-          <div class="relative z-10 max-w-3xl">
-            <span class="page-hero-tag page-hero-tag-teal">
-              <Icon name="badge" size="sm" />
-              {{ t('admin.subscriptions.title') }}
-            </span>
-            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-              {{ t('admin.subscriptions.title') }}
-            </h1>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-              {{ t('admin.subscriptions.description') }}
-            </p>
-          </div>
-        </header>
-      </template>
-
       <template #filters>
         <!-- Top Toolbar: Left (search + filters) / Right (actions) -->
         <div class="flex flex-wrap items-start justify-between gap-4">
@@ -360,37 +342,45 @@
           </template>
 
           <template #cell-expires_at="{ value }">
-            <div v-if="value">
+            <div v-if="value" class="flex flex-col items-start gap-1">
+              <span class="text-sm text-gray-700 dark:text-gray-300">{{ formatDateOnly(value) }}</span>
+              <!-- 剩余天数：即将到期 (< 7 天) amber 警示 chip；正常 灰色文字 -->
               <span
-                class="text-sm"
-                :class="
-                  isExpiringSoon(value)
-                    ? 'text-orange-600 dark:text-orange-400'
-                    : 'text-gray-700 dark:text-gray-300'
-                "
+                v-if="getDaysRemaining(value) !== null"
+                class="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium"
+                :class="isExpiringSoon(value)
+                  ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+                  : 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'"
               >
-                {{ formatDateOnly(value) }}
-              </span>
-              <div v-if="getDaysRemaining(value) !== null" class="text-xs text-gray-500">
+                <span class="h-1.5 w-1.5 rounded-full" :class="isExpiringSoon(value) ? 'bg-amber-500' : 'bg-gray-400'"></span>
                 {{ getDaysRemaining(value) }} {{ t('admin.subscriptions.daysRemaining') }}
-              </div>
+              </span>
             </div>
-            <span v-else class="text-sm text-gray-500">{{
-              t('admin.subscriptions.noExpiration')
-            }}</span>
+            <span v-else class="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
+              <Icon name="checkCircle" size="xs" />
+              {{ t('admin.subscriptions.noExpiration') }}
+            </span>
           </template>
 
           <template #cell-status="{ value }">
             <span
-              :class="[
-                'badge',
-                value === 'active'
-                  ? 'badge-success'
-                  : value === 'expired'
-                    ? 'badge-warning'
-                    : 'badge-danger'
-              ]"
+              class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium"
+              :class="value === 'active'
+                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                : value === 'expired'
+                  ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+                  : 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'"
             >
+              <span class="relative flex h-1.5 w-1.5">
+                <span
+                  v-if="value === 'active'"
+                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70"
+                ></span>
+                <span
+                  class="relative inline-flex h-1.5 w-1.5 rounded-full"
+                  :class="value === 'active' ? 'bg-emerald-500' : value === 'expired' ? 'bg-amber-500' : 'bg-rose-500'"
+                ></span>
+              </span>
               {{ t(`admin.subscriptions.status.${value}`) }}
             </span>
           </template>
@@ -1335,9 +1325,10 @@ const getProgressClass = (used: number | null | undefined, limit: number | null)
   if (!limit || limit === 0) return 'bg-gray-400'
   const usedValue = used ?? 0
   const percentage = (usedValue / limit) * 100
+  // 与全站警示色一致：>= 90% red、>= 70% amber、否则 emerald
   if (percentage >= 90) return 'bg-red-500'
-  if (percentage >= 70) return 'bg-orange-500'
-  return 'bg-green-500'
+  if (percentage >= 70) return 'bg-amber-500'
+  return 'bg-emerald-500'
 }
 
 // Format reset time based on window start and period type

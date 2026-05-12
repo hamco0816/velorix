@@ -1,24 +1,6 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <TablePageLayout>
-      <!-- Hero：sky 渐变标题区，与全站 page-hero 系列统一 -->
-      <template #hero>
-        <header class="page-hero page-hero-sky">
-          <div class="relative z-10 max-w-3xl">
-            <span class="page-hero-tag page-hero-tag-sky">
-              <Icon name="gift" size="sm" />
-              {{ t('admin.redeem.title') }}
-            </span>
-            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-              {{ t('admin.redeem.title') }}
-            </h1>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-              {{ t('admin.redeem.description') }}
-            </p>
-          </div>
-        </header>
-      </template>
-
       <template #filters>
         <div class="flex flex-wrap items-center gap-3">
           <!-- Left: Search + Filters -->
@@ -102,15 +84,14 @@
 
           <template #cell-type="{ value }">
             <span
-              :class="[
-                'badge',
-                value === 'balance'
-                  ? 'badge-success'
-                  : value === 'subscription'
-                    ? 'badge-warning'
-                    : 'badge-primary'
-              ]"
+              class="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium"
+              :class="value === 'balance'
+                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                : value === 'subscription'
+                  ? 'bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300'
+                  : 'bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300'"
             >
+              <Icon :name="value === 'balance' ? 'dollar' : value === 'subscription' ? 'badge' : 'gift'" size="xs" />
               {{ t('admin.redeem.types.' + value) }}
             </span>
           </template>
@@ -130,15 +111,23 @@
 
           <template #cell-status="{ value }">
             <span
-              :class="[
-                'badge',
-                value === 'unused'
-                  ? 'badge-success'
-                  : value === 'used'
-                    ? 'badge-gray'
-                    : 'badge-danger'
-              ]"
+              class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium"
+              :class="value === 'unused'
+                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                : value === 'used'
+                  ? 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'
+                  : 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'"
             >
+              <span class="relative flex h-1.5 w-1.5">
+                <span
+                  v-if="value === 'unused'"
+                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70"
+                ></span>
+                <span
+                  class="relative inline-flex h-1.5 w-1.5 rounded-full"
+                  :class="value === 'unused' ? 'bg-emerald-500' : value === 'used' ? 'bg-gray-400' : 'bg-rose-500'"
+                ></span>
+              </span>
               {{ t('admin.redeem.status.' + value) }}
             </span>
           </template>

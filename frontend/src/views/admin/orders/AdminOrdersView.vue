@@ -1,34 +1,24 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <div class="space-y-5">
-      <!-- Hero：amber 渐变标题区，标识订单业务色 -->
-      <header class="page-hero page-hero-amber">
-        <div class="relative z-10 max-w-3xl">
-          <span class="page-hero-tag page-hero-tag-amber">
-            <Icon name="document" size="sm" />
-            {{ t('payment.admin.title') }}
-          </span>
-          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-            {{ t('payment.admin.title') }}
-          </h1>
-          <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-            {{ t('payment.admin.subtitle') }}
-          </p>
-        </div>
-      </header>
-
       <!-- Filters -->
-      <div class="card p-4">
-        <div class="flex flex-wrap items-center gap-3">
+      <div class="surface-card p-5">
+        <div class="flex flex-wrap items-center gap-2">
           <div class="flex-1 sm:max-w-64">
             <input v-model="orderSearch" type="text" :placeholder="t('payment.admin.searchOrders')" class="input" @input="debounceLoadOrders" />
           </div>
-          <Select v-model="orderFilters.status" :options="statusFilterOptions" class="min-w-[10rem]" @change="loadOrders" />
-          <Select v-model="orderFilters.payment_type" :options="paymentTypeFilterOptions" class="min-w-[10rem]" @change="loadOrders" />
-          <Select v-model="orderFilters.order_type" :options="orderTypeFilterOptions" class="min-w-[10rem]" @change="loadOrders" />
-          <div class="flex flex-1 flex-wrap items-center justify-end gap-2">
-            <button @click="loadOrders" :disabled="ordersLoading" class="btn btn-secondary" :title="t('common.refresh')">
-              <Icon name="refresh" size="md" :class="ordersLoading ? 'animate-spin' : ''" />
+          <div class="w-[10rem]">
+            <Select v-model="orderFilters.status" :options="statusFilterOptions" @change="loadOrders" />
+          </div>
+          <div class="w-[10rem]">
+            <Select v-model="orderFilters.payment_type" :options="paymentTypeFilterOptions" @change="loadOrders" />
+          </div>
+          <div class="w-[10rem]">
+            <Select v-model="orderFilters.order_type" :options="orderTypeFilterOptions" @change="loadOrders" />
+          </div>
+          <div class="ml-auto flex items-center gap-2">
+            <button @click="loadOrders" :disabled="ordersLoading" class="btn btn-secondary btn-sm" :title="t('common.refresh')">
+              <Icon name="refresh" size="sm" :class="ordersLoading ? 'animate-spin' : ''" />
             </button>
           </div>
         </div>

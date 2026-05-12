@@ -1,168 +1,130 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <TablePageLayout>
-      <!-- Hero：violet 渐变标题区，标识用量统计业务色调 -->
-      <template #hero>
-        <header class="page-hero page-hero-violet">
-          <div class="relative z-10 max-w-3xl">
-            <span class="page-hero-tag page-hero-tag-violet">
-              <Icon name="chart" size="sm" />
-              {{ t('usage.title') }}
-            </span>
-            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-              {{ t('usage.title') }}
-            </h1>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-              {{ t('usage.description') }}
-            </p>
-          </div>
-        </header>
-      </template>
-
       <template #actions>
-        <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <!-- Total Requests -->
-          <div class="card p-4">
-          <div class="flex items-center gap-3">
-            <div class="rounded-lg bg-blue-100 p-2 dark:bg-blue-900/30">
-              <Icon name="document" size="md" class="text-blue-600 dark:text-blue-400" />
-            </div>
-            <div>
-              <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
-                {{ t('usage.totalRequests') }}
-              </p>
-              <p class="text-xl font-bold text-gray-900 dark:text-white">
-                {{ usageStats?.total_requests?.toLocaleString() || '0' }}
-              </p>
-              <p class="text-xs text-gray-500 dark:text-gray-400">
-                {{ t('usage.inSelectedRange') }}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Total Tokens -->
-        <div class="card p-4">
-          <div class="flex items-center gap-3">
-            <div class="rounded-lg bg-amber-100 p-2 dark:bg-amber-900/30">
-              <Icon name="cube" size="md" class="text-amber-600 dark:text-amber-400" />
-            </div>
-            <div>
-              <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
-                {{ t('usage.totalTokens') }}
-              </p>
-              <p class="text-xl font-bold text-gray-900 dark:text-white">
-                {{ formatTokens(usageStats?.total_tokens || 0) }}
-              </p>
-              <p class="text-xs text-gray-500 dark:text-gray-400">
-                {{ t('usage.in') }}: {{ formatTokens(usageStats?.total_input_tokens || 0) }} /
-                {{ t('usage.out') }}: {{ formatTokens(usageStats?.total_output_tokens || 0) }}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Total Cost -->
-        <div class="card p-4">
-          <div class="flex items-center gap-3">
-            <div class="rounded-lg bg-green-100 p-2 dark:bg-green-900/30">
-              <Icon name="dollar" size="md" class="text-green-600 dark:text-green-400" />
+          <div class="kpi-card group">
+            <div class="kpi-icon kpi-icon-sky">
+              <Icon name="document" size="md" />
             </div>
             <div class="min-w-0 flex-1">
-              <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
-                {{ t('usage.totalCost') }}
+              <p class="kpi-label">{{ t('usage.totalRequests') }}</p>
+              <p class="kpi-value">
+                {{ usageStats?.total_requests?.toLocaleString() || '0' }}
               </p>
-              <p class="text-xl font-bold text-green-600 dark:text-green-400">
+              <p class="kpi-hint">{{ t('usage.inSelectedRange') }}</p>
+            </div>
+          </div>
+
+          <!-- Total Tokens -->
+          <div class="kpi-card group">
+            <div class="kpi-icon kpi-icon-amber">
+              <Icon name="cube" size="md" />
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="kpi-label">{{ t('usage.totalTokens') }}</p>
+              <p class="kpi-value">
+                {{ formatTokens(usageStats?.total_tokens || 0) }}
+              </p>
+              <p class="kpi-hint">
+                {{ t('usage.in') }} {{ formatTokens(usageStats?.total_input_tokens || 0) }} ·
+                {{ t('usage.out') }} {{ formatTokens(usageStats?.total_output_tokens || 0) }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Total Cost -->
+          <div class="kpi-card group">
+            <div class="kpi-icon kpi-icon-emerald">
+              <Icon name="dollar" size="md" />
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="kpi-label">{{ t('usage.totalCost') }}</p>
+              <p class="kpi-value text-emerald-600 dark:text-emerald-400">
                 ${{ (usageStats?.total_actual_cost || 0).toFixed(4) }}
               </p>
-              <p class="text-xs text-gray-500 dark:text-gray-400">
-                {{ t('usage.actualCost') }} /
+              <p class="kpi-hint">
+                {{ t('usage.actualCost') }} ·
                 <span class="line-through">${{ (usageStats?.total_cost || 0).toFixed(4) }}</span>
                 {{ t('usage.standardCost') }}
               </p>
             </div>
           </div>
-        </div>
 
-        <!-- Average Duration -->
-        <div class="card p-4">
-          <div class="flex items-center gap-3">
-            <div class="rounded-lg bg-purple-100 p-2 dark:bg-purple-900/30">
-              <Icon name="clock" size="md" class="text-purple-600 dark:text-purple-400" />
+          <!-- Average Duration -->
+          <div class="kpi-card group">
+            <div class="kpi-icon kpi-icon-violet">
+              <Icon name="clock" size="md" />
             </div>
-            <div>
-              <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
-                {{ t('usage.avgDuration') }}
-              </p>
-              <p class="text-xl font-bold text-gray-900 dark:text-white">
-                {{ formatDuration(usageStats?.average_duration_ms || 0) }}
-              </p>
-              <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('usage.perRequest') }}</p>
+            <div class="min-w-0 flex-1">
+              <p class="kpi-label">{{ t('usage.avgDuration') }}</p>
+              <p class="kpi-value">{{ formatDuration(usageStats?.average_duration_ms || 0) }}</p>
+              <p class="kpi-hint">{{ t('usage.perRequest') }}</p>
             </div>
           </div>
-        </div>
         </div>
       </template>
 
       <template #filters>
-        <div class="card">
-          <div class="px-6 py-4">
-          <div class="flex flex-wrap items-end gap-4">
-            <!-- API Key Filter -->
-            <div class="min-w-[180px]">
-              <label class="input-label">{{ t('usage.apiKeyFilter') }}</label>
-              <Select
-                v-model="filters.api_key_id"
-                :options="apiKeyOptions"
-                :placeholder="t('usage.allApiKeys')"
-                @change="applyFilters"
-              />
-            </div>
-
-            <!-- Date Range Filter -->
-            <div>
-              <label class="input-label">{{ t('usage.timeRange') }}</label>
-              <DateRangePicker
-                v-model:start-date="startDate"
-                v-model:end-date="endDate"
-                @change="onDateRangeChange"
-              />
-            </div>
-
-            <!-- Actions -->
-            <div class="ml-auto flex items-center gap-3">
-              <button @click="applyFilters" :disabled="loading" class="btn btn-secondary">
-                {{ t('common.refresh') }}
-              </button>
-              <button @click="resetFilters" class="btn btn-secondary">
-                {{ t('common.reset') }}
-              </button>
-              <button @click="exportToCSV" :disabled="exporting" class="btn btn-primary">
-                <svg
-                  v-if="exporting"
-                  class="-ml-1 mr-2 h-4 w-4 animate-spin"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    class="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    stroke-width="4"
-                  ></circle>
-                  <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                {{ exporting ? t('usage.exporting') : t('usage.exportCsv') }}
-              </button>
-            </div>
+        <div class="flex flex-wrap items-end gap-4">
+          <!-- API Key Filter -->
+          <div class="min-w-[200px]">
+            <label class="input-label">{{ t('usage.apiKeyFilter') }}</label>
+            <Select
+              v-model="filters.api_key_id"
+              :options="apiKeyOptions"
+              :placeholder="t('usage.allApiKeys')"
+              @change="applyFilters"
+            />
           </div>
-        </div>
+
+          <!-- Date Range Filter -->
+          <div>
+            <label class="input-label">{{ t('usage.timeRange') }}</label>
+            <DateRangePicker
+              v-model:start-date="startDate"
+              v-model:end-date="endDate"
+              @change="onDateRangeChange"
+            />
+          </div>
+
+          <!-- Actions -->
+          <div class="ml-auto flex items-center gap-2">
+            <button
+              type="button"
+              @click="applyFilters"
+              :disabled="loading"
+              class="btn btn-secondary btn-sm"
+              :title="t('common.refresh')"
+              :aria-label="t('common.refresh')"
+            >
+              <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
+            </button>
+            <button
+              type="button"
+              @click="resetFilters"
+              class="btn btn-secondary btn-sm"
+              :title="t('common.reset')"
+              :aria-label="t('common.reset')"
+            >
+              <Icon name="x" size="sm" />
+            </button>
+            <button
+              type="button"
+              @click="exportToCSV"
+              :disabled="exporting"
+              class="btn btn-primary"
+            >
+              <Icon
+                name="download"
+                size="sm"
+                class="mr-1.5"
+                :class="exporting ? 'animate-pulse' : ''"
+              />
+              {{ exporting ? t('usage.exporting') : t('usage.exportCsv') }}
+            </button>
+          </div>
         </div>
       </template>
 
@@ -200,16 +162,19 @@
 
           <template #cell-stream="{ row }">
             <span
-              class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium"
+              class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset"
               :class="getRequestTypeBadgeClass(row)"
             >
+              <span class="h-1.5 w-1.5 rounded-full" :class="getRequestTypeDotClass(row)"></span>
               {{ getRequestTypeLabel(row) }}
             </span>
           </template>
 
           <template #cell-billing_mode="{ row }">
-            <span class="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium"
-                  :class="getBillingModeBadgeClass(row.billing_mode)">
+            <span
+              class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
+              :class="getBillingModeBadgeClass(row.billing_mode)"
+            >
               {{ getBillingModeLabel(row.billing_mode, t) }}
             </span>
           </template>
@@ -678,10 +643,21 @@ const getRequestTypeLabel = (log: UsageLog): string => {
 
 const getRequestTypeBadgeClass = (log: UsageLog): string => {
   const requestType = resolveUsageRequestType(log)
-  if (requestType === 'ws_v2') return 'bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-200'
-  if (requestType === 'stream') return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-  if (requestType === 'sync') return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
-  return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
+  if (requestType === 'ws_v2')
+    return 'bg-violet-50 text-violet-700 ring-violet-200/70 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30'
+  if (requestType === 'stream')
+    return 'bg-sky-50 text-sky-700 ring-sky-200/70 dark:bg-sky-500/15 dark:text-sky-300 dark:ring-sky-500/30'
+  if (requestType === 'sync')
+    return 'bg-gray-50 text-gray-600 ring-gray-200/70 dark:bg-gray-500/15 dark:text-gray-300 dark:ring-gray-500/30'
+  return 'bg-amber-50 text-amber-700 ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30'
+}
+
+const getRequestTypeDotClass = (log: UsageLog): string => {
+  const requestType = resolveUsageRequestType(log)
+  if (requestType === 'ws_v2') return 'bg-violet-500'
+  if (requestType === 'stream') return 'bg-sky-500 animate-pulse'
+  if (requestType === 'sync') return 'bg-gray-400'
+  return 'bg-amber-500'
 }
 
 
@@ -969,3 +945,42 @@ onMounted(() => {
   loadUsageStats()
 })
 </script>
+
+<style scoped>
+/* KPI 卡：Notion 风圆润柔边卡片，hover 时阴影微抬升 */
+.kpi-card {
+  @apply flex items-start gap-3 rounded-2xl border border-gray-200/70 bg-white p-4 transition-shadow;
+  @apply dark:border-dark-700/60 dark:bg-dark-800/40;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+}
+.kpi-card:hover {
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -18px rgb(15 23 42 / 0.22);
+}
+
+/* KPI 图标筐：圆角方块 + 主题色背景 */
+.kpi-icon {
+  @apply inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl;
+}
+.kpi-icon-sky {
+  @apply bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300;
+}
+.kpi-icon-amber {
+  @apply bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300;
+}
+.kpi-icon-emerald {
+  @apply bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300;
+}
+.kpi-icon-violet {
+  @apply bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300;
+}
+
+.kpi-label {
+  @apply text-[12px] font-medium text-gray-500 dark:text-dark-400;
+}
+.kpi-value {
+  @apply mt-0.5 text-[22px] font-semibold leading-tight tracking-tight text-gray-900 dark:text-white tabular-nums;
+}
+.kpi-hint {
+  @apply mt-1 text-[11px] text-gray-500 dark:text-dark-400;
+}
+</style>

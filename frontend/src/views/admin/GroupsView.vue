@@ -1,23 +1,6 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <TablePageLayout>
-      <!-- Hero：indigo 渐变标题区，标识分组业务色调 -->
-      <template #hero>
-        <header class="page-hero page-hero-indigo">
-          <div class="relative z-10 max-w-3xl">
-            <span class="page-hero-tag page-hero-tag-indigo">
-              <Icon name="users" size="sm" />
-              {{ t('admin.groups.title') }}
-            </span>
-            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-              {{ t('admin.groups.title') }}
-            </h1>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-              {{ t('admin.groups.description') }}
-            </p>
-          </div>
-        </header>
-      </template>
 
       <template #filters>
         <div
@@ -117,14 +100,14 @@
           <template #cell-platform="{ value }">
             <span
               :class="[
-                'inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium',
+                'inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium',
                 value === 'anthropic'
-                  ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                  ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
                   : value === 'openai'
-                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
                     : value === 'antigravity'
-                      ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
-                      : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+                      ? 'bg-violet-50 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300'
+                      : 'bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300',
               ]"
             >
               <PlatformIcon :platform="value" size="xs" />
@@ -137,10 +120,10 @@
               <!-- Type Badge -->
               <span
                 :class="[
-                  'inline-block rounded-full px-2 py-0.5 text-xs font-medium',
+                  'inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium',
                   row.subscription_type === 'subscription'
-                    ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400'
-                    : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300',
+                    ? 'bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300'
+                    : 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300',
                 ]"
               >
                 {{
@@ -198,23 +181,41 @@
           </template>
 
           <template #cell-rate_multiplier="{ value }">
-            <span class="text-sm text-gray-700 dark:text-gray-300"
-              >{{ value }}x</span
-            >
+            <span
+              class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium tabular-nums"
+              :class="value > 1
+                ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+                : value < 1
+                  ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                  : 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'"
+            >{{ value }}x</span>
           </template>
 
           <template #cell-is_exclusive="{ value }">
-            <span :class="['badge', value ? 'badge-primary' : 'badge-gray']">
-              {{
-                value ? t("admin.groups.exclusive") : t("admin.groups.public")
-              }}
+            <span
+              v-if="value"
+              class="inline-flex items-center gap-1 rounded-md bg-violet-50 px-2 py-0.5 text-xs font-medium text-violet-700 dark:bg-violet-500/15 dark:text-violet-300"
+            >
+              <Icon name="shield" size="xs" />
+              {{ t("admin.groups.exclusive") }}
+            </span>
+            <span
+              v-else
+              class="inline-flex items-center gap-1 rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-dark-700 dark:text-gray-300"
+            >
+              <Icon name="globe" size="xs" />
+              {{ t("admin.groups.public") }}
             </span>
           </template>
 
           <template #cell-account_count="{ row }">
-            <!-- 用 label/数字两列布局，标签灰色统一宽度，数字 tabular-nums 等宽对齐，
-                 视觉上像迷你的指标面板而不是堆叠的句子；单位放数字旁边小灰角标减少噪音 -->
-            <div class="inline-grid min-w-[8.5rem] grid-cols-[auto_1fr] items-baseline gap-x-2 gap-y-0.5 text-xs">
+            <!-- 点击数字跳转到账号管理并按当前分组过滤，省去手动搜索 -->
+            <button
+              type="button"
+              class="inline-grid min-w-[8.5rem] cursor-pointer grid-cols-[auto_1fr] items-baseline gap-x-2 gap-y-0.5 rounded-md p-1 text-left text-xs transition-colors hover:bg-gray-50 dark:hover:bg-dark-800"
+              :title="t('admin.groups.viewAccountsInGroup')"
+              @click.stop="goToAccounts(row)"
+            >
               <span class="text-gray-500 dark:text-gray-400">{{ t("admin.groups.accountsAvailable") }}</span>
               <span class="text-right font-mono tabular-nums font-semibold text-emerald-600 dark:text-emerald-400">
                 {{ (row.active_account_count || 0) - (row.rate_limited_account_count || 0) }}
@@ -232,7 +233,7 @@
                 {{ row.account_count || 0 }}
                 <span class="ml-0.5 text-[10px] font-normal text-gray-400">{{ t("admin.groups.accountsUnit") }}</span>
               </span>
-            </div>
+            </button>
           </template>
 
           <template #cell-capacity="{ row }">
@@ -250,37 +251,55 @@
 
           <template #cell-usage="{ row }">
             <div v-if="usageLoading" class="text-xs text-gray-400">—</div>
-            <div v-else class="inline-block space-y-0.5 text-left align-middle text-xs">
-              <div class="text-gray-500 dark:text-gray-400">
-                <span class="text-gray-400 dark:text-gray-500">{{
-                  t("admin.groups.usageToday")
-                }}</span>
-                <span class="ml-1 font-medium text-gray-700 dark:text-gray-300"
-                  >${{
-                    formatCost(usageMap.get(row.id)?.today_cost ?? 0)
-                  }}</span
-                >
+            <div v-else class="min-w-[10rem] text-sm">
+              <div class="flex items-baseline gap-1 tabular-nums">
+                <span class="font-semibold text-gray-900 dark:text-white">
+                  ${{ formatCost(usageMap.get(row.id)?.today_cost ?? 0) }}
+                </span>
+                <span class="text-[11px] text-gray-400 dark:text-dark-500">{{ t("admin.groups.usageToday") }}</span>
               </div>
-              <div class="text-gray-500 dark:text-gray-400">
-                <span class="text-gray-400 dark:text-gray-500">{{
-                  t("admin.groups.usageTotal")
-                }}</span>
-                <span class="ml-1 font-medium text-gray-700 dark:text-gray-300"
-                  >${{
-                    formatCost(usageMap.get(row.id)?.total_cost ?? 0)
-                  }}</span
-                >
+              <div class="mt-0.5 flex items-baseline gap-1 tabular-nums text-xs">
+                <span class="font-medium text-gray-500 dark:text-dark-400">
+                  ${{ formatCost(usageMap.get(row.id)?.total_cost ?? 0) }}
+                </span>
+                <span class="text-[11px] text-gray-400 dark:text-dark-500">{{ t("admin.groups.usageTotal") }}</span>
+              </div>
+              <!-- 日限额进度条：今日 / daily_limit 占比超过 80% amber、超过 100% red -->
+              <div v-if="row.subscription_type === 'subscription' && row.daily_limit_usd" class="mt-1.5">
+                <div class="flex items-baseline justify-between text-[10px]">
+                  <span class="text-gray-400">{{ t('admin.groups.dailyUsage') }}</span>
+                  <span class="tabular-nums" :class="usagePercentColor(row)">
+                    {{ usagePercent(row).toFixed(0) }}%
+                  </span>
+                </div>
+                <div class="mt-0.5 h-1 w-full overflow-hidden rounded-full bg-gray-200/70 dark:bg-dark-700">
+                  <div
+                    class="h-full rounded-full transition-all"
+                    :class="usagePercentBg(row)"
+                    :style="{ width: `${Math.min(usagePercent(row), 100)}%` }"
+                  ></div>
+                </div>
               </div>
             </div>
           </template>
 
           <template #cell-status="{ value }">
             <span
-              :class="[
-                'badge',
-                value === 'active' ? 'badge-success' : 'badge-danger',
-              ]"
+              class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium"
+              :class="value === 'active'
+                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                : 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'"
             >
+              <span class="relative flex h-1.5 w-1.5">
+                <span
+                  v-if="value === 'active'"
+                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70"
+                ></span>
+                <span
+                  class="relative inline-flex h-1.5 w-1.5 rounded-full"
+                  :class="value === 'active' ? 'bg-emerald-500' : 'bg-rose-500'"
+                ></span>
+              </span>
               {{ t("admin.accounts.status." + value) }}
             </span>
           </template>
@@ -288,33 +307,56 @@
           <template #cell-actions="{ row }">
             <div class="flex items-center justify-center gap-1">
               <button
-                @click="handleEdit(row)"
+                @click.stop="handleEdit(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-dark-700 dark:hover:text-primary-400"
+                :title="t('common.edit')"
               >
                 <Icon name="edit" size="sm" />
                 <span class="text-xs">{{ t("common.edit") }}</span>
               </button>
+              <!-- 快速启用/禁用：避免进编辑弹窗切换状态 -->
               <button
-                @click="handleRateMultipliers(row)"
+                @click.stop="handleToggleStatus(row)"
+                :class="[
+                  'flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors',
+                  row.status === 'active'
+                    ? 'hover:bg-amber-50 hover:text-amber-600 dark:hover:bg-amber-900/20 dark:hover:text-amber-400'
+                    : 'hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-900/20 dark:hover:text-emerald-400'
+                ]"
+                :title="row.status === 'active' ? t('admin.groups.disable') : t('admin.groups.enable')"
+              >
+                <Icon :name="row.status === 'active' ? 'ban' : 'checkCircle'" size="sm" />
+                <span class="text-xs">{{ row.status === 'active' ? t('admin.groups.disable') : t('admin.groups.enable') }}</span>
+              </button>
+              <!-- 复制分组：常见需求"基于现有配置创建相似分组" -->
+              <button
+                @click.stop="handleDuplicate(row)"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-sky-600 dark:hover:bg-dark-700 dark:hover:text-sky-400"
+                :title="t('admin.groups.duplicate')"
+              >
+                <Icon name="copy" size="sm" />
+                <span class="text-xs">{{ t("admin.groups.duplicate") }}</span>
+              </button>
+              <button
+                @click.stop="handleRateMultipliers(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-purple-600 dark:hover:bg-dark-700 dark:hover:text-purple-400"
+                :title="t('admin.groups.rateMultipliers')"
               >
                 <Icon name="dollar" size="sm" />
-                <span class="text-xs">{{
-                  t("admin.groups.rateMultipliers")
-                }}</span>
+                <span class="text-xs">{{ t("admin.groups.rateMultipliers") }}</span>
               </button>
               <button
-                @click="handleRPMOverrides(row)"
+                @click.stop="handleRPMOverrides(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-orange-600 dark:hover:bg-dark-700 dark:hover:text-orange-400"
+                :title="t('admin.groups.rpmOverrides')"
               >
                 <Icon name="bolt" size="sm" />
-                <span class="text-xs">{{
-                  t("admin.groups.rpmOverrides")
-                }}</span>
+                <span class="text-xs">{{ t("admin.groups.rpmOverrides") }}</span>
               </button>
               <button
-                @click="handleDelete(row)"
+                @click.stop="handleDelete(row)"
                 class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                :title="t('common.delete')"
               >
                 <Icon name="trash" size="sm" />
                 <span class="text-xs">{{ t("common.delete") }}</span>
@@ -2831,6 +2873,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, onUnmounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
 import { useAppStore } from "@/stores/app";
 import { useOnboardingStore } from "@/stores/onboarding";
 import { adminAPI } from "@/api/admin";
@@ -2863,6 +2906,35 @@ import {
 
 const { t } = useI18n();
 const appStore = useAppStore();
+const router = useRouter();
+
+// 跳转到账号管理并按当前分组过滤
+const goToAccounts = (group: AdminGroup) => {
+  router.push({ path: '/admin/accounts', query: { group_id: String(group.id) } });
+};
+
+// 限额使用率：今日 / daily_limit_usd 百分比
+const usagePercent = (group: AdminGroup): number => {
+  const limit = group.daily_limit_usd;
+  const today = usageMap.value.get(group.id)?.today_cost ?? 0;
+  if (!limit || limit <= 0) return 0;
+  return (today / limit) * 100;
+};
+
+// 限额警示色：< 80% emerald、80-100% amber、>= 100% red
+const usagePercentColor = (group: AdminGroup): string => {
+  const pct = usagePercent(group);
+  if (pct >= 100) return 'text-red-600 dark:text-red-400 font-semibold';
+  if (pct >= 80) return 'text-amber-600 dark:text-amber-400 font-medium';
+  return 'text-emerald-600 dark:text-emerald-400';
+};
+
+const usagePercentBg = (group: AdminGroup): string => {
+  const pct = usagePercent(group);
+  if (pct >= 100) return 'bg-red-500';
+  if (pct >= 80) return 'bg-amber-500';
+  return 'bg-emerald-500';
+};
 const onboardingStore = useOnboardingStore();
 
 const columns = computed<Column[]>(() => [
@@ -3906,6 +3978,40 @@ const handleRateMultipliers = (group: AdminGroup) => {
   showRateMultipliersModal.value = true;
 };
 
+// 一键切换分组启用状态（避免进编辑弹窗修改 status）
+const handleToggleStatus = async (group: AdminGroup) => {
+  try {
+    const newStatus: 'active' | 'inactive' = group.status === 'active' ? 'inactive' : 'active';
+    await adminAPI.groups.toggleStatus(group.id, newStatus);
+    appStore.showSuccess(
+      newStatus === 'active'
+        ? t('admin.groups.enabledSuccess')
+        : t('admin.groups.disabledSuccess')
+    );
+    loadGroups();
+  } catch (error: any) {
+    appStore.showError(
+      error.response?.data?.detail || t('admin.groups.failedToToggleStatus')
+    );
+    console.error('Error toggling group status:', error);
+  }
+};
+
+// 复制分组：弹出创建表单 + 预填当前分组配置（除 name 外），降低重复输入成本
+const handleDuplicate = (group: AdminGroup) => {
+  // 重置创建表单并填入现有分组配置
+  createForm.name = `${group.name} (copy)`;
+  createForm.description = group.description || '';
+  createForm.platform = group.platform;
+  createForm.rate_multiplier = group.rate_multiplier;
+  createForm.is_exclusive = group.is_exclusive;
+  createForm.subscription_type = group.subscription_type || 'standard';
+  if (group.daily_limit_usd != null) createForm.daily_limit_usd = group.daily_limit_usd;
+  if (group.weekly_limit_usd != null) createForm.weekly_limit_usd = group.weekly_limit_usd;
+  if (group.monthly_limit_usd != null) createForm.monthly_limit_usd = group.monthly_limit_usd;
+  showCreateModal.value = true;
+};
+
 const handleRPMOverrides = (group: AdminGroup) => {
   rpmOverridesGroup.value = group;
   showRPMOverridesModal.value = true;
@@ -4044,13 +4150,34 @@ const saveSortOrder = async () => {
   }
 };
 
+// 全局快捷键：N=新建分组、/=聚焦搜索（输入框聚焦时不拦截 N 避免干扰输入）
+const handleHotkey = (e: KeyboardEvent) => {
+  const target = e.target as HTMLElement | null;
+  const tag = target?.tagName?.toLowerCase();
+  const isTyping = tag === 'input' || tag === 'textarea' || target?.isContentEditable;
+  // / 聚焦搜索
+  if (e.key === '/' && !isTyping) {
+    e.preventDefault();
+    const el = document.querySelector('input[placeholder]') as HTMLInputElement | null;
+    el?.focus();
+    return;
+  }
+  // N 新建分组（避免和输入冲突 + 不在打开的 modal 上触发）
+  if ((e.key === 'n' || e.key === 'N') && !isTyping && !showCreateModal.value && !showEditModal.value) {
+    e.preventDefault();
+    showCreateModal.value = true;
+  }
+};
+
 onMounted(() => {
   loadGroups();
   document.addEventListener("click", handleClickOutside);
+  document.addEventListener("keydown", handleHotkey);
 });
 
 onUnmounted(() => {
   document.removeEventListener("click", handleClickOutside);
+  document.removeEventListener("keydown", handleHotkey);
   accountSearchRunner.clearAll();
   clearAllAccountSearchState();
 });

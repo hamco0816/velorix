@@ -435,6 +435,7 @@ export default {
     tomorrow: 'Tomorrow',
     unknown: 'Unknown',
     minutes: 'min',
+    user: 'User',
     time: {
       never: 'Never',
       justNow: 'Just now',
@@ -483,7 +484,7 @@ export default {
     logout: 'Logout',
     mySubscriptions: 'My Subscriptions',
     buySubscription: 'Recharge / Subscription',
-    docs: 'Docs',
+    docs: 'User Guide',
     myOrders: 'My Orders',
     mySeats: 'My Exclusive Seats',
     orderManagement: 'Orders',
@@ -718,6 +719,7 @@ export default {
   dashboard: {
     title: 'Dashboard',
     welcomeMessage: "Welcome back! Here's an overview of your account.",
+    welcomeTitle: 'Hi, {name}',
     coreStats: 'Core Stats',
     tokenStats: 'Token & Performance',
     balance: 'Balance',
@@ -923,6 +925,7 @@ export default {
     currentExpiration: 'Current expiration',
     expiresAt: 'Expires',
     noExpiration: 'Never',
+    expired: 'Expired',
     status: {
       active: 'Active',
       inactive: 'Inactive',
@@ -1065,6 +1068,8 @@ export default {
       '15d': '15 days',
       '30d': '30 days'
     },
+    heroOperational: 'operational',
+    heroAvgAvailability: 'avg uptime',
     overall: {
       operational: 'OPERATIONAL',
       degraded: 'DEGRADED',
@@ -1098,6 +1103,7 @@ export default {
     title: 'Available Channels',
     description: 'Channels you can access, along with their supported models and pricing',
     searchPlaceholder: 'Search channels or models...',
+    statChannels: 'channels',
     empty: 'No available channels',
     noModels: 'No models configured',
     noPricing: 'Pricing not configured',
@@ -1389,7 +1395,8 @@ export default {
 
   // Empty States
   empty: {
-    noData: 'No data found'
+    noData: 'No data found',
+    tryAdjustFilters: 'Try adjusting filters or check permissions'
   },
 
   // Table
@@ -1515,7 +1522,13 @@ export default {
       spendShort: 'Spend',
       requestsShort: 'Req',
       tokensShort: 'Tok',
-      failedToLoad: 'Failed to load dashboard statistics'
+      failedToLoad: 'Failed to load dashboard statistics',
+      todaySnapshot: 'Today Snapshot',
+      systemHealth: 'System Health',
+      liveUpdated: 'Updated',
+      secondsAgo: '{n}s ago',
+      todayDelta: 'Today',
+      userTrendTitle: 'User Usage Trend'
     },
 
     backup: {
@@ -2163,6 +2176,14 @@ export default {
       failedToCreate: 'Failed to create group',
       failedToUpdate: 'Failed to update group',
       failedToDelete: 'Failed to delete group',
+      duplicate: 'Duplicate',
+      enable: 'Enable',
+      disable: 'Disable',
+      enabledSuccess: 'Group enabled',
+      disabledSuccess: 'Group disabled',
+      failedToToggleStatus: 'Failed to toggle status',
+      viewAccountsInGroup: 'View accounts in this group',
+      dailyUsage: 'Daily',
       nameRequired: 'Please enter group name',
       rateMultipliers: 'Rate Multipliers',
       rateMultipliersTitle: 'Group Rate Multipliers',
@@ -4264,6 +4285,7 @@ export default {
       noSystemMetrics: 'No system metrics collected yet.',
       collectedAt: 'Collected at:',
       window: 'window',
+      systemHealthLabel: 'System Health',
       memory: 'Memory',
       db: 'DB',
       goroutines: 'Goroutines',
@@ -6148,6 +6170,9 @@ export default {
     subtitle: 'Manage exclusive pool seats you purchased; renew before expiry to keep the bound account.',
     empty: 'No exclusive seats yet',
     browsePlans: 'Browse Plans',
+    statTotal: 'seats',
+    statActive: 'active',
+    statExpiringSoon: 'expiring in 7d',
     assignedAt: 'Assigned At',
     expiresAt: 'Expires At',
     lastRenewalAt: 'Last Renewal',
@@ -6219,6 +6244,9 @@ export default {
     noActiveSubscriptionsDesc:
       "You don't have any active subscriptions. Contact administrator to get one.",
     failedToLoad: 'Failed to load subscriptions',
+    statTotal: 'subscriptions',
+    statActive: 'active',
+    statExpiringSoon: 'expiring in 7d',
     status: {
       active: 'Active',
       expired: 'Expired',
@@ -6720,6 +6748,14 @@ export default {
         colExpiresAt: 'Expires At',
         colActions: 'Actions',
         empty: 'No seats in this pool',
+        emptyFiltered: 'No matching seats',
+        emptyFilteredHint: 'Try adjusting search or filter',
+        searchPlaceholder: 'Search user / account / ID',
+        allStatuses: 'All Statuses',
+        totalCount: '{n} total',
+        alreadyExpired: 'Expired',
+        expiresToday: 'Expires today',
+        expiresInDays: '{n} days left',
         actExtend: 'Extend',
         actSwap: 'Swap',
         actRelease: 'Release',

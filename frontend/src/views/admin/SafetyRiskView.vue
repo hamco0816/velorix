@@ -1,32 +1,15 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <div class="risk-page space-y-5">
-      <!-- Hero：amber 渐变标题区，标识风险告警业务色调 -->
-      <header class="page-hero page-hero-amber">
-        <div class="relative z-10 max-w-3xl">
-          <span class="page-hero-tag page-hero-tag-amber">
-            <Icon name="shield" size="sm" />
-            风险与合规
-          </span>
-          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-            风控日志
-          </h1>
-          <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-            记录请求被拦截的命中规则、AI 审核结果与管理员复核状态，用于排查风险和清空用户管控记录。
-          </p>
-        </div>
-      </header>
-
-      <div class="risk-info-banner">
-        <span class="risk-info-icon">
-          <Icon name="infoCircle" size="sm" />
-        </span>
-        <span>
+      <!-- 简洁说明 chip 替代 hero（页面标题已由 AppHeader 提供） -->
+      <div class="flex items-start gap-2.5 rounded-xl border border-amber-200/60 bg-amber-50/60 px-4 py-3 dark:border-amber-500/20 dark:bg-amber-500/5">
+        <Icon name="shield" size="sm" class="mt-0.5 flex-shrink-0 text-amber-600 dark:text-amber-400" />
+        <p class="text-sm leading-6 text-amber-900 dark:text-amber-200">
           风控拦截会在请求发送到上游前执行。这里记录命中规则、是否经过 AI 审核以及管理员复核状态，便于排查风险和清空用户管控记录。
-        </span>
+        </p>
       </div>
 
-      <section class="card p-5">
+      <section class="surface-card p-5">
         <div class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(190px,1fr)_minmax(190px,1fr)_minmax(190px,1fr)_minmax(320px,1.25fr)_auto]">
           <label class="space-y-2">
             <span class="filter-label">状态</span>
@@ -71,52 +54,50 @@
           </label>
 
           <div class="flex items-end">
-            <button class="risk-icon-button h-10 w-full justify-center xl:w-auto" :disabled="loading" @click="loadEvents">
+            <button class="btn btn-secondary h-10 w-full justify-center gap-1.5 xl:w-auto" :disabled="loading" @click="loadEvents">
               <Icon name="refresh" size="sm" />
               <span>刷新</span>
             </button>
           </div>
         </div>
 
-        <div class="mt-5 flex flex-wrap items-center gap-3">
-          <button class="risk-action-button risk-action-primary min-w-[88px]" :disabled="loading" @click="applyFilters">查询</button>
-          <button class="risk-action-button risk-action-secondary min-w-[88px]" :disabled="loading" @click="resetFilters">重置</button>
+        <div class="mt-5 flex flex-wrap items-center gap-2">
+          <button class="btn btn-primary min-w-[88px]" :disabled="loading" @click="applyFilters">查询</button>
+          <button class="btn btn-secondary min-w-[88px]" :disabled="loading" @click="resetFilters">重置</button>
         </div>
       </section>
 
-      <section class="card overflow-hidden p-0">
-        <div class="grid grid-cols-1 divide-y divide-gray-100 dark:divide-dark-700 md:grid-cols-5 md:divide-x md:divide-y-0">
-          <div v-for="stat in riskStats" :key="stat.key" class="risk-stat">
-            <span class="risk-stat-icon" :class="stat.iconClass">
-              <Icon :name="stat.icon" size="md" />
-            </span>
-            <span class="min-w-0">
-              <span class="block text-sm text-gray-500 dark:text-gray-400">{{ stat.label }}</span>
-              <span class="mt-1 block text-2xl font-semibold leading-none text-gray-900 dark:text-gray-100">{{ stat.value }}</span>
-              <span class="mt-2 block text-xs text-gray-400 dark:text-gray-500">{{ stat.hint }}</span>
-            </span>
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        <div v-for="stat in riskStats" :key="stat.key" class="metric-card">
+          <span class="risk-stat-icon" :class="stat.iconClass">
+            <Icon :name="stat.icon" size="sm" :stroke-width="1.75" />
+          </span>
+          <div class="min-w-0 flex-1">
+            <p class="text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ stat.label }}</p>
+            <p class="mt-1 text-[24px] font-semibold leading-tight tabular-nums text-gray-900 dark:text-white">{{ stat.value }}</p>
+            <p class="mt-1 text-xs text-gray-400 dark:text-dark-500">{{ stat.hint }}</p>
           </div>
         </div>
-      </section>
+      </div>
 
       <!-- 白名单管理 + 规则统计：默认折叠，admin 可点开 -->
-      <section class="card overflow-hidden">
+      <section class="surface-card overflow-hidden">
         <div class="flex flex-wrap items-center gap-2 border-b border-gray-100 px-4 py-3 dark:border-dark-700">
           <button
             type="button"
             class="rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
-            :class="activePanel === 'allowlist' ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700'"
+            :class="activePanel === 'allowlist' ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700'"
             @click="togglePanel('allowlist')"
           >
-            🟢 白名单管理 ({{ allowlistDetail.length }})
+            白名单管理 ({{ allowlistDetail.length }})
           </button>
           <button
             type="button"
             class="rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
-            :class="activePanel === 'stats' ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700'"
+            :class="activePanel === 'stats' ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900' : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700'"
             @click="togglePanel('stats')"
           >
-            📊 规则命中统计
+            规则命中统计
           </button>
           <!-- 批量 AI 复核：把当前列表里所有 ai_reviewed=false 的事件依次同步复核 -->
           <button
@@ -127,7 +108,7 @@
             title="对当前页所有未经过 AI 的事件依次跑 AI 审核（顺序执行避免限流）"
             @click="batchAIReview"
           >
-            {{ batchAIReviewing ? `AI 复核中… ${batchProgress.done}/${batchProgress.total}` : `🤖 批量 AI 复核当前页 (${pendingAIReviewCount})` }}
+            {{ batchAIReviewing ? `AI 复核中… ${batchProgress.done}/${batchProgress.total}` : `批量 AI 复核当前页 (${pendingAIReviewCount})` }}
           </button>
           <button
             v-if="activePanel"
@@ -176,7 +157,7 @@
                   <span class="font-mono text-gray-500">#{{ user.id }}</span>
                   <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ user.username || user.email }}</span>
                   <span v-if="user.username && user.email" class="ml-2 text-xs text-gray-500">{{ user.email }}</span>
-                  <span v-if="allowlistedUserIds.has(user.id)" class="ml-2 text-xs text-emerald-600 dark:text-emerald-400">✓ 已在白名单</span>
+                  <span v-if="allowlistedUserIds.has(user.id)" class="ml-2 text-xs text-emerald-600 dark:text-emerald-400">已在白名单</span>
                   <span v-else-if="allowlistAddingId === user.id" class="ml-2 text-xs text-gray-500">添加中…</span>
                 </button>
               </div>
@@ -225,7 +206,7 @@
               :key="opt.hours"
               type="button"
               class="rounded-md px-2.5 py-1 text-xs font-medium"
-              :class="ruleStatsHours === opt.hours ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-300'"
+              :class="ruleStatsHours === opt.hours ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-300'"
               @click="setRuleStatsHours(opt.hours)"
             >
               {{ opt.label }}
@@ -233,7 +214,7 @@
             <span class="ml-auto text-xs text-gray-400">显示 top {{ ruleStats.length }}，按命中数降序</span>
           </div>
           <p class="mb-3 rounded-md bg-blue-50 px-3 py-2 text-xs text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
-            💡 如果某条规则的 AI Pass 率很高 → 大概率是误报源头，建议把它从 block 改为 warn 或删除
+            提示：如果某条规则的 AI Pass 率很高 → 大概率是误报源头，建议把它从 block 改为 warn 或删除
           </p>
           <div v-if="ruleStatsLoading" class="py-4 text-center text-sm text-gray-400">加载中...</div>
           <div v-else-if="ruleStats.length === 0" class="rounded-lg border border-dashed border-gray-300 py-8 text-center text-sm text-gray-500 dark:border-dark-600">
@@ -287,7 +268,7 @@
         </div>
       </section>
 
-      <section class="card overflow-hidden p-0">
+      <section class="surface-card overflow-hidden">
         <div class="overflow-x-auto px-4 pt-4">
           <table class="min-w-full divide-y divide-gray-200 dark:divide-dark-700">
             <thead class="bg-gray-50 dark:bg-dark-800">
@@ -405,7 +386,7 @@
                       :title="'用 AI 模型对该事件做二次审核（消耗配置的 ApiKey 额度）'"
                       @click="triggerAIReview(item)"
                     >
-                      {{ aiReviewingIds.has(item.id) ? 'AI 审核中…' : '🤖 AI 复核' }}
+                      {{ aiReviewingIds.has(item.id) ? 'AI 审核中…' : 'AI 复核' }}
                     </button>
                     <button
                       v-if="item.user_id && !allowlistedUserIds.has(item.user_id)"
@@ -421,7 +402,7 @@
                       class="mr-2 inline-flex items-center rounded bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
                       title="该用户已在风控白名单"
                     >
-                      ✓ 已白名单
+                      已白名单
                     </span>
                     <button
                       v-if="item.user_id && item.status !== 'cleared'"
@@ -580,7 +561,7 @@ async function copyPreviewToClipboard() {
   }
 }
 // 风控白名单缓存：在白名单的 user 后续请求直接跳过 sensitive_filter；
-// 列表中行级 "加入白名单" / "✓已白名单" 角标基于这个 Set 渲染
+// 列表中行级 "加入白名单" / "已白名单" 角标基于这个 Set 渲染
 const allowlistedUserIds = ref<Set<number>>(new Set())
 async function refreshAllowlist() {
   try {
@@ -1137,11 +1118,11 @@ function aiParse(raw: string | null | undefined): AIReviewParsed {
 function aiVerdictLabel(verdict: string): string {
   switch (verdict) {
     case 'pass':
-      return '✓ 通过'
+      return '通过'
     case 'flag':
-      return '⚠ 需复核'
+      return '需复核'
     case 'reject':
-      return '✗ 违规'
+      return '违规'
     case 'raw':
       return '原始'
     case 'error':
@@ -1342,22 +1323,40 @@ onMounted(() => {
   color: white;
 }
 
-.risk-stat {
-  display: flex;
-  min-height: 6.75rem;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.5rem 1.25rem;
-}
-
+/* metric-card 内的图标块：2.5rem 与 ops 系统资源卡同款尺寸 */
 .risk-stat-icon {
   display: inline-flex;
-  height: 3rem;
-  width: 3rem;
+  height: 2.5rem;
+  width: 2.5rem;
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
   border-radius: 0.75rem;
+}
+
+/* metric-card 局部样式：与仪表盘统一的 Notion 风 */
+.metric-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  border-radius: 1rem;
+  border: 1px solid rgb(229 231 235 / 0.7);
+  background: white;
+  padding: 1rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: all 0.2s;
+}
+.metric-card:hover {
+  border-color: rgb(209 213 219);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  transform: translateY(-2px);
+}
+.dark .metric-card {
+  border-color: rgb(55 65 81 / 0.6);
+  background: rgb(31 41 55 / 0.4);
+}
+.dark .metric-card:hover {
+  border-color: rgb(75 85 99);
 }
 
 .risk-empty-state {
@@ -1372,20 +1371,19 @@ onMounted(() => {
 
 .risk-empty-icon {
   display: inline-flex;
-  height: 5rem;
-  width: 5rem;
+  height: 4rem;
+  width: 4rem;
   align-items: center;
   justify-content: center;
-  border-radius: 1.5rem;
-  background: linear-gradient(180deg, rgb(219 234 254), rgb(238 242 255));
-  color: rgb(79 70 229);
-  box-shadow: 0 18px 40px rgb(99 102 241 / 0.18);
-  margin-bottom: 1.25rem;
+  border-radius: 1rem;
+  background: rgb(243 244 246);
+  color: rgb(156 163 175);
+  margin-bottom: 1rem;
 }
 
 .dark .risk-empty-icon {
-  background: linear-gradient(180deg, rgb(30 64 175 / 0.4), rgb(49 46 129 / 0.45));
-  color: rgb(191 219 254);
+  background: rgb(55 65 81);
+  color: rgb(107 114 128);
 }
 
 .table-th {

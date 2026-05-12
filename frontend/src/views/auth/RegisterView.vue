@@ -177,7 +177,7 @@
           </p>
         </div>
 
-        <!-- Turnstile：占位 → ✓/widget → 失败 三段式，避免暴露 Cloudflare 灰色加载矩形 -->
+        <!-- Turnstile：占位 → 已校验/widget → 失败 三段式，避免暴露 Cloudflare 灰色加载矩形 -->
         <div v-if="turnstileEnabled && turnstileSiteKey">
           <div
             v-if="turnstilePlaceholderVisible"

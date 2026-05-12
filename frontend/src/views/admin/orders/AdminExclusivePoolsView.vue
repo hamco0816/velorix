@@ -1,90 +1,76 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <div class="space-y-5">
-      <header class="page-hero page-hero-violet">
-        <div class="relative z-10 max-w-3xl">
-          <span class="page-hero-tag page-hero-tag-violet">
-            <Icon name="badge" size="sm" />
-            {{ t('payment.admin.exclusivePools.title') }}
-          </span>
-          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-            {{ t('payment.admin.exclusivePools.title') }}
-          </h1>
-          <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-            {{ t('payment.admin.exclusivePools.subtitle') }}
-          </p>
+      <!-- 选择独享池：inline label + 控件单行对齐 -->
+      <div class="surface-card flex flex-wrap items-center gap-3 px-5 py-3">
+        <label class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+          <Icon name="badge" size="sm" class="text-gray-400" />
+          {{ t('payment.admin.exclusivePools.poolGroup') }}
+        </label>
+        <div class="w-full sm:w-64">
+          <Select v-model="selectedGroupID" :options="groupOptions" @change="loadInventoryAndSeats" />
         </div>
-      </header>
-
-      <!-- 选择独享池 -->
-      <div class="card p-4">
-        <div class="flex flex-wrap items-end gap-3">
-          <div class="min-w-[14rem]">
-            <label class="input-label">{{ t('payment.admin.exclusivePools.poolGroup') }}</label>
-            <Select v-model="selectedGroupID" :options="groupOptions" class="w-full" @change="loadInventoryAndSeats" />
-          </div>
-          <button @click="loadInventoryAndSeats" :disabled="!selectedGroupID || loading" class="btn btn-secondary">
-            <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
-          </button>
-          <button @click="grantDialogOpen = true" :disabled="!selectedGroupID" class="btn btn-primary">
-            <Icon name="plus" size="md" /> {{ t('payment.admin.exclusivePools.grantButton') }}
-          </button>
-        </div>
+        <button @click="loadInventoryAndSeats" :disabled="!selectedGroupID || loading" class="btn btn-secondary btn-sm" :title="t('common.refresh')">
+          <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
+        </button>
+        <button @click="grantDialogOpen = true" :disabled="!selectedGroupID" class="btn btn-primary btn-sm ml-auto">
+          <Icon name="plus" size="sm" class="mr-1.5" />
+          {{ t('payment.admin.exclusivePools.grantButton') }}
+        </button>
       </div>
 
       <!-- 库存看板 -->
-      <div v-if="inventory" class="grid gap-3 sm:grid-cols-4">
-        <div class="card flex items-center gap-3 p-4">
-          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 text-violet-600 dark:bg-violet-900/30 dark:text-violet-300">
-            <Icon name="badge" size="md" />
-          </div>
-          <div>
-            <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('payment.admin.exclusivePools.statTotal') }}</p>
-            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ inventory.total }}</p>
+      <div v-if="inventory" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="metric-card">
+          <span class="metric-icon bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300">
+            <Icon name="badge" size="sm" :stroke-width="1.75" />
+          </span>
+          <div class="min-w-0 flex-1">
+            <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.statTotal') }}</p>
+            <p class="mt-1 text-[24px] font-semibold leading-tight tabular-nums text-gray-900 dark:text-white">{{ inventory.total }}</p>
           </div>
         </div>
-        <!-- 把"可立即分配"作为主要指标（真实可售卖数），原"空闲"作为次要技术指标 -->
-        <div class="card flex items-center gap-3 p-4">
-          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300">
-            <Icon name="check" size="md" />
-          </div>
-          <div class="min-w-0">
-            <p class="text-xs text-gray-500 dark:text-gray-400" :title="t('payment.admin.exclusivePools.statSchedulableHint')">
+        <div class="metric-card">
+          <span class="metric-icon bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
+            <Icon name="check" size="sm" :stroke-width="1.75" />
+          </span>
+          <div class="min-w-0 flex-1">
+            <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400" :title="t('payment.admin.exclusivePools.statSchedulableHint')">
               {{ t('payment.admin.exclusivePools.statAvailableNow') }}
             </p>
-            <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-300">
+            <p class="mt-1 text-[24px] font-semibold leading-tight tabular-nums text-emerald-600 dark:text-emerald-400">
               {{ typeof inventory.schedulable === 'number' ? inventory.schedulable : inventory.free }}
             </p>
             <p v-if="typeof inventory.schedulable === 'number' && inventory.schedulable !== inventory.free"
-              class="mt-0.5 text-[11px] text-gray-500 dark:text-gray-400">
+              class="mt-1 text-[11px] tabular-nums text-gray-500 dark:text-gray-400">
               {{ t('payment.admin.exclusivePools.statFreeRaw', { n: inventory.free }) }}
             </p>
           </div>
         </div>
-        <div class="card flex items-center gap-3 p-4">
-          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300">
-            <Icon name="link" size="md" />
-          </div>
-          <div>
-            <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('payment.admin.exclusivePools.statUsed') }}</p>
-            <p class="text-2xl font-bold text-blue-600 dark:text-blue-300">{{ inventory.used }}</p>
+        <div class="metric-card">
+          <span class="metric-icon bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300">
+            <Icon name="link" size="sm" :stroke-width="1.75" />
+          </span>
+          <div class="min-w-0 flex-1">
+            <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.statUsed') }}</p>
+            <p class="mt-1 text-[24px] font-semibold leading-tight tabular-nums text-sky-600 dark:text-sky-400">{{ inventory.used }}</p>
           </div>
         </div>
         <!-- 7 天内到期：可点击筛选 seat 列表，运营预警入口 -->
         <button
           type="button"
-          class="card flex w-full items-center gap-3 p-4 text-left transition hover:ring-2 hover:ring-amber-300 dark:hover:ring-amber-700"
-          :class="{ 'ring-2 ring-amber-400 dark:ring-amber-600': expiringFilter }"
+          class="metric-card text-left"
+          :class="expiringFilter ? 'ring-2 ring-amber-300 dark:ring-amber-500/50' : ''"
           :disabled="inventory.expiring_in_7 === 0"
           @click="toggleExpiringFilter"
         >
-          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300">
-            <Icon name="clock" size="md" />
-          </div>
-          <div class="min-w-0">
-            <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('payment.admin.exclusivePools.statExpiring') }}</p>
-            <p class="text-2xl font-bold text-amber-600 dark:text-amber-300">{{ inventory.expiring_in_7 }}</p>
-            <p v-if="inventory.expiring_in_7 > 0" class="mt-0.5 text-[11px] text-amber-700/80 dark:text-amber-300/70">
+          <span class="metric-icon bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300">
+            <Icon name="clock" size="sm" :stroke-width="1.75" />
+          </span>
+          <div class="min-w-0 flex-1">
+            <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.statExpiring') }}</p>
+            <p class="mt-1 text-[24px] font-semibold leading-tight tabular-nums text-amber-600 dark:text-amber-400">{{ inventory.expiring_in_7 }}</p>
+            <p v-if="inventory.expiring_in_7 > 0" class="mt-1 text-[11px] text-amber-700/80 dark:text-amber-300/70">
               {{ expiringFilter ? t('payment.admin.exclusivePools.statExpiringClickClear') : t('payment.admin.exclusivePools.statExpiringClickFilter') }}
             </p>
           </div>
@@ -102,61 +88,109 @@
         </button>
       </div>
 
-      <!-- seat 列表 -->
-      <div class="card overflow-hidden">
+      <!-- seat 列表：顶部加搜索 + 状态筛选 -->
+      <div class="surface-card overflow-hidden">
+        <!-- 列表筛选条 -->
+        <div class="flex flex-wrap items-center gap-2 border-b border-gray-200/60 px-5 py-3 dark:border-dark-700/60">
+          <div class="relative w-full sm:w-64">
+            <Icon name="search" size="sm" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              v-model="seatSearch"
+              type="text"
+              :placeholder="t('payment.admin.exclusivePools.searchPlaceholder')"
+              class="input w-full pl-9"
+            />
+          </div>
+          <div class="w-[9.5rem]">
+            <Select v-model="seatStatusFilter" :options="seatStatusOptions" />
+          </div>
+          <span class="ml-auto text-xs text-gray-500 dark:text-dark-400">
+            {{ t('payment.admin.exclusivePools.totalCount', { n: filteredSeats.length }) }}
+          </span>
+        </div>
+
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200 dark:divide-dark-700">
-            <thead class="bg-gray-50 dark:bg-dark-800">
+          <table class="min-w-full divide-y divide-gray-200/60 dark:divide-dark-700/60">
+            <thead class="bg-gray-50/60 dark:bg-dark-800/60">
               <tr>
-                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400">ID</th>
-                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400">{{ t('payment.admin.exclusivePools.colUser') }}</th>
-                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400">{{ t('payment.admin.exclusivePools.colAccount') }}</th>
-                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400">{{ t('payment.admin.exclusivePools.colStatus') }}</th>
-                <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400">{{ t('payment.admin.exclusivePools.colExpiresAt') }}</th>
-                <th class="px-4 py-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400">{{ t('payment.admin.exclusivePools.colActions') }}</th>
+                <th class="px-4 py-3 text-left text-[13px] font-medium text-gray-500 dark:text-dark-400">ID</th>
+                <th class="px-4 py-3 text-left text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.colUser') }}</th>
+                <th class="px-4 py-3 text-left text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.colAccount') }}</th>
+                <th class="px-4 py-3 text-left text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.colStatus') }}</th>
+                <th class="px-4 py-3 text-left text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.colExpiresAt') }}</th>
+                <th class="px-4 py-3 text-right text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.colActions') }}</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-dark-700">
-              <tr v-for="seat in filteredSeats" :key="seat.id" class="text-sm">
-                <td class="px-4 py-2 text-gray-500 dark:text-gray-400">#{{ seat.id }}</td>
-                <td class="px-4 py-2">
+            <tbody class="divide-y divide-gray-100 dark:divide-dark-700/60">
+              <tr v-for="seat in filteredSeats" :key="seat.id" class="text-sm transition-colors hover:bg-gray-50/60 dark:hover:bg-dark-800/40">
+                <td class="px-4 py-3 font-mono text-gray-500 dark:text-gray-400">#{{ seat.id }}</td>
+                <td class="px-4 py-3">
                   <div class="flex flex-col">
                     <span class="font-medium text-gray-900 dark:text-white">{{ userLabel(seat.user_id) }}</span>
                     <span class="font-mono text-[11px] text-gray-400">#{{ seat.user_id }}</span>
                   </div>
                 </td>
-                <td class="px-4 py-2">
+                <td class="px-4 py-3">
                   <div class="flex flex-col">
                     <span class="text-gray-900 dark:text-gray-200">{{ accountLabel(seat.account_id) }}</span>
                     <span class="font-mono text-[11px] text-gray-400">#{{ seat.account_id }}</span>
                   </div>
                 </td>
-                <td class="px-4 py-2">
-                  <span :class="['rounded-full px-2 py-0.5 text-[11px] font-semibold', statusPillClass(seat.status)]">
+                <td class="px-4 py-3">
+                  <span class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium" :class="statusPillClass(seat.status)">
+                    <span class="relative flex h-1.5 w-1.5">
+                      <span
+                        v-if="seat.status === 'active'"
+                        class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70"
+                      ></span>
+                      <span
+                        class="relative inline-flex h-1.5 w-1.5 rounded-full"
+                        :class="statusDotClass(seat.status)"
+                      ></span>
+                    </span>
                     {{ t(`exclusiveSeats.status.${seat.status}`) }}
                   </span>
                 </td>
-                <td class="px-4 py-2">
-                  <span :class="expiresColor(seat)">{{ formatDate(seat.expires_at) }}</span>
-                  <span v-if="isExpiringSoon(seat)" class="ml-1 rounded bg-amber-100 px-1 text-[10px] font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">!</span>
+                <td class="px-4 py-3">
+                  <div class="flex flex-col items-start gap-1">
+                    <span class="text-sm tabular-nums" :class="expiresColor(seat)">{{ formatDate(seat.expires_at) }}</span>
+                    <!-- 倒计时 chip：< 3 天 rose / 3-7 天 amber，更醒目 -->
+                    <span v-if="seat.status === 'active' && expiryDays(seat) !== null" class="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium" :class="expiryChipClass(seat)">
+                      <Icon name="clock" size="xs" />
+                      {{ expiryChipLabel(seat) }}
+                    </span>
+                  </div>
                 </td>
-                <td class="px-4 py-2 text-right">
+                <td class="px-4 py-3 text-right">
                   <div class="flex justify-end gap-1">
-                    <button v-if="seat.status === 'active'" @click="openExtend(seat)" class="rounded-md px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-dark-700">
+                    <button v-if="seat.status === 'active'" @click="openExtend(seat)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-dark-700 dark:hover:text-gray-100" :title="t('payment.admin.exclusivePools.actExtend')">
+                      <Icon name="calendar" size="xs" />
                       {{ t('payment.admin.exclusivePools.actExtend') }}
                     </button>
-                    <button v-if="seat.status === 'active'" @click="openSwap(seat)" class="rounded-md px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20">
+                    <button v-if="seat.status === 'active'" @click="openSwap(seat)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-sky-600 transition-colors hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-500/10" :title="t('payment.admin.exclusivePools.actSwap')">
+                      <Icon name="refresh" size="xs" />
                       {{ t('payment.admin.exclusivePools.actSwap') }}
                     </button>
-                    <button v-if="seat.status === 'active'" @click="openRelease(seat)" class="rounded-md px-2 py-1 text-xs text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20">
+                    <button v-if="seat.status === 'active'" @click="openRelease(seat)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-rose-600 transition-colors hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10" :title="t('payment.admin.exclusivePools.actRelease')">
+                      <Icon name="trash" size="xs" />
                       {{ t('payment.admin.exclusivePools.actRelease') }}
                     </button>
                   </div>
                 </td>
               </tr>
               <tr v-if="filteredSeats.length === 0">
-                <td colspan="6" class="py-12 text-center text-sm text-gray-400">
-                  {{ expiringFilter ? t('payment.admin.exclusivePools.emptyExpiring') : t('payment.admin.exclusivePools.empty') }}
+                <td colspan="6" class="py-16">
+                  <div class="flex flex-col items-center gap-3">
+                    <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 text-gray-400 dark:bg-dark-700 dark:text-dark-500">
+                      <Icon name="inbox" size="lg" />
+                    </div>
+                    <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                      {{ expiringFilter ? t('payment.admin.exclusivePools.emptyExpiring') : (seatSearch || seatStatusFilter ? t('payment.admin.exclusivePools.emptyFiltered') : t('payment.admin.exclusivePools.empty')) }}
+                    </p>
+                    <p v-if="!filteredSeats.length && (seatSearch || seatStatusFilter || expiringFilter)" class="text-xs text-gray-500 dark:text-dark-400">
+                      {{ t('payment.admin.exclusivePools.emptyFilteredHint') }}
+                    </p>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -199,8 +233,9 @@
             </div>
           </div>
           <p v-if="selectedUser" class="mt-1.5 text-xs">
-            <span class="rounded bg-green-100 px-1.5 py-0.5 font-medium text-green-700 dark:bg-green-900/30 dark:text-green-300">
-              ✓ {{ t('payment.admin.exclusivePools.userSearchSelected') }}: #{{ selectedUser.id }} {{ selectedUser.username || selectedUser.email }}
+            <span class="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 font-medium text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
+              <Icon name="check" size="xs" />
+              {{ t('payment.admin.exclusivePools.userSearchSelected') }}: #{{ selectedUser.id }} {{ selectedUser.username || selectedUser.email }}
             </span>
           </p>
           <p v-else-if="userSearchQuery && userSearchResults.length === 0 && !userSearchLoading" class="mt-1 text-xs text-amber-600 dark:text-amber-400">
@@ -217,6 +252,21 @@
         <div>
           <label class="input-label">{{ t('payment.admin.exclusivePools.validityDays') }}</label>
           <input v-model.number="grantForm.validity_days" type="number" min="1" class="input mt-1 w-full" />
+          <!-- 快捷按钮：常用 7/30/90/180/365 天，省去手动输入 -->
+          <div class="mt-2 flex flex-wrap gap-1.5">
+            <button
+              v-for="d in [7, 30, 90, 180, 365]"
+              :key="d"
+              type="button"
+              class="rounded-md px-2 py-0.5 text-xs font-medium transition-colors"
+              :class="grantForm.validity_days === d
+                ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600'"
+              @click="grantForm.validity_days = d"
+            >
+              {{ d }}{{ t('payment.admin.daySuffix') }}
+            </button>
+          </div>
         </div>
         <div>
           <label class="input-label">{{ t('payment.admin.exclusivePools.notes') }}</label>
@@ -261,6 +311,21 @@
           <label class="input-label">{{ t('payment.admin.exclusivePools.extendDays') }}</label>
           <input v-model.number="extendDays" type="number" class="input mt-1 w-full" />
           <p class="mt-1 text-xs text-gray-500">{{ t('payment.admin.exclusivePools.extendHint') }}</p>
+          <!-- 快捷延期：+7/+30/+90/+180/+365 / -7 缩减 -->
+          <div class="mt-2 flex flex-wrap gap-1.5">
+            <button
+              v-for="d in [7, 30, 90, 180, 365]"
+              :key="d"
+              type="button"
+              class="rounded-md px-2 py-0.5 text-xs font-medium transition-colors"
+              :class="extendDays === d
+                ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600'"
+              @click="extendDays = d"
+            >
+              +{{ d }}{{ t('payment.admin.daySuffix') }}
+            </button>
+          </div>
         </div>
         <!-- 预览：当前到期日 + 输入天数 = 新到期日，让管理员所见即所得 -->
         <div v-if="extendTarget" class="rounded-lg bg-gray-50 p-3 text-xs dark:bg-dark-800">
@@ -306,8 +371,9 @@
           <div class="py-0.5"><span class="text-gray-500">{{ t('payment.admin.exclusivePools.colUser') }}:</span> <span class="font-medium">{{ userLabel(swapTarget.user_id) }} (#{{ swapTarget.user_id }})</span></div>
           <div class="py-0.5"><span class="text-gray-500">{{ t('payment.admin.exclusivePools.swapDialogOldAccount') }}:</span> <span class="font-medium">{{ accountLabel(swapTarget.account_id) }} (#{{ swapTarget.account_id }})</span></div>
         </div>
-        <p class="text-xs text-amber-700 dark:text-amber-400">
-          ⚠️ {{ t('payment.admin.exclusivePools.swapDialogWarn') }}
+        <p class="flex items-start gap-1.5 text-xs text-amber-700 dark:text-amber-400">
+          <Icon name="exclamationTriangle" size="xs" class="mt-0.5 flex-shrink-0" />
+          <span>{{ t('payment.admin.exclusivePools.swapDialogWarn') }}</span>
         </p>
       </div>
       <template #footer>
@@ -533,9 +599,33 @@ function isExpiringSoon(seat: AdminExclusiveSeat): boolean {
   return ms >= 0 && ms < 7 * 24 * 60 * 60 * 1000
 }
 
+// 搜索（user 名称 / user id / account 名称 / account id）+ 状态筛选 + 到期筛选
+const seatSearch = ref('')
+const seatStatusFilter = ref<string>('')
+const seatStatusOptions = computed(() => [
+  { value: '', label: t('payment.admin.exclusivePools.allStatuses') },
+  { value: 'active', label: t('exclusiveSeats.status.active') },
+  { value: 'expired', label: t('exclusiveSeats.status.expired') },
+  { value: 'refunded', label: t('exclusiveSeats.status.refunded') }
+])
+
 const filteredSeats = computed(() => {
-  if (!expiringFilter.value) return seats.value
-  return seats.value.filter((s) => s.status === 'active' && isExpiringSoon(s))
+  let list = seats.value
+  if (expiringFilter.value) {
+    list = list.filter((s) => s.status === 'active' && isExpiringSoon(s))
+  }
+  if (seatStatusFilter.value) {
+    list = list.filter((s) => s.status === seatStatusFilter.value)
+  }
+  const q = seatSearch.value.trim().toLowerCase()
+  if (q) {
+    list = list.filter((s) => {
+      const userText = `${userLabel(s.user_id)} ${s.user_id}`.toLowerCase()
+      const accountText = `${accountLabel(s.account_id)} ${s.account_id}`.toLowerCase()
+      return userText.includes(q) || accountText.includes(q)
+    })
+  }
+  return list
 })
 
 function toggleExpiringFilter() {
@@ -654,11 +744,43 @@ async function confirmExtend() {
 
 function statusPillClass(status: string): string {
   switch (status) {
-    case 'active': return 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:ring-emerald-900/50'
-    case 'expired': return 'bg-amber-50 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:ring-amber-900/50'
-    case 'refunded': return 'bg-purple-50 text-purple-700 ring-1 ring-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:ring-purple-900/50'
-    default: return 'bg-gray-50 text-gray-600 ring-1 ring-gray-200 dark:bg-dark-800 dark:text-gray-400 dark:ring-dark-600'
+    case 'active': return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+    case 'expired': return 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+    case 'refunded': return 'bg-violet-50 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300'
+    default: return 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'
   }
+}
+
+function statusDotClass(status: string): string {
+  switch (status) {
+    case 'active': return 'bg-emerald-500'
+    case 'expired': return 'bg-amber-500'
+    case 'refunded': return 'bg-violet-500'
+    default: return 'bg-gray-400'
+  }
+}
+
+// 到期倒计时（天数）：null = 没有到期时间
+function expiryDays(seat: AdminExclusiveSeat): number | null {
+  const ms = msUntilExpiry(seat)
+  if (!isFinite(ms)) return null
+  return Math.ceil(ms / (24 * 60 * 60 * 1000))
+}
+
+function expiryChipClass(seat: AdminExclusiveSeat): string {
+  const days = expiryDays(seat)
+  if (days === null || days >= 7) return ''
+  if (days < 0) return 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'
+  if (days < 3) return 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'
+  return 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+}
+
+function expiryChipLabel(seat: AdminExclusiveSeat): string {
+  const days = expiryDays(seat)
+  if (days === null || days >= 7) return ''
+  if (days < 0) return t('payment.admin.exclusivePools.alreadyExpired')
+  if (days === 0) return t('payment.admin.exclusivePools.expiresToday')
+  return t('payment.admin.exclusivePools.expiresInDays', { n: days })
 }
 
 function formatDate(s: string): string {
@@ -673,3 +795,19 @@ onMounted(() => {
   loadPlans()
 })
 </script>
+
+<style scoped>
+.metric-card {
+  @apply flex items-start gap-3 rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-200;
+  @apply dark:border-dark-700/60 dark:bg-dark-800/40;
+  @apply hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-[0_4px_16px_rgba(15,23,42,0.06)] dark:hover:border-dark-600;
+}
+
+.metric-card[disabled] {
+  @apply pointer-events-none opacity-60;
+}
+
+.metric-icon {
+  @apply flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl;
+}
+</style>

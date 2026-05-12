@@ -1,60 +1,33 @@
 <template>
-  <AppLayout>
-    <div class="space-y-5">
-      <!-- Hero：indigo 渐变标题区，与全站 page-hero 系列统一 -->
-      <header class="page-hero page-hero-indigo">
-        <div class="relative z-10 flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-          <div class="max-w-3xl">
-            <span class="page-hero-tag page-hero-tag-indigo">
-              <Icon name="book" size="sm" />
-              管理员文档
-            </span>
-            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-              配置词典与运维教程
-            </h1>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-              给管理员看的后台配置说明，重点解释小白容易混淆的专业术语、配置位置、风险点和上线前检查顺序。新增平台、支付、风控或用户文档时，先按这份清单核对。
-            </p>
-          </div>
-          <div class="grid grid-cols-2 gap-2 sm:grid-cols-4 xl:min-w-[520px]">
-            <div
-              v-for="stat in quickStats"
-              :key="stat.label"
-              class="docs-stat-card"
-              :class="`docs-stat-card-${stat.tone}`"
-            >
-              <div class="text-xl font-semibold text-gray-950 dark:text-white">{{ stat.value }}</div>
-              <div class="mt-0.5 text-xs text-gray-500 dark:text-dark-300">{{ stat.label }}</div>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <!-- 信息提示条：amber 警示，强调上线链路完整性 -->
-      <div class="docs-hint docs-hint-amber">
+  <AppLayout wide>
+    <div class="space-y-6">
+      <!-- 顶部 amber 警示条：强调上线链路完整性 -->
+      <div class="flex items-start gap-2.5 rounded-xl border border-amber-200/60 bg-amber-50/60 px-4 py-3 dark:border-amber-500/20 dark:bg-amber-500/5">
         <Icon name="exclamationCircle" size="sm" class="mt-0.5 flex-shrink-0 text-amber-600 dark:text-amber-300" />
-        <p class="text-sm leading-6 text-amber-900 dark:text-amber-100">
-          后台配置不要只看"能不能保存"。完整上线链路是：<span class="font-medium">出口可控、账号可调度、分组能授权、渠道能展示、模型能计费、错误能归因、风控能拦截、日志能复核</span>。
+        <p class="text-sm leading-6 text-amber-900 dark:text-amber-200">
+          后台配置不要只看"能不能保存"。完整上线链路是：<span class="font-semibold">出口可控、账号可调度、分组能授权、渠道能展示、模型能计费、错误能归因、风控能拦截、日志能复核</span>。
         </p>
       </div>
 
       <!-- 新平台上线顺序：8 个步骤卡片 -->
-      <section class="space-y-3">
-        <div class="flex items-center gap-2 px-1">
-          <Icon name="checkCircle" size="md" class="text-emerald-600 dark:text-emerald-300" />
-          <h2 class="text-lg font-semibold text-gray-950 dark:text-white">新平台上线顺序</h2>
+      <section class="space-y-4">
+        <div class="flex items-center gap-2.5">
+          <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
+            <Icon name="checkCircle" size="sm" :stroke-width="1.75" />
+          </span>
+          <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">新平台上线顺序</h2>
         </div>
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
           <article
             v-for="step in setupSteps"
             :key="step.title"
-            class="docs-step-card"
+            class="surface-card group p-5 transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(15,23,42,0.06)]"
           >
             <div class="flex items-start gap-3">
-              <span class="docs-step-no">{{ step.no }}</span>
+              <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gray-900 text-sm font-semibold text-white dark:bg-white dark:text-gray-900">{{ step.no }}</span>
               <div class="min-w-0">
-                <h3 class="text-sm font-semibold text-gray-950 dark:text-white">{{ step.title }}</h3>
-                <p class="mt-1 text-xs leading-5 text-gray-600 dark:text-dark-300">{{ step.desc }}</p>
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ step.title }}</h3>
+                <p class="mt-1.5 text-xs leading-5 text-gray-600 dark:text-dark-300">{{ step.desc }}</p>
                 <code class="mt-2 inline-block rounded-md bg-gray-50 px-1.5 py-0.5 font-mono text-[11px] text-gray-600 ring-1 ring-gray-200 dark:bg-dark-800/60 dark:text-dark-300 dark:ring-dark-700">{{ step.path }}</code>
               </div>
             </div>
@@ -62,32 +35,32 @@
         </div>
       </section>
 
-      <!-- 后台术语词典：violet 头部 panel，长表格 -->
-      <section class="colored-panel">
-        <div class="docs-panel-header colored-header-violet">
-          <div class="docs-panel-icon docs-panel-icon-violet">
-            <Icon name="grid" size="md" />
-          </div>
+      <!-- 后台术语词典 -->
+      <section class="surface-card overflow-hidden">
+        <header class="flex items-start gap-3 border-b border-gray-200/60 px-6 py-4 dark:border-dark-700/60">
+          <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300">
+            <Icon name="grid" size="sm" :stroke-width="1.75" />
+          </span>
           <div class="min-w-0">
-            <h2 class="text-base font-semibold text-gray-950 dark:text-white">后台术语词典</h2>
-            <p class="mt-0.5 text-sm text-gray-500 dark:text-dark-400">
+            <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">后台术语词典</h2>
+            <p class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">
               这里解释配置项的业务含义，不替代表单校验。遇到问题时优先从"影响"和"常见错误"两列定位。
             </p>
           </div>
-        </div>
+        </header>
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-100 text-sm dark:divide-dark-700">
-            <thead class="bg-gray-50/70 text-xs uppercase tracking-wide text-gray-500 dark:bg-dark-800/40 dark:text-dark-300">
-              <tr>
-                <th class="whitespace-nowrap px-4 py-3 text-left font-medium">配置/术语</th>
-                <th class="px-4 py-3 text-left font-medium">白话解释</th>
-                <th class="px-4 py-3 text-left font-medium">影响</th>
-                <th class="px-4 py-3 text-left font-medium">常见错误</th>
+          <table class="min-w-full divide-y divide-gray-200/60 text-sm dark:divide-dark-700/60">
+            <thead>
+              <tr class="bg-gray-50/60 dark:bg-dark-800/60">
+                <th class="whitespace-nowrap px-4 py-3 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">配置/术语</th>
+                <th class="px-4 py-3 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">白话解释</th>
+                <th class="px-4 py-3 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">影响</th>
+                <th class="px-4 py-3 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">常见错误</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100 bg-white dark:divide-dark-700 dark:bg-dark-800">
-              <tr v-for="item in glossary" :key="item.term" class="transition-colors hover:bg-violet-50/30 dark:hover:bg-violet-900/10">
-                <td class="whitespace-nowrap px-4 py-3 align-top font-medium text-gray-950 dark:text-white">{{ item.term }}</td>
+            <tbody class="divide-y divide-gray-100 dark:divide-dark-700/60">
+              <tr v-for="item in glossary" :key="item.term" class="transition-colors hover:bg-gray-50/60 dark:hover:bg-dark-800/40">
+                <td class="whitespace-nowrap px-4 py-3 align-top font-medium text-gray-900 dark:text-white">{{ item.term }}</td>
                 <td class="min-w-[260px] px-4 py-3 align-top text-gray-700 dark:text-dark-200">{{ item.meaning }}</td>
                 <td class="min-w-[240px] px-4 py-3 align-top text-gray-600 dark:text-dark-300">{{ item.impact }}</td>
                 <td class="min-w-[240px] px-4 py-3 align-top text-gray-600 dark:text-dark-300">{{ item.mistake }}</td>
@@ -97,26 +70,26 @@
         </div>
       </section>
 
-      <!-- 四大模块说明：彩色 panel 网格 -->
+      <!-- 四大模块说明：2 列 surface-card 网格 -->
       <section class="grid grid-cols-1 gap-4 xl:grid-cols-2">
         <article
           v-for="section in adminSections"
           :key="section.title"
-          class="colored-panel"
+          class="surface-card overflow-hidden"
         >
-          <div class="docs-panel-header" :class="`colored-header-${section.tone}`">
-            <div class="docs-panel-icon" :class="`docs-panel-icon-${section.tone}`">
-              <Icon :name="section.icon" size="md" />
-            </div>
+          <header class="flex items-start gap-3 border-b border-gray-200/60 px-6 py-4 dark:border-dark-700/60">
+            <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg" :class="`docs-icon-${section.tone}`">
+              <Icon :name="section.icon" size="sm" :stroke-width="1.75" />
+            </span>
             <div class="min-w-0">
-              <h2 class="text-base font-semibold text-gray-950 dark:text-white">{{ section.title }}</h2>
-              <p class="mt-0.5 text-sm text-gray-500 dark:text-dark-400">{{ section.summary }}</p>
+              <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">{{ section.title }}</h2>
+              <p class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">{{ section.summary }}</p>
             </div>
-          </div>
-          <div class="divide-y divide-gray-100 px-5 dark:divide-dark-700 sm:px-6">
-            <div v-for="item in section.items" :key="item.title" class="py-3.5 first:pt-4 last:pb-4">
+          </header>
+          <div class="divide-y divide-gray-100 px-6 dark:divide-dark-700/60">
+            <div v-for="item in section.items" :key="item.title" class="py-4 first:pt-5 last:pb-5">
               <div class="flex flex-wrap items-center gap-2">
-                <h3 class="text-sm font-semibold text-gray-950 dark:text-white">{{ item.title }}</h3>
+                <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ item.title }}</h3>
                 <span class="docs-tag" :class="`docs-tag-${section.tone}`">{{ item.tag }}</span>
               </div>
               <p class="mt-1.5 text-xs leading-5 text-gray-600 dark:text-dark-300">{{ item.desc }}</p>
@@ -125,60 +98,60 @@
         </article>
       </section>
 
-      <!-- 风控与敏感词建议：rose 头部 panel -->
-      <section class="colored-panel">
-        <div class="docs-panel-header colored-header-rose">
-          <div class="docs-panel-icon docs-panel-icon-rose">
-            <Icon name="shield" size="md" />
-          </div>
+      <!-- 风控与敏感词建议 -->
+      <section class="surface-card overflow-hidden">
+        <header class="flex items-start gap-3 border-b border-gray-200/60 px-6 py-4 dark:border-dark-700/60">
+          <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-500/15 dark:text-rose-300">
+            <Icon name="shield" size="sm" :stroke-width="1.75" />
+          </span>
           <div class="min-w-0">
-            <h2 class="text-base font-semibold text-gray-950 dark:text-white">风控与敏感词处理建议</h2>
-            <p class="mt-0.5 text-sm text-gray-500 dark:text-dark-400">分级拦截、留好证据，避免误杀也避免漏杀</p>
+            <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">风控与敏感词处理建议</h2>
+            <p class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">分级拦截、留好证据，避免误杀也避免漏杀</p>
           </div>
-        </div>
-        <div class="grid grid-cols-1 gap-3 p-5 md:grid-cols-3 sm:p-6">
+        </header>
+        <div class="grid grid-cols-1 gap-3 p-6 md:grid-cols-3">
           <div
             v-for="policy in riskPolicies"
             :key="policy.title"
-            class="rounded-lg border border-rose-100 bg-rose-50/40 p-4 dark:border-rose-900/40 dark:bg-rose-900/10"
+            class="rounded-xl border border-gray-200/70 bg-gray-50/40 p-4 dark:border-dark-700/60 dark:bg-dark-800/40"
           >
-            <h3 class="text-sm font-semibold text-gray-950 dark:text-white">{{ policy.title }}</h3>
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ policy.title }}</h3>
             <p class="mt-2 text-xs leading-5 text-gray-600 dark:text-dark-200">{{ policy.desc }}</p>
           </div>
         </div>
       </section>
 
-      <!-- 常见排查路径：sky 头部 panel -->
-      <section class="colored-panel">
-        <div class="docs-panel-header colored-header-sky">
-          <div class="docs-panel-icon docs-panel-icon-sky">
-            <Icon name="questionCircle" size="md" />
-          </div>
+      <!-- 常见排查路径 -->
+      <section class="surface-card overflow-hidden">
+        <header class="flex items-start gap-3 border-b border-gray-200/60 px-6 py-4 dark:border-dark-700/60">
+          <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300">
+            <Icon name="questionCircle" size="sm" :stroke-width="1.75" />
+          </span>
           <div class="min-w-0">
-            <h2 class="text-base font-semibold text-gray-950 dark:text-white">常见排查路径</h2>
-            <p class="mt-0.5 text-sm text-gray-500 dark:text-dark-400">出现问题时按这个顺序排查，避免在错误层级反复尝试</p>
+            <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">常见排查路径</h2>
+            <p class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">出现问题时按这个顺序排查，避免在错误层级反复尝试</p>
           </div>
-        </div>
-        <div class="grid grid-cols-1 gap-3 p-5 md:grid-cols-2 xl:grid-cols-3 sm:p-6">
+        </header>
+        <div class="grid grid-cols-1 gap-3 p-6 md:grid-cols-2 xl:grid-cols-3">
           <div
             v-for="item in troubleshooting"
             :key="item.problem"
-            class="rounded-lg border border-gray-200 bg-gray-50/60 p-3.5 dark:border-dark-700 dark:bg-dark-800/40"
+            class="rounded-xl border border-gray-200/70 bg-gray-50/40 p-4 dark:border-dark-700/60 dark:bg-dark-800/40"
           >
             <div class="flex items-start gap-2">
               <Icon name="search" size="xs" class="mt-1 flex-shrink-0 text-sky-600 dark:text-sky-300" />
-              <h3 class="text-sm font-semibold text-gray-950 dark:text-white">{{ item.problem }}</h3>
+              <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ item.problem }}</h3>
             </div>
             <p class="mt-1.5 pl-5 text-xs leading-5 text-gray-600 dark:text-dark-300">{{ item.check }}</p>
           </div>
         </div>
       </section>
 
-      <!-- 外部接入依据：信息提示条（sky 调） -->
-      <div class="docs-hint docs-hint-sky">
+      <!-- 外部接入依据：sky 提示条 -->
+      <div class="flex items-start gap-2.5 rounded-xl border border-sky-200/60 bg-sky-50/60 px-4 py-3 dark:border-sky-500/20 dark:bg-sky-500/5">
         <Icon name="infoCircle" size="sm" class="mt-0.5 flex-shrink-0 text-sky-600 dark:text-sky-300" />
-        <div class="text-sm leading-6 text-sky-900 dark:text-sky-100">
-          <div class="font-medium">外部接入依据</div>
+        <div class="text-sm leading-6 text-sky-900 dark:text-sky-200">
+          <div class="font-semibold">外部接入依据</div>
           <p class="mt-0.5">
             Claude Code 官方网关文档要求网关暴露 Anthropic Messages 端点，并说明 <code class="docs-hint-code">ANTHROPIC_AUTH_TOKEN</code> 的认证行为；Codex 官方文档使用 <code class="docs-hint-code">config.toml</code> 管理 provider。用户接入页已经按这些行为写成可复制示例。
           </p>
@@ -194,13 +167,6 @@ import Icon from '@/components/icons/Icon.vue'
 
 type Tone = 'sky' | 'emerald' | 'violet' | 'amber' | 'rose' | 'indigo' | 'teal'
 type DocIcon = 'server' | 'sparkles' | 'cpu' | 'creditCard'
-
-const quickStats: Array<{ value: string; label: string; tone: Tone }> = [
-  { value: '8', label: '上线步骤', tone: 'emerald' },
-  { value: '18', label: '核心术语', tone: 'violet' },
-  { value: '7', label: '风险检查', tone: 'rose' },
-  { value: '2', label: '文档页面', tone: 'indigo' },
-]
 
 const setupSteps = [
   { no: '1', title: '配置出口 IP', desc: '先录入代理并做连通性/质量检测，确认出口 IP、地区和上游可达性。', path: '/admin/proxies' },
@@ -314,155 +280,27 @@ const troubleshooting = [
 
 <style scoped>
 /* ============================================================================
- * 管理员文档页：复用全局 page-hero / colored-panel / colored-header-* 工具类，
- * 仅扩展文档场景特有的小部件（统计胶囊、步骤色块、信息条、tag 胶囊、icon 盒）
+ * 管理员文档页：复用全局 surface-card；只扩展色调标签和 icon 背景色
  * ========================================================================= */
 
-/* Hero 内的统计胶囊：白底 + 顶部色条 */
-.docs-stat-card {
-  position: relative;
-  border-radius: 0.5rem;
-  background: rgb(255 255 255 / 0.85);
-  padding: 0.75rem 0.875rem;
-  text-align: left;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
-  overflow: hidden;
-}
+/* section header 内的 colored icon 背景（柔和的 50 浅底 + 600 描边图标） */
+.docs-icon-sky     { background: rgb(240 249 255); color: rgb(2 132 199); }
+.docs-icon-emerald { background: rgb(236 253 245); color: rgb(5 150 105); }
+.docs-icon-violet  { background: rgb(245 243 255); color: rgb(124 58 237); }
+.docs-icon-amber   { background: rgb(255 251 235); color: rgb(217 119 6); }
+.docs-icon-rose    { background: rgb(255 241 242); color: rgb(225 29 72); }
+.docs-icon-indigo  { background: rgb(238 242 255); color: rgb(79 70 229); }
+.docs-icon-teal    { background: rgb(240 253 250); color: rgb(13 148 136); }
 
-.docs-stat-card::before {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 3px;
-  background: currentColor;
-  opacity: 0.85;
-}
+:global(:root.dark) .docs-icon-sky     { background: rgb(14 165 233 / 0.15); color: rgb(125 211 252); }
+:global(:root.dark) .docs-icon-emerald { background: rgb(16 185 129 / 0.15); color: rgb(110 231 183); }
+:global(:root.dark) .docs-icon-violet  { background: rgb(139 92 246 / 0.15); color: rgb(196 181 253); }
+:global(:root.dark) .docs-icon-amber   { background: rgb(245 158 11 / 0.15); color: rgb(252 211 77); }
+:global(:root.dark) .docs-icon-rose    { background: rgb(244 63 94 / 0.15); color: rgb(253 164 175); }
+:global(:root.dark) .docs-icon-indigo  { background: rgb(99 102 241 / 0.15); color: rgb(165 180 252); }
+:global(:root.dark) .docs-icon-teal    { background: rgb(20 184 166 / 0.15); color: rgb(94 234 212); }
 
-.docs-stat-card-emerald { color: rgb(16 185 129); }
-.docs-stat-card-violet { color: rgb(139 92 246); }
-.docs-stat-card-rose { color: rgb(244 63 94); }
-.docs-stat-card-indigo { color: rgb(99 102 241); }
-
-:global(:root.dark) .docs-stat-card {
-  background: rgb(31 41 55 / 0.7);
-  box-shadow: none;
-}
-
-/* 步骤卡片：白底 + 渐变数字色块 */
-.docs-step-card {
-  position: relative;
-  border-radius: 0.5rem;
-  border: 1px solid rgb(229 231 235);
-  background: rgb(255 255 255);
-  padding: 1rem 1.125rem;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-
-.docs-step-card:hover {
-  border-color: rgb(199 210 254);
-  box-shadow: 0 4px 16px -8px rgb(15 23 42 / 0.08);
-}
-
-:global(:root.dark) .docs-step-card {
-  border-color: rgb(55 65 81);
-  background: rgb(31 41 55);
-  box-shadow: none;
-}
-
-.docs-step-no {
-  display: inline-flex;
-  flex-shrink: 0;
-  height: 2rem;
-  width: 2rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.5rem;
-  background: linear-gradient(135deg, rgb(99 102 241), rgb(139 92 246));
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: rgb(255 255 255);
-  box-shadow: 0 4px 12px -4px rgb(99 102 241 / 0.5);
-}
-
-/* Panel 头部容器：搭配全局 colored-header-* 类使用 */
-.docs-panel-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 1.125rem 1.25rem;
-}
-
-@media (min-width: 640px) {
-  .docs-panel-header {
-    padding: 1.125rem 1.5rem;
-  }
-}
-
-/* 圆角 icon 盒 */
-.docs-panel-icon {
-  display: flex;
-  flex-shrink: 0;
-  height: 2.5rem;
-  width: 2.5rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.5rem;
-  background: rgb(255 255 255);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
-}
-
-:global(:root.dark) .docs-panel-icon {
-  background: rgb(55 65 81);
-}
-
-.docs-panel-icon-sky { color: rgb(2 132 199); }
-.docs-panel-icon-emerald { color: rgb(5 150 105); }
-.docs-panel-icon-violet { color: rgb(124 58 237); }
-.docs-panel-icon-amber { color: rgb(217 119 6); }
-.docs-panel-icon-rose { color: rgb(225 29 72); }
-.docs-panel-icon-indigo { color: rgb(79 70 229); }
-.docs-panel-icon-teal { color: rgb(13 148 136); }
-
-:global(:root.dark) .docs-panel-icon-sky { color: rgb(125 211 252); }
-:global(:root.dark) .docs-panel-icon-emerald { color: rgb(110 231 183); }
-:global(:root.dark) .docs-panel-icon-violet { color: rgb(196 181 253); }
-:global(:root.dark) .docs-panel-icon-amber { color: rgb(252 211 77); }
-:global(:root.dark) .docs-panel-icon-rose { color: rgb(253 164 175); }
-:global(:root.dark) .docs-panel-icon-indigo { color: rgb(165 180 252); }
-:global(:root.dark) .docs-panel-icon-teal { color: rgb(94 234 212); }
-
-/* 信息提示条：amber/sky 双色 */
-.docs-hint {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.625rem;
-  border-radius: 0.5rem;
-  border: 1px solid;
-  padding: 0.875rem 1rem;
-}
-
-.docs-hint-amber {
-  border-color: rgb(253 230 138);
-  background: rgb(255 251 235);
-}
-
-.docs-hint-sky {
-  border-color: rgb(186 230 253);
-  background: rgb(240 249 255);
-}
-
-:global(:root.dark) .docs-hint-amber {
-  border-color: rgb(146 64 14 / 0.5);
-  background: rgb(120 53 15 / 0.2);
-}
-
-:global(:root.dark) .docs-hint-sky {
-  border-color: rgb(7 89 133 / 0.5);
-  background: rgb(8 47 73 / 0.3);
-}
-
+/* code 标签：sky 调代码片段 */
 .docs-hint-code {
   display: inline-block;
   background: rgb(255 255 255 / 0.8);

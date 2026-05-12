@@ -1,24 +1,6 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <TablePageLayout>
-      <!-- Hero：emerald 渐变标题区，标识渠道监控业务色调 -->
-      <template #hero>
-        <header class="page-hero page-hero-emerald">
-          <div class="relative z-10 max-w-3xl">
-            <span class="page-hero-tag page-hero-tag-emerald">
-              <Icon name="bolt" size="sm" />
-              {{ t('admin.channelMonitor.title') }}
-            </span>
-            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-              {{ t('admin.channelMonitor.title') }}
-            </h1>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-              {{ t('admin.channelMonitor.description') }}
-            </p>
-          </div>
-        </header>
-      </template>
-
       <template #filters>
         <MonitorFiltersBar
           v-model:search="searchQuery"
@@ -54,11 +36,26 @@
           </template>
 
           <template #cell-availability_7d="{ row }">
-            <span class="text-sm text-gray-900 dark:text-gray-100">{{ formatAvailability(row) }}</span>
+            <span
+              class="inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium tabular-nums"
+              :class="availabilityChipClass(row)"
+            >
+              <span
+                v-if="row.availability_7d != null"
+                class="h-1.5 w-1.5 rounded-full"
+                :class="availabilityDotClass(row.availability_7d)"
+              ></span>
+              {{ formatAvailability(row) }}
+            </span>
           </template>
 
           <template #cell-latency="{ row }">
-            <span class="text-sm text-gray-900 dark:text-gray-100">{{ formatLatency(row.primary_latency_ms) }}</span>
+            <span
+              class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium tabular-nums"
+              :class="latencyChipClass(row.primary_latency_ms)"
+            >
+              {{ formatLatency(row.primary_latency_ms) }}
+            </span>
           </template>
 
           <template #cell-enabled="{ row }">
@@ -203,6 +200,28 @@ const deleteConfirmMessage = computed(() => {
   const name = deleting.value?.name || ''
   return t('admin.channelMonitor.deleteConfirm', { name })
 })
+
+// 可用率/延迟视觉色编码：让 admin 一眼看出健康/告警状态
+function availabilityChipClass(row: ChannelMonitor): string {
+  const v = row.availability_7d
+  if (v == null) return 'bg-gray-100 text-gray-500 dark:bg-dark-700 dark:text-dark-400'
+  if (v >= 99) return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+  if (v >= 95) return 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+  return 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'
+}
+
+function availabilityDotClass(v: number): string {
+  if (v >= 99) return 'bg-emerald-500'
+  if (v >= 95) return 'bg-amber-500'
+  return 'bg-rose-500'
+}
+
+function latencyChipClass(ms: number | null | undefined): string {
+  if (ms == null) return 'bg-gray-100 text-gray-500 dark:bg-dark-700 dark:text-dark-400'
+  if (ms < 500) return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+  if (ms < 2000) return 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+  return 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'
+}
 
 async function reload() {
   if (abortController) abortController.abort()

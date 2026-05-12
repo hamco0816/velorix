@@ -446,6 +446,12 @@
     @apply transition-colors duration-200;
   }
 
+  /* surface-card：Notion 风温和宽阔卡片，仪表盘/运维监控等数据面板专用 */
+  .surface-card {
+    @apply rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all;
+    @apply dark:border-dark-700/60 dark:bg-dark-800/40;
+  }
+
   .card-hover {
     @apply hover:shadow-card-hover hover:border-gray-300 dark:hover:border-dark-600;
   }
@@ -604,10 +610,10 @@
     @apply flex items-center gap-2;
   }
 
-  /* ============ 模态框 ============ */
+  /* ============ 模态框（Notion 风：圆润、柔边、克制阴影） ============ */
   .modal-overlay {
     @apply fixed inset-0 z-50;
-    @apply bg-black/50 backdrop-blur-sm;
+    @apply bg-gray-950/55 backdrop-blur-md;
     @apply flex items-center justify-center p-2 sm:p-4;
   }
 
@@ -615,33 +621,38 @@
     @apply w-full;
     @apply max-h-[95vh] sm:max-h-[90vh];
     @apply bg-white dark:bg-dark-800;
-    @apply rounded-lg shadow-xl;
-    @apply border border-gray-200 dark:border-dark-700;
+    @apply rounded-2xl;
+    @apply border border-gray-200/70 dark:border-dark-700/60;
     @apply flex flex-col;
+    box-shadow:
+      0 1px 2px rgb(15 23 42 / 0.04),
+      0 8px 24px -8px rgb(15 23 42 / 0.18),
+      0 24px 60px -28px rgb(15 23 42 / 0.32);
   }
 
   .modal-header {
-    @apply border-b border-gray-200 px-4 py-3 dark:border-dark-700;
-    @apply sm:px-6 sm:py-4;
-    @apply flex items-center justify-between;
+    @apply border-b border-gray-100 px-5 py-4 dark:border-dark-700/60;
+    @apply sm:px-6;
+    @apply flex items-center justify-between gap-3;
     @apply flex-shrink-0;
   }
 
   .modal-title {
-    @apply text-lg font-semibold text-gray-900 dark:text-white;
+    @apply text-base font-semibold tracking-tight text-gray-900 dark:text-white;
   }
 
   .modal-body {
-    @apply px-4 py-3;
-    @apply sm:px-6 sm:py-4;
+    @apply px-5 py-5;
+    @apply sm:px-6;
     @apply flex-1 overflow-y-auto;
   }
 
   .modal-footer {
-    @apply border-t border-gray-200 px-4 py-3 dark:border-dark-700;
-    @apply sm:px-6 sm:py-4;
-    @apply flex items-center justify-end gap-3;
+    @apply border-t border-gray-100 bg-gray-50/40 px-5 py-3.5 dark:border-dark-700/60 dark:bg-dark-800/40;
+    @apply sm:px-6;
+    @apply flex items-center justify-end gap-2.5;
     @apply flex-shrink-0;
+    @apply rounded-b-2xl;
   }
 
   /* 防止body滚动的工具类 */

@@ -1,11 +1,14 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <MonitorHero
       :overall-status="overallStatus"
       :interval-seconds="DEFAULT_INTERVAL_SECONDS"
       :window="currentWindow"
       :loading="loading"
       :auto-refresh="autoRefresh"
+      :total-count="items.length"
+      :operational-count="operationalCount"
+      :avg-availability="avgAvailability"
       @update:window="handleWindowChange"
       @refresh="manualReload"
     />
@@ -79,6 +82,19 @@ const overallStatus = computed<OverallStatus>(() => {
     if (it.primary_status !== STATUS_OPERATIONAL) return 'degraded'
   }
   return 'operational'
+})
+
+// 概览数据：正常运行渠道数 / 平均可用率 — 用作 hero 顶部的简洁数字
+const operationalCount = computed(() =>
+  items.value.filter(it => it.primary_status === STATUS_OPERATIONAL).length,
+)
+
+const avgAvailability = computed<number | null>(() => {
+  const vals = items.value
+    .map(it => it.availability_7d)
+    .filter((v): v is number => typeof v === 'number')
+  if (vals.length === 0) return null
+  return vals.reduce((a, b) => a + b, 0) / vals.length
 })
 
 const detailTitle = computed(() => {

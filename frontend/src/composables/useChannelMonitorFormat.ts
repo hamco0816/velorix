@@ -45,14 +45,28 @@ export function useChannelMonitorFormat() {
   function statusBadgeClass(s: MonitorStatus | ''): string {
     switch (s) {
       case STATUS_OPERATIONAL:
-        return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+        return 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30'
       case STATUS_DEGRADED:
-        return 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+        return 'bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30'
       case STATUS_FAILED:
-        return 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300'
+        return 'bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-200/70 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/30'
       case STATUS_ERROR:
       default:
         return NEUTRAL_BADGE
+    }
+  }
+
+  function statusDotClass(s: MonitorStatus | ''): string {
+    switch (s) {
+      case STATUS_OPERATIONAL:
+        return 'bg-emerald-500 animate-pulse'
+      case STATUS_DEGRADED:
+        return 'bg-amber-500 animate-pulse'
+      case STATUS_FAILED:
+        return 'bg-rose-500 animate-pulse'
+      case STATUS_ERROR:
+      default:
+        return 'bg-gray-400'
     }
   }
 
@@ -134,6 +148,7 @@ export function useChannelMonitorFormat() {
   return {
     statusLabel,
     statusBadgeClass,
+    statusDotClass,
     providerLabel,
     providerBadgeClass,
     providerPickerClass,

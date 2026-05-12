@@ -1,26 +1,10 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <div class="space-y-5">
-      <!-- Hero：violet 渐变标题区，标识使用统计业务色调 -->
-      <header class="page-hero page-hero-violet">
-        <div class="relative z-10 max-w-3xl">
-          <span class="page-hero-tag page-hero-tag-violet">
-            <Icon name="chart" size="sm" />
-            {{ t('admin.usage.title') }}
-          </span>
-          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-            {{ t('admin.usage.title') }}
-          </h1>
-          <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-            {{ t('admin.usage.description') }}
-          </p>
-        </div>
-      </header>
-
       <UsageStatsCards :stats="usageStats" />
       <!-- Charts Section -->
       <div class="space-y-4">
-        <div class="card p-4">
+        <div class="surface-card p-5">
           <div class="flex flex-wrap items-center gap-4">
             <div class="flex items-center gap-2">
               <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('admin.dashboard.timeRange') }}:</span>

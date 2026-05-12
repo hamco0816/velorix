@@ -1,15 +1,18 @@
 <template>
   <div class="fixed inset-0 z-50 overflow-y-auto" @click.self="$emit('close')">
     <div class="flex min-h-full items-center justify-center p-4">
-      <div class="fixed inset-0 bg-black/50 transition-opacity" @click="$emit('close')"></div>
+      <div class="fixed inset-0 bg-gray-950/55 backdrop-blur-md transition-opacity" @click="$emit('close')"></div>
 
-      <div class="relative w-full max-w-md transform rounded-xl bg-white p-6 shadow-xl transition-all dark:bg-dark-800">
+      <div
+        class="relative w-full max-w-md transform rounded-2xl border border-gray-200/70 bg-white p-6 transition-all dark:border-dark-700/60 dark:bg-dark-800"
+        style="box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -8px rgb(15 23 42 / 0.18), 0 24px 60px -28px rgb(15 23 42 / 0.32);"
+      >
         <!-- Header -->
         <div class="mb-6 text-center">
-          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+          <h3 class="text-base font-semibold tracking-tight text-gray-900 dark:text-white">
             {{ t('profile.totp.setupTitle') }}
           </h3>
-          <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+          <p class="mt-2 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
             {{ stepDescription }}
           </p>
         </div>
@@ -82,7 +85,7 @@
           <!-- QR Code and Secret -->
           <template v-if="setupData">
             <div class="flex justify-center">
-              <div class="rounded-lg border border-gray-200 p-4 bg-white dark:border-dark-600 dark:bg-white">
+              <div class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-white">
                 <img :src="qrCodeDataUrl" alt="QR Code" class="h-48 w-48" />
               </div>
             </div>

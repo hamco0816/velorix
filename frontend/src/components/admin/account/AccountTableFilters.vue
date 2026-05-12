@@ -1,17 +1,28 @@
 <template>
-  <div class="flex flex-wrap items-center gap-3">
+  <!-- 筛选条：所有 Select 用统一窗口宽度，避免 Privacy 撑满整行 -->
+  <div class="flex flex-wrap items-center gap-2">
     <SearchInput
       :model-value="searchQuery"
       :placeholder="t('admin.accounts.searchAccounts')"
-      class="w-full sm:w-64"
+      class="w-full sm:w-56"
       @update:model-value="$emit('update:searchQuery', $event)"
       @search="$emit('change')"
     />
-    <Select :model-value="filters.platform" class="min-w-[10rem]" :options="pOpts" @update:model-value="updatePlatform" @change="$emit('change')" />
-    <Select :model-value="filters.type" class="min-w-[10rem]" :options="tOpts" @update:model-value="updateType" @change="$emit('change')" />
-    <Select :model-value="filters.status" class="min-w-[10rem]" :options="sOpts" @update:model-value="updateStatus" @change="$emit('change')" />
-    <Select :model-value="filters.privacy_mode" class="w-full sm:min-w-[13rem]" :options="privacyOpts" @update:model-value="updatePrivacyMode" @change="$emit('change')" />
-    <Select :model-value="filters.group" class="min-w-[10rem]" :options="gOpts" @update:model-value="updateGroup" @change="$emit('change')" />
+    <div class="w-[9.5rem]">
+      <Select :model-value="filters.platform" :options="pOpts" @update:model-value="updatePlatform" @change="$emit('change')" />
+    </div>
+    <div class="w-[9.5rem]">
+      <Select :model-value="filters.type" :options="tOpts" @update:model-value="updateType" @change="$emit('change')" />
+    </div>
+    <div class="w-[9.5rem]">
+      <Select :model-value="filters.status" :options="sOpts" @update:model-value="updateStatus" @change="$emit('change')" />
+    </div>
+    <div class="w-[10.5rem]">
+      <Select :model-value="filters.privacy_mode" :options="privacyOpts" @update:model-value="updatePrivacyMode" @change="$emit('change')" />
+    </div>
+    <div class="w-[9.5rem]">
+      <Select :model-value="filters.group" :options="gOpts" @update:model-value="updateGroup" @change="$emit('change')" />
+    </div>
   </div>
 </template>
 

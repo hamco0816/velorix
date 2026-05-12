@@ -1,19 +1,26 @@
 <template>
-  <div class="card p-4">
-    <h3 class="mb-4 text-sm font-semibold text-gray-900 dark:text-white">
-      {{ t('admin.dashboard.tokenUsageTrend') }}
-    </h3>
-    <div v-if="loading" class="flex h-48 items-center justify-center">
-      <LoadingSpinner />
+  <div class="surface-card overflow-hidden">
+    <div class="border-b border-gray-200/60 px-6 py-4 dark:border-dark-700/60">
+      <h3 class="text-[15px] font-semibold text-gray-900 dark:text-white">
+        {{ t('admin.dashboard.tokenUsageTrend') }}
+      </h3>
     </div>
-    <div v-else-if="trendData.length > 0 && chartData" class="h-48">
-      <Line :data="chartData" :options="lineOptions" />
-    </div>
-    <div
-      v-else
-      class="flex h-48 items-center justify-center text-sm text-gray-500 dark:text-gray-400"
-    >
-      {{ t('admin.dashboard.noDataAvailable') }}
+    <div class="p-6">
+      <div v-if="loading" class="flex h-56 items-center justify-center">
+        <LoadingSpinner />
+      </div>
+      <div v-else-if="trendData.length > 0 && chartData" class="h-56">
+        <Line :data="chartData" :options="lineOptions" />
+      </div>
+      <div
+        v-else
+        class="flex h-56 flex-col items-center justify-center gap-3 text-sm text-gray-500 dark:text-gray-400"
+      >
+        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-100 text-gray-400 dark:bg-dark-700 dark:text-dark-500">
+          <Icon name="chart" size="md" />
+        </div>
+        {{ t('admin.dashboard.noDataAvailable') }}
+      </div>
     </div>
   </div>
 </template>
@@ -34,6 +41,7 @@ import {
 } from 'chart.js'
 import { Line } from 'vue-chartjs'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import Icon from '@/components/icons/Icon.vue'
 import type { TrendDataPoint } from '@/types'
 
 ChartJS.register(
@@ -226,3 +234,10 @@ const formatCost = (value: number): string => {
   return value.toFixed(4)
 }
 </script>
+
+<style scoped>
+.surface-card {
+  @apply rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)];
+  @apply dark:border-dark-700/60 dark:bg-dark-800/40;
+}
+</style>

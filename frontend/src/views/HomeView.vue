@@ -107,12 +107,12 @@
           <div class="lg:col-span-6">
             <!-- Eyebrow badge -->
             <div class="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50/80 px-3 py-1 text-xs font-medium text-brand-800 dark:border-brand-500/30 dark:bg-brand-500/10 dark:text-brand-300">
-              <span class="text-brand-600 dark:text-brand-400">📢</span>
+              <span class="h-1.5 w-1.5 rounded-full bg-brand-500 dark:bg-brand-400"></span>
               {{ t('home.heroEyebrowFull') }}
             </div>
 
             <!-- Display headline：参考图风格，关键词橙色高亮 -->
-            <h1 class="mt-6 text-[44px] font-bold leading-[1.1] tracking-[-0.025em] text-gray-900 dark:text-white sm:text-5xl lg:text-[56px]">
+            <h1 class="mt-6 text-[40px] font-semibold leading-[1.1] tracking-[-0.025em] text-gray-900 dark:text-white sm:text-5xl lg:text-[52px]">
               {{ t('home.heroDisplayPrimary') }}<br />
               {{ t('home.heroDisplayLine2') }}
               <span class="text-brand-600 dark:text-brand-400">{{ t('home.heroDisplayHighlight') }}</span>
@@ -145,8 +145,8 @@
             <!-- 3 个特性 chip：图标 + 主标 + 副标 -->
             <div class="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-3">
               <div class="flex items-center gap-3">
-                <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-white ring-1 ring-gray-200 dark:bg-dark-800/60 dark:ring-dark-700">
-                  <Icon name="check" size="sm" class="text-emerald-600 dark:text-emerald-400" :stroke-width="2.5" />
+                <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-50 ring-1 ring-inset ring-emerald-200/70 dark:bg-emerald-500/15 dark:ring-emerald-500/30">
+                  <Icon name="check" size="sm" class="text-emerald-600 dark:text-emerald-300" :stroke-width="2.5" />
                 </div>
                 <div class="min-w-0">
                   <div class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white">{{ t('home.stats.compatible') }}</div>
@@ -154,8 +154,8 @@
                 </div>
               </div>
               <div class="flex items-center gap-3">
-                <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-white ring-1 ring-gray-200 dark:bg-dark-800/60 dark:ring-dark-700">
-                  <Icon name="dollar" size="sm" class="text-brand-600 dark:text-brand-400" :stroke-width="2" />
+                <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand-50 ring-1 ring-inset ring-brand-200/70 dark:bg-brand-500/15 dark:ring-brand-500/30">
+                  <Icon name="dollar" size="sm" class="text-brand-600 dark:text-brand-300" :stroke-width="2" />
                 </div>
                 <div class="min-w-0">
                   <div class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white">{{ t('home.stats.payAsYouGo') }}</div>
@@ -163,8 +163,8 @@
                 </div>
               </div>
               <div class="flex items-center gap-3">
-                <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-white ring-1 ring-gray-200 dark:bg-dark-800/60 dark:ring-dark-700">
-                  <Icon name="shield" size="sm" class="text-emerald-600 dark:text-emerald-400" :stroke-width="2" />
+                <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-sky-50 ring-1 ring-inset ring-sky-200/70 dark:bg-sky-500/15 dark:ring-sky-500/30">
+                  <Icon name="shield" size="sm" class="text-sky-600 dark:text-sky-300" :stroke-width="2" />
                 </div>
                 <div class="min-w-0">
                   <div class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white">{{ t('home.stats.stable') }}</div>
@@ -185,27 +185,27 @@
     <!-- ============== Pain Points ============== -->
     <section id="pain-points" class="border-y border-gray-200 bg-stone-50/70 py-20 dark:border-dark-800 dark:bg-dark-900/30 sm:py-24">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center gap-2.5">
-          <span class="text-brand-600 dark:text-brand-400">✦</span>
-          <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-[28px]">
+        <div class="flex items-center gap-3">
+          <span class="h-5 w-1 rounded-full bg-brand-500 dark:bg-brand-400"></span>
+          <h2 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-2xl">
             {{ t('home.painPoints.title') }}
           </h2>
         </div>
 
-        <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
+        <div class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
           <div
             v-for="item in painPointItems"
             :key="item.key"
-            class="group rounded-xl border border-gray-200 bg-white p-6 transition-all hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-card-hover dark:border-dark-700 dark:bg-dark-800/60 dark:hover:border-brand-500/30"
+            class="group rounded-2xl border border-gray-200/70 bg-white p-6 transition-colors hover:border-brand-200/80 dark:border-dark-700/60 dark:bg-dark-800/40 dark:hover:border-brand-500/30"
           >
-            <!-- 圆形橙色图标（参考图风格） -->
-            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-brand-100 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
-              <Icon :name="item.icon" size="md" :stroke-width="2" />
+            <!-- 圆角方块图标筐：与全站 ring inset 调统一 -->
+            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600 ring-1 ring-inset ring-brand-200/70 dark:bg-brand-500/15 dark:text-brand-300 dark:ring-brand-500/30">
+              <Icon :name="item.icon" size="sm" :stroke-width="2" />
             </div>
-            <h3 class="mt-5 text-[15px] font-semibold tracking-tight text-gray-900 dark:text-white">
+            <h3 class="mt-4 text-[15px] font-semibold tracking-tight text-gray-900 dark:text-white">
               {{ item.title }}
             </h3>
-            <p class="mt-2 text-[13px] leading-relaxed text-gray-600 dark:text-dark-300">
+            <p class="mt-1.5 text-[13px] leading-relaxed text-gray-600 dark:text-dark-300">
               {{ item.desc }}
             </p>
           </div>
@@ -216,27 +216,27 @@
     <!-- ============== Solutions / 3 Steps + Code Demo ============== -->
     <section id="features" class="py-20 sm:py-24">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center gap-2.5">
-          <span class="text-brand-600 dark:text-brand-400">✦</span>
-          <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-[28px]">
+        <div class="flex items-center gap-3">
+          <span class="h-5 w-1 rounded-full bg-brand-500 dark:bg-brand-400"></span>
+          <h2 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-2xl">
             {{ t('home.steps.title') }}
           </h2>
         </div>
 
-        <div class="mt-10 grid gap-6 lg:grid-cols-2 lg:gap-8">
+        <div class="mt-8 grid gap-6 lg:grid-cols-2 lg:gap-8">
           <!-- Left: 3 Steps -->
-          <div class="grid gap-3">
+          <div class="grid gap-2.5">
             <div
               v-for="step in stepItems"
               :key="step.key"
-              class="group flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-5 transition-colors hover:border-brand-200 dark:border-dark-700 dark:bg-dark-800/60 dark:hover:border-brand-500/30"
+              class="group flex items-start gap-4 rounded-2xl border border-gray-200/70 bg-white p-5 transition-colors hover:border-brand-200/80 dark:border-dark-700/60 dark:bg-dark-800/40 dark:hover:border-brand-500/30"
             >
-              <!-- 大号橙色编号 -->
-              <span class="font-mono text-[26px] font-bold leading-none tracking-tight text-brand-600 dark:text-brand-400">
+              <!-- 步骤编号：font-semibold 克制 -->
+              <span class="font-mono text-[22px] font-semibold leading-none tracking-tight text-brand-600 dark:text-brand-400">
                 {{ step.num }}
               </span>
-              <!-- 图标 -->
-              <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-700 dark:bg-dark-700 dark:text-gray-200">
+              <!-- 图标筐 -->
+              <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gray-50 text-gray-700 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-700/40 dark:text-gray-200 dark:ring-dark-600/60">
                 <Icon :name="step.icon" size="sm" :stroke-width="2" />
               </div>
               <div class="min-w-0 flex-1">
@@ -273,31 +273,31 @@
     <!-- ============== Comparison ============== -->
     <section class="border-y border-gray-200 bg-stone-50/70 py-20 dark:border-dark-800 dark:bg-dark-900/30 sm:py-24">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center gap-2.5">
-          <span class="text-brand-600 dark:text-brand-400">✦</span>
-          <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-[28px]">
+        <div class="flex items-center gap-3">
+          <span class="h-5 w-1 rounded-full bg-brand-500 dark:bg-brand-400"></span>
+          <h2 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-2xl">
             {{ t('home.comparison.title') }}
           </h2>
         </div>
 
-        <div class="mt-10 grid gap-8 lg:grid-cols-2 lg:gap-10">
+        <div class="mt-8 grid gap-6 lg:grid-cols-2 lg:gap-8">
           <!-- Comparison Table -->
-          <div class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-dark-700 dark:bg-dark-800/60">
+          <div class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white dark:border-dark-700/60 dark:bg-dark-800/40">
             <table class="w-full text-sm">
               <thead>
-                <tr class="bg-gray-50 dark:bg-dark-900/40">
-                  <th class="px-4 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-dark-400 sm:px-5">
+                <tr class="bg-gray-50/60 dark:bg-dark-800/40">
+                  <th class="px-4 py-3.5 text-left text-[12px] font-medium text-gray-500 dark:text-dark-400 sm:px-5">
                     {{ t('home.comparison.headers.feature') }}
                   </th>
-                  <th class="px-4 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-dark-400 sm:px-5">
+                  <th class="px-4 py-3.5 text-left text-[12px] font-medium text-gray-500 dark:text-dark-400 sm:px-5">
                     {{ t('home.comparison.headers.official') }}
                   </th>
-                  <th class="bg-brand-50/80 px-4 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-brand-700 dark:bg-brand-500/10 dark:text-brand-300 sm:px-5">
+                  <th class="bg-brand-50/60 px-4 py-3.5 text-left text-[12px] font-medium text-brand-700 dark:bg-brand-500/10 dark:text-brand-300 sm:px-5">
                     {{ siteName }} {{ t('home.comparison.headers.us') }}
                   </th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-gray-100 dark:divide-dark-700">
+              <tbody class="divide-y divide-gray-100 dark:divide-dark-700/60">
                 <tr v-for="row in comparisonItems" :key="row.key">
                   <td class="px-4 py-3.5 font-medium text-gray-900 dark:text-white sm:px-5">{{ row.feature }}</td>
                   <td class="px-4 py-3.5 text-[13px] text-gray-500 dark:text-dark-400 sm:px-5">
@@ -306,7 +306,7 @@
                       <span>{{ row.official }}</span>
                     </span>
                   </td>
-                  <td class="bg-brand-50/40 px-4 py-3.5 text-[13px] text-gray-900 dark:bg-brand-500/[0.06] dark:text-gray-100 sm:px-5">
+                  <td class="bg-brand-50/30 px-4 py-3.5 text-[13px] text-gray-900 dark:bg-brand-500/[0.06] dark:text-gray-100 sm:px-5">
                     <span class="inline-flex items-start gap-1.5">
                       <Icon name="check" size="xs" class="mt-0.5 flex-shrink-0 text-brand-600 dark:text-brand-400" :stroke-width="2.5" />
                       <span class="font-medium">{{ row.us }}</span>
@@ -328,20 +328,20 @@
               {{ t('home.providers.description') }}
             </p>
 
-            <div class="mt-5 grid grid-cols-2 gap-3">
+            <div class="mt-5 grid grid-cols-2 gap-2.5">
               <div
                 v-for="provider in providerCards"
                 :key="provider.key"
-                class="group flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3.5 transition-all hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-card dark:border-dark-700 dark:bg-dark-800/60"
+                class="group flex items-center gap-3 rounded-xl border border-gray-200/70 bg-white p-3.5 transition-colors hover:border-gray-300 dark:border-dark-700/60 dark:bg-dark-800/40"
               >
-                <div :class="['flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md', provider.bg]">
+                <div :class="['flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl', provider.bg]">
                   <BrandIcon v-if="provider.brand" :brand="provider.brand" size="22px" />
-                  <span v-else :class="['text-sm font-bold', provider.textClass || 'text-gray-700']">{{ provider.letter }}</span>
+                  <span v-else :class="['text-sm font-semibold', provider.textClass || 'text-gray-700']">{{ provider.letter }}</span>
                 </div>
                 <div class="min-w-0 flex-1">
                   <p class="text-[13px] font-semibold tracking-tight text-gray-900 dark:text-white">{{ provider.name }}</p>
-                  <p class="mt-0.5 inline-flex items-center gap-1 text-[11px] font-medium" :class="provider.disabled ? 'text-gray-500 dark:text-dark-400' : 'text-emerald-600 dark:text-emerald-400'">
-                    <span class="h-1 w-1 rounded-full" :class="provider.disabled ? 'bg-gray-400' : 'bg-emerald-500'"></span>
+                  <p class="mt-0.5 inline-flex items-center gap-1.5 text-[11px] font-medium" :class="provider.disabled ? 'text-gray-500 dark:text-dark-400' : 'text-emerald-600 dark:text-emerald-400'">
+                    <span class="h-1.5 w-1.5 rounded-full" :class="provider.disabled ? 'bg-gray-400' : 'bg-emerald-500 animate-pulse'"></span>
                     {{ provider.disabled ? t('home.providers.soon') : t('home.providers.supported') }}
                   </p>
                 </div>
@@ -355,28 +355,28 @@
     <!-- ============== Pricing：后台配置驱动，无套餐时整段隐藏 ============== -->
     <section v-if="plans.length > 0" id="pricing" class="py-20 sm:py-24">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center gap-2.5">
-          <span class="text-brand-600 dark:text-brand-400">✦</span>
-          <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-[28px]">
+        <div class="flex items-center gap-3">
+          <span class="h-5 w-1 rounded-full bg-brand-500 dark:bg-brand-400"></span>
+          <h2 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-2xl">
             {{ t('home.pricing.title') }}
           </h2>
         </div>
         <p class="mt-2 text-[14px] text-gray-600 dark:text-dark-300">{{ t('home.pricing.subtitle') }}</p>
 
-        <div class="mt-10 grid gap-6 lg:grid-cols-2 xl:grid-cols-[2fr_1fr]">
+        <div class="mt-8 grid gap-6 lg:grid-cols-2 xl:grid-cols-[2fr_1fr]">
           <!-- 套餐卡片网格 -->
-          <div class="grid gap-5" :class="planGridColsClass">
+          <div class="grid gap-4" :class="planGridColsClass">
             <div
               v-for="plan in plans"
               :key="plan.id"
-              class="relative flex flex-col rounded-xl p-6 transition-all"
+              class="relative flex flex-col rounded-2xl p-6 transition-colors"
               :class="plan.recommended
-                ? 'border-2 border-gray-900 bg-gray-950 text-white shadow-card-hover dark:border-white'
-                : 'border border-gray-200 bg-white hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-card-hover dark:border-dark-700 dark:bg-dark-800/60'"
+                ? 'border border-gray-900 bg-gray-950 text-white dark:border-white'
+                : 'border border-gray-200/70 bg-white hover:border-gray-300 dark:border-dark-700/60 dark:bg-dark-800/40'"
             >
               <span
                 v-if="plan.recommended"
-                class="absolute -top-3 right-6 inline-flex items-center rounded-md bg-brand-500 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-white shadow-card"
+                class="absolute -top-2.5 right-6 inline-flex items-center rounded-full bg-brand-500 px-2.5 py-0.5 text-[11px] font-semibold text-white"
               >
                 {{ t('home.pricing.recommended') }}
               </span>
@@ -389,7 +389,7 @@
               </p>
 
               <div class="mt-5 flex items-baseline gap-2">
-                <span class="text-3xl font-bold tabular-nums tracking-tight" :class="plan.recommended ? 'text-white' : 'text-gray-900 dark:text-white'">
+                <span class="text-3xl font-semibold tabular-nums tracking-tight" :class="plan.recommended ? 'text-white' : 'text-gray-900 dark:text-white'">
                   ¥ {{ plan.price }}
                 </span>
                 <span v-if="plan.originalPrice && plan.originalPrice > plan.price" class="text-sm text-gray-400 line-through tabular-nums">
@@ -421,9 +421,9 @@
           </div>
 
           <!-- Right benefits column -->
-          <div class="grid gap-x-5 gap-y-6 sm:grid-cols-2 xl:grid-cols-1 xl:gap-y-7 xl:self-start">
+          <div class="grid gap-x-5 gap-y-5 sm:grid-cols-2 xl:grid-cols-1 xl:gap-y-6 xl:self-start">
             <div v-for="b in benefitItems" :key="b.key" class="flex items-start gap-3">
-              <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
+              <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 ring-1 ring-inset ring-brand-200/70 dark:bg-brand-500/15 dark:text-brand-300 dark:ring-brand-500/30">
                 <Icon :name="b.icon" size="sm" :stroke-width="2" />
               </div>
               <div class="min-w-0">
@@ -449,7 +449,7 @@
 
         <div class="relative grid items-center gap-8 p-10 sm:grid-cols-12 sm:p-14">
           <div class="sm:col-span-7">
-            <h2 class="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+            <h2 class="text-xl font-semibold tracking-tight text-white sm:text-3xl">
               {{ t('home.cta.title') }}
             </h2>
             <p class="mt-3 text-[14px] leading-relaxed text-gray-300/85">
@@ -502,8 +502,8 @@
 
           <!-- Links: Product -->
           <div>
-            <h4 class="text-[12px] font-semibold uppercase tracking-wider text-gray-900 dark:text-white">{{ t('home.nav.product') }}</h4>
-            <ul class="mt-4 space-y-2.5 text-[13px]">
+            <h4 class="text-[13px] font-semibold tracking-tight text-gray-900 dark:text-white">{{ t('home.nav.product') }}</h4>
+            <ul class="mt-3 space-y-2.5 text-[13px]">
               <li><a href="#features" class="text-gray-500 transition-colors hover:text-gray-900 dark:text-dark-400 dark:hover:text-white">{{ t('home.steps.title') }}</a></li>
               <li v-if="plans.length > 0"><a href="#pricing" class="text-gray-500 transition-colors hover:text-gray-900 dark:text-dark-400 dark:hover:text-white">{{ t('home.nav.pricing') }}</a></li>
               <li><a v-if="docUrl" :href="docUrl" target="_blank" rel="noopener noreferrer" class="text-gray-500 transition-colors hover:text-gray-900 dark:text-dark-400 dark:hover:text-white">{{ t('home.nav.docs') }}</a></li>
@@ -512,8 +512,8 @@
 
           <!-- Links: Support -->
           <div>
-            <h4 class="text-[12px] font-semibold uppercase tracking-wider text-gray-900 dark:text-white">{{ t('home.nav.support') }}</h4>
-            <ul class="mt-4 space-y-2.5 text-[13px]">
+            <h4 class="text-[13px] font-semibold tracking-tight text-gray-900 dark:text-white">{{ t('home.nav.support') }}</h4>
+            <ul class="mt-3 space-y-2.5 text-[13px]">
               <li><router-link to="/login" class="text-gray-500 transition-colors hover:text-gray-900 dark:text-dark-400 dark:hover:text-white">{{ t('home.login') }}</router-link></li>
               <li><router-link to="/login" class="text-gray-500 transition-colors hover:text-gray-900 dark:text-dark-400 dark:hover:text-white">{{ t('home.nav.register') }}</router-link></li>
               <li><a href="#cta" class="text-gray-500 transition-colors hover:text-gray-900 dark:text-dark-400 dark:hover:text-white">{{ t('home.nav.support') }}</a></li>

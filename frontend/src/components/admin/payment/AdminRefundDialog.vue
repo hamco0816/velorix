@@ -92,9 +92,10 @@
         <!-- No deduction info -->
         <div
           v-if="!form.deduct_balance"
-          class="mt-2 rounded-lg bg-blue-50 p-3 text-sm text-blue-700 dark:bg-blue-900/20 dark:text-blue-300"
+          class="mt-2 flex items-start gap-2 rounded-xl border border-sky-200/70 bg-sky-50/60 p-3 text-sm leading-relaxed text-sky-800 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-200"
         >
-          {{ t('payment.admin.noDeduction') }}
+          <Icon name="infoCircle" size="sm" class="mt-0.5 shrink-0 text-sky-500 dark:text-sky-300" />
+          <span>{{ t('payment.admin.noDeduction') }}</span>
         </div>
       </div>
 
@@ -133,9 +134,10 @@
       <!-- Warning -->
       <div
         v-if="warning"
-        class="rounded-lg bg-yellow-50 p-3 text-sm text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-300"
+        class="flex items-start gap-2 rounded-xl border border-amber-200/70 bg-amber-50/60 p-3 text-sm leading-relaxed text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200"
       >
-        {{ warning }}
+        <Icon name="exclamationTriangle" size="sm" class="mt-0.5 shrink-0 text-amber-500 dark:text-amber-300" />
+        <span>{{ warning }}</span>
       </div>
 
       <!-- Force Refund -->
@@ -186,6 +188,7 @@
 import { reactive, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import BaseDialog from '@/components/common/BaseDialog.vue'
+import Icon from '@/components/icons/Icon.vue'
 import type { PaymentOrder } from '@/types/payment'
 import { formatOrderDateTime } from '@/components/payment/orderUtils'
 

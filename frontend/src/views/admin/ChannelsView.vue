@@ -1,24 +1,6 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <TablePageLayout>
-      <!-- Hero：teal 渐变标题区，标识渠道管理业务色调 -->
-      <template #hero>
-        <header class="page-hero page-hero-teal">
-          <div class="relative z-10 max-w-3xl">
-            <span class="page-hero-tag page-hero-tag-teal">
-              <Icon name="server" size="sm" />
-              {{ t('admin.channels.title') }}
-            </span>
-            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-              {{ t('admin.channels.title') }}
-            </h1>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-              {{ t('admin.channels.description') }}
-            </p>
-          </div>
-        </header>
-      </template>
-
       <template #filters>
         <div class="flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
           <!-- Left: Search + Filters -->
@@ -92,8 +74,9 @@
 
           <template #cell-group_count="{ row }">
             <span
-              class="inline-flex items-center rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-800 dark:bg-dark-600 dark:text-gray-300"
+              class="inline-flex items-center gap-1 rounded-md bg-sky-50 px-2 py-0.5 text-xs font-medium text-sky-700 dark:bg-sky-500/15 dark:text-sky-300"
             >
+              <Icon name="users" size="xs" />
               {{ (row.group_ids || []).length }}
               {{ t('admin.channels.groupsUnit', 'groups') }}
             </span>
@@ -101,8 +84,9 @@
 
           <template #cell-pricing_count="{ row }">
             <span
-              class="inline-flex items-center rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-800 dark:bg-dark-600 dark:text-gray-300"
+              class="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
             >
+              <Icon name="dollar" size="xs" />
               {{ (row.model_pricing || []).length }}
               {{ t('admin.channels.pricingUnit', 'pricing rules') }}
             </span>

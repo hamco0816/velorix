@@ -1,48 +1,36 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <div class="space-y-5">
-      <!-- Hero -->
-      <header class="page-hero page-hero-amber">
-        <div class="relative z-10 max-w-3xl">
-          <span class="page-hero-tag page-hero-tag-amber">
-            <Icon name="badge" size="sm" />
-            {{ t('admin.pricing.title') }}
-          </span>
-          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-            {{ t('admin.pricing.title') }}
-          </h1>
-          <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-            {{ t('admin.pricing.subtitle') }}
-          </p>
-        </div>
-      </header>
-
-      <!-- 数据源元信息 + 视图控制 -->
-      <div class="grid gap-3 md:grid-cols-3">
-        <!-- 数据源 -->
-        <div class="card p-4 text-sm">
-          <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('admin.pricing.source') }}</p>
-          <p v-if="metadata" class="mt-1 break-all font-mono text-xs text-gray-700 dark:text-gray-300">
+      <!-- 3 张元信息 metric-card：数据源 / 上次更新 / 模型数 -->
+      <div class="grid gap-4 md:grid-cols-3">
+        <div class="surface-card p-5">
+          <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('admin.pricing.source') }}</p>
+          <p v-if="metadata" class="mt-2 break-all font-mono text-xs text-gray-700 dark:text-gray-300">
             {{ metadata.remote_url || t('admin.pricing.sourceUnknown') }}
           </p>
-          <p v-else class="mt-1 text-gray-400">—</p>
+          <p v-else class="mt-2 text-gray-400">—</p>
         </div>
-        <div class="card p-4 text-sm">
-          <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('admin.pricing.lastUpdated') }}</p>
-          <p class="mt-1 text-gray-700 dark:text-gray-300">
+        <div class="surface-card p-5">
+          <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('admin.pricing.lastUpdated') }}</p>
+          <p class="mt-2 text-sm text-gray-700 dark:text-gray-300">
             {{ metadata?.last_updated ? formatRelativeWithDateTime(metadata.last_updated) : '—' }}
           </p>
         </div>
-        <div class="card p-4 text-sm">
-          <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('admin.pricing.modelCount') }}</p>
-          <p class="mt-1 text-2xl font-bold text-amber-600 dark:text-amber-300">
-            {{ metadata?.model_count ?? '—' }}
-          </p>
+        <div class="surface-card flex items-start gap-3 p-5">
+          <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300">
+            <Icon name="cube" size="sm" :stroke-width="1.75" />
+          </span>
+          <div>
+            <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('admin.pricing.modelCount') }}</p>
+            <p class="mt-1 text-[26px] font-semibold leading-tight tabular-nums text-gray-900 dark:text-white">
+              {{ metadata?.model_count ?? '—' }}
+            </p>
+          </div>
         </div>
       </div>
 
       <!-- 倍率视角选择器 + 操作 -->
-      <div class="card p-4">
+      <div class="surface-card p-5">
         <div class="flex flex-wrap items-end gap-4">
           <div class="min-w-[12rem]">
             <label class="input-label">{{ t('admin.pricing.viewMode') }}</label>
@@ -67,8 +55,8 @@
           </div>
           <div class="ml-auto flex items-end gap-3">
             <div class="text-sm">
-              <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('admin.pricing.effectiveMultiplier') }}</p>
-              <p class="mt-0.5 text-xl font-bold tabular-nums" :class="multiplierColor">
+              <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('admin.pricing.effectiveMultiplier') }}</p>
+              <p class="mt-0.5 text-xl font-semibold tabular-nums" :class="multiplierColor">
                 {{ effectiveMultiplier.toFixed(2) }}x
               </p>
             </div>
@@ -77,44 +65,48 @@
             </button>
           </div>
         </div>
-        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+        <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
           {{ t('admin.pricing.viewModeHint') }}
         </p>
       </div>
 
-      <!-- Provider tabs：187 个模型直接铺平阅读体验差，按上游分桶后单 tab 内只有几十条 -->
+      <!-- Provider tabs：black active（Linear 风），与全站时间窗口按钮一致 -->
       <div class="flex flex-wrap items-center gap-2">
         <button
           v-for="tab in providerTabs"
           :key="tab.key"
           type="button"
-          class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors"
+          class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors"
           :class="tab.key === activeProvider
-            ? 'border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-700 dark:bg-amber-900/30 dark:text-amber-200'
-            : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50 dark:border-dark-600 dark:bg-dark-900 dark:text-gray-300 dark:hover:border-dark-500'"
+            ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
+            : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-700 dark:text-gray-300 dark:hover:bg-dark-600'"
           @click="activeProvider = tab.key"
         >
           {{ tab.label }}
-          <span class="rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-gray-600 dark:bg-dark-700 dark:text-gray-300">
+          <span
+            class="rounded-full px-1.5 py-0.5 text-[10px] font-semibold tabular-nums"
+            :class="tab.key === activeProvider
+              ? 'bg-white/20 text-white dark:bg-gray-900/20 dark:text-gray-900'
+              : 'bg-gray-200 text-gray-600 dark:bg-dark-600 dark:text-gray-300'"
+          >
             {{ tab.count }}
           </span>
         </button>
       </div>
 
       <!-- 表格 -->
-      <div class="card overflow-hidden">
+      <div class="surface-card overflow-hidden">
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200 dark:divide-dark-700">
-            <!-- sticky thead：长列表滚到中段表头仍可见，比起设固定高度 + 表内滚动更顺手（避免与页面滚动条争夺） -->
-            <thead class="sticky top-0 z-10 bg-gray-50 dark:bg-dark-800">
+          <table class="min-w-full divide-y divide-gray-200/60 dark:divide-dark-700/60">
+            <thead class="sticky top-0 z-10 bg-gray-50/60 backdrop-blur-sm dark:bg-dark-800/60">
               <tr>
                 <th
                   v-for="col in tableColumns"
                   :key="col.key"
                   :class="[
-                    'px-4 py-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400',
+                    'px-4 py-3 text-[13px] font-medium text-gray-500 dark:text-dark-400 border-b border-gray-200/60 dark:border-dark-700/60',
                     col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left',
-                    col.sortable ? 'cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-dark-700' : '',
+                    col.sortable ? 'cursor-pointer select-none hover:bg-gray-100/80 dark:hover:bg-dark-700/40' : '',
                   ]"
                   @click="col.sortable ? toggleSort(col.key as SortKey) : undefined"
                 >
@@ -124,7 +116,7 @@
                       <Icon :name="sortDir === 'asc' ? 'chevronUp' : 'chevronDown'" size="sm" />
                     </template>
                     <template v-else-if="col.sortable">
-                      <span class="text-[9px] text-gray-300 dark:text-gray-600">⇅</span>
+                      <Icon name="arrowsUpDown" size="xs" class="text-gray-300 dark:text-gray-600" />
                     </template>
                   </span>
                 </th>
@@ -163,7 +155,7 @@
             </tbody>
           </table>
         </div>
-        <div v-if="sortedRows.length > 0" class="border-t border-gray-100 px-4 py-2 text-xs text-gray-500 dark:border-dark-700 dark:text-gray-400">
+        <div v-if="sortedRows.length > 0" class="border-t border-gray-200/60 bg-gray-50/30 px-4 py-2.5 text-xs text-gray-500 dark:border-dark-700/60 dark:bg-dark-800/30 dark:text-gray-400">
           {{ t('admin.pricing.tableFooter', { shown: sortedRows.length, total: pricingRows.length }) }}
         </div>
       </div>

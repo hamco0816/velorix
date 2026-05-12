@@ -1,21 +1,53 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <div class="space-y-5">
-      <!-- Hero：emerald 渐变标题区，标识订阅业务色 -->
-      <header class="page-hero page-hero-emerald">
-        <div class="relative z-10 max-w-3xl">
-          <span class="page-hero-tag page-hero-tag-emerald">
-            <Icon name="badge" size="sm" />
-            订阅管理
+      <!-- 工具栏：左侧概览 chip / 右侧操作 -->
+      <div v-if="!loading" class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <span
+            class="inline-flex items-center gap-1.5 rounded-full bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60"
+          >
+            <Icon name="badge" size="xs" class="text-gray-400" />
+            <span class="tabular-nums">{{ subscriptions.length }}</span>
+            <span class="text-gray-400 dark:text-dark-400">{{ t('userSubscriptions.statTotal') }}</span>
           </span>
-          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-            {{ t('userSubscriptions.title') }}
-          </h1>
-          <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-            {{ t('userSubscriptions.description') }}
-          </p>
+          <span
+            v-if="activeCount > 0"
+            class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30"
+          >
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="tabular-nums">{{ activeCount }}</span>
+            <span class="opacity-70">{{ t('userSubscriptions.statActive') }}</span>
+          </span>
+          <span
+            v-if="expiringSoonCount > 0"
+            class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30"
+          >
+            <Icon name="clock" size="xs" />
+            <span class="tabular-nums">{{ expiringSoonCount }}</span>
+            <span class="opacity-70">{{ t('userSubscriptions.statExpiringSoon') }}</span>
+          </span>
         </div>
-      </header>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            class="btn btn-secondary btn-sm"
+            :title="t('common.refresh')"
+            :aria-label="t('common.refresh')"
+            @click="loadSubscriptions"
+          >
+            <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary btn-sm"
+            @click="router.push({ path: '/purchase', query: { tab: 'subscription' } })"
+          >
+            <Icon name="plus" size="sm" class="mr-1.5" />
+            {{ t('payment.subscribeNow') }}
+          </button>
+        </div>
+      </div>
 
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center py-12">
@@ -25,66 +57,71 @@
       </div>
 
       <!-- Empty State -->
-      <div v-else-if="subscriptions.length === 0" class="card p-12 text-center">
+      <div
+        v-else-if="subscriptions.length === 0"
+        class="rounded-2xl border border-gray-200/70 bg-white p-12 text-center dark:border-dark-700/60 dark:bg-dark-800/40"
+      >
         <div
-          class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-dark-700"
+          class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-50 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-700/40 dark:ring-dark-600/60"
         >
-          <Icon name="creditCard" size="xl" class="text-gray-400" />
+          <Icon name="creditCard" size="lg" class="text-gray-400" />
         </div>
-        <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
+        <h3 class="mb-1.5 text-base font-semibold text-gray-900 dark:text-white">
           {{ t('userSubscriptions.noActiveSubscriptions') }}
         </h3>
-        <p class="text-gray-500 dark:text-dark-400">
+        <p class="mx-auto max-w-md text-sm text-gray-500 dark:text-dark-400">
           {{ t('userSubscriptions.noActiveSubscriptionsDesc') }}
         </p>
+        <button
+          type="button"
+          class="btn btn-primary btn-sm mt-5"
+          @click="router.push({ path: '/purchase', query: { tab: 'subscription' } })"
+        >
+          <Icon name="plus" size="sm" class="mr-1.5" />
+          {{ t('payment.subscribeNow') }}
+        </button>
       </div>
 
       <!-- Subscriptions Grid -->
-      <div v-else class="grid gap-6 lg:grid-cols-2">
+      <div v-else class="grid gap-5 lg:grid-cols-2">
         <div
           v-for="subscription in subscriptions"
           :key="subscription.id"
-          class="overflow-hidden rounded-2xl border bg-white dark:bg-dark-800"
-          :class="platformBorderClass(subscription.group?.platform || '')"
+          class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-shadow hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-18px_rgba(15,23,42,0.22)] dark:border-dark-700/60 dark:bg-dark-800/40"
         >
           <!-- Header -->
           <div
-            class="flex items-center justify-between border-b border-gray-100 p-4 dark:border-dark-700"
+            class="flex items-center justify-between gap-3 border-b border-gray-100 p-4 dark:border-dark-700/60"
           >
-            <div class="flex items-center gap-3">
-              <div :class="['h-1.5 w-1.5 shrink-0 rounded-full', platformAccentDotClass(subscription.group?.platform || '')]" />
-              <div>
-                <div class="flex items-center gap-2">
-                  <h3 class="font-semibold text-gray-900 dark:text-white">
+            <div class="flex items-start gap-3 min-w-0">
+              <div :class="['mt-2 h-1.5 w-1.5 shrink-0 rounded-full', platformAccentDotClass(subscription.group?.platform || '')]" />
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h3 class="font-semibold text-gray-900 dark:text-white truncate">
                     {{ subscription.group?.name || `Group #${subscription.group_id}` }}
                   </h3>
-                  <span :class="['rounded-md border px-2 py-0.5 text-[11px] font-medium', platformBadgeClass(subscription.group?.platform || '')]">
+                  <span :class="['inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium', platformBadgeClass(subscription.group?.platform || '')]">
                     {{ platformLabel(subscription.group?.platform || '') }}
                   </span>
                 </div>
-                <p v-if="subscription.group?.description" class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">
+                <p v-if="subscription.group?.description" class="mt-0.5 text-xs leading-relaxed text-gray-500 dark:text-dark-400 line-clamp-2">
                   {{ subscription.group.description }}
                 </p>
               </div>
             </div>
-            <div class="flex items-center gap-2">
-              <!-- 状态 badge 配色：active 绿、expired 琥珀（警示但非危险）、其他（如 cancelled）红
-                   原来 expired 用灰色，跟 "neutral/未激活" 没有区别，用户看不出是"已过期需要续费" -->
+            <div class="flex flex-col items-end gap-2 shrink-0">
               <span
                 :class="[
-                  'rounded-full px-2 py-0.5 text-xs font-medium',
-                  subscription.status === 'active'
-                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
-                    : subscription.status === 'expired'
-                      ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
-                      : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'
+                  'inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset',
+                  statusChipClass(subscription.status),
                 ]"
               >
+                <span class="h-1.5 w-1.5 rounded-full" :class="statusDotClass(subscription.status)"></span>
                 {{ t(`userSubscriptions.status.${subscription.status}`) }}
               </span>
               <button
                 v-if="subscription.status === 'active'"
-                :class="['rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition-colors', platformButtonClass(subscription.group?.platform || '')]"
+                :class="['rounded-lg px-3 py-1 text-xs font-semibold text-white transition-colors', platformButtonClass(subscription.group?.platform || '')]"
                 @click="router.push({ path: '/purchase', query: { tab: 'subscription', group: String(subscription.group_id) } })"
               >
                 {{ t('payment.renewNow') }}
@@ -242,18 +279,16 @@
                 !subscription.group?.weekly_limit_usd &&
                 !subscription.group?.monthly_limit_usd
               "
-              class="flex items-center justify-center rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 py-6 dark:from-emerald-900/20 dark:to-teal-900/20"
+              class="flex items-center justify-center gap-3 rounded-2xl border border-emerald-200/70 bg-emerald-50/60 py-5 dark:border-emerald-500/30 dark:bg-emerald-500/10"
             >
-              <div class="flex items-center gap-3">
-                <span class="text-4xl text-emerald-600 dark:text-emerald-400">∞</span>
-                <div>
-                  <p class="text-sm font-medium text-emerald-700 dark:text-emerald-300">
-                    {{ t('userSubscriptions.unlimited') }}
-                  </p>
-                  <p class="text-xs text-emerald-600/70 dark:text-emerald-400/70">
-                    {{ t('userSubscriptions.unlimitedDesc') }}
-                  </p>
-                </div>
+              <span class="text-3xl font-light leading-none text-emerald-600 dark:text-emerald-400">∞</span>
+              <div>
+                <p class="text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+                  {{ t('userSubscriptions.unlimited') }}
+                </p>
+                <p class="text-xs text-emerald-600/70 dark:text-emerald-400/70">
+                  {{ t('userSubscriptions.unlimitedDesc') }}
+                </p>
               </div>
             </div>
           </div>
@@ -264,7 +299,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
@@ -273,7 +308,7 @@ import type { UserSubscription } from '@/types'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { formatDateOnly } from '@/utils/format'
-import { platformBorderClass, platformBadgeClass, platformButtonClass, platformLabel } from '@/utils/platformColors'
+import { platformBadgeClass, platformButtonClass, platformLabel } from '@/utils/platformColors'
 
 function platformAccentDotClass(p: string): string {
   switch (p) {
@@ -310,13 +345,52 @@ function getProgressWidth(used: number | undefined, limit: number | null | undef
   return `${percentage}%`
 }
 
+// 用量进度色阶（与全站统一）：<80% emerald 健康 / 80–100% amber 接近上限 / ≥100% rose 已耗尽
 function getProgressBarClass(used: number | undefined, limit: number | null | undefined): string {
   if (!limit || limit === 0) return 'bg-gray-400'
   const percentage = ((used || 0) / limit) * 100
-  if (percentage >= 90) return 'bg-red-500'
-  if (percentage >= 70) return 'bg-orange-500'
-  return 'bg-green-500'
+  if (percentage >= 100) return 'bg-rose-500'
+  if (percentage >= 80) return 'bg-amber-500'
+  return 'bg-emerald-500'
 }
+
+// 订阅状态 chip：active 绿 / expired 琥珀（提示续费） / 其他 (cancelled 等) 玫红
+function statusChipClass(status: string): string {
+  switch (status) {
+    case 'active':
+      return 'bg-emerald-50 text-emerald-700 ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30'
+    case 'expired':
+      return 'bg-amber-50 text-amber-700 ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30'
+    default:
+      return 'bg-rose-50 text-rose-700 ring-rose-200/70 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/30'
+  }
+}
+
+function statusDotClass(status: string): string {
+  switch (status) {
+    case 'active':
+      return 'bg-emerald-500 animate-pulse'
+    case 'expired':
+      return 'bg-amber-500'
+    default:
+      return 'bg-rose-500'
+  }
+}
+
+// 概览统计：active 数量 / 即将过期 (≤7 天) 数量 — 用于工具栏概览 chip
+const activeCount = computed(
+  () => subscriptions.value.filter(s => s.status === 'active').length,
+)
+
+const expiringSoonCount = computed(() => {
+  const now = Date.now()
+  const sevenDaysMs = 7 * 24 * 60 * 60 * 1000
+  return subscriptions.value.filter(s => {
+    if (s.status !== 'active' || !s.expires_at) return false
+    const diff = new Date(s.expires_at).getTime() - now
+    return diff > 0 && diff <= sevenDaysMs
+  }).length
+})
 
 function formatExpirationDate(expiresAt: string): string {
   const now = new Date()

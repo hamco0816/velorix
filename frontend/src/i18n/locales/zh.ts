@@ -440,6 +440,7 @@ export default {
     tomorrow: '明天',
     unknown: '未知',
     minutes: '分钟',
+    user: '用户',
     time: {
       never: '从未',
       justNow: '刚刚',
@@ -488,7 +489,7 @@ export default {
     logout: '退出登录',
     mySubscriptions: '我的订阅',
     buySubscription: '充值/订阅',
-    docs: '文档',
+    docs: '使用文档',
     myOrders: '我的订单',
     mySeats: '我的独享号',
     orderManagement: '订单管理',
@@ -722,6 +723,7 @@ export default {
   dashboard: {
     title: '仪表盘',
     welcomeMessage: '欢迎回来！这是您账户的概览。',
+    welcomeTitle: '你好，{name}',
     coreStats: '核心数据',
     tokenStats: 'Token 与性能',
     balance: '余额',
@@ -932,6 +934,7 @@ export default {
     currentExpiration: '当前过期时间',
     expiresAt: '过期时间',
     noExpiration: '永久有效',
+    expired: '已过期',
     status: {
       active: '活跃',
       inactive: '已停用',
@@ -1074,6 +1077,8 @@ export default {
       '15d': '15 天',
       '30d': '30 天'
     },
+    heroOperational: '正常运行',
+    heroAvgAvailability: '平均可用率',
     overall: {
       operational: 'OPERATIONAL',
       degraded: 'DEGRADED',
@@ -1107,6 +1112,7 @@ export default {
     title: '可用渠道',
     description: '查看您可访问的渠道与其支持的模型、定价',
     searchPlaceholder: '搜索渠道或模型...',
+    statChannels: '渠道',
     empty: '暂无可用渠道',
     noModels: '未配置模型',
     noPricing: '未配置定价',
@@ -1398,7 +1404,8 @@ export default {
 
   // Empty States
   empty: {
-    noData: '暂无数据'
+    noData: '暂无数据',
+    tryAdjustFilters: '试试调整筛选条件，或检查权限设置'
   },
 
   // Table
@@ -1541,7 +1548,13 @@ export default {
       configureAiAccounts: '配置 AI 平台账号',
       systemSettings: '系统设置',
       configureSystem: '配置系统设置',
-      failedToLoad: '加载仪表盘数据失败'
+      failedToLoad: '加载仪表盘数据失败',
+      todaySnapshot: '今日运营快照',
+      systemHealth: '系统健康度',
+      liveUpdated: '数据更新于',
+      secondsAgo: '{n} 秒前',
+      todayDelta: '今日新增',
+      userTrendTitle: '用户使用趋势'
     },
 
     backup: {
@@ -2263,6 +2276,14 @@ export default {
       groupDeleted: '分组删除成功',
       failedToCreate: '创建分组失败',
       failedToUpdate: '更新分组失败',
+      duplicate: '复制',
+      enable: '启用',
+      disable: '禁用',
+      enabledSuccess: '分组已启用',
+      disabledSuccess: '分组已禁用',
+      failedToToggleStatus: '切换状态失败',
+      viewAccountsInGroup: '查看该分组的账号',
+      dailyUsage: '日限额',
       nameRequired: '请输入分组名称',
       rateMultipliers: '专属倍率',
       rateMultipliersTitle: '分组专属倍率管理',
@@ -4425,6 +4446,7 @@ export default {
       noSystemMetrics: '尚未收集系统指标。',
       collectedAt: '采集时间：',
       window: '窗口',
+      systemHealthLabel: '系统健康度',
       memory: '内存',
       db: '数据库',
       goroutines: '协程',
@@ -6312,6 +6334,9 @@ export default {
     subtitle: '查看您购买的独享池名额，到期前可续费保留绑定账号。',
     empty: '您当前没有独享名额',
     browsePlans: '前往套餐购买',
+    statTotal: '独享号',
+    statActive: '有效',
+    statExpiringSoon: '7 天内到期',
     assignedAt: '开通时间',
     expiresAt: '到期时间',
     lastRenewalAt: '上次续费',
@@ -6382,6 +6407,9 @@ export default {
     noActiveSubscriptions: '暂无有效订阅',
     noActiveSubscriptionsDesc: '您没有任何有效订阅。请联系管理员获取订阅。',
     failedToLoad: '加载订阅失败',
+    statTotal: '订阅',
+    statActive: '有效',
+    statExpiringSoon: '7 天内到期',
     status: {
       active: '有效',
       expired: '已过期',
@@ -6909,6 +6937,14 @@ export default {
         colExpiresAt: '到期时间',
         colActions: '操作',
         empty: '该池暂无独享名额',
+        emptyFiltered: '没有匹配的名额',
+        emptyFilteredHint: '试试调整搜索词或筛选条件',
+        searchPlaceholder: '搜索用户 / 账号 / ID',
+        allStatuses: '全部状态',
+        totalCount: '共 {n} 条',
+        alreadyExpired: '已过期',
+        expiresToday: '今天到期',
+        expiresInDays: '剩 {n} 天',
         actExtend: '延期',
         actSwap: '换号',
         actRelease: '释放',

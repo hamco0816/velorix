@@ -1,26 +1,9 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <TablePageLayout>
-      <!-- Hero：violet 渐变标题区，标识账号管理业务色 -->
-      <template #hero>
-        <header class="page-hero page-hero-violet">
-          <div class="relative z-10 max-w-3xl">
-            <span class="page-hero-tag page-hero-tag-violet">
-              <Icon name="server" size="sm" />
-              {{ t('admin.accounts.title') }}
-            </span>
-            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-              {{ t('admin.accounts.title') }}
-            </h1>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-              {{ t('admin.accounts.description') }}
-            </p>
-          </div>
-        </header>
-      </template>
-
       <template #filters>
-        <div class="flex flex-wrap-reverse items-start justify-between gap-3">
+        <!-- 筛选条独占一行；操作按钮组独占下一行，避免在小屏下并排时挤压 / 错位 -->
+        <div class="space-y-3">
           <AccountTableFilters
             v-model:searchQuery="params.search"
             :filters="params"
@@ -282,12 +265,17 @@
             <span v-else class="text-sm text-gray-400 dark:text-dark-500">-</span>
           </template>
           <template #cell-rate_multiplier="{ row }">
-            <span class="text-sm font-mono text-gray-700 dark:text-gray-300">
-              {{ (row.rate_multiplier ?? 1).toFixed(2) }}x
-            </span>
+            <span
+              class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium tabular-nums"
+              :class="(row.rate_multiplier ?? 1) > 1
+                ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+                : (row.rate_multiplier ?? 1) < 1
+                  ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                  : 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'"
+            >{{ (row.rate_multiplier ?? 1).toFixed(2) }}x</span>
           </template>
           <template #cell-priority="{ value }">
-            <span class="text-sm text-gray-700 dark:text-gray-300">{{ value }}</span>
+            <span class="text-sm tabular-nums font-medium text-gray-700 dark:text-gray-300">{{ value }}</span>
           </template>
           <template #cell-last_used_at="{ value }">
             <span class="text-sm text-gray-500 dark:text-dark-400">{{ formatRelativeTime(value) }}</span>
@@ -298,13 +286,14 @@
               <div v-if="isExpired(value) || (row.auto_pause_on_expired && value)" class="flex items-center gap-1">
                 <span
                   v-if="isExpired(value)"
-                  class="inline-flex items-center rounded-md bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
+                  class="inline-flex items-center gap-1 rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 dark:bg-rose-500/15 dark:text-rose-300"
                 >
+                  <span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span>
                   {{ t('admin.accounts.expired') }}
                 </span>
                 <span
                   v-if="row.auto_pause_on_expired && value"
-                  class="inline-flex items-center rounded-md bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
+                  class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
                 >
                   {{ t('admin.accounts.autoPauseOnExpired') }}
                 </span>
@@ -1065,9 +1054,9 @@ function getOpenAICompactTitle(row: any): string {
 function getAntigravityTierClass(row: any): string {
   const tier = getAntigravityTierFromRow(row)
   switch (tier) {
-    case 'free-tier': return 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
-    case 'g1-pro-tier': return 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300'
-    case 'g1-ultra-tier': return 'bg-purple-100 text-purple-600 dark:bg-purple-900/40 dark:text-purple-300'
+    case 'free-tier': return 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'
+    case 'g1-pro-tier': return 'bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300'
+    case 'g1-ultra-tier': return 'bg-violet-50 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300'
     default: return ''
   }
 }

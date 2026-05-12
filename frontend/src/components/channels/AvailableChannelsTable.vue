@@ -1,13 +1,13 @@
 <template>
-  <div class="card overflow-hidden">
+  <div class="h-full overflow-auto">
     <table class="w-full table-fixed border-collapse text-sm">
-      <thead>
-        <tr class="border-b border-gray-100 bg-gray-50/50 text-xs font-medium uppercase tracking-wide text-gray-500 dark:border-dark-700 dark:bg-dark-800/50 dark:text-gray-400">
-          <th class="w-[180px] px-4 py-3 text-left">{{ columns.name }}</th>
-          <th class="w-[200px] px-4 py-3 text-left">{{ columns.description }}</th>
-          <th class="w-[140px] px-4 py-3 text-left">{{ columns.platform }}</th>
-          <th class="px-4 py-3 text-left">{{ columns.groups }}</th>
-          <th class="px-4 py-3 text-left">{{ columns.supportedModels }}</th>
+      <thead class="sticky top-0 z-10 bg-gray-50/80 backdrop-blur-sm dark:bg-dark-800/60">
+        <tr class="border-b border-gray-200/60 text-[13px] font-medium text-gray-500 dark:border-dark-700/60 dark:text-dark-400">
+          <th class="w-[180px] px-5 py-3.5 text-left">{{ columns.name }}</th>
+          <th class="w-[220px] px-5 py-3.5 text-left">{{ columns.description }}</th>
+          <th class="w-[140px] px-5 py-3.5 text-left">{{ columns.platform }}</th>
+          <th class="px-5 py-3.5 text-left">{{ columns.groups }}</th>
+          <th class="px-5 py-3.5 text-left">{{ columns.supportedModels }}</th>
         </tr>
       </thead>
       <tbody v-if="loading">
@@ -31,7 +31,7 @@
         v-else
         v-for="(channel, chIdx) in rows"
         :key="`${channel.name}-${chIdx}`"
-        class="border-b-2 border-gray-200 last:border-b-0 dark:border-dark-600"
+        class="border-b border-gray-200/70 last:border-b-0 dark:border-dark-700/60"
       >
         <tr
           v-for="(section, secIdx) in channel.platforms"
@@ -43,7 +43,7 @@
           <td
             v-if="secIdx === 0"
             :rowspan="channel.platforms.length"
-            class="px-4 py-3 text-left align-middle font-medium text-gray-900 dark:text-white"
+            class="px-5 py-4 text-left align-middle text-sm font-medium text-gray-900 dark:text-white"
           >
             {{ channel.name }}
           </td>
@@ -52,27 +52,27 @@
           <td
             v-if="secIdx === 0"
             :rowspan="channel.platforms.length"
-            class="px-4 py-3 align-middle text-xs text-gray-500 dark:text-gray-400"
+            class="px-5 py-4 align-middle text-xs leading-relaxed text-gray-500 dark:text-gray-400"
           >
             <template v-if="channel.description">{{ channel.description }}</template>
             <span v-else class="text-gray-400">-</span>
           </td>
 
           <!-- 平台徽章 -->
-          <td class="align-top px-4 py-3">
+          <td class="align-top px-5 py-4">
             <span
               :class="[
-                'inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-medium uppercase',
+                'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium',
                 platformBadgeClass(section.platform),
               ]"
             >
               <PlatformIcon :platform="section.platform as GroupPlatform" size="xs" />
-              {{ section.platform }}
+              <span class="uppercase tracking-wide">{{ section.platform }}</span>
             </span>
           </td>
 
           <!-- 分组：专属分组在前（紫色 shield 行），公开分组在后（灰色 globe 行）。 -->
-          <td class="align-top px-4 py-3">
+          <td class="align-top px-5 py-4">
             <div class="flex flex-col gap-1.5">
               <div
                 v-if="exclusiveGroups(section).length > 0"
@@ -123,7 +123,7 @@
           </td>
 
           <!-- 支持模型 -->
-          <td class="align-top px-4 py-3">
+          <td class="align-top px-5 py-4">
             <div class="flex flex-wrap gap-1">
               <SupportedModelChip
                 v-for="m in section.supported_models"

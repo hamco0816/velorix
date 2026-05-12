@@ -87,7 +87,7 @@
           </router-link>
         </div>
 
-        <!-- Turnstile：占位 → ✓/widget → 失败 三段式，避免暴露 Cloudflare 灰色加载矩形 -->
+        <!-- Turnstile：占位 → 已校验/widget → 失败 三段式，避免暴露 Cloudflare 灰色加载矩形 -->
         <div v-if="turnstileEnabled && turnstileSiteKey">
           <!-- 1) 加载中占位（默认 3 秒，遮蔽掉 Cloudflare 自带的灰色加载状态） -->
           <div
@@ -277,7 +277,7 @@ const turnstileRef = ref<InstanceType<typeof TurnstileWidget> | null>(null)
 const turnstileToken = ref<string>('')
 // 三段式占位策略：
 //   1. turnstilePlaceholderVisible: 默认 true，显示我们自己的 spinner 占位（替代 Cloudflare 的灰色矩形）
-//   2. 3 秒后切换：若已 verify 则显示 ✓；否则显示真实 widget（这时已完成渲染，不会是灰色加载态）
+//   2. 3 秒后切换：若已 verify 则显示通过状态；否则显示真实 widget（这时已完成渲染，不会是灰色加载态）
 //   3. 8 秒仍无 token 则判定加载失败，给重试入口
 const turnstilePlaceholderVisible = ref<boolean>(true)
 const turnstileLoadFailed = ref<boolean>(false)

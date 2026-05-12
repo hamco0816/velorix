@@ -15,16 +15,17 @@
     </template>
 
     <template v-else-if="!data || data.length === 0">
-      <div class="rounded-lg border border-gray-200 bg-white p-12 text-center dark:border-dark-700 dark:bg-dark-900">
+      <div class="rounded-2xl border border-gray-200/70 bg-white p-12 text-center dark:border-dark-700/60 dark:bg-dark-800/40">
         <slot name="empty">
           <div class="flex flex-col items-center">
-            <Icon
-              name="inbox"
-              size="xl"
-              class="mb-4 h-12 w-12 text-gray-400 dark:text-dark-500"
-            />
-            <p class="text-lg font-medium text-gray-900 dark:text-gray-100">
+            <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 dark:bg-dark-700">
+              <Icon name="inbox" size="lg" class="text-gray-400 dark:text-dark-500" />
+            </div>
+            <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
               {{ t('empty.noData') }}
+            </p>
+            <p class="mt-1 text-xs text-gray-500 dark:text-dark-400">
+              {{ t('empty.tryAdjustFilters') }}
             </p>
           </div>
         </slot>
@@ -35,7 +36,7 @@
       <div
         v-for="(row, index) in sortedData"
         :key="resolveRowKey(row, index)"
-        class="rounded-lg border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-900"
+        class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40"
       >
         <div class="space-y-3">
           <div
@@ -43,7 +44,7 @@
             :key="column.key"
             class="flex items-start justify-between gap-4"
           >
-            <span class="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400">
+            <span class="text-xs font-medium text-gray-500 dark:text-dark-400">
               {{ column.label }}
             </span>
             <div class="text-right text-sm text-gray-900 dark:text-gray-100">
@@ -133,17 +134,18 @@
         <tr v-else-if="!data || data.length === 0">
           <td
             :colspan="columns.length"
-            :class="['py-12 text-center text-gray-500 dark:text-dark-400', getAdaptivePaddingClass()]"
+            :class="['py-16 text-center text-gray-500 dark:text-dark-400', getAdaptivePaddingClass()]"
           >
             <slot name="empty">
               <div class="flex flex-col items-center">
-                <Icon
-                  name="inbox"
-                  size="xl"
-                  class="mb-4 h-12 w-12 text-gray-400 dark:text-dark-500"
-                />
-                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 dark:bg-dark-700">
+                  <Icon name="inbox" size="lg" class="text-gray-400 dark:text-dark-500" />
+                </div>
+                <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
                   {{ t('empty.noData') }}
+                </p>
+                <p class="mt-1 text-xs text-gray-500 dark:text-dark-400">
+                  {{ t('empty.tryAdjustFilters') }}
                 </p>
               </div>
             </slot>
@@ -163,7 +165,7 @@
             :data-row-id="resolveRowKey(sortedData[virtualRow.index], virtualRow.index)"
             :data-index="virtualRow.index"
             :ref="measureElement"
-            class="hover:bg-gray-50 dark:hover:bg-dark-800"
+            class="group/row transition-colors hover:bg-gray-50 dark:hover:bg-dark-800"
           >
             <td
               v-for="(column, colIndex) in columns"

@@ -1,5 +1,5 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <TablePageLayout>
       <template #filters>
         <div class="flex flex-wrap items-center gap-3">
@@ -63,28 +63,35 @@
 
           <template #cell-status="{ value }">
             <span
-              :class="[
-                'badge',
-                value === 'active'
-                  ? 'badge-success'
-                  : value === 'draft'
-                    ? 'badge-gray'
-                    : 'badge-warning'
-              ]"
+              class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium"
+              :class="value === 'active'
+                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                : value === 'draft'
+                  ? 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'
+                  : 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'"
             >
+              <span class="relative flex h-1.5 w-1.5">
+                <span
+                  v-if="value === 'active'"
+                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70"
+                ></span>
+                <span
+                  class="relative inline-flex h-1.5 w-1.5 rounded-full"
+                  :class="value === 'active' ? 'bg-emerald-500' : value === 'draft' ? 'bg-gray-400' : 'bg-amber-500'"
+                ></span>
+              </span>
               {{ statusLabel(value) }}
             </span>
           </template>
 
           <template #cell-notify_mode="{ row }">
             <span
-              :class="[
-                'badge',
-                row.notify_mode === 'popup'
-                  ? 'badge-warning'
-                  : 'badge-gray'
-              ]"
+              class="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium"
+              :class="row.notify_mode === 'popup'
+                ? 'bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300'
+                : 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'"
             >
+              <Icon :name="row.notify_mode === 'popup' ? 'bell' : 'inbox'" size="xs" />
               {{ row.notify_mode === 'popup' ? t('admin.announcements.notifyModeLabels.popup') : t('admin.announcements.notifyModeLabels.silent') }}
             </span>
           </template>

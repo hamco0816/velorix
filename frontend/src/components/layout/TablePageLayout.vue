@@ -53,7 +53,7 @@ onUnmounted(() => {
 <style scoped>
 /* 桌面端：Flexbox 布局 */
 .table-page-layout {
-  @apply flex flex-col gap-6;
+  @apply flex flex-col gap-5;
   height: calc(100vh - 64px - 4rem); /* 减去 header + lg:p-8 的上下padding */
 }
 
@@ -65,24 +65,14 @@ onUnmounted(() => {
   @apply flex-1 min-h-0 flex flex-col;
 }
 
-/* 筛选条 panel：与兑换码 / 文档 panel 同款外观 */
+/* 筛选条 panel：Notion 风温和卡片（与 surface-card 同款） */
 .filters-panel {
-  @apply rounded-lg border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-900 sm:p-5;
-  box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
+  @apply rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40 sm:p-5;
 }
 
-:global(:root.dark) .filters-panel {
-  box-shadow: none;
-}
-
-/* 表格滚动容器 - 与全站 panel 统一的"远距离淡阴影" */
+/* 表格滚动容器 - 与全站 surface-card 统一 */
 .table-scroll-container {
-  @apply flex flex-col overflow-hidden h-full bg-white dark:bg-dark-800 rounded-lg border border-gray-200 dark:border-dark-700;
-  box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
-}
-
-:global(:root.dark) .table-scroll-container {
-  box-shadow: none;
+  @apply flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40;
 }
 
 .table-scroll-container :deep(.table-wrapper) {
@@ -97,25 +87,34 @@ onUnmounted(() => {
   display: table; /* 使用标准 table 布局以支持 sticky 列 */
 }
 
-/* 表头：浅 sky 背景 + 弱化分隔线，与全站浅色头部 panel 风格统一 */
+/* 表头：温和中性灰底，去掉 sky 蓝调，与 Notion 风一致 */
 .table-scroll-container :deep(thead) {
-  @apply bg-sky-50/50 backdrop-blur-sm;
+  @apply bg-gray-50/60 backdrop-blur-sm;
 }
 
 :global(:root.dark) .table-scroll-container :deep(thead) {
-  background-color: rgb(14 165 233 / 0.08);
+  background-color: rgb(31 41 55 / 0.6);
 }
 
 .table-scroll-container :deep(tbody) {
   /* 保持默认 table-row-group 显示，不使用 block */
 }
 
+/* 表头：13px font-medium，去 uppercase，与全站 metric-label 同节奏 */
 .table-scroll-container :deep(th) {
-  @apply px-5 py-4 text-left text-sm font-medium text-gray-600 dark:text-dark-300 border-b border-gray-200 dark:border-dark-700;
+  @apply px-5 py-3.5 text-left text-[13px] font-medium text-gray-500 dark:text-dark-400 border-b border-gray-200/60 dark:border-dark-700/60;
 }
 
 .table-scroll-container :deep(td) {
   @apply px-5 py-4 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-100 dark:border-dark-800;
+}
+
+/* 行 hover 微背景，让数据条目可"扫描"到 */
+.table-scroll-container :deep(tbody tr) {
+  @apply transition-colors;
+}
+.table-scroll-container :deep(tbody tr:hover) {
+  @apply bg-gray-50/60 dark:bg-dark-800/40;
 }
 
 /* 移动端：恢复正常滚动 */

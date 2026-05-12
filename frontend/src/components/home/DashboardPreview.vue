@@ -57,8 +57,8 @@
                     <span v-else :class="['text-[9px] font-bold', m.textClass]">{{ m.letter }}</span>
                   </div>
                   <span class="flex-1 truncate text-[11px] font-medium text-gray-700 dark:text-dark-200">{{ m.name }}</span>
-                  <span class="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
-                    <span class="h-1 w-1 rounded-full bg-emerald-500"></span>
+                  <span class="inline-flex items-center gap-1.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
+                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                     {{ t('home.dashPreview.stateAvailable') }}
                   </span>
                   <span class="font-mono text-[10px] tabular-nums text-gray-500 dark:text-dark-400">{{ m.value }}</span>
@@ -73,7 +73,7 @@
                 <div class="text-[10px] font-medium text-gray-500 dark:text-dark-400">
                   {{ t('home.dashPreview.todayUsage') }}
                 </div>
-                <div class="mt-1 text-lg font-bold tabular-nums tracking-tight text-gray-900 dark:text-white">
+                <div class="mt-1 text-lg font-semibold tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400">
                   ¥ 12.86
                 </div>
                 <div class="mt-0.5 inline-flex items-center gap-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
@@ -89,7 +89,7 @@
                   <div class="text-[10px] font-medium text-gray-500 dark:text-dark-400">
                     {{ t('home.dashPreview.totalRequests') }}
                   </div>
-                  <div class="mt-0.5 text-sm font-bold tabular-nums tracking-tight text-gray-900 dark:text-white">
+                  <div class="mt-0.5 text-sm font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">
                     2,128
                   </div>
                 </div>
@@ -97,7 +97,7 @@
                   <div class="text-[10px] font-medium text-gray-500 dark:text-dark-400">
                     {{ t('home.dashPreview.successRate') }}
                   </div>
-                  <div class="mt-0.5 text-sm font-bold tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400">
+                  <div class="mt-0.5 text-sm font-semibold tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400">
                     99.8%
                   </div>
                 </div>
@@ -201,11 +201,5 @@ const models = computed<ModelRow[]>(() => [
 </script>
 
 <style scoped>
-.dash-preview {
-  /* 给整个卡片轻微透视感（参考图风格更稳重，所以不大幅倾斜） */
-  transition: transform 0.4s ease;
-}
-.dash-preview:hover {
-  transform: translateY(-2px);
-}
+/* DashboardPreview 静态展示，不做 hover 位移以保持 Notion 风克制 */
 </style>

@@ -7,15 +7,15 @@
   >
     <div class="space-y-4">
       <!-- No Group Assigned Warning -->
-      <div v-if="!platform" class="flex items-start gap-3 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
-        <svg class="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-        </svg>
+      <div v-if="!platform" class="flex items-start gap-3 rounded-xl border border-amber-200/70 bg-amber-50/60 p-4 dark:border-amber-500/30 dark:bg-amber-500/10">
+        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/80 text-amber-600 ring-1 ring-inset ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30">
+          <Icon name="exclamationTriangle" size="sm" :stroke-width="2" />
+        </div>
         <div>
-          <p class="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+          <p class="text-sm font-semibold text-amber-900 dark:text-amber-100">
             {{ t('keys.useKeyModal.noGroupTitle') }}
           </p>
-          <p class="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+          <p class="mt-1 text-sm leading-relaxed text-amber-800 dark:text-amber-200">
             {{ t('keys.useKeyModal.noGroupDescription') }}
           </p>
         </div>
@@ -24,25 +24,25 @@
       <!-- Platform-specific content -->
       <template v-else>
         <!-- Description -->
-        <p class="text-sm text-gray-600 dark:text-gray-400">
+        <p class="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
           {{ platformDescription }}
         </p>
 
         <!-- Client Tabs -->
-        <div v-if="clientTabs.length" class="border-b border-gray-200 dark:border-dark-700">
-          <nav class="-mb-px flex space-x-6" aria-label="Client">
+        <div v-if="clientTabs.length" class="border-b border-gray-200/70 dark:border-dark-700/60">
+          <nav class="-mb-px flex space-x-5" aria-label="Client">
             <button
               v-for="tab in clientTabs"
               :key="tab.id"
               @click="activeClientTab = tab.id"
               :class="[
-                'whitespace-nowrap py-2.5 px-1 border-b-2 font-medium text-sm transition-colors',
+                'whitespace-nowrap py-2.5 px-1 border-b-2 font-medium text-[13px] transition-colors',
                 activeClientTab === tab.id
-                  ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                  ? 'border-gray-900 text-gray-900 dark:border-white dark:text-white'
+                  : 'border-transparent text-gray-500 hover:text-gray-900 hover:border-gray-300 dark:text-gray-400 dark:hover:text-white'
               ]"
             >
-              <span class="flex items-center gap-2">
+              <span class="flex items-center gap-1.5">
                 <component :is="tab.icon" class="w-4 h-4" />
                 {{ tab.label }}
               </span>
@@ -51,20 +51,20 @@
         </div>
 
         <!-- OS/Shell Tabs -->
-        <div v-if="showShellTabs" class="border-b border-gray-200 dark:border-dark-700">
+        <div v-if="showShellTabs" class="border-b border-gray-200/70 dark:border-dark-700/60">
           <nav class="-mb-px flex space-x-4" aria-label="Tabs">
             <button
               v-for="tab in currentTabs"
               :key="tab.id"
               @click="activeTab = tab.id"
               :class="[
-                'whitespace-nowrap py-2.5 px-1 border-b-2 font-medium text-sm transition-colors',
+                'whitespace-nowrap py-2.5 px-1 border-b-2 font-medium text-[13px] transition-colors',
                 activeTab === tab.id
-                  ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                  ? 'border-gray-900 text-gray-900 dark:border-white dark:text-white'
+                  : 'border-transparent text-gray-500 hover:text-gray-900 hover:border-gray-300 dark:text-gray-400 dark:hover:text-white'
               ]"
             >
-              <span class="flex items-center gap-2">
+              <span class="flex items-center gap-1.5">
                 <component :is="tab.icon" class="w-4 h-4" />
                 {{ tab.label }}
               </span>
@@ -111,9 +111,9 @@
         </div>
 
         <!-- Usage Note -->
-        <div v-if="showPlatformNote" class="flex items-start gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800">
-          <Icon name="infoCircle" size="md" class="text-blue-500 flex-shrink-0 mt-0.5" />
-          <p class="text-sm text-blue-700 dark:text-blue-300">
+        <div v-if="showPlatformNote" class="flex items-start gap-3 rounded-xl border border-sky-200/70 bg-sky-50/60 p-3.5 dark:border-sky-500/30 dark:bg-sky-500/10">
+          <Icon name="infoCircle" size="md" class="mt-0.5 shrink-0 text-sky-500 dark:text-sky-300" />
+          <p class="text-sm leading-relaxed text-sky-800 dark:text-sky-200">
             {{ platformNote }}
           </p>
         </div>
@@ -121,14 +121,12 @@
     </div>
 
     <template #footer>
-      <div class="flex justify-end">
-        <button
-          @click="emit('close')"
-          class="btn btn-secondary"
-        >
-          {{ t('common.close') }}
-        </button>
-      </div>
+      <button
+        @click="emit('close')"
+        class="btn btn-secondary"
+      >
+        {{ t('common.close') }}
+      </button>
     </template>
   </BaseDialog>
 </template>

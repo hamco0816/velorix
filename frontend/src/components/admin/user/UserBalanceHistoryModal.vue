@@ -2,11 +2,11 @@
   <BaseDialog :show="show" :title="t('admin.users.balanceHistoryTitle')" width="wide" :close-on-click-outside="true" :z-index="40" @close="$emit('close')">
     <div v-if="user" class="space-y-4">
       <!-- User header: two-row layout with full user info -->
-      <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-700">
+      <div class="rounded-xl border border-gray-200/70 bg-gray-50/40 p-4 dark:border-dark-700/60 dark:bg-dark-800/30">
         <!-- Row 1: avatar + email/username/created_at (left) + current balance (right) -->
         <div class="flex items-center gap-3">
-          <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/30">
-            <span class="text-lg font-medium text-primary-700 dark:text-primary-300">
+          <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary-50 ring-1 ring-inset ring-primary-200/70 dark:bg-primary-500/15 dark:ring-primary-500/30">
+            <span class="text-base font-semibold text-primary-600 dark:text-primary-300">
               {{ user.email.charAt(0).toUpperCase() }}
             </span>
           </div>
@@ -15,7 +15,7 @@
               <p class="truncate font-medium text-gray-900 dark:text-white">{{ user.email }}</p>
               <span
                 v-if="user.username"
-                class="flex-shrink-0 rounded bg-primary-50 px-1.5 py-0.5 text-xs text-primary-600 dark:bg-primary-900/20 dark:text-primary-400"
+                class="flex-shrink-0 rounded bg-primary-50 px-1.5 py-0.5 text-xs font-medium text-primary-700 ring-1 ring-inset ring-primary-200/70 dark:bg-primary-500/15 dark:text-primary-300 dark:ring-primary-500/30"
               >
                 {{ user.username }}
               </span>
@@ -26,8 +26,8 @@
           </div>
           <!-- Current balance: prominent display on the right -->
           <div class="flex-shrink-0 text-right">
-            <p class="text-xs text-gray-500 dark:text-dark-400">{{ t('admin.users.currentBalance') }}</p>
-            <p class="text-xl font-bold text-gray-900 dark:text-white">
+            <p class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ t('admin.users.currentBalance') }}</p>
+            <p class="text-xl font-semibold tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400">
               ${{ user.balance?.toFixed(2) || '0.00' }}
             </p>
           </div>

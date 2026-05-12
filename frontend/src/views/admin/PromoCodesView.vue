@@ -1,24 +1,6 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <TablePageLayout>
-      <!-- Hero：rose 渐变标题区，标识优惠码业务色 -->
-      <template #hero>
-        <header class="page-hero page-hero-rose">
-          <div class="relative z-10 max-w-3xl">
-            <span class="page-hero-tag page-hero-tag-rose">
-              <Icon name="gift" size="sm" />
-              {{ t('admin.promo.title') }}
-            </span>
-            <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-              {{ t('admin.promo.title') }}
-            </h1>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-              {{ t('admin.promo.description') }}
-            </p>
-          </div>
-        </header>
-      </template>
-
       <template #filters>
         <div class="flex flex-wrap items-center gap-3">
           <!-- Left: Search + Filters -->
@@ -106,11 +88,23 @@
 
           <template #cell-status="{ value, row }">
             <span
-              :class="[
-                'badge',
-                getStatusClass(value, row)
-              ]"
+              class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium"
+              :class="getStatusClass(value, row)"
             >
+              <span class="relative flex h-1.5 w-1.5">
+                <span
+                  v-if="value === 'active' && !(row.expires_at && new Date(row.expires_at) < new Date()) && !(row.max_uses > 0 && row.used_count >= row.max_uses)"
+                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70"
+                ></span>
+                <span
+                  class="relative inline-flex h-1.5 w-1.5 rounded-full"
+                  :class="(row.expires_at && new Date(row.expires_at) < new Date())
+                    ? 'bg-rose-500'
+                    : (row.max_uses > 0 && row.used_count >= row.max_uses)
+                      ? 'bg-gray-400'
+                      : value === 'active' ? 'bg-emerald-500' : 'bg-gray-400'"
+                ></span>
+              </span>
               {{ getStatusLabel(value, row) }}
             </span>
           </template>
@@ -508,12 +502,14 @@ const columns = computed<Column[]>(() => [
 // Helpers
 const getStatusClass = (status: string, row: PromoCode) => {
   if (row.expires_at && new Date(row.expires_at) < new Date()) {
-    return 'badge-danger'
+    return 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'
   }
   if (row.max_uses > 0 && row.used_count >= row.max_uses) {
-    return 'badge-gray'
+    return 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'
   }
-  return status === 'active' ? 'badge-success' : 'badge-gray'
+  return status === 'active'
+    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+    : 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'
 }
 
 const getStatusLabel = (status: string, row: PromoCode) => {
