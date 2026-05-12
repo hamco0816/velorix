@@ -229,41 +229,50 @@
           </div>
 
           <!-- Grid -->
-          <div v-else class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <div v-else class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             <div
               v-for="model in filteredModels"
               :key="`${model.platform}-${model.name}`"
-              class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-colors hover:border-gray-300 dark:border-dark-700/60 dark:bg-dark-800/40 dark:hover:border-dark-500"
+              class="flex flex-col rounded-2xl border border-gray-200/70 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-colors hover:border-gray-300 dark:border-dark-700/60 dark:bg-dark-800/40 dark:hover:border-dark-500"
             >
               <!-- Header：平台 icon + 模型名 + 计费 chip -->
-              <div class="flex items-start gap-2.5">
+              <div class="flex items-start gap-3">
                 <div
                   :class="[
-                    'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset',
+                    'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset',
                     platformIconBg(model.platform),
                   ]"
                 >
-                  <PlatformIcon :platform="model.platform as GroupPlatform" size="sm" />
+                  <PlatformIcon :platform="model.platform as GroupPlatform" size="md" />
                 </div>
                 <div class="min-w-0 flex-1">
-                  <p class="truncate text-sm font-semibold tracking-tight text-gray-900 dark:text-white" :title="model.name">
+                  <p class="truncate text-[15px] font-semibold tracking-tight text-gray-900 dark:text-white" :title="model.name">
                     {{ model.name }}
                   </p>
-                  <div class="mt-0.5 flex flex-wrap items-center gap-1.5">
+                  <div class="mt-1 flex flex-wrap items-center gap-1.5">
                     <span
                       :class="[
-                        'inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium ring-1 ring-inset',
+                        'inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset',
                         billingModeChipClass(model.pricing?.billing_mode),
                       ]"
                     >
                       {{ billingModeLabel(model.pricing?.billing_mode || 'token') }}
                     </span>
+                    <!-- 阶梯定价 chip：仅当有 intervals 时显示 -->
+                    <span
+                      v-if="model.pricing?.intervals && model.pricing.intervals.length > 0"
+                      class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-medium text-indigo-700 ring-1 ring-inset ring-indigo-200/70 dark:bg-indigo-500/15 dark:text-indigo-300 dark:ring-indigo-500/30"
+                      :title="t('pricing.tieredHint')"
+                    >
+                      <Icon name="chart" size="xs" />
+                      {{ t('pricing.tiered') }}
+                    </span>
                   </div>
                 </div>
               </div>
 
-              <!-- 价格主体：根据计费模式分支 -->
-              <div class="mt-3 space-y-1.5 text-[12px]">
+              <!-- 价格主体：根据计费模式分支；text-sm + space-y-2 让信息更舒展 -->
+              <div class="mt-4 flex-1 space-y-2 text-sm">
                 <template v-if="!model.pricing">
                   <p class="text-gray-400 dark:text-dark-500">{{ t('pricing.noPricing') }}</p>
                 </template>
@@ -272,7 +281,7 @@
                 <template v-else-if="model.pricing.billing_mode === 'per_request'">
                   <div class="flex items-center justify-between">
                     <span class="text-gray-500 dark:text-dark-400">{{ t('pricing.perRequest') }}</span>
-                    <span class="font-semibold tabular-nums text-gray-900 dark:text-white">
+                    <span class="text-base font-semibold tabular-nums text-gray-900 dark:text-white">
                       {{ formatPrice(applyRate(model.pricing.per_request_price)) }}
                     </span>
                   </div>
@@ -282,7 +291,7 @@
                 <template v-else-if="model.pricing.billing_mode === 'image'">
                   <div class="flex items-center justify-between">
                     <span class="text-gray-500 dark:text-dark-400">{{ t('pricing.imageOutput') }}</span>
-                    <span class="font-semibold tabular-nums text-gray-900 dark:text-white">
+                    <span class="text-base font-semibold tabular-nums text-gray-900 dark:text-white">
                       {{ formatPrice(applyRate(model.pricing.image_output_price)) }}
                     </span>
                   </div>
@@ -291,8 +300,8 @@
                 <!-- Token 计费（默认） -->
                 <template v-else>
                   <div class="flex items-center justify-between">
-                    <span class="inline-flex items-center gap-1 text-gray-500 dark:text-dark-400">
-                      <Icon name="arrowDown" size="xs" class="text-emerald-500" />
+                    <span class="inline-flex items-center gap-1.5 text-gray-500 dark:text-dark-400">
+                      <Icon name="arrowDown" size="sm" class="text-emerald-500" />
                       {{ t('pricing.input') }}
                     </span>
                     <span class="font-semibold tabular-nums text-gray-900 dark:text-white">
@@ -300,8 +309,8 @@
                     </span>
                   </div>
                   <div class="flex items-center justify-between">
-                    <span class="inline-flex items-center gap-1 text-gray-500 dark:text-dark-400">
-                      <Icon name="arrowUp" size="xs" class="text-violet-500" />
+                    <span class="inline-flex items-center gap-1.5 text-gray-500 dark:text-dark-400">
+                      <Icon name="arrowUp" size="sm" class="text-violet-500" />
                       {{ t('pricing.output') }}
                     </span>
                     <span class="font-semibold tabular-nums text-gray-900 dark:text-white">
@@ -309,8 +318,8 @@
                     </span>
                   </div>
                   <div v-if="model.pricing.cache_read_price != null" class="flex items-center justify-between">
-                    <span class="inline-flex items-center gap-1 text-gray-500 dark:text-dark-400">
-                      <Icon name="inbox" size="xs" class="text-sky-500" />
+                    <span class="inline-flex items-center gap-1.5 text-gray-500 dark:text-dark-400">
+                      <Icon name="inbox" size="sm" class="text-sky-500" />
                       {{ t('pricing.cacheRead') }}
                     </span>
                     <span class="font-medium tabular-nums text-sky-700 dark:text-sky-300">
@@ -318,8 +327,8 @@
                     </span>
                   </div>
                   <div v-if="model.pricing.cache_write_price != null" class="flex items-center justify-between">
-                    <span class="inline-flex items-center gap-1 text-gray-500 dark:text-dark-400">
-                      <Icon name="edit" size="xs" class="text-amber-500" />
+                    <span class="inline-flex items-center gap-1.5 text-gray-500 dark:text-dark-400">
+                      <Icon name="edit" size="sm" class="text-amber-500" />
                       {{ t('pricing.cacheWrite') }}
                     </span>
                     <span class="font-medium tabular-nums text-amber-700 dark:text-amber-300">
@@ -329,38 +338,33 @@
                 </template>
               </div>
 
-              <!-- 阶梯定价 hint：仅当有 intervals 且 token 计费时提示 -->
-              <p
-                v-if="model.pricing?.intervals && model.pricing.intervals.length > 0"
-                class="mt-2 inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-medium text-indigo-700 ring-1 ring-inset ring-indigo-200/70 dark:bg-indigo-500/15 dark:text-indigo-300 dark:ring-indigo-500/30"
-                :title="t('pricing.tieredHint')"
-              >
-                <Icon name="chart" size="xs" />
-                {{ t('pricing.tiered') }} ×{{ model.pricing.intervals.length }}
-              </p>
-
-              <!-- 模型可访问分组 hint：让用户知道这个模型属于哪些分组 -->
+              <!-- 模型可访问分组：分组名完整显示（不截断），最便宜的高亮 -->
               <div
-                v-if="!selectedGroupId && model.accessibleGroups.length > 0"
-                class="mt-3 flex flex-wrap items-center gap-1 border-t border-gray-100 pt-2.5 dark:border-dark-700/60"
+                v-if="model.accessibleGroups.length > 0"
+                class="mt-4 border-t border-gray-100 pt-3 dark:border-dark-700/60"
               >
-                <span class="text-[10px] text-gray-400 dark:text-dark-500">{{ t('pricing.availableIn') }}</span>
-                <span
-                  v-for="g in model.accessibleGroups.slice(0, 3)"
-                  :key="g.id"
-                  class="inline-flex items-center gap-0.5 rounded bg-gray-50 px-1.5 py-0.5 text-[10px] font-medium text-gray-600 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60"
-                  :title="`×${effectiveRate(g).toFixed(2)}`"
-                >
-                  <Icon v-if="g.is_exclusive" name="shield" size="xs" class="text-violet-500" />
-                  <span class="truncate max-w-[10ch]">{{ g.name }}</span>
-                  <span class="opacity-60">×{{ effectiveRate(g).toFixed(1) }}</span>
-                </span>
-                <span
-                  v-if="model.accessibleGroups.length > 3"
-                  class="text-[10px] text-gray-500 dark:text-dark-400"
-                >
-                  +{{ model.accessibleGroups.length - 3 }}
-                </span>
+                <p class="mb-1.5 text-[11px] font-medium text-gray-500 dark:text-dark-400">
+                  {{ t('pricing.availableIn') }}
+                </p>
+                <div class="flex flex-wrap gap-1.5">
+                  <button
+                    v-for="g in sortGroupsByRate(model.accessibleGroups)"
+                    :key="g.id"
+                    type="button"
+                    class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset transition-colors"
+                    :class="
+                      selectedGroupId === g.id
+                        ? 'bg-brand-50 text-brand-700 ring-brand-200/70 dark:bg-brand-500/15 dark:text-brand-300 dark:ring-brand-500/30'
+                        : 'bg-gray-50 text-gray-600 ring-gray-200/70 hover:bg-gray-100 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60 dark:hover:bg-dark-700/60'
+                    "
+                    :title="t('pricing.switchToGroup', { name: g.name })"
+                    @click="selectedGroupId = g.id"
+                  >
+                    <Icon v-if="g.is_exclusive" name="shield" size="xs" class="text-violet-500" />
+                    <span>{{ g.name }}</span>
+                    <span class="tabular-nums opacity-70">×{{ effectiveRate(g).toFixed(2) }}</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -368,7 +372,7 @@
           <!-- 倍率提示：选中"全部分组"时说明显示原价 -->
           <p
             v-if="!loading && filteredModels.length > 0 && !selectedGroup"
-            class="mt-4 inline-flex items-center gap-1.5 text-[12px] text-gray-500 dark:text-dark-400"
+            class="mt-4 inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-[12px] font-medium text-amber-700 ring-1 ring-inset ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30"
           >
             <Icon name="infoCircle" size="xs" />
             {{ t('pricing.standardPriceHint') }}
@@ -420,11 +424,21 @@ async function loadAll() {
     ])
     channels.value = list
     userGroupRates.value = rates
+    // 默认选中最便宜的分组（按 effectiveRate 升序后第一个），让用户一打开就看到自己的实际价格
+    // 仅在用户尚未手动选择且有可用分组时设置
+    if (selectedGroupId.value === null && availableGroups.value.length > 0) {
+      selectedGroupId.value = availableGroups.value[0].id
+    }
   } catch (err: unknown) {
     appStore.showError(extractApiErrorMessage(err, t('common.error')))
   } finally {
     loading.value = false
   }
+}
+
+// 按 effectiveRate 升序排列分组（便宜的放前面，让模型卡上的 chip 列表一眼看到最优选项）
+function sortGroupsByRate(groups: UserAvailableGroup[]): UserAvailableGroup[] {
+  return [...groups].sort((a, b) => effectiveRate(a) - effectiveRate(b))
 }
 
 // 实际倍率：用户专属 > 分组默认
