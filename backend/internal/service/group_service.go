@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"time"
 
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/pagination"
@@ -52,9 +53,19 @@ type CreateGroupRequest struct {
 	AllowImageGeneration bool     `json:"allow_image_generation"`
 	ImageRateIndependent bool     `json:"image_rate_independent"`
 	ImageRateMultiplier  *float64 `json:"image_rate_multiplier"`
+
+	// 限时倍率（promo rate）：在 [PromoStartsAt, PromoEndsAt) 窗口内 billing 自动用 PromoRateMultiplier
+	PromoRateMultiplier *float64   `json:"promo_rate_multiplier"`
+	PromoStartsAt       *time.Time `json:"promo_starts_at"`
+	PromoEndsAt         *time.Time `json:"promo_ends_at"`
+	PromoLabel          string     `json:"promo_label"`
 }
 
 // UpdateGroupRequest 更新分组请求
+//
+// promo 字段语义：
+//   - PromoRateMultiplier 字段未传（指针 nil） → 不更新；传了 *nil → 清空（取消限时活动）
+//   - PromoStartsAt / PromoEndsAt 同上
 type UpdateGroupRequest struct {
 	Name                 *string  `json:"name"`
 	Description          *string  `json:"description"`
@@ -64,6 +75,19 @@ type UpdateGroupRequest struct {
 	AllowImageGeneration *bool    `json:"allow_image_generation"`
 	ImageRateIndependent *bool    `json:"image_rate_independent"`
 	ImageRateMultiplier  *float64 `json:"image_rate_multiplier"`
+
+	// 限时倍率 4 字段：传 NullablePromoUpdate{Touched: true, Value: nil} 表示清空
+	PromoUpdate *PromoUpdate `json:"promo_update,omitempty"`
+}
+
+// PromoUpdate 让 admin 显式表达"清空 promo 活动"和"不动 promo 活动"两种语义。
+// 用 Touched 标记是否要执行更新；Value 为各字段的目标值（nil 即清空）。
+type PromoUpdate struct {
+	Touched             bool       `json:"touched"`
+	PromoRateMultiplier *float64   `json:"promo_rate_multiplier,omitempty"`
+	PromoStartsAt       *time.Time `json:"promo_starts_at,omitempty"`
+	PromoEndsAt         *time.Time `json:"promo_ends_at,omitempty"`
+	PromoLabel          string     `json:"promo_label,omitempty"`
 }
 
 // GroupService 分组管理服务
@@ -110,6 +134,10 @@ func (s *GroupService) Create(ctx context.Context, req CreateGroupRequest) (*Gro
 		AllowImageGeneration: req.AllowImageGeneration,
 		ImageRateIndependent: req.ImageRateIndependent,
 		ImageRateMultiplier:  imageRateMultiplier,
+		PromoRateMultiplier:  req.PromoRateMultiplier,
+		PromoStartsAt:        req.PromoStartsAt,
+		PromoEndsAt:          req.PromoEndsAt,
+		PromoLabel:           req.PromoLabel,
 	}
 
 	if err := s.groupRepo.Create(ctx, group); err != nil {
@@ -192,6 +220,21 @@ func (s *GroupService) Update(ctx context.Context, id int64, req UpdateGroupRequ
 			return nil, fmt.Errorf("image_rate_multiplier must be >= 0")
 		}
 		group.ImageRateMultiplier = *req.ImageRateMultiplier
+	}
+
+	// 限时倍率：Touched=true 时执行更新（nil 字段表示清空）
+	if req.PromoUpdate != nil && req.PromoUpdate.Touched {
+		if req.PromoUpdate.PromoRateMultiplier != nil && *req.PromoUpdate.PromoRateMultiplier < 0 {
+			return nil, fmt.Errorf("promo_rate_multiplier must be >= 0")
+		}
+		if req.PromoUpdate.PromoStartsAt != nil && req.PromoUpdate.PromoEndsAt != nil &&
+			!req.PromoUpdate.PromoStartsAt.Before(*req.PromoUpdate.PromoEndsAt) {
+			return nil, fmt.Errorf("promo_starts_at must be before promo_ends_at")
+		}
+		group.PromoRateMultiplier = req.PromoUpdate.PromoRateMultiplier
+		group.PromoStartsAt = req.PromoUpdate.PromoStartsAt
+		group.PromoEndsAt = req.PromoUpdate.PromoEndsAt
+		group.PromoLabel = req.PromoUpdate.PromoLabel
 	}
 
 	if err := s.groupRepo.Update(ctx, group); err != nil {

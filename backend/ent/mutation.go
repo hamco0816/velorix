@@ -17280,6 +17280,11 @@ type GroupMutation struct {
 	messages_dispatch_model_config          *domain.OpenAIMessagesDispatchModelConfig
 	rpm_limit                               *int
 	addrpm_limit                            *int
+	promo_rate_multiplier                   *float64
+	addpromo_rate_multiplier                *float64
+	promo_starts_at                         *time.Time
+	promo_ends_at                           *time.Time
+	promo_label                             *string
 	clearedFields                           map[string]struct{}
 	api_keys                                map[int64]struct{}
 	removedapi_keys                         map[int64]struct{}
@@ -19052,6 +19057,223 @@ func (m *GroupMutation) ResetRpmLimit() {
 	m.addrpm_limit = nil
 }
 
+// SetPromoRateMultiplier sets the "promo_rate_multiplier" field.
+func (m *GroupMutation) SetPromoRateMultiplier(f float64) {
+	m.promo_rate_multiplier = &f
+	m.addpromo_rate_multiplier = nil
+}
+
+// PromoRateMultiplier returns the value of the "promo_rate_multiplier" field in the mutation.
+func (m *GroupMutation) PromoRateMultiplier() (r float64, exists bool) {
+	v := m.promo_rate_multiplier
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPromoRateMultiplier returns the old "promo_rate_multiplier" field's value of the Group entity.
+// If the Group object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GroupMutation) OldPromoRateMultiplier(ctx context.Context) (v *float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPromoRateMultiplier is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPromoRateMultiplier requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPromoRateMultiplier: %w", err)
+	}
+	return oldValue.PromoRateMultiplier, nil
+}
+
+// AddPromoRateMultiplier adds f to the "promo_rate_multiplier" field.
+func (m *GroupMutation) AddPromoRateMultiplier(f float64) {
+	if m.addpromo_rate_multiplier != nil {
+		*m.addpromo_rate_multiplier += f
+	} else {
+		m.addpromo_rate_multiplier = &f
+	}
+}
+
+// AddedPromoRateMultiplier returns the value that was added to the "promo_rate_multiplier" field in this mutation.
+func (m *GroupMutation) AddedPromoRateMultiplier() (r float64, exists bool) {
+	v := m.addpromo_rate_multiplier
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearPromoRateMultiplier clears the value of the "promo_rate_multiplier" field.
+func (m *GroupMutation) ClearPromoRateMultiplier() {
+	m.promo_rate_multiplier = nil
+	m.addpromo_rate_multiplier = nil
+	m.clearedFields[group.FieldPromoRateMultiplier] = struct{}{}
+}
+
+// PromoRateMultiplierCleared returns if the "promo_rate_multiplier" field was cleared in this mutation.
+func (m *GroupMutation) PromoRateMultiplierCleared() bool {
+	_, ok := m.clearedFields[group.FieldPromoRateMultiplier]
+	return ok
+}
+
+// ResetPromoRateMultiplier resets all changes to the "promo_rate_multiplier" field.
+func (m *GroupMutation) ResetPromoRateMultiplier() {
+	m.promo_rate_multiplier = nil
+	m.addpromo_rate_multiplier = nil
+	delete(m.clearedFields, group.FieldPromoRateMultiplier)
+}
+
+// SetPromoStartsAt sets the "promo_starts_at" field.
+func (m *GroupMutation) SetPromoStartsAt(t time.Time) {
+	m.promo_starts_at = &t
+}
+
+// PromoStartsAt returns the value of the "promo_starts_at" field in the mutation.
+func (m *GroupMutation) PromoStartsAt() (r time.Time, exists bool) {
+	v := m.promo_starts_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPromoStartsAt returns the old "promo_starts_at" field's value of the Group entity.
+// If the Group object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GroupMutation) OldPromoStartsAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPromoStartsAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPromoStartsAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPromoStartsAt: %w", err)
+	}
+	return oldValue.PromoStartsAt, nil
+}
+
+// ClearPromoStartsAt clears the value of the "promo_starts_at" field.
+func (m *GroupMutation) ClearPromoStartsAt() {
+	m.promo_starts_at = nil
+	m.clearedFields[group.FieldPromoStartsAt] = struct{}{}
+}
+
+// PromoStartsAtCleared returns if the "promo_starts_at" field was cleared in this mutation.
+func (m *GroupMutation) PromoStartsAtCleared() bool {
+	_, ok := m.clearedFields[group.FieldPromoStartsAt]
+	return ok
+}
+
+// ResetPromoStartsAt resets all changes to the "promo_starts_at" field.
+func (m *GroupMutation) ResetPromoStartsAt() {
+	m.promo_starts_at = nil
+	delete(m.clearedFields, group.FieldPromoStartsAt)
+}
+
+// SetPromoEndsAt sets the "promo_ends_at" field.
+func (m *GroupMutation) SetPromoEndsAt(t time.Time) {
+	m.promo_ends_at = &t
+}
+
+// PromoEndsAt returns the value of the "promo_ends_at" field in the mutation.
+func (m *GroupMutation) PromoEndsAt() (r time.Time, exists bool) {
+	v := m.promo_ends_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPromoEndsAt returns the old "promo_ends_at" field's value of the Group entity.
+// If the Group object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GroupMutation) OldPromoEndsAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPromoEndsAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPromoEndsAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPromoEndsAt: %w", err)
+	}
+	return oldValue.PromoEndsAt, nil
+}
+
+// ClearPromoEndsAt clears the value of the "promo_ends_at" field.
+func (m *GroupMutation) ClearPromoEndsAt() {
+	m.promo_ends_at = nil
+	m.clearedFields[group.FieldPromoEndsAt] = struct{}{}
+}
+
+// PromoEndsAtCleared returns if the "promo_ends_at" field was cleared in this mutation.
+func (m *GroupMutation) PromoEndsAtCleared() bool {
+	_, ok := m.clearedFields[group.FieldPromoEndsAt]
+	return ok
+}
+
+// ResetPromoEndsAt resets all changes to the "promo_ends_at" field.
+func (m *GroupMutation) ResetPromoEndsAt() {
+	m.promo_ends_at = nil
+	delete(m.clearedFields, group.FieldPromoEndsAt)
+}
+
+// SetPromoLabel sets the "promo_label" field.
+func (m *GroupMutation) SetPromoLabel(s string) {
+	m.promo_label = &s
+}
+
+// PromoLabel returns the value of the "promo_label" field in the mutation.
+func (m *GroupMutation) PromoLabel() (r string, exists bool) {
+	v := m.promo_label
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPromoLabel returns the old "promo_label" field's value of the Group entity.
+// If the Group object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GroupMutation) OldPromoLabel(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPromoLabel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPromoLabel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPromoLabel: %w", err)
+	}
+	return oldValue.PromoLabel, nil
+}
+
+// ClearPromoLabel clears the value of the "promo_label" field.
+func (m *GroupMutation) ClearPromoLabel() {
+	m.promo_label = nil
+	m.clearedFields[group.FieldPromoLabel] = struct{}{}
+}
+
+// PromoLabelCleared returns if the "promo_label" field was cleared in this mutation.
+func (m *GroupMutation) PromoLabelCleared() bool {
+	_, ok := m.clearedFields[group.FieldPromoLabel]
+	return ok
+}
+
+// ResetPromoLabel resets all changes to the "promo_label" field.
+func (m *GroupMutation) ResetPromoLabel() {
+	m.promo_label = nil
+	delete(m.clearedFields, group.FieldPromoLabel)
+}
+
 // AddAPIKeyIDs adds the "api_keys" edge to the APIKey entity by ids.
 func (m *GroupMutation) AddAPIKeyIDs(ids ...int64) {
 	if m.api_keys == nil {
@@ -19410,7 +19632,7 @@ func (m *GroupMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *GroupMutation) Fields() []string {
-	fields := make([]string, 0, 34)
+	fields := make([]string, 0, 38)
 	if m.created_at != nil {
 		fields = append(fields, group.FieldCreatedAt)
 	}
@@ -19513,6 +19735,18 @@ func (m *GroupMutation) Fields() []string {
 	if m.rpm_limit != nil {
 		fields = append(fields, group.FieldRpmLimit)
 	}
+	if m.promo_rate_multiplier != nil {
+		fields = append(fields, group.FieldPromoRateMultiplier)
+	}
+	if m.promo_starts_at != nil {
+		fields = append(fields, group.FieldPromoStartsAt)
+	}
+	if m.promo_ends_at != nil {
+		fields = append(fields, group.FieldPromoEndsAt)
+	}
+	if m.promo_label != nil {
+		fields = append(fields, group.FieldPromoLabel)
+	}
 	return fields
 }
 
@@ -19589,6 +19823,14 @@ func (m *GroupMutation) Field(name string) (ent.Value, bool) {
 		return m.MessagesDispatchModelConfig()
 	case group.FieldRpmLimit:
 		return m.RpmLimit()
+	case group.FieldPromoRateMultiplier:
+		return m.PromoRateMultiplier()
+	case group.FieldPromoStartsAt:
+		return m.PromoStartsAt()
+	case group.FieldPromoEndsAt:
+		return m.PromoEndsAt()
+	case group.FieldPromoLabel:
+		return m.PromoLabel()
 	}
 	return nil, false
 }
@@ -19666,6 +19908,14 @@ func (m *GroupMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldMessagesDispatchModelConfig(ctx)
 	case group.FieldRpmLimit:
 		return m.OldRpmLimit(ctx)
+	case group.FieldPromoRateMultiplier:
+		return m.OldPromoRateMultiplier(ctx)
+	case group.FieldPromoStartsAt:
+		return m.OldPromoStartsAt(ctx)
+	case group.FieldPromoEndsAt:
+		return m.OldPromoEndsAt(ctx)
+	case group.FieldPromoLabel:
+		return m.OldPromoLabel(ctx)
 	}
 	return nil, fmt.Errorf("unknown Group field %s", name)
 }
@@ -19913,6 +20163,34 @@ func (m *GroupMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRpmLimit(v)
 		return nil
+	case group.FieldPromoRateMultiplier:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPromoRateMultiplier(v)
+		return nil
+	case group.FieldPromoStartsAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPromoStartsAt(v)
+		return nil
+	case group.FieldPromoEndsAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPromoEndsAt(v)
+		return nil
+	case group.FieldPromoLabel:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPromoLabel(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Group field %s", name)
 }
@@ -19960,6 +20238,9 @@ func (m *GroupMutation) AddedFields() []string {
 	if m.addrpm_limit != nil {
 		fields = append(fields, group.FieldRpmLimit)
 	}
+	if m.addpromo_rate_multiplier != nil {
+		fields = append(fields, group.FieldPromoRateMultiplier)
+	}
 	return fields
 }
 
@@ -19994,6 +20275,8 @@ func (m *GroupMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedSortOrder()
 	case group.FieldRpmLimit:
 		return m.AddedRpmLimit()
+	case group.FieldPromoRateMultiplier:
+		return m.AddedPromoRateMultiplier()
 	}
 	return nil, false
 }
@@ -20094,6 +20377,13 @@ func (m *GroupMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddRpmLimit(v)
 		return nil
+	case group.FieldPromoRateMultiplier:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPromoRateMultiplier(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Group numeric field %s", name)
 }
@@ -20134,6 +20424,18 @@ func (m *GroupMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(group.FieldModelRouting) {
 		fields = append(fields, group.FieldModelRouting)
+	}
+	if m.FieldCleared(group.FieldPromoRateMultiplier) {
+		fields = append(fields, group.FieldPromoRateMultiplier)
+	}
+	if m.FieldCleared(group.FieldPromoStartsAt) {
+		fields = append(fields, group.FieldPromoStartsAt)
+	}
+	if m.FieldCleared(group.FieldPromoEndsAt) {
+		fields = append(fields, group.FieldPromoEndsAt)
+	}
+	if m.FieldCleared(group.FieldPromoLabel) {
+		fields = append(fields, group.FieldPromoLabel)
 	}
 	return fields
 }
@@ -20181,6 +20483,18 @@ func (m *GroupMutation) ClearField(name string) error {
 		return nil
 	case group.FieldModelRouting:
 		m.ClearModelRouting()
+		return nil
+	case group.FieldPromoRateMultiplier:
+		m.ClearPromoRateMultiplier()
+		return nil
+	case group.FieldPromoStartsAt:
+		m.ClearPromoStartsAt()
+		return nil
+	case group.FieldPromoEndsAt:
+		m.ClearPromoEndsAt()
+		return nil
+	case group.FieldPromoLabel:
+		m.ClearPromoLabel()
 		return nil
 	}
 	return fmt.Errorf("unknown Group nullable field %s", name)
@@ -20291,6 +20605,18 @@ func (m *GroupMutation) ResetField(name string) error {
 		return nil
 	case group.FieldRpmLimit:
 		m.ResetRpmLimit()
+		return nil
+	case group.FieldPromoRateMultiplier:
+		m.ResetPromoRateMultiplier()
+		return nil
+	case group.FieldPromoStartsAt:
+		m.ResetPromoStartsAt()
+		return nil
+	case group.FieldPromoEndsAt:
+		m.ResetPromoEndsAt()
+		return nil
+	case group.FieldPromoLabel:
+		m.ResetPromoLabel()
 		return nil
 	}
 	return fmt.Errorf("unknown Group field %s", name)

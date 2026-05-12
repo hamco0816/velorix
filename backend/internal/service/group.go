@@ -66,6 +66,13 @@ type Group struct {
 	// 一旦设置即接管该分组用户的限流（覆盖用户级 rpm_limit），可被 user-group rpm_override 进一步覆盖。
 	RPMLimit int
 
+	// 限时倍率（promo rate）：在 [PromoStartsAt, PromoEndsAt) 时间窗内
+	// 实际计费用 PromoRateMultiplier 替代 RateMultiplier，用户端展示划线价 + 倒计时。
+	PromoRateMultiplier *float64
+	PromoStartsAt       *time.Time
+	PromoEndsAt         *time.Time
+	PromoLabel          string
+
 	CreatedAt time.Time
 	UpdatedAt time.Time
 
@@ -93,6 +100,38 @@ func (g *Group) HasWeeklyLimit() bool {
 
 func (g *Group) HasMonthlyLimit() bool {
 	return g.MonthlyLimitUSD != nil && *g.MonthlyLimitUSD > 0
+}
+
+// PromoActiveAt 判断给定时间点是否在限时倍率窗口内。
+// 规则：必须配置了 PromoRateMultiplier；窗口边界 NULL 时按"无下限/上限"处理（NULL ends_at
+// 视为永久，但 admin UI 应禁止这种情况以免促销失控）。
+func (g *Group) PromoActiveAt(now time.Time) bool {
+	if g == nil || g.PromoRateMultiplier == nil {
+		return false
+	}
+	if g.PromoStartsAt != nil && now.Before(*g.PromoStartsAt) {
+		return false
+	}
+	if g.PromoEndsAt != nil && !now.Before(*g.PromoEndsAt) {
+		return false
+	}
+	return true
+}
+
+// EffectiveRateMultiplier 返回 now 时点的实际计费倍率：
+//   - 在限时窗口内：用 PromoRateMultiplier
+//   - 其他情况：用 RateMultiplier
+//
+// 注意：用户端展示用 RateMultiplier（原价）+ Promo 字段（前端做划线/倒计时），
+// billing 流程则统一通过此 helper 拿生效倍率，保证"展示与计费一致"。
+func (g *Group) EffectiveRateMultiplier(now time.Time) float64 {
+	if g == nil {
+		return 0
+	}
+	if g.PromoActiveAt(now) {
+		return *g.PromoRateMultiplier
+	}
+	return g.RateMultiplier
 }
 
 // GetImagePrice 根据 image_size 返回对应的图片生成价格

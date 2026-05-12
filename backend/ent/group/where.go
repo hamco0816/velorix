@@ -210,6 +210,26 @@ func RpmLimit(v int) predicate.Group {
 	return predicate.Group(sql.FieldEQ(FieldRpmLimit, v))
 }
 
+// PromoRateMultiplier applies equality check predicate on the "promo_rate_multiplier" field. It's identical to PromoRateMultiplierEQ.
+func PromoRateMultiplier(v float64) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldPromoRateMultiplier, v))
+}
+
+// PromoStartsAt applies equality check predicate on the "promo_starts_at" field. It's identical to PromoStartsAtEQ.
+func PromoStartsAt(v time.Time) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldPromoStartsAt, v))
+}
+
+// PromoEndsAt applies equality check predicate on the "promo_ends_at" field. It's identical to PromoEndsAtEQ.
+func PromoEndsAt(v time.Time) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldPromoEndsAt, v))
+}
+
+// PromoLabel applies equality check predicate on the "promo_label" field. It's identical to PromoLabelEQ.
+func PromoLabel(v string) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldPromoLabel, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Group {
 	return predicate.Group(sql.FieldEQ(FieldCreatedAt, v))
@@ -1438,6 +1458,231 @@ func RpmLimitLT(v int) predicate.Group {
 // RpmLimitLTE applies the LTE predicate on the "rpm_limit" field.
 func RpmLimitLTE(v int) predicate.Group {
 	return predicate.Group(sql.FieldLTE(FieldRpmLimit, v))
+}
+
+// PromoRateMultiplierEQ applies the EQ predicate on the "promo_rate_multiplier" field.
+func PromoRateMultiplierEQ(v float64) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldPromoRateMultiplier, v))
+}
+
+// PromoRateMultiplierNEQ applies the NEQ predicate on the "promo_rate_multiplier" field.
+func PromoRateMultiplierNEQ(v float64) predicate.Group {
+	return predicate.Group(sql.FieldNEQ(FieldPromoRateMultiplier, v))
+}
+
+// PromoRateMultiplierIn applies the In predicate on the "promo_rate_multiplier" field.
+func PromoRateMultiplierIn(vs ...float64) predicate.Group {
+	return predicate.Group(sql.FieldIn(FieldPromoRateMultiplier, vs...))
+}
+
+// PromoRateMultiplierNotIn applies the NotIn predicate on the "promo_rate_multiplier" field.
+func PromoRateMultiplierNotIn(vs ...float64) predicate.Group {
+	return predicate.Group(sql.FieldNotIn(FieldPromoRateMultiplier, vs...))
+}
+
+// PromoRateMultiplierGT applies the GT predicate on the "promo_rate_multiplier" field.
+func PromoRateMultiplierGT(v float64) predicate.Group {
+	return predicate.Group(sql.FieldGT(FieldPromoRateMultiplier, v))
+}
+
+// PromoRateMultiplierGTE applies the GTE predicate on the "promo_rate_multiplier" field.
+func PromoRateMultiplierGTE(v float64) predicate.Group {
+	return predicate.Group(sql.FieldGTE(FieldPromoRateMultiplier, v))
+}
+
+// PromoRateMultiplierLT applies the LT predicate on the "promo_rate_multiplier" field.
+func PromoRateMultiplierLT(v float64) predicate.Group {
+	return predicate.Group(sql.FieldLT(FieldPromoRateMultiplier, v))
+}
+
+// PromoRateMultiplierLTE applies the LTE predicate on the "promo_rate_multiplier" field.
+func PromoRateMultiplierLTE(v float64) predicate.Group {
+	return predicate.Group(sql.FieldLTE(FieldPromoRateMultiplier, v))
+}
+
+// PromoRateMultiplierIsNil applies the IsNil predicate on the "promo_rate_multiplier" field.
+func PromoRateMultiplierIsNil() predicate.Group {
+	return predicate.Group(sql.FieldIsNull(FieldPromoRateMultiplier))
+}
+
+// PromoRateMultiplierNotNil applies the NotNil predicate on the "promo_rate_multiplier" field.
+func PromoRateMultiplierNotNil() predicate.Group {
+	return predicate.Group(sql.FieldNotNull(FieldPromoRateMultiplier))
+}
+
+// PromoStartsAtEQ applies the EQ predicate on the "promo_starts_at" field.
+func PromoStartsAtEQ(v time.Time) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldPromoStartsAt, v))
+}
+
+// PromoStartsAtNEQ applies the NEQ predicate on the "promo_starts_at" field.
+func PromoStartsAtNEQ(v time.Time) predicate.Group {
+	return predicate.Group(sql.FieldNEQ(FieldPromoStartsAt, v))
+}
+
+// PromoStartsAtIn applies the In predicate on the "promo_starts_at" field.
+func PromoStartsAtIn(vs ...time.Time) predicate.Group {
+	return predicate.Group(sql.FieldIn(FieldPromoStartsAt, vs...))
+}
+
+// PromoStartsAtNotIn applies the NotIn predicate on the "promo_starts_at" field.
+func PromoStartsAtNotIn(vs ...time.Time) predicate.Group {
+	return predicate.Group(sql.FieldNotIn(FieldPromoStartsAt, vs...))
+}
+
+// PromoStartsAtGT applies the GT predicate on the "promo_starts_at" field.
+func PromoStartsAtGT(v time.Time) predicate.Group {
+	return predicate.Group(sql.FieldGT(FieldPromoStartsAt, v))
+}
+
+// PromoStartsAtGTE applies the GTE predicate on the "promo_starts_at" field.
+func PromoStartsAtGTE(v time.Time) predicate.Group {
+	return predicate.Group(sql.FieldGTE(FieldPromoStartsAt, v))
+}
+
+// PromoStartsAtLT applies the LT predicate on the "promo_starts_at" field.
+func PromoStartsAtLT(v time.Time) predicate.Group {
+	return predicate.Group(sql.FieldLT(FieldPromoStartsAt, v))
+}
+
+// PromoStartsAtLTE applies the LTE predicate on the "promo_starts_at" field.
+func PromoStartsAtLTE(v time.Time) predicate.Group {
+	return predicate.Group(sql.FieldLTE(FieldPromoStartsAt, v))
+}
+
+// PromoStartsAtIsNil applies the IsNil predicate on the "promo_starts_at" field.
+func PromoStartsAtIsNil() predicate.Group {
+	return predicate.Group(sql.FieldIsNull(FieldPromoStartsAt))
+}
+
+// PromoStartsAtNotNil applies the NotNil predicate on the "promo_starts_at" field.
+func PromoStartsAtNotNil() predicate.Group {
+	return predicate.Group(sql.FieldNotNull(FieldPromoStartsAt))
+}
+
+// PromoEndsAtEQ applies the EQ predicate on the "promo_ends_at" field.
+func PromoEndsAtEQ(v time.Time) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldPromoEndsAt, v))
+}
+
+// PromoEndsAtNEQ applies the NEQ predicate on the "promo_ends_at" field.
+func PromoEndsAtNEQ(v time.Time) predicate.Group {
+	return predicate.Group(sql.FieldNEQ(FieldPromoEndsAt, v))
+}
+
+// PromoEndsAtIn applies the In predicate on the "promo_ends_at" field.
+func PromoEndsAtIn(vs ...time.Time) predicate.Group {
+	return predicate.Group(sql.FieldIn(FieldPromoEndsAt, vs...))
+}
+
+// PromoEndsAtNotIn applies the NotIn predicate on the "promo_ends_at" field.
+func PromoEndsAtNotIn(vs ...time.Time) predicate.Group {
+	return predicate.Group(sql.FieldNotIn(FieldPromoEndsAt, vs...))
+}
+
+// PromoEndsAtGT applies the GT predicate on the "promo_ends_at" field.
+func PromoEndsAtGT(v time.Time) predicate.Group {
+	return predicate.Group(sql.FieldGT(FieldPromoEndsAt, v))
+}
+
+// PromoEndsAtGTE applies the GTE predicate on the "promo_ends_at" field.
+func PromoEndsAtGTE(v time.Time) predicate.Group {
+	return predicate.Group(sql.FieldGTE(FieldPromoEndsAt, v))
+}
+
+// PromoEndsAtLT applies the LT predicate on the "promo_ends_at" field.
+func PromoEndsAtLT(v time.Time) predicate.Group {
+	return predicate.Group(sql.FieldLT(FieldPromoEndsAt, v))
+}
+
+// PromoEndsAtLTE applies the LTE predicate on the "promo_ends_at" field.
+func PromoEndsAtLTE(v time.Time) predicate.Group {
+	return predicate.Group(sql.FieldLTE(FieldPromoEndsAt, v))
+}
+
+// PromoEndsAtIsNil applies the IsNil predicate on the "promo_ends_at" field.
+func PromoEndsAtIsNil() predicate.Group {
+	return predicate.Group(sql.FieldIsNull(FieldPromoEndsAt))
+}
+
+// PromoEndsAtNotNil applies the NotNil predicate on the "promo_ends_at" field.
+func PromoEndsAtNotNil() predicate.Group {
+	return predicate.Group(sql.FieldNotNull(FieldPromoEndsAt))
+}
+
+// PromoLabelEQ applies the EQ predicate on the "promo_label" field.
+func PromoLabelEQ(v string) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldPromoLabel, v))
+}
+
+// PromoLabelNEQ applies the NEQ predicate on the "promo_label" field.
+func PromoLabelNEQ(v string) predicate.Group {
+	return predicate.Group(sql.FieldNEQ(FieldPromoLabel, v))
+}
+
+// PromoLabelIn applies the In predicate on the "promo_label" field.
+func PromoLabelIn(vs ...string) predicate.Group {
+	return predicate.Group(sql.FieldIn(FieldPromoLabel, vs...))
+}
+
+// PromoLabelNotIn applies the NotIn predicate on the "promo_label" field.
+func PromoLabelNotIn(vs ...string) predicate.Group {
+	return predicate.Group(sql.FieldNotIn(FieldPromoLabel, vs...))
+}
+
+// PromoLabelGT applies the GT predicate on the "promo_label" field.
+func PromoLabelGT(v string) predicate.Group {
+	return predicate.Group(sql.FieldGT(FieldPromoLabel, v))
+}
+
+// PromoLabelGTE applies the GTE predicate on the "promo_label" field.
+func PromoLabelGTE(v string) predicate.Group {
+	return predicate.Group(sql.FieldGTE(FieldPromoLabel, v))
+}
+
+// PromoLabelLT applies the LT predicate on the "promo_label" field.
+func PromoLabelLT(v string) predicate.Group {
+	return predicate.Group(sql.FieldLT(FieldPromoLabel, v))
+}
+
+// PromoLabelLTE applies the LTE predicate on the "promo_label" field.
+func PromoLabelLTE(v string) predicate.Group {
+	return predicate.Group(sql.FieldLTE(FieldPromoLabel, v))
+}
+
+// PromoLabelContains applies the Contains predicate on the "promo_label" field.
+func PromoLabelContains(v string) predicate.Group {
+	return predicate.Group(sql.FieldContains(FieldPromoLabel, v))
+}
+
+// PromoLabelHasPrefix applies the HasPrefix predicate on the "promo_label" field.
+func PromoLabelHasPrefix(v string) predicate.Group {
+	return predicate.Group(sql.FieldHasPrefix(FieldPromoLabel, v))
+}
+
+// PromoLabelHasSuffix applies the HasSuffix predicate on the "promo_label" field.
+func PromoLabelHasSuffix(v string) predicate.Group {
+	return predicate.Group(sql.FieldHasSuffix(FieldPromoLabel, v))
+}
+
+// PromoLabelIsNil applies the IsNil predicate on the "promo_label" field.
+func PromoLabelIsNil() predicate.Group {
+	return predicate.Group(sql.FieldIsNull(FieldPromoLabel))
+}
+
+// PromoLabelNotNil applies the NotNil predicate on the "promo_label" field.
+func PromoLabelNotNil() predicate.Group {
+	return predicate.Group(sql.FieldNotNull(FieldPromoLabel))
+}
+
+// PromoLabelEqualFold applies the EqualFold predicate on the "promo_label" field.
+func PromoLabelEqualFold(v string) predicate.Group {
+	return predicate.Group(sql.FieldEqualFold(FieldPromoLabel, v))
+}
+
+// PromoLabelContainsFold applies the ContainsFold predicate on the "promo_label" field.
+func PromoLabelContainsFold(v string) predicate.Group {
+	return predicate.Group(sql.FieldContainsFold(FieldPromoLabel, v))
 }
 
 // HasAPIKeys applies the HasEdge predicate on the "api_keys" edge.

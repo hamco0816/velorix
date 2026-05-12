@@ -637,6 +637,93 @@ func (_u *GroupUpdate) AddRpmLimit(v int) *GroupUpdate {
 	return _u
 }
 
+// SetPromoRateMultiplier sets the "promo_rate_multiplier" field.
+func (_u *GroupUpdate) SetPromoRateMultiplier(v float64) *GroupUpdate {
+	_u.mutation.ResetPromoRateMultiplier()
+	_u.mutation.SetPromoRateMultiplier(v)
+	return _u
+}
+
+// SetNillablePromoRateMultiplier sets the "promo_rate_multiplier" field if the given value is not nil.
+func (_u *GroupUpdate) SetNillablePromoRateMultiplier(v *float64) *GroupUpdate {
+	if v != nil {
+		_u.SetPromoRateMultiplier(*v)
+	}
+	return _u
+}
+
+// AddPromoRateMultiplier adds value to the "promo_rate_multiplier" field.
+func (_u *GroupUpdate) AddPromoRateMultiplier(v float64) *GroupUpdate {
+	_u.mutation.AddPromoRateMultiplier(v)
+	return _u
+}
+
+// ClearPromoRateMultiplier clears the value of the "promo_rate_multiplier" field.
+func (_u *GroupUpdate) ClearPromoRateMultiplier() *GroupUpdate {
+	_u.mutation.ClearPromoRateMultiplier()
+	return _u
+}
+
+// SetPromoStartsAt sets the "promo_starts_at" field.
+func (_u *GroupUpdate) SetPromoStartsAt(v time.Time) *GroupUpdate {
+	_u.mutation.SetPromoStartsAt(v)
+	return _u
+}
+
+// SetNillablePromoStartsAt sets the "promo_starts_at" field if the given value is not nil.
+func (_u *GroupUpdate) SetNillablePromoStartsAt(v *time.Time) *GroupUpdate {
+	if v != nil {
+		_u.SetPromoStartsAt(*v)
+	}
+	return _u
+}
+
+// ClearPromoStartsAt clears the value of the "promo_starts_at" field.
+func (_u *GroupUpdate) ClearPromoStartsAt() *GroupUpdate {
+	_u.mutation.ClearPromoStartsAt()
+	return _u
+}
+
+// SetPromoEndsAt sets the "promo_ends_at" field.
+func (_u *GroupUpdate) SetPromoEndsAt(v time.Time) *GroupUpdate {
+	_u.mutation.SetPromoEndsAt(v)
+	return _u
+}
+
+// SetNillablePromoEndsAt sets the "promo_ends_at" field if the given value is not nil.
+func (_u *GroupUpdate) SetNillablePromoEndsAt(v *time.Time) *GroupUpdate {
+	if v != nil {
+		_u.SetPromoEndsAt(*v)
+	}
+	return _u
+}
+
+// ClearPromoEndsAt clears the value of the "promo_ends_at" field.
+func (_u *GroupUpdate) ClearPromoEndsAt() *GroupUpdate {
+	_u.mutation.ClearPromoEndsAt()
+	return _u
+}
+
+// SetPromoLabel sets the "promo_label" field.
+func (_u *GroupUpdate) SetPromoLabel(v string) *GroupUpdate {
+	_u.mutation.SetPromoLabel(v)
+	return _u
+}
+
+// SetNillablePromoLabel sets the "promo_label" field if the given value is not nil.
+func (_u *GroupUpdate) SetNillablePromoLabel(v *string) *GroupUpdate {
+	if v != nil {
+		_u.SetPromoLabel(*v)
+	}
+	return _u
+}
+
+// ClearPromoLabel clears the value of the "promo_label" field.
+func (_u *GroupUpdate) ClearPromoLabel() *GroupUpdate {
+	_u.mutation.ClearPromoLabel()
+	return _u
+}
+
 // AddAPIKeyIDs adds the "api_keys" edge to the APIKey entity by IDs.
 func (_u *GroupUpdate) AddAPIKeyIDs(ids ...int64) *GroupUpdate {
 	_u.mutation.AddAPIKeyIDs(ids...)
@@ -927,6 +1014,11 @@ func (_u *GroupUpdate) check() error {
 			return &ValidationError{Name: "default_mapped_model", err: fmt.Errorf(`ent: validator failed for field "Group.default_mapped_model": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.PromoLabel(); ok {
+		if err := group.PromoLabelValidator(v); err != nil {
+			return &ValidationError{Name: "promo_label", err: fmt.Errorf(`ent: validator failed for field "Group.promo_label": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -1117,6 +1209,33 @@ func (_u *GroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.AddedRpmLimit(); ok {
 		_spec.AddField(group.FieldRpmLimit, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.PromoRateMultiplier(); ok {
+		_spec.SetField(group.FieldPromoRateMultiplier, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedPromoRateMultiplier(); ok {
+		_spec.AddField(group.FieldPromoRateMultiplier, field.TypeFloat64, value)
+	}
+	if _u.mutation.PromoRateMultiplierCleared() {
+		_spec.ClearField(group.FieldPromoRateMultiplier, field.TypeFloat64)
+	}
+	if value, ok := _u.mutation.PromoStartsAt(); ok {
+		_spec.SetField(group.FieldPromoStartsAt, field.TypeTime, value)
+	}
+	if _u.mutation.PromoStartsAtCleared() {
+		_spec.ClearField(group.FieldPromoStartsAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.PromoEndsAt(); ok {
+		_spec.SetField(group.FieldPromoEndsAt, field.TypeTime, value)
+	}
+	if _u.mutation.PromoEndsAtCleared() {
+		_spec.ClearField(group.FieldPromoEndsAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.PromoLabel(); ok {
+		_spec.SetField(group.FieldPromoLabel, field.TypeString, value)
+	}
+	if _u.mutation.PromoLabelCleared() {
+		_spec.ClearField(group.FieldPromoLabel, field.TypeString)
 	}
 	if _u.mutation.APIKeysCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2033,6 +2152,93 @@ func (_u *GroupUpdateOne) AddRpmLimit(v int) *GroupUpdateOne {
 	return _u
 }
 
+// SetPromoRateMultiplier sets the "promo_rate_multiplier" field.
+func (_u *GroupUpdateOne) SetPromoRateMultiplier(v float64) *GroupUpdateOne {
+	_u.mutation.ResetPromoRateMultiplier()
+	_u.mutation.SetPromoRateMultiplier(v)
+	return _u
+}
+
+// SetNillablePromoRateMultiplier sets the "promo_rate_multiplier" field if the given value is not nil.
+func (_u *GroupUpdateOne) SetNillablePromoRateMultiplier(v *float64) *GroupUpdateOne {
+	if v != nil {
+		_u.SetPromoRateMultiplier(*v)
+	}
+	return _u
+}
+
+// AddPromoRateMultiplier adds value to the "promo_rate_multiplier" field.
+func (_u *GroupUpdateOne) AddPromoRateMultiplier(v float64) *GroupUpdateOne {
+	_u.mutation.AddPromoRateMultiplier(v)
+	return _u
+}
+
+// ClearPromoRateMultiplier clears the value of the "promo_rate_multiplier" field.
+func (_u *GroupUpdateOne) ClearPromoRateMultiplier() *GroupUpdateOne {
+	_u.mutation.ClearPromoRateMultiplier()
+	return _u
+}
+
+// SetPromoStartsAt sets the "promo_starts_at" field.
+func (_u *GroupUpdateOne) SetPromoStartsAt(v time.Time) *GroupUpdateOne {
+	_u.mutation.SetPromoStartsAt(v)
+	return _u
+}
+
+// SetNillablePromoStartsAt sets the "promo_starts_at" field if the given value is not nil.
+func (_u *GroupUpdateOne) SetNillablePromoStartsAt(v *time.Time) *GroupUpdateOne {
+	if v != nil {
+		_u.SetPromoStartsAt(*v)
+	}
+	return _u
+}
+
+// ClearPromoStartsAt clears the value of the "promo_starts_at" field.
+func (_u *GroupUpdateOne) ClearPromoStartsAt() *GroupUpdateOne {
+	_u.mutation.ClearPromoStartsAt()
+	return _u
+}
+
+// SetPromoEndsAt sets the "promo_ends_at" field.
+func (_u *GroupUpdateOne) SetPromoEndsAt(v time.Time) *GroupUpdateOne {
+	_u.mutation.SetPromoEndsAt(v)
+	return _u
+}
+
+// SetNillablePromoEndsAt sets the "promo_ends_at" field if the given value is not nil.
+func (_u *GroupUpdateOne) SetNillablePromoEndsAt(v *time.Time) *GroupUpdateOne {
+	if v != nil {
+		_u.SetPromoEndsAt(*v)
+	}
+	return _u
+}
+
+// ClearPromoEndsAt clears the value of the "promo_ends_at" field.
+func (_u *GroupUpdateOne) ClearPromoEndsAt() *GroupUpdateOne {
+	_u.mutation.ClearPromoEndsAt()
+	return _u
+}
+
+// SetPromoLabel sets the "promo_label" field.
+func (_u *GroupUpdateOne) SetPromoLabel(v string) *GroupUpdateOne {
+	_u.mutation.SetPromoLabel(v)
+	return _u
+}
+
+// SetNillablePromoLabel sets the "promo_label" field if the given value is not nil.
+func (_u *GroupUpdateOne) SetNillablePromoLabel(v *string) *GroupUpdateOne {
+	if v != nil {
+		_u.SetPromoLabel(*v)
+	}
+	return _u
+}
+
+// ClearPromoLabel clears the value of the "promo_label" field.
+func (_u *GroupUpdateOne) ClearPromoLabel() *GroupUpdateOne {
+	_u.mutation.ClearPromoLabel()
+	return _u
+}
+
 // AddAPIKeyIDs adds the "api_keys" edge to the APIKey entity by IDs.
 func (_u *GroupUpdateOne) AddAPIKeyIDs(ids ...int64) *GroupUpdateOne {
 	_u.mutation.AddAPIKeyIDs(ids...)
@@ -2336,6 +2542,11 @@ func (_u *GroupUpdateOne) check() error {
 			return &ValidationError{Name: "default_mapped_model", err: fmt.Errorf(`ent: validator failed for field "Group.default_mapped_model": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.PromoLabel(); ok {
+		if err := group.PromoLabelValidator(v); err != nil {
+			return &ValidationError{Name: "promo_label", err: fmt.Errorf(`ent: validator failed for field "Group.promo_label": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -2543,6 +2754,33 @@ func (_u *GroupUpdateOne) sqlSave(ctx context.Context) (_node *Group, err error)
 	}
 	if value, ok := _u.mutation.AddedRpmLimit(); ok {
 		_spec.AddField(group.FieldRpmLimit, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.PromoRateMultiplier(); ok {
+		_spec.SetField(group.FieldPromoRateMultiplier, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedPromoRateMultiplier(); ok {
+		_spec.AddField(group.FieldPromoRateMultiplier, field.TypeFloat64, value)
+	}
+	if _u.mutation.PromoRateMultiplierCleared() {
+		_spec.ClearField(group.FieldPromoRateMultiplier, field.TypeFloat64)
+	}
+	if value, ok := _u.mutation.PromoStartsAt(); ok {
+		_spec.SetField(group.FieldPromoStartsAt, field.TypeTime, value)
+	}
+	if _u.mutation.PromoStartsAtCleared() {
+		_spec.ClearField(group.FieldPromoStartsAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.PromoEndsAt(); ok {
+		_spec.SetField(group.FieldPromoEndsAt, field.TypeTime, value)
+	}
+	if _u.mutation.PromoEndsAtCleared() {
+		_spec.ClearField(group.FieldPromoEndsAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.PromoLabel(); ok {
+		_spec.SetField(group.FieldPromoLabel, field.TypeString, value)
+	}
+	if _u.mutation.PromoLabelCleared() {
+		_spec.ClearField(group.FieldPromoLabel, field.TypeString)
 	}
 	if _u.mutation.APIKeysCleared() {
 		edge := &sqlgraph.EdgeSpec{

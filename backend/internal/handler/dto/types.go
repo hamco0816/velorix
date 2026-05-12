@@ -119,6 +119,13 @@ type Group struct {
 	// RPMLimit 分组级每分钟请求数上限（0 = 不限制），设置后覆盖用户级 rpm_limit。
 	RPMLimit int `json:"rpm_limit"`
 
+	// 限时倍率（promo rate）：billing 在 [PromoStartsAt, PromoEndsAt) 自动用 PromoRateMultiplier；
+	// 前端据此做划线价 + 倒计时展示。
+	PromoRateMultiplier *float64   `json:"promo_rate_multiplier,omitempty"`
+	PromoStartsAt       *time.Time `json:"promo_starts_at,omitempty"`
+	PromoEndsAt         *time.Time `json:"promo_ends_at,omitempty"`
+	PromoLabel          string     `json:"promo_label,omitempty"`
+
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

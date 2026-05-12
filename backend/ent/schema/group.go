@@ -160,6 +160,27 @@ func (Group) Fields() []ent.Field {
 		field.Int("rpm_limit").
 			Default(0).
 			Comment("分组 RPM 上限，0 表示不限制；设置后接管该分组用户的限流"),
+
+		// 限时倍率（promo rate） — 在 [promo_starts_at, promo_ends_at) 时间窗内
+		// 实际计费用 promo_rate_multiplier 替代 rate_multiplier，用户端展示划线价 + 倒计时。
+		field.Float("promo_rate_multiplier").
+			Optional().
+			Nillable().
+			SchemaType(map[string]string{dialect.Postgres: "decimal(10,4)"}).
+			Comment("限时倍率：在 promo_starts_at..promo_ends_at 窗口内替代 rate_multiplier 计费"),
+		field.Time("promo_starts_at").
+			Optional().
+			Nillable().
+			Comment("限时倍率起始时间；NULL 视为立即生效（一旦设置 promo_rate_multiplier 即开始）"),
+		field.Time("promo_ends_at").
+			Optional().
+			Nillable().
+			Comment("限时倍率结束时间；NULL 视为永久（极不推荐，应总是配置截止时间）"),
+		field.String("promo_label").
+			Optional().
+			Nillable().
+			MaxLen(100).
+			Comment("限时活动名称，如 \"618 大促\"，用于前端展示"),
 	}
 }
 

@@ -27,6 +27,16 @@
             <span class="opacity-70">{{ t('pricing.appliedRate') }}</span>
             <span class="tabular-nums">×{{ effectiveRate(selectedGroup).toFixed(2) }}</span>
           </span>
+          <!-- 限时活动 chip：当选中分组在 promo 窗口内，显示活动名 + 倒计时 -->
+          <span
+            v-if="selectedGroup && promoActive(selectedGroup)"
+            class="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-2.5 py-1 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-200/70 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/30"
+          >
+            <Icon name="fire" size="xs" :stroke-width="2.2" />
+            <span v-if="selectedGroup.promo_label">{{ selectedGroup.promo_label }}</span>
+            <span v-else>{{ t('pricing.promoActive') }}</span>
+            <span class="tabular-nums opacity-90">{{ countdownLabel(selectedGroup) }}</span>
+          </span>
         </div>
         <div class="flex items-center gap-2">
           <!-- 货币切换：USD 标准价 / CNY 换算后价 -->
@@ -40,6 +50,7 @@
                   : 'text-gray-500 hover:text-gray-900 dark:text-dark-400 dark:hover:text-white'
               "
               @click="currency = 'USD'"
+              :title="t('pricing.usdHint', { rate: usdToCny.toFixed(2) })"
             >
               USD
             </button>
@@ -52,7 +63,7 @@
                   : 'text-gray-500 hover:text-gray-900 dark:text-dark-400 dark:hover:text-white'
               "
               @click="currency = 'CNY'"
-              :title="t('pricing.cnyHint', { rate: usdToCny.toFixed(2) })"
+              :title="t('pricing.cnyHint2')"
             >
               CNY
             </button>
@@ -139,10 +150,30 @@
                       class="shrink-0 text-violet-500"
                       :title="t('pricing.exclusiveGroup')"
                     />
+                    <Icon
+                      v-if="promoActive(group)"
+                      name="fire"
+                      size="xs"
+                      class="shrink-0 text-rose-500 animate-pulse"
+                      :title="group.promo_label || t('pricing.promoActive')"
+                    />
                     <PlatformIcon :platform="group.platform as GroupPlatform" size="xs" class="shrink-0" />
                     <span class="truncate font-medium">{{ group.name }}</span>
                   </span>
+                  <!-- 倍率标记：限时窗口内 → 原 ×N 划线 + ×M 高亮；否则单一 ×N -->
                   <span
+                    v-if="promoActive(group)"
+                    class="ml-1 inline-flex shrink-0 items-center gap-1 text-[11px] font-semibold tabular-nums"
+                  >
+                    <span class="line-through opacity-40">×{{ baseRate(group).toFixed(2) }}</span>
+                    <span
+                      class="rounded-full bg-rose-50 px-2 py-0.5 text-rose-700 ring-1 ring-inset ring-rose-200/70 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/30"
+                    >
+                      ×{{ effectiveRate(group).toFixed(2) }}
+                    </span>
+                  </span>
+                  <span
+                    v-else
                     class="ml-1 inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-semibold tabular-nums ring-1 ring-inset"
                     :class="
                       selectedGroupId === group.id
@@ -331,8 +362,16 @@
                       <Icon name="arrowDown" size="sm" class="text-emerald-500" />
                       {{ t('pricing.input') }}
                     </span>
-                    <span class="font-semibold tabular-nums text-gray-900 dark:text-white">
-                      {{ formatPricePerM(applyRate(model.inputPrice)) }}
+                    <span class="inline-flex items-center gap-1.5 tabular-nums">
+                      <span v-if="selectedGroupPromoActive" class="text-xs text-gray-400 line-through">
+                        {{ formatPricePerM(applyBaseRate(model.inputPrice)) }}
+                      </span>
+                      <span
+                        class="font-semibold"
+                        :class="selectedGroupPromoActive ? 'text-rose-600 dark:text-rose-400' : 'text-gray-900 dark:text-white'"
+                      >
+                        {{ formatPricePerM(applyRate(model.inputPrice)) }}
+                      </span>
                     </span>
                   </div>
                   <div class="flex items-center justify-between">
@@ -340,8 +379,16 @@
                       <Icon name="arrowUp" size="sm" class="text-violet-500" />
                       {{ t('pricing.output') }}
                     </span>
-                    <span class="font-semibold tabular-nums text-gray-900 dark:text-white">
-                      {{ formatPricePerM(applyRate(model.outputPrice)) }}
+                    <span class="inline-flex items-center gap-1.5 tabular-nums">
+                      <span v-if="selectedGroupPromoActive" class="text-xs text-gray-400 line-through">
+                        {{ formatPricePerM(applyBaseRate(model.outputPrice)) }}
+                      </span>
+                      <span
+                        class="font-semibold"
+                        :class="selectedGroupPromoActive ? 'text-rose-600 dark:text-rose-400' : 'text-gray-900 dark:text-white'"
+                      >
+                        {{ formatPricePerM(applyRate(model.outputPrice)) }}
+                      </span>
                     </span>
                   </div>
                   <div v-if="model.cacheReadPrice != null && model.cacheReadPrice > 0" class="flex items-center justify-between">
@@ -349,8 +396,13 @@
                       <Icon name="inbox" size="sm" class="text-sky-500" />
                       {{ t('pricing.cacheRead') }}
                     </span>
-                    <span class="font-medium tabular-nums text-sky-700 dark:text-sky-300">
-                      {{ formatPricePerM(applyRate(model.cacheReadPrice)) }}
+                    <span class="inline-flex items-center gap-1.5 tabular-nums">
+                      <span v-if="selectedGroupPromoActive" class="text-xs text-gray-400 line-through">
+                        {{ formatPricePerM(applyBaseRate(model.cacheReadPrice)) }}
+                      </span>
+                      <span class="font-medium" :class="selectedGroupPromoActive ? 'text-rose-600 dark:text-rose-400' : 'text-sky-700 dark:text-sky-300'">
+                        {{ formatPricePerM(applyRate(model.cacheReadPrice)) }}
+                      </span>
                     </span>
                   </div>
                   <div v-if="model.cacheWritePrice != null && model.cacheWritePrice > 0" class="flex items-center justify-between">
@@ -358,8 +410,13 @@
                       <Icon name="edit" size="sm" class="text-amber-500" />
                       {{ t('pricing.cacheWrite') }}
                     </span>
-                    <span class="font-medium tabular-nums text-amber-700 dark:text-amber-300">
-                      {{ formatPricePerM(applyRate(model.cacheWritePrice)) }}
+                    <span class="inline-flex items-center gap-1.5 tabular-nums">
+                      <span v-if="selectedGroupPromoActive" class="text-xs text-gray-400 line-through">
+                        {{ formatPricePerM(applyBaseRate(model.cacheWritePrice)) }}
+                      </span>
+                      <span class="font-medium" :class="selectedGroupPromoActive ? 'text-rose-600 dark:text-rose-400' : 'text-amber-700 dark:text-amber-300'">
+                        {{ formatPricePerM(applyRate(model.cacheWritePrice)) }}
+                      </span>
                     </span>
                   </div>
                 </template>
@@ -411,7 +468,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Icon from '@/components/icons/Icon.vue'
@@ -422,6 +479,7 @@ import userChannelsAPI, {
   type PricingListEntry,
 } from '@/api/channels'
 import userGroupsAPI from '@/api/groups'
+import { paymentAPI } from '@/api/payment'
 import { useAppStore } from '@/stores/app'
 import { extractApiErrorMessage } from '@/utils/apiError'
 import type { GroupPlatform } from '@/types'
@@ -443,10 +501,21 @@ const selectedPlatform = ref<string | null>(null)
 const selectedBillingMode = ref<BillingMode | null>(null)
 
 // ============ 货币 ============
-// 默认显示 CNY（中国用户更习惯）；USD 按钮切回美元原价
+// 站点计价模型说明：
+//   - 后端 model_pricing 字段（input_cost_per_token 等）单位虽为 USD，但语义上是
+//     「美元余额」（账户上扣多少美元额度）。
+//   - 站点充值倍率 balance_recharge_multiplier（M）= ¥1 充值能得到的美元余额，
+//     本站默认 M=1.0（¥1 = $1 余额，1:1）。
+//   - 用户实付 CNY = 后端价 / M
+//   - 真实 USD（按外汇汇率算）= CNY / usdToCny
+//
+// 默认显示 CNY（中国用户更直接）；USD 切回真实美元价（÷ usdToCny）。
 const currency = ref<'USD' | 'CNY'>('CNY')
 
-// USD → CNY 汇率：默认 7.2；后续可从 public settings 加 `usd_to_cny_rate` 字段覆盖
+// 站点充值倍率（¥1 = M 美元余额）；通过 paymentAPI.getCheckoutInfo 异步获取
+const rechargeMultiplier = ref(1.0)
+
+// USD ↔ CNY 真实外汇汇率：默认 7.2，可从 public_settings.usd_to_cny_rate 覆盖
 const usdToCny = computed(() => {
   const fromSettings = appStore.cachedPublicSettings as { usd_to_cny_rate?: number } | null
   const rate = fromSettings?.usd_to_cny_rate
@@ -457,14 +526,18 @@ const usdToCny = computed(() => {
 async function loadAll() {
   loading.value = true
   try {
-    const [list, rates, pricingResp] = await Promise.all([
+    const [list, rates, pricingResp, checkoutResp] = await Promise.all([
       userChannelsAPI.getAvailable(),
       userGroupsAPI.getUserGroupRates().catch(() => ({}) as Record<number, number>),
       userChannelsAPI.listAllPricing().catch(() => ({ models: [], metadata: {} as never })),
+      // 拉取 balance_recharge_multiplier — 用于 USD/CNY 换算；失败时回退到默认 1.0
+      paymentAPI.getCheckoutInfo().catch(() => null),
     ])
     channels.value = list
     userGroupRates.value = rates
     allPricingEntries.value = pricingResp.models || []
+    const m = checkoutResp?.data?.balance_recharge_multiplier
+    if (typeof m === 'number' && m > 0) rechargeMultiplier.value = m
     // 默认选中最便宜的分组（按 effectiveRate 升序后第一个）
     if (selectedGroupId.value === null && availableGroups.value.length > 0) {
       selectedGroupId.value = availableGroups.value[0].id
@@ -476,13 +549,47 @@ async function loadAll() {
   }
 }
 
-// 实际倍率：用户专属 > 分组默认
-function effectiveRate(group: UserAvailableGroup): number {
-  const custom = userGroupRates.value[group.id]
-  return typeof custom === 'number' ? custom : group.rate_multiplier
+// ============ 限时倍率（promo rate） ============
+// 每秒 +1 触发倒计时 / promo 状态判定的响应式 tick；mount 时启动 setInterval
+const nowTick = ref<number>(Date.now())
+let nowTimer: ReturnType<typeof setInterval> | null = null
+
+// 是否在 promo 窗口内（依赖 nowTick 让 UI 自动响应分秒）
+function promoActive(g: UserAvailableGroup): boolean {
+  if (g.promo_rate_multiplier == null) return false
+  const t = nowTick.value
+  if (g.promo_starts_at && t < Date.parse(g.promo_starts_at)) return false
+  if (g.promo_ends_at && t >= Date.parse(g.promo_ends_at)) return false
+  return true
 }
 
-// 按 effectiveRate 升序排列分组
+// 分组原价倍率（不应用 promo / 用户专属，仅纯展示用）
+function baseRate(group: UserAvailableGroup): number {
+  return group.rate_multiplier
+}
+
+// 实际倍率优先级：用户专属 > 限时 promo > 分组默认
+function effectiveRate(group: UserAvailableGroup): number {
+  const custom = userGroupRates.value[group.id]
+  if (typeof custom === 'number') return custom
+  if (promoActive(group)) return group.promo_rate_multiplier as number
+  return group.rate_multiplier
+}
+
+// 倒计时格式化：返回 "2天 12:34:56" 或 "23:45:12"
+function countdownLabel(g: UserAvailableGroup): string {
+  if (!g.promo_ends_at) return ''
+  const remaining = Math.max(0, Date.parse(g.promo_ends_at) - nowTick.value)
+  const days = Math.floor(remaining / 86_400_000)
+  const hours = Math.floor((remaining % 86_400_000) / 3_600_000)
+  const mins = Math.floor((remaining % 3_600_000) / 60_000)
+  const secs = Math.floor((remaining % 60_000) / 1_000)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  if (days > 0) return t('pricing.promoCountdownDays', { d: days, h: pad(hours), m: pad(mins), s: pad(secs) })
+  return `${pad(hours)}:${pad(mins)}:${pad(secs)}`
+}
+
+// 按 effectiveRate 升序排列分组（限时窗口内 promo 价更低就排前）
 function sortGroupsByRate(groups: UserAvailableGroup[]): UserAvailableGroup[] {
   return [...groups].sort((a, b) => effectiveRate(a) - effectiveRate(b))
 }
@@ -663,10 +770,22 @@ const filteredModels = computed<FlatModel[]>(() => {
 // 当前生效的倍率（无选中分组时为 1，表示展示原价）
 const activeRate = computed(() => (selectedGroup.value ? effectiveRate(selectedGroup.value) : 1))
 
+// 选中分组的"原"倍率（即未应用 promo / 用户专属的分组默认倍率），用于划线对比展示
+const activeBaseRate = computed(() => (selectedGroup.value ? baseRate(selectedGroup.value) : 1))
+
 function applyRate(price: number | null | undefined): number | null {
   if (price == null) return null
   return price * activeRate.value
 }
+
+// 用"原倍率"换算价格，用于划线对比；仅当 promoActive 时才展示
+function applyBaseRate(price: number | null | undefined): number | null {
+  if (price == null) return null
+  return price * activeBaseRate.value
+}
+
+// 选中分组当前是否处于 promo 窗口（展示划线 / 倒计时的触发条件）
+const selectedGroupPromoActive = computed(() => (selectedGroup.value ? promoActive(selectedGroup.value) : false))
 
 // 单位说明：API 返回的是 USD per token；CNY 模式下再 × usdToCny 汇率
 const PER_MILLION = 1_000_000
@@ -678,11 +797,15 @@ function smartFixed(n: number): string {
   return n.toFixed(4)
 }
 
+// applyCurrency 把后端"美元余额"价格换算为用户可读的实付价。
+//   - CNY：后端价 / rechargeMultiplier（本站 multiplier=1 时数值不变，只换符号）
+//   - USD（真实美元）：CNY / usdToCny
 function applyCurrency(usdPrice: number): { value: number; symbol: string } {
+  const cnyPaid = rechargeMultiplier.value > 0 ? usdPrice / rechargeMultiplier.value : usdPrice
   if (currency.value === 'CNY') {
-    return { value: usdPrice * usdToCny.value, symbol: '¥' }
+    return { value: cnyPaid, symbol: '¥' }
   }
-  return { value: usdPrice, symbol: '$' }
+  return { value: cnyPaid / usdToCny.value, symbol: '$' }
 }
 
 // 单次价格（per_request / image）
@@ -731,5 +854,18 @@ function platformIconBg(platform: string): string {
   }
 }
 
-onMounted(loadAll)
+onMounted(() => {
+  void loadAll()
+  // 每秒 +1 触发倒计时 / promoActive 重算
+  nowTimer = setInterval(() => {
+    nowTick.value = Date.now()
+  }, 1000)
+})
+
+onBeforeUnmount(() => {
+  if (nowTimer != null) {
+    clearInterval(nowTimer)
+    nowTimer = null
+  }
+})
 </script>

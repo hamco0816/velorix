@@ -737,6 +737,10 @@ var (
 		{Name: "default_mapped_model", Type: field.TypeString, Size: 100, Default: ""},
 		{Name: "messages_dispatch_model_config", Type: field.TypeJSON, SchemaType: map[string]string{"postgres": "jsonb"}},
 		{Name: "rpm_limit", Type: field.TypeInt, Default: 0},
+		{Name: "promo_rate_multiplier", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"postgres": "decimal(10,4)"}},
+		{Name: "promo_starts_at", Type: field.TypeTime, Nullable: true},
+		{Name: "promo_ends_at", Type: field.TypeTime, Nullable: true},
+		{Name: "promo_label", Type: field.TypeString, Nullable: true, Size: 100},
 	}
 	// GroupsTable holds the schema information for the "groups" table.
 	GroupsTable = &schema.Table{

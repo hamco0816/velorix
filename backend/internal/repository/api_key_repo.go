@@ -723,8 +723,14 @@ func groupEntityToService(g *dbent.Group) *service.Group {
 		DefaultMappedModel:              g.DefaultMappedModel,
 		MessagesDispatchModelConfig:     g.MessagesDispatchModelConfig,
 		RPMLimit:                        g.RpmLimit,
-		CreatedAt:                       g.CreatedAt,
-		UpdatedAt:                       g.UpdatedAt,
+		// 限时倍率（promo rate）：用户端展示原价 + promo 字段；
+		// billing 流程通过 service.Group.EffectiveRateMultiplier(now) 拿生效倍率
+		PromoRateMultiplier: g.PromoRateMultiplier,
+		PromoStartsAt:       g.PromoStartsAt,
+		PromoEndsAt:         g.PromoEndsAt,
+		PromoLabel:          derefString(g.PromoLabel),
+		CreatedAt:           g.CreatedAt,
+		UpdatedAt:           g.UpdatedAt,
 	}
 }
 

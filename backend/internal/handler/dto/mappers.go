@@ -191,6 +191,10 @@ func groupFromServiceBase(g *service.Group) Group {
 		RequireOAuthOnly:                g.RequireOAuthOnly,
 		RequirePrivacySet:               g.RequirePrivacySet,
 		RPMLimit:                        g.RPMLimit,
+		PromoRateMultiplier:             g.PromoRateMultiplier,
+		PromoStartsAt:                   g.PromoStartsAt,
+		PromoEndsAt:                     g.PromoEndsAt,
+		PromoLabel:                      g.PromoLabel,
 		CreatedAt:                       g.CreatedAt,
 		UpdatedAt:                       g.UpdatedAt,
 	}

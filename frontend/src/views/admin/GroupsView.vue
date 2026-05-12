@@ -1720,6 +1720,68 @@
             data-tour="group-form-multiplier"
           />
         </div>
+
+        <!-- 限时倍率（promo rate）：配置后 billing 在窗口内自动用 promo 倍率，用户端显示划线价 + 倒计时 -->
+        <div class="rounded-2xl border border-rose-200/70 bg-rose-50/40 p-4 dark:border-rose-500/30 dark:bg-rose-500/10">
+          <div class="mb-3 flex items-center gap-2">
+            <Icon name="fire" size="sm" class="text-rose-500" :stroke-width="2.2" />
+            <h4 class="text-sm font-semibold tracking-tight text-rose-700 dark:text-rose-300">
+              {{ t("admin.groups.form.promoTitle") }}
+            </h4>
+            <button
+              v-if="editForm.promo_rate_multiplier != null || editForm.promo_starts_at || editForm.promo_ends_at"
+              type="button"
+              class="ml-auto text-xs font-medium text-rose-600 hover:text-rose-700 dark:text-rose-400"
+              @click="clearEditPromo()"
+            >
+              {{ t("common.clear") }}
+            </button>
+          </div>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div>
+              <label class="input-label">{{ t("admin.groups.form.promoRate") }}</label>
+              <input
+                v-model.number="editForm.promo_rate_multiplier"
+                type="number"
+                step="0.001"
+                min="0"
+                class="input"
+                :placeholder="t('admin.groups.form.promoRatePlaceholder')"
+              />
+              <p class="input-hint">{{ t("admin.groups.form.promoRateHint") }}</p>
+            </div>
+            <div>
+              <label class="input-label">{{ t("admin.groups.form.promoLabel") }}</label>
+              <input
+                v-model="editForm.promo_label"
+                type="text"
+                maxlength="100"
+                class="input"
+                :placeholder="t('admin.groups.form.promoLabelPlaceholder')"
+              />
+            </div>
+            <div>
+              <label class="input-label">{{ t("admin.groups.form.promoStartsAt") }}</label>
+              <input
+                v-model="editForm.promo_starts_at"
+                type="datetime-local"
+                class="input"
+              />
+            </div>
+            <div>
+              <label class="input-label">{{ t("admin.groups.form.promoEndsAt") }}</label>
+              <input
+                v-model="editForm.promo_ends_at"
+                type="datetime-local"
+                class="input"
+              />
+            </div>
+          </div>
+          <p class="mt-2 text-xs text-rose-600/80 dark:text-rose-300/70">
+            {{ t("admin.groups.form.promoHint") }}
+          </p>
+        </div>
+
         <div>
           <label class="input-label">{{ t("admin.groups.form.rpmLimit") }}</label>
           <input
@@ -3214,6 +3276,12 @@ const createForm = reactive({
   copy_accounts_from_group_ids: [] as number[],
   // 分组级 RPM 限制（每用户每分钟最大请求数；0 = 不限制）
   rpm_limit: 0 as number,
+  // 限时倍率（promo rate）：在 [promo_starts_at, promo_ends_at) 窗口内 billing 自动用 promo_rate_multiplier 替代
+  // 表单输入：datetime-local 字符串；空字符串表示清空字段
+  promo_rate_multiplier: null as number | null,
+  promo_starts_at: '' as string,
+  promo_ends_at: '' as string,
+  promo_label: '' as string,
 });
 
 // 简单账号类型（用于模型路由选择）
@@ -3500,6 +3568,12 @@ const editForm = reactive({
   copy_accounts_from_group_ids: [] as number[],
   // 分组级 RPM 限制（每用户每分钟最大请求数；0 = 不限制）
   rpm_limit: 0 as number,
+  // 限时倍率（promo rate）：在 [promo_starts_at, promo_ends_at) 窗口内 billing 自动用 promo_rate_multiplier 替代
+  // 表单输入：datetime-local 字符串；空字符串表示清空字段
+  promo_rate_multiplier: null as number | null,
+  promo_starts_at: '' as string,
+  promo_ends_at: '' as string,
+  promo_label: '' as string,
 });
 
 type ImagePricingFormState = {
@@ -3763,6 +3837,31 @@ const normalizeImageRateMultiplier = (
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : 1;
 };
 
+// 限时倍率 helper：ISO 字符串 ↔ <input type="datetime-local"> 字符串（YYYY-MM-DDTHH:mm）
+// 后端存 UTC（ISO），表单显示本地时间字符串，提交时按本地时间解析回 UTC ISO
+function isoToDatetimeLocal(iso: string | null | undefined): string {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
+  // 转成本地时间的 YYYY-MM-DDTHH:mm（去 timezone offset 的影响）
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
+function datetimeLocalToIso(local: string | null | undefined): string | null {
+  if (!local) return null
+  const d = new Date(local)
+  if (Number.isNaN(d.getTime())) return null
+  return d.toISOString()
+}
+
+function clearEditPromo() {
+  editForm.promo_rate_multiplier = null
+  editForm.promo_starts_at = ''
+  editForm.promo_ends_at = ''
+  editForm.promo_label = ''
+}
+
 const handleCreateGroup = async () => {
   if (!createForm.name.trim()) {
     appStore.showError(t("admin.groups.nameRequired"));
@@ -3867,6 +3966,11 @@ const handleEdit = async (group: AdminGroup) => {
   editForm.mcp_xml_inject = group.mcp_xml_inject ?? true;
   editForm.copy_accounts_from_group_ids = []; // 复制账号字段每次编辑时重置为空
   editForm.rpm_limit = group.rpm_limit ?? 0;
+  // 限时倍率（promo rate）：ISO 时间字符串 → datetime-local 输入格式（YYYY-MM-DDTHH:mm）
+  editForm.promo_rate_multiplier = group.promo_rate_multiplier ?? null;
+  editForm.promo_starts_at = isoToDatetimeLocal(group.promo_starts_at);
+  editForm.promo_ends_at = isoToDatetimeLocal(group.promo_ends_at);
+  editForm.promo_label = group.promo_label || '';
   // 加载模型路由规则（异步加载账号名称）
   editModelRoutingRules.value = await convertApiFormatToRoutingRules(
     group.model_routing,
@@ -3935,6 +4039,36 @@ const handleUpdateGroup = async () => {
     payload.image_rate_multiplier = normalizeImageRateMultiplier(
       payload.image_rate_multiplier,
     );
+
+    // 限时倍率（promo rate）：把 datetime-local 字符串转回 ISO；空字段表示清空对应数据库列
+    // 字段从 payload 顶层迁到 promo_update 子对象，匹配后端约定
+    const promoRate = typeof editForm.promo_rate_multiplier === 'number' && !Number.isNaN(editForm.promo_rate_multiplier)
+      ? editForm.promo_rate_multiplier
+      : null
+    const promoStartsAt = datetimeLocalToIso(editForm.promo_starts_at)
+    const promoEndsAt = datetimeLocalToIso(editForm.promo_ends_at)
+    const promoLabel = (editForm.promo_label || '').trim()
+    const hasAnyPromoField = promoRate != null || promoStartsAt || promoEndsAt || promoLabel
+    const editingHadPromo = editingGroup.value?.promo_rate_multiplier != null
+      || !!editingGroup.value?.promo_starts_at
+      || !!editingGroup.value?.promo_ends_at
+      || !!editingGroup.value?.promo_label
+    // 仅当 admin 实际碰过该区块（有任一字段，或之前有 promo 现在想清空）时才下发 promo_update
+    const looseyPayload = payload as Record<string, unknown>
+    if (hasAnyPromoField || editingHadPromo) {
+      looseyPayload.promo_update = {
+        promo_rate_multiplier: promoRate,
+        promo_starts_at: promoStartsAt,
+        promo_ends_at: promoEndsAt,
+        promo_label: promoLabel,
+      }
+    }
+    // 这 4 个字段不应直接在 payload 顶层（后端 UpdateGroupRequest 没有顶层字段，仅 promo_update）
+    delete looseyPayload.promo_rate_multiplier
+    delete looseyPayload.promo_starts_at
+    delete looseyPayload.promo_ends_at
+    delete looseyPayload.promo_label
+
     await adminAPI.groups.update(editingGroup.value.id, payload);
     appStore.showSuccess(t("admin.groups.groupUpdated"));
     closeEditModal();

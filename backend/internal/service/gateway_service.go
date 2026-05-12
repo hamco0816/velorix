@@ -8551,7 +8551,10 @@ func (s *GatewayService) recordUsageCore(ctx context.Context, input *recordUsage
 		multiplier = s.cfg.Default.RateMultiplier
 	}
 	if apiKey.GroupID != nil && apiKey.Group != nil {
-		effectiveDefault := apiKey.Group.RateMultiplier
+		// 限时倍率窗口内自动用 PromoRateMultiplier 替代 RateMultiplier；
+		// 窗口外用原 RateMultiplier。逻辑封装在 Group.EffectiveRateMultiplier，
+		// 用户端展示原价 + promo 字段，前端做划线 / 倒计时。
+		effectiveDefault := apiKey.Group.EffectiveRateMultiplier(time.Now())
 		if input.Subscription != nil && input.Subscription.RateMultiplier != nil && *input.Subscription.RateMultiplier > 0 {
 			effectiveDefault = *input.Subscription.RateMultiplier
 		}

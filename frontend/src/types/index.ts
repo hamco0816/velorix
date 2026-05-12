@@ -521,6 +521,12 @@ export interface Group {
   messages_dispatch_model_config?: OpenAIMessagesDispatchModelConfig
   require_oauth_only: boolean
   require_privacy_set: boolean
+  // 限时倍率（promo rate）：billing 在 [promo_starts_at, promo_ends_at) 自动用 promo_rate_multiplier 替代 rate_multiplier；
+  // 前端据此渲染划线价 + 倒计时
+  promo_rate_multiplier?: number | null
+  promo_starts_at?: string | null
+  promo_ends_at?: string | null
+  promo_label?: string
   created_at: string
   updated_at: string
 }
@@ -632,6 +638,11 @@ export interface CreateGroupRequest {
   require_privacy_set?: boolean
   // 从指定分组复制账号
   copy_accounts_from_group_ids?: number[]
+  // 限时倍率（promo rate）：在 [promo_starts_at, promo_ends_at) 窗口内自动用 promo_rate_multiplier 计费
+  promo_rate_multiplier?: number | null
+  promo_starts_at?: string | null
+  promo_ends_at?: string | null
+  promo_label?: string
 }
 
 export interface UpdateGroupRequest {
@@ -659,6 +670,16 @@ export interface UpdateGroupRequest {
   require_oauth_only?: boolean
   require_privacy_set?: boolean
   copy_accounts_from_group_ids?: number[]
+  // 限时倍率更新载荷：不传 = 不动；传对象（字段可为 null）= 应用更新（null 字段清空）
+  promo_update?: PromoUpdate | null
+}
+
+// 限时倍率更新载荷
+export interface PromoUpdate {
+  promo_rate_multiplier?: number | null
+  promo_starts_at?: string | null
+  promo_ends_at?: string | null
+  promo_label?: string
 }
 
 // ==================== Account & Proxy Types ====================

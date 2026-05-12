@@ -1168,6 +1168,10 @@ export default {
     billingImage: 'Per image',
     standardPriceHint: 'Showing standard (×1) price. Pick a group on the left to see your effective price.',
     cnyHint: 'At $1 ≈ ¥{rate}',
+    cnyHint2: 'Your actual CNY payment',
+    usdHint: 'Converted to real USD at $1 ≈ ¥{rate}',
+    promoActive: 'Promo',
+    promoCountdownDays: '{d}d {h}:{m}:{s}',
     standardModel: 'Standard',
     standardModelHint: 'From the system-wide pricing catalog (auto-synced); not customized by any channel'
   },
@@ -2185,7 +2189,16 @@ export default {
         exclusive: 'Exclusive Group',
         rpmLimit: 'Requests Per Minute (RPM)',
         rpmLimitPlaceholder: '0 = unlimited',
-        rpmLimitHint: 'Max requests per minute for each user in this group; 0 = unlimited. Once set, it takes over per-user rate limiting in this group (overrides the user-level rpm_limit fallback).'
+        rpmLimitHint: 'Max requests per minute for each user in this group; 0 = unlimited. Once set, it takes over per-user rate limiting in this group (overrides the user-level rpm_limit fallback).',
+        promoTitle: 'Limited-time promo rate',
+        promoRate: 'Promo rate multiplier',
+        promoRatePlaceholder: 'e.g., 0.5 (half price)',
+        promoRateHint: 'Replaces the rate multiplier above during the promo window',
+        promoLabel: 'Campaign name',
+        promoLabelPlaceholder: 'e.g., 618 Mega Sale',
+        promoStartsAt: 'Starts at',
+        promoEndsAt: 'Ends at',
+        promoHint: 'Auto-activates when starts_at reached, auto-expires when ends_at reached. Empty fields stay unset.'
       },
       enterGroupName: 'Enter group name',
       optionalDescription: 'Optional description',

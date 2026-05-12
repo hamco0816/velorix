@@ -2,6 +2,7 @@ package handler
 
 import (
 	"sort"
+	"time"
 
 	"github.com/Wei-Shaw/sub2api/internal/pkg/response"
 	"github.com/Wei-Shaw/sub2api/internal/server/middleware"
@@ -52,13 +53,20 @@ func (h *AvailableChannelHandler) featureEnabled(c *gin.Context) bool {
 // 前端据此区分专属 vs 公开分组（IsExclusive）、订阅 vs 标准分组（SubscriptionType，
 // 订阅视觉加深），并用 RateMultiplier 作为默认倍率；用户专属倍率前端走
 // /groups/rates，和 API 密钥页面保持一致。
+//
+// 限时倍率 4 字段（PromoRateMultiplier 等）用于前端展示划线价 + 倒计时；
+// 实际计费由 service.Group.EffectiveRateMultiplier(now) 自动切换。
 type userAvailableGroup struct {
-	ID               int64   `json:"id"`
-	Name             string  `json:"name"`
-	Platform         string  `json:"platform"`
-	SubscriptionType string  `json:"subscription_type"`
-	RateMultiplier   float64 `json:"rate_multiplier"`
-	IsExclusive      bool    `json:"is_exclusive"`
+	ID                  int64      `json:"id"`
+	Name                string     `json:"name"`
+	Platform            string     `json:"platform"`
+	SubscriptionType    string     `json:"subscription_type"`
+	RateMultiplier      float64    `json:"rate_multiplier"`
+	IsExclusive         bool       `json:"is_exclusive"`
+	PromoRateMultiplier *float64   `json:"promo_rate_multiplier,omitempty"`
+	PromoStartsAt       *time.Time `json:"promo_starts_at,omitempty"`
+	PromoEndsAt         *time.Time `json:"promo_ends_at,omitempty"`
+	PromoLabel          string     `json:"promo_label,omitempty"`
 }
 
 // userSupportedModelPricing 用户可见的定价字段白名单。
@@ -213,12 +221,16 @@ func filterUserVisibleGroups(
 			continue
 		}
 		visible = append(visible, userAvailableGroup{
-			ID:               g.ID,
-			Name:             g.Name,
-			Platform:         g.Platform,
-			SubscriptionType: g.SubscriptionType,
-			RateMultiplier:   g.RateMultiplier,
-			IsExclusive:      g.IsExclusive,
+			ID:                  g.ID,
+			Name:                g.Name,
+			Platform:            g.Platform,
+			SubscriptionType:    g.SubscriptionType,
+			RateMultiplier:      g.RateMultiplier,
+			IsExclusive:         g.IsExclusive,
+			PromoRateMultiplier: g.PromoRateMultiplier,
+			PromoStartsAt:       g.PromoStartsAt,
+			PromoEndsAt:         g.PromoEndsAt,
+			PromoLabel:          g.PromoLabel,
 		})
 	}
 	return visible

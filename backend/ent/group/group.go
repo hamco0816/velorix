@@ -84,6 +84,14 @@ const (
 	FieldMessagesDispatchModelConfig = "messages_dispatch_model_config"
 	// FieldRpmLimit holds the string denoting the rpm_limit field in the database.
 	FieldRpmLimit = "rpm_limit"
+	// FieldPromoRateMultiplier holds the string denoting the promo_rate_multiplier field in the database.
+	FieldPromoRateMultiplier = "promo_rate_multiplier"
+	// FieldPromoStartsAt holds the string denoting the promo_starts_at field in the database.
+	FieldPromoStartsAt = "promo_starts_at"
+	// FieldPromoEndsAt holds the string denoting the promo_ends_at field in the database.
+	FieldPromoEndsAt = "promo_ends_at"
+	// FieldPromoLabel holds the string denoting the promo_label field in the database.
+	FieldPromoLabel = "promo_label"
 	// EdgeAPIKeys holds the string denoting the api_keys edge name in mutations.
 	EdgeAPIKeys = "api_keys"
 	// EdgeRedeemCodes holds the string denoting the redeem_codes edge name in mutations.
@@ -193,6 +201,10 @@ var Columns = []string{
 	FieldDefaultMappedModel,
 	FieldMessagesDispatchModelConfig,
 	FieldRpmLimit,
+	FieldPromoRateMultiplier,
+	FieldPromoStartsAt,
+	FieldPromoEndsAt,
+	FieldPromoLabel,
 }
 
 var (
@@ -278,6 +290,8 @@ var (
 	DefaultMessagesDispatchModelConfig domain.OpenAIMessagesDispatchModelConfig
 	// DefaultRpmLimit holds the default value on creation for the "rpm_limit" field.
 	DefaultRpmLimit int
+	// PromoLabelValidator is a validator for the "promo_label" field. It is called by the builders before save.
+	PromoLabelValidator func(string) error
 )
 
 // OrderOption defines the ordering options for the Group queries.
@@ -441,6 +455,26 @@ func ByDefaultMappedModel(opts ...sql.OrderTermOption) OrderOption {
 // ByRpmLimit orders the results by the rpm_limit field.
 func ByRpmLimit(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRpmLimit, opts...).ToFunc()
+}
+
+// ByPromoRateMultiplier orders the results by the promo_rate_multiplier field.
+func ByPromoRateMultiplier(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPromoRateMultiplier, opts...).ToFunc()
+}
+
+// ByPromoStartsAt orders the results by the promo_starts_at field.
+func ByPromoStartsAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPromoStartsAt, opts...).ToFunc()
+}
+
+// ByPromoEndsAt orders the results by the promo_ends_at field.
+func ByPromoEndsAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPromoEndsAt, opts...).ToFunc()
+}
+
+// ByPromoLabel orders the results by the promo_label field.
+func ByPromoLabel(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPromoLabel, opts...).ToFunc()
 }
 
 // ByAPIKeysCount orders the results by api_keys count.

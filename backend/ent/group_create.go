@@ -481,6 +481,62 @@ func (_c *GroupCreate) SetNillableRpmLimit(v *int) *GroupCreate {
 	return _c
 }
 
+// SetPromoRateMultiplier sets the "promo_rate_multiplier" field.
+func (_c *GroupCreate) SetPromoRateMultiplier(v float64) *GroupCreate {
+	_c.mutation.SetPromoRateMultiplier(v)
+	return _c
+}
+
+// SetNillablePromoRateMultiplier sets the "promo_rate_multiplier" field if the given value is not nil.
+func (_c *GroupCreate) SetNillablePromoRateMultiplier(v *float64) *GroupCreate {
+	if v != nil {
+		_c.SetPromoRateMultiplier(*v)
+	}
+	return _c
+}
+
+// SetPromoStartsAt sets the "promo_starts_at" field.
+func (_c *GroupCreate) SetPromoStartsAt(v time.Time) *GroupCreate {
+	_c.mutation.SetPromoStartsAt(v)
+	return _c
+}
+
+// SetNillablePromoStartsAt sets the "promo_starts_at" field if the given value is not nil.
+func (_c *GroupCreate) SetNillablePromoStartsAt(v *time.Time) *GroupCreate {
+	if v != nil {
+		_c.SetPromoStartsAt(*v)
+	}
+	return _c
+}
+
+// SetPromoEndsAt sets the "promo_ends_at" field.
+func (_c *GroupCreate) SetPromoEndsAt(v time.Time) *GroupCreate {
+	_c.mutation.SetPromoEndsAt(v)
+	return _c
+}
+
+// SetNillablePromoEndsAt sets the "promo_ends_at" field if the given value is not nil.
+func (_c *GroupCreate) SetNillablePromoEndsAt(v *time.Time) *GroupCreate {
+	if v != nil {
+		_c.SetPromoEndsAt(*v)
+	}
+	return _c
+}
+
+// SetPromoLabel sets the "promo_label" field.
+func (_c *GroupCreate) SetPromoLabel(v string) *GroupCreate {
+	_c.mutation.SetPromoLabel(v)
+	return _c
+}
+
+// SetNillablePromoLabel sets the "promo_label" field if the given value is not nil.
+func (_c *GroupCreate) SetNillablePromoLabel(v *string) *GroupCreate {
+	if v != nil {
+		_c.SetPromoLabel(*v)
+	}
+	return _c
+}
+
 // AddAPIKeyIDs adds the "api_keys" edge to the APIKey entity by IDs.
 func (_c *GroupCreate) AddAPIKeyIDs(ids ...int64) *GroupCreate {
 	_c.mutation.AddAPIKeyIDs(ids...)
@@ -801,6 +857,11 @@ func (_c *GroupCreate) check() error {
 	if _, ok := _c.mutation.RpmLimit(); !ok {
 		return &ValidationError{Name: "rpm_limit", err: errors.New(`ent: missing required field "Group.rpm_limit"`)}
 	}
+	if v, ok := _c.mutation.PromoLabel(); ok {
+		if err := group.PromoLabelValidator(v); err != nil {
+			return &ValidationError{Name: "promo_label", err: fmt.Errorf(`ent: validator failed for field "Group.promo_label": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -963,6 +1024,22 @@ func (_c *GroupCreate) createSpec() (*Group, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.RpmLimit(); ok {
 		_spec.SetField(group.FieldRpmLimit, field.TypeInt, value)
 		_node.RpmLimit = value
+	}
+	if value, ok := _c.mutation.PromoRateMultiplier(); ok {
+		_spec.SetField(group.FieldPromoRateMultiplier, field.TypeFloat64, value)
+		_node.PromoRateMultiplier = &value
+	}
+	if value, ok := _c.mutation.PromoStartsAt(); ok {
+		_spec.SetField(group.FieldPromoStartsAt, field.TypeTime, value)
+		_node.PromoStartsAt = &value
+	}
+	if value, ok := _c.mutation.PromoEndsAt(); ok {
+		_spec.SetField(group.FieldPromoEndsAt, field.TypeTime, value)
+		_node.PromoEndsAt = &value
+	}
+	if value, ok := _c.mutation.PromoLabel(); ok {
+		_spec.SetField(group.FieldPromoLabel, field.TypeString, value)
+		_node.PromoLabel = &value
 	}
 	if nodes := _c.mutation.APIKeysIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1660,6 +1737,84 @@ func (u *GroupUpsert) AddRpmLimit(v int) *GroupUpsert {
 	return u
 }
 
+// SetPromoRateMultiplier sets the "promo_rate_multiplier" field.
+func (u *GroupUpsert) SetPromoRateMultiplier(v float64) *GroupUpsert {
+	u.Set(group.FieldPromoRateMultiplier, v)
+	return u
+}
+
+// UpdatePromoRateMultiplier sets the "promo_rate_multiplier" field to the value that was provided on create.
+func (u *GroupUpsert) UpdatePromoRateMultiplier() *GroupUpsert {
+	u.SetExcluded(group.FieldPromoRateMultiplier)
+	return u
+}
+
+// AddPromoRateMultiplier adds v to the "promo_rate_multiplier" field.
+func (u *GroupUpsert) AddPromoRateMultiplier(v float64) *GroupUpsert {
+	u.Add(group.FieldPromoRateMultiplier, v)
+	return u
+}
+
+// ClearPromoRateMultiplier clears the value of the "promo_rate_multiplier" field.
+func (u *GroupUpsert) ClearPromoRateMultiplier() *GroupUpsert {
+	u.SetNull(group.FieldPromoRateMultiplier)
+	return u
+}
+
+// SetPromoStartsAt sets the "promo_starts_at" field.
+func (u *GroupUpsert) SetPromoStartsAt(v time.Time) *GroupUpsert {
+	u.Set(group.FieldPromoStartsAt, v)
+	return u
+}
+
+// UpdatePromoStartsAt sets the "promo_starts_at" field to the value that was provided on create.
+func (u *GroupUpsert) UpdatePromoStartsAt() *GroupUpsert {
+	u.SetExcluded(group.FieldPromoStartsAt)
+	return u
+}
+
+// ClearPromoStartsAt clears the value of the "promo_starts_at" field.
+func (u *GroupUpsert) ClearPromoStartsAt() *GroupUpsert {
+	u.SetNull(group.FieldPromoStartsAt)
+	return u
+}
+
+// SetPromoEndsAt sets the "promo_ends_at" field.
+func (u *GroupUpsert) SetPromoEndsAt(v time.Time) *GroupUpsert {
+	u.Set(group.FieldPromoEndsAt, v)
+	return u
+}
+
+// UpdatePromoEndsAt sets the "promo_ends_at" field to the value that was provided on create.
+func (u *GroupUpsert) UpdatePromoEndsAt() *GroupUpsert {
+	u.SetExcluded(group.FieldPromoEndsAt)
+	return u
+}
+
+// ClearPromoEndsAt clears the value of the "promo_ends_at" field.
+func (u *GroupUpsert) ClearPromoEndsAt() *GroupUpsert {
+	u.SetNull(group.FieldPromoEndsAt)
+	return u
+}
+
+// SetPromoLabel sets the "promo_label" field.
+func (u *GroupUpsert) SetPromoLabel(v string) *GroupUpsert {
+	u.Set(group.FieldPromoLabel, v)
+	return u
+}
+
+// UpdatePromoLabel sets the "promo_label" field to the value that was provided on create.
+func (u *GroupUpsert) UpdatePromoLabel() *GroupUpsert {
+	u.SetExcluded(group.FieldPromoLabel)
+	return u
+}
+
+// ClearPromoLabel clears the value of the "promo_label" field.
+func (u *GroupUpsert) ClearPromoLabel() *GroupUpsert {
+	u.SetNull(group.FieldPromoLabel)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -2332,6 +2487,97 @@ func (u *GroupUpsertOne) AddRpmLimit(v int) *GroupUpsertOne {
 func (u *GroupUpsertOne) UpdateRpmLimit() *GroupUpsertOne {
 	return u.Update(func(s *GroupUpsert) {
 		s.UpdateRpmLimit()
+	})
+}
+
+// SetPromoRateMultiplier sets the "promo_rate_multiplier" field.
+func (u *GroupUpsertOne) SetPromoRateMultiplier(v float64) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetPromoRateMultiplier(v)
+	})
+}
+
+// AddPromoRateMultiplier adds v to the "promo_rate_multiplier" field.
+func (u *GroupUpsertOne) AddPromoRateMultiplier(v float64) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.AddPromoRateMultiplier(v)
+	})
+}
+
+// UpdatePromoRateMultiplier sets the "promo_rate_multiplier" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdatePromoRateMultiplier() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdatePromoRateMultiplier()
+	})
+}
+
+// ClearPromoRateMultiplier clears the value of the "promo_rate_multiplier" field.
+func (u *GroupUpsertOne) ClearPromoRateMultiplier() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.ClearPromoRateMultiplier()
+	})
+}
+
+// SetPromoStartsAt sets the "promo_starts_at" field.
+func (u *GroupUpsertOne) SetPromoStartsAt(v time.Time) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetPromoStartsAt(v)
+	})
+}
+
+// UpdatePromoStartsAt sets the "promo_starts_at" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdatePromoStartsAt() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdatePromoStartsAt()
+	})
+}
+
+// ClearPromoStartsAt clears the value of the "promo_starts_at" field.
+func (u *GroupUpsertOne) ClearPromoStartsAt() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.ClearPromoStartsAt()
+	})
+}
+
+// SetPromoEndsAt sets the "promo_ends_at" field.
+func (u *GroupUpsertOne) SetPromoEndsAt(v time.Time) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetPromoEndsAt(v)
+	})
+}
+
+// UpdatePromoEndsAt sets the "promo_ends_at" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdatePromoEndsAt() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdatePromoEndsAt()
+	})
+}
+
+// ClearPromoEndsAt clears the value of the "promo_ends_at" field.
+func (u *GroupUpsertOne) ClearPromoEndsAt() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.ClearPromoEndsAt()
+	})
+}
+
+// SetPromoLabel sets the "promo_label" field.
+func (u *GroupUpsertOne) SetPromoLabel(v string) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetPromoLabel(v)
+	})
+}
+
+// UpdatePromoLabel sets the "promo_label" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdatePromoLabel() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdatePromoLabel()
+	})
+}
+
+// ClearPromoLabel clears the value of the "promo_label" field.
+func (u *GroupUpsertOne) ClearPromoLabel() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.ClearPromoLabel()
 	})
 }
 
@@ -3173,6 +3419,97 @@ func (u *GroupUpsertBulk) AddRpmLimit(v int) *GroupUpsertBulk {
 func (u *GroupUpsertBulk) UpdateRpmLimit() *GroupUpsertBulk {
 	return u.Update(func(s *GroupUpsert) {
 		s.UpdateRpmLimit()
+	})
+}
+
+// SetPromoRateMultiplier sets the "promo_rate_multiplier" field.
+func (u *GroupUpsertBulk) SetPromoRateMultiplier(v float64) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetPromoRateMultiplier(v)
+	})
+}
+
+// AddPromoRateMultiplier adds v to the "promo_rate_multiplier" field.
+func (u *GroupUpsertBulk) AddPromoRateMultiplier(v float64) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.AddPromoRateMultiplier(v)
+	})
+}
+
+// UpdatePromoRateMultiplier sets the "promo_rate_multiplier" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdatePromoRateMultiplier() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdatePromoRateMultiplier()
+	})
+}
+
+// ClearPromoRateMultiplier clears the value of the "promo_rate_multiplier" field.
+func (u *GroupUpsertBulk) ClearPromoRateMultiplier() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.ClearPromoRateMultiplier()
+	})
+}
+
+// SetPromoStartsAt sets the "promo_starts_at" field.
+func (u *GroupUpsertBulk) SetPromoStartsAt(v time.Time) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetPromoStartsAt(v)
+	})
+}
+
+// UpdatePromoStartsAt sets the "promo_starts_at" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdatePromoStartsAt() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdatePromoStartsAt()
+	})
+}
+
+// ClearPromoStartsAt clears the value of the "promo_starts_at" field.
+func (u *GroupUpsertBulk) ClearPromoStartsAt() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.ClearPromoStartsAt()
+	})
+}
+
+// SetPromoEndsAt sets the "promo_ends_at" field.
+func (u *GroupUpsertBulk) SetPromoEndsAt(v time.Time) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetPromoEndsAt(v)
+	})
+}
+
+// UpdatePromoEndsAt sets the "promo_ends_at" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdatePromoEndsAt() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdatePromoEndsAt()
+	})
+}
+
+// ClearPromoEndsAt clears the value of the "promo_ends_at" field.
+func (u *GroupUpsertBulk) ClearPromoEndsAt() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.ClearPromoEndsAt()
+	})
+}
+
+// SetPromoLabel sets the "promo_label" field.
+func (u *GroupUpsertBulk) SetPromoLabel(v string) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetPromoLabel(v)
+	})
+}
+
+// UpdatePromoLabel sets the "promo_label" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdatePromoLabel() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdatePromoLabel()
+	})
+}
+
+// ClearPromoLabel clears the value of the "promo_label" field.
+func (u *GroupUpsertBulk) ClearPromoLabel() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.ClearPromoLabel()
 	})
 }
 

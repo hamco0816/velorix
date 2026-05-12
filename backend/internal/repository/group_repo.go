@@ -67,7 +67,13 @@ func (r *groupRepository) Create(ctx context.Context, groupIn *service.Group) er
 		SetRequirePrivacySet(groupIn.RequirePrivacySet).
 		SetDefaultMappedModel(groupIn.DefaultMappedModel).
 		SetMessagesDispatchModelConfig(groupIn.MessagesDispatchModelConfig).
-		SetRpmLimit(groupIn.RPMLimit)
+		SetRpmLimit(groupIn.RPMLimit).
+		SetNillablePromoRateMultiplier(groupIn.PromoRateMultiplier).
+		SetNillablePromoStartsAt(groupIn.PromoStartsAt).
+		SetNillablePromoEndsAt(groupIn.PromoEndsAt)
+	if groupIn.PromoLabel != "" {
+		builder = builder.SetPromoLabel(groupIn.PromoLabel)
+	}
 
 	// 设置模型路由配置
 	if groupIn.ModelRouting != nil {
@@ -194,6 +200,28 @@ func (r *groupRepository) Update(ctx context.Context, groupIn *service.Group) er
 
 	// 处理 SupportedModelScopes（始终设置，空数组表示不限制）
 	builder = builder.SetSupportedModelScopes(groupIn.SupportedModelScopes)
+
+	// 限时倍率：nil 时清空（Clear），非 nil 时设置
+	if groupIn.PromoRateMultiplier != nil {
+		builder = builder.SetPromoRateMultiplier(*groupIn.PromoRateMultiplier)
+	} else {
+		builder = builder.ClearPromoRateMultiplier()
+	}
+	if groupIn.PromoStartsAt != nil {
+		builder = builder.SetPromoStartsAt(*groupIn.PromoStartsAt)
+	} else {
+		builder = builder.ClearPromoStartsAt()
+	}
+	if groupIn.PromoEndsAt != nil {
+		builder = builder.SetPromoEndsAt(*groupIn.PromoEndsAt)
+	} else {
+		builder = builder.ClearPromoEndsAt()
+	}
+	if groupIn.PromoLabel != "" {
+		builder = builder.SetPromoLabel(groupIn.PromoLabel)
+	} else {
+		builder = builder.ClearPromoLabel()
+	}
 
 	updated, err := builder.Save(ctx)
 	if err != nil {

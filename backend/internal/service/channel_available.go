@@ -5,20 +5,29 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"time"
 )
 
 // AvailableGroupRef 渠道视图中关联分组的简要信息。
 //
-// 用户侧「可用渠道」页面据此展示：专属分组 vs 公开分组（IsExclusive）、
+// 用户侧「可用渠道/计费标准」页面据此展示：专属分组 vs 公开分组（IsExclusive）、
 // 订阅 vs 标准（SubscriptionType）、默认倍率（RateMultiplier）。用户专属倍率
 // 不在这里暴露，前端自己通过 /groups/rates 拉取，和 API 密钥页面保持一致。
+//
+// 限时倍率（PromoRateMultiplier 等 4 个字段）只在窗口内"生效"，但用户端始终能看到
+// 原价 RateMultiplier + promo 字段，由前端做划线/倒计时展示。billing 流程通过
+// service.Group.EffectiveRateMultiplier(now) 拿生效倍率，跟展示自动一致。
 type AvailableGroupRef struct {
-	ID               int64
-	Name             string
-	Platform         string
-	SubscriptionType string
-	RateMultiplier   float64
-	IsExclusive      bool
+	ID                  int64
+	Name                string
+	Platform            string
+	SubscriptionType    string
+	RateMultiplier      float64
+	IsExclusive         bool
+	PromoRateMultiplier *float64
+	PromoStartsAt       *time.Time
+	PromoEndsAt         *time.Time
+	PromoLabel          string
 }
 
 // AvailableChannel 可用渠道视图：用于「可用渠道」页面展示渠道基础信息 +
@@ -59,12 +68,16 @@ func (s *ChannelService) ListAvailable(ctx context.Context) ([]AvailableChannel,
 	for i := range groups {
 		g := groups[i]
 		groupByID[g.ID] = AvailableGroupRef{
-			ID:               g.ID,
-			Name:             g.Name,
-			Platform:         g.Platform,
-			SubscriptionType: g.SubscriptionType,
-			RateMultiplier:   g.RateMultiplier,
-			IsExclusive:      g.IsExclusive,
+			ID:                  g.ID,
+			Name:                g.Name,
+			Platform:            g.Platform,
+			SubscriptionType:    g.SubscriptionType,
+			RateMultiplier:      g.RateMultiplier,
+			IsExclusive:         g.IsExclusive,
+			PromoRateMultiplier: g.PromoRateMultiplier,
+			PromoStartsAt:       g.PromoStartsAt,
+			PromoEndsAt:         g.PromoEndsAt,
+			PromoLabel:          g.PromoLabel,
 		}
 	}
 

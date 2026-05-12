@@ -16,6 +16,11 @@ export interface UserAvailableGroup {
   rate_multiplier: number
   /** true = 专属分组（小范围授权）；false = 公开分组。 */
   is_exclusive: boolean
+  /** 限时倍率（promo rate）：在 [promo_starts_at, promo_ends_at) 时间窗内 billing 自动用此倍率。 */
+  promo_rate_multiplier?: number | null
+  promo_starts_at?: string | null
+  promo_ends_at?: string | null
+  promo_label?: string
 }
 
 export interface UserPricingInterval {

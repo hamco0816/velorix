@@ -217,6 +217,11 @@ type CreateGroupInput struct {
 	RPMLimit int
 	// 从指定分组复制账号（创建分组后在同一事务内绑定）
 	CopyAccountsFromGroupIDs []int64
+	// 限时倍率（promo rate）：billing 在 [PromoStartsAt, PromoEndsAt) 自动用 PromoRateMultiplier
+	PromoRateMultiplier *float64
+	PromoStartsAt       *time.Time
+	PromoEndsAt         *time.Time
+	PromoLabel          string
 }
 
 type UpdateGroupInput struct {
@@ -257,6 +262,16 @@ type UpdateGroupInput struct {
 	RPMLimit *int
 	// 从指定分组复制账号（同步操作：先清空当前分组的账号绑定，再绑定源分组的账号）
 	CopyAccountsFromGroupIDs []int64
+	// 限时倍率（promo rate）更新：PromoUpdate 为 nil 表示不动；非 nil 时按其内部字段值更新（nil 字段表示清空）
+	PromoUpdate *GroupPromoUpdate
+}
+
+// GroupPromoUpdate 限时倍率更新载荷。nil 字段语义为清空对应数据库列。
+type GroupPromoUpdate struct {
+	PromoRateMultiplier *float64
+	PromoStartsAt       *time.Time
+	PromoEndsAt         *time.Time
+	PromoLabel          string
 }
 
 type CreateAccountInput struct {
@@ -1677,6 +1692,10 @@ func (s *adminServiceImpl) CreateGroup(ctx context.Context, input *CreateGroupIn
 		DefaultMappedModel:              input.DefaultMappedModel,
 		MessagesDispatchModelConfig:     normalizeOpenAIMessagesDispatchModelConfig(input.MessagesDispatchModelConfig),
 		RPMLimit:                        input.RPMLimit,
+		PromoRateMultiplier:             input.PromoRateMultiplier,
+		PromoStartsAt:                   input.PromoStartsAt,
+		PromoEndsAt:                     input.PromoEndsAt,
+		PromoLabel:                      input.PromoLabel,
 	}
 	sanitizeGroupMessagesDispatchFields(group)
 	if err := s.groupRepo.Create(ctx, group); err != nil {
@@ -1925,6 +1944,20 @@ func (s *adminServiceImpl) UpdateGroup(ctx context.Context, id int64, input *Upd
 	}
 	if input.RPMLimit != nil {
 		group.RPMLimit = *input.RPMLimit
+	}
+	// 限时倍率：仅当 PromoUpdate 非 nil 时执行更新；nil 字段表示清空对应数据库列
+	if input.PromoUpdate != nil {
+		if input.PromoUpdate.PromoRateMultiplier != nil && *input.PromoUpdate.PromoRateMultiplier < 0 {
+			return nil, errors.New("promo_rate_multiplier must be >= 0")
+		}
+		if input.PromoUpdate.PromoStartsAt != nil && input.PromoUpdate.PromoEndsAt != nil &&
+			!input.PromoUpdate.PromoStartsAt.Before(*input.PromoUpdate.PromoEndsAt) {
+			return nil, errors.New("promo_starts_at must be before promo_ends_at")
+		}
+		group.PromoRateMultiplier = input.PromoUpdate.PromoRateMultiplier
+		group.PromoStartsAt = input.PromoUpdate.PromoStartsAt
+		group.PromoEndsAt = input.PromoUpdate.PromoEndsAt
+		group.PromoLabel = input.PromoUpdate.PromoLabel
 	}
 	sanitizeGroupMessagesDispatchFields(group)
 

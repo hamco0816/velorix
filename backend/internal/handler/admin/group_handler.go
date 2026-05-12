@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Wei-Shaw/sub2api/internal/handler/dto"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/response"
@@ -117,6 +118,12 @@ type CreateGroupRequest struct {
 	RPMLimit int `json:"rpm_limit"`
 	// 从指定分组复制账号（创建后自动绑定）
 	CopyAccountsFromGroupIDs []int64 `json:"copy_accounts_from_group_ids"`
+
+	// 限时倍率（promo rate）：在 [PromoStartsAt, PromoEndsAt) 窗口内 billing 自动用 PromoRateMultiplier 替代 RateMultiplier
+	PromoRateMultiplier *float64   `json:"promo_rate_multiplier"`
+	PromoStartsAt       *time.Time `json:"promo_starts_at"`
+	PromoEndsAt         *time.Time `json:"promo_ends_at"`
+	PromoLabel          string     `json:"promo_label"`
 }
 
 // UpdateGroupRequest represents update group request
@@ -157,6 +164,17 @@ type UpdateGroupRequest struct {
 	RPMLimit *int `json:"rpm_limit"`
 	// 从指定分组复制账号（同步操作：先清空当前分组的账号绑定，再绑定源分组的账号）
 	CopyAccountsFromGroupIDs []int64 `json:"copy_accounts_from_group_ids"`
+
+	// 限时倍率：传 promo_update 对象时执行更新（其字段为 nil 表示清空）
+	PromoUpdate *AdminPromoUpdate `json:"promo_update,omitempty"`
+}
+
+// AdminPromoUpdate 限时倍率更新载荷
+type AdminPromoUpdate struct {
+	PromoRateMultiplier *float64   `json:"promo_rate_multiplier,omitempty"`
+	PromoStartsAt       *time.Time `json:"promo_starts_at,omitempty"`
+	PromoEndsAt         *time.Time `json:"promo_ends_at,omitempty"`
+	PromoLabel          string     `json:"promo_label,omitempty"`
 }
 
 // List handles listing all groups with pagination
@@ -277,6 +295,10 @@ func (h *GroupHandler) Create(c *gin.Context) {
 		MessagesDispatchModelConfig:     req.MessagesDispatchModelConfig,
 		RPMLimit:                        req.RPMLimit,
 		CopyAccountsFromGroupIDs:        req.CopyAccountsFromGroupIDs,
+		PromoRateMultiplier:             req.PromoRateMultiplier,
+		PromoStartsAt:                   req.PromoStartsAt,
+		PromoEndsAt:                     req.PromoEndsAt,
+		PromoLabel:                      req.PromoLabel,
 	})
 	if err != nil {
 		response.ErrorFrom(c, err)
@@ -332,6 +354,7 @@ func (h *GroupHandler) Update(c *gin.Context) {
 		MessagesDispatchModelConfig:     req.MessagesDispatchModelConfig,
 		RPMLimit:                        req.RPMLimit,
 		CopyAccountsFromGroupIDs:        req.CopyAccountsFromGroupIDs,
+		PromoUpdate:                     mapPromoUpdateToService(req.PromoUpdate),
 	})
 	if err != nil {
 		response.ErrorFrom(c, err)
@@ -339,6 +362,19 @@ func (h *GroupHandler) Update(c *gin.Context) {
 	}
 
 	response.Success(c, dto.GroupFromServiceAdmin(group))
+}
+
+// mapPromoUpdateToService 把 admin handler 的 promo 更新载荷转成 service 层结构；nil 直传
+func mapPromoUpdateToService(p *AdminPromoUpdate) *service.GroupPromoUpdate {
+	if p == nil {
+		return nil
+	}
+	return &service.GroupPromoUpdate{
+		PromoRateMultiplier: p.PromoRateMultiplier,
+		PromoStartsAt:       p.PromoStartsAt,
+		PromoEndsAt:         p.PromoEndsAt,
+		PromoLabel:          p.PromoLabel,
+	}
 }
 
 // Delete handles deleting a group

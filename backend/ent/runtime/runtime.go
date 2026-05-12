@@ -907,6 +907,10 @@ func init() {
 	groupDescRpmLimit := groupFields[30].Descriptor()
 	// group.DefaultRpmLimit holds the default value on creation for the rpm_limit field.
 	group.DefaultRpmLimit = groupDescRpmLimit.Default.(int)
+	// groupDescPromoLabel is the schema descriptor for promo_label field.
+	groupDescPromoLabel := groupFields[34].Descriptor()
+	// group.PromoLabelValidator is a validator for the "promo_label" field. It is called by the builders before save.
+	group.PromoLabelValidator = groupDescPromoLabel.Validators[0].(func(string) error)
 	idempotencyrecordMixin := schema.IdempotencyRecord{}.Mixin()
 	idempotencyrecordMixinFields0 := idempotencyrecordMixin[0].Fields()
 	_ = idempotencyrecordMixinFields0
