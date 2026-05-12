@@ -210,16 +210,21 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
-    path: '/available-channels',
-    name: 'UserAvailableChannels',
-    component: () => import('@/views/user/AvailableChannelsView.vue'),
+    path: '/pricing',
+    name: 'UserPricing',
+    component: () => import('@/views/user/PricingView.vue'),
     meta: {
       requiresAuth: true,
       requiresAdmin: false,
-      title: 'Available Channels',
-      titleKey: 'availableChannels.title',
-      descriptionKey: 'availableChannels.description'
+      title: 'Pricing',
+      titleKey: 'pricing.title',
+      descriptionKey: 'pricing.description'
     }
+  },
+  {
+    // 旧路径重定向到新的计费标准页（融合了可用渠道信息），避免外链失效
+    path: '/available-channels',
+    redirect: '/pricing'
   },
   {
     path: '/docs',

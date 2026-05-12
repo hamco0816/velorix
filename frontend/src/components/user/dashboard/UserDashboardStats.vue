@@ -92,11 +92,23 @@
           </div>
           <p class="kpi-card-label">{{ t('dashboard.todayTokens') }}</p>
           <p class="kpi-card-value">{{ formatTokens(stats?.today_tokens || 0) }}</p>
-          <p class="kpi-card-hint tabular-nums">
-            <span>{{ t('dashboard.input') }} {{ formatTokens(stats?.today_input_tokens || 0) }}</span>
-            <span class="mx-1 text-gray-300 dark:text-dark-600">·</span>
-            <span>{{ t('dashboard.output') }} {{ formatTokens(stats?.today_output_tokens || 0) }}</span>
-          </p>
+          <!-- 输入/输出 + 缓存读取/创建 分两行展示，保证四项加起来等于 total_tokens -->
+          <div class="kpi-card-hint space-y-0.5 tabular-nums">
+            <p>
+              <Icon name="arrowDown" size="xs" class="mr-0.5 inline-block text-emerald-500" />
+              <span>{{ formatTokens(stats?.today_input_tokens || 0) }}</span>
+              <span class="mx-1 text-gray-300 dark:text-dark-600">·</span>
+              <Icon name="arrowUp" size="xs" class="mr-0.5 inline-block text-violet-500" />
+              <span>{{ formatTokens(stats?.today_output_tokens || 0) }}</span>
+            </p>
+            <p v-if="hasCacheToday">
+              <Icon name="inbox" size="xs" class="mr-0.5 inline-block text-sky-500" />
+              <span>{{ formatTokens(stats?.today_cache_read_tokens || 0) }}</span>
+              <span class="mx-1 text-gray-300 dark:text-dark-600">·</span>
+              <Icon name="edit" size="xs" class="mr-0.5 inline-block text-amber-500" />
+              <span>{{ formatTokens(stats?.today_cache_creation_tokens || 0) }}</span>
+            </p>
+          </div>
           <div v-if="hasSpark(tokensSeries)" class="kpi-card-spark">
             <SparklineMini :data="tokensSeries" color="#f59e0b" :height="40" />
           </div>
@@ -110,11 +122,22 @@
           <div class="metric-body">
             <p class="metric-label">{{ t('dashboard.totalTokens') }}</p>
             <p class="metric-value">{{ formatTokens(stats?.total_tokens || 0) }}</p>
-            <p class="metric-hint tabular-nums">
-              <span>{{ t('dashboard.input') }} {{ formatTokens(stats?.total_input_tokens || 0) }}</span>
-              <span class="mx-1 text-gray-300 dark:text-dark-600">·</span>
-              <span>{{ t('dashboard.output') }} {{ formatTokens(stats?.total_output_tokens || 0) }}</span>
-            </p>
+            <div class="metric-hint space-y-0.5 tabular-nums">
+              <p>
+                <Icon name="arrowDown" size="xs" class="mr-0.5 inline-block text-emerald-500" />
+                <span>{{ formatTokens(stats?.total_input_tokens || 0) }}</span>
+                <span class="mx-1 text-gray-300 dark:text-dark-600">·</span>
+                <Icon name="arrowUp" size="xs" class="mr-0.5 inline-block text-violet-500" />
+                <span>{{ formatTokens(stats?.total_output_tokens || 0) }}</span>
+              </p>
+              <p v-if="hasCacheTotal">
+                <Icon name="inbox" size="xs" class="mr-0.5 inline-block text-sky-500" />
+                <span>{{ formatTokens(stats?.total_cache_read_tokens || 0) }}</span>
+                <span class="mx-1 text-gray-300 dark:text-dark-600">·</span>
+                <Icon name="edit" size="xs" class="mr-0.5 inline-block text-amber-500" />
+                <span>{{ formatTokens(stats?.total_cache_creation_tokens || 0) }}</span>
+              </p>
+            </div>
           </div>
         </div>
 
@@ -153,13 +176,14 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Icon from '@/components/icons/Icon.vue'
 import SparklineMini from '@/components/charts/SparklineMini.vue'
 import TrendChip from '@/components/charts/TrendChip.vue'
 import type { UserDashboardStats as UserStatsType } from '@/api/usage'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     stats: UserStatsType
     balance: number
@@ -184,6 +208,14 @@ const { t } = useI18n()
 
 // 至少 2 个点 + 不全为 0 才显示 sparkline，避免无数据时出现空白条
 const hasSpark = (series?: number[]) => Array.isArray(series) && series.length >= 2 && series.some((v) => v > 0)
+
+// 是否有缓存数据（任一字段 > 0）— 没有就不渲染 cache 行，避免出现一整行 0
+const hasCacheToday = computed(() =>
+  (props.stats?.today_cache_read_tokens || 0) > 0 || (props.stats?.today_cache_creation_tokens || 0) > 0,
+)
+const hasCacheTotal = computed(() =>
+  (props.stats?.total_cache_read_tokens || 0) > 0 || (props.stats?.total_cache_creation_tokens || 0) > 0,
+)
 
 const formatBalance = (b: number) =>
   new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(b)

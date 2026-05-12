@@ -473,6 +473,7 @@ export default {
     groups: '分组管理',
     channels: '渠道管理',
     availableChannels: '可用渠道',
+    pricing: '计费标准',
     subscriptions: '订阅管理',
     accounts: '账号管理',
     proxies: 'IP管理',
@@ -1142,6 +1143,38 @@ export default {
       unitPerMillion: '/ 1M token',
       unitPerRequest: '/ 次'
     }
+  },
+
+  // 计费标准（融合"可用分组"+ "模型价格"按倍率换算）
+  pricing: {
+    title: '计费标准',
+    description: '查看所有模型的标准定价，按你的分组倍率实时换算',
+    searchPlaceholder: '搜索模型名称或平台...',
+    statModels: '模型',
+    statGroups: '可用分组',
+    appliedRate: '应用倍率',
+    filterGroups: '我的可用分组',
+    filterPlatform: '供应商',
+    filterBillingMode: '计费类型',
+    allGroups: '全部分组',
+    noGroups: '暂无可访问的分组，请联系管理员或开通订阅。',
+    empty: '暂无模型数据',
+    emptyFiltered: '当前筛选条件下没有匹配的模型',
+    exclusiveGroup: '专属分组',
+    input: '输入',
+    output: '输出',
+    cacheRead: '缓存读取',
+    cacheWrite: '缓存创建',
+    perRequest: '每次请求',
+    imageOutput: '图片输出',
+    noPricing: '未配置定价',
+    tiered: '阶梯',
+    tieredHint: '此模型按 token 区间分档定价',
+    availableIn: '可用于',
+    billingToken: '按量计费',
+    billingPerRequest: '按次计费',
+    billingImage: '按图片计费',
+    standardPriceHint: '当前显示标准价格（未应用任何分组倍率）。选择左侧分组以查看专属价格。'
   },
 
   affiliate: {

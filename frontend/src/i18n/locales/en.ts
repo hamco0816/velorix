@@ -468,6 +468,7 @@ export default {
     groups: 'Groups',
     channels: 'Channels',
     availableChannels: 'Available Channels',
+    pricing: 'Pricing',
     subscriptions: 'Subscriptions',
     accounts: 'Accounts',
     proxies: 'Proxies',
@@ -1133,6 +1134,38 @@ export default {
       unitPerMillion: '/ 1M tokens',
       unitPerRequest: '/ request'
     }
+  },
+
+  // Pricing (merges "Available Channels" + per-group multiplier-aware pricing)
+  pricing: {
+    title: 'Pricing',
+    description: 'Browse standard pricing for all models, instantly converted by your group multiplier',
+    searchPlaceholder: 'Search by model name or platform...',
+    statModels: 'models',
+    statGroups: 'accessible groups',
+    appliedRate: 'rate',
+    filterGroups: 'My Accessible Groups',
+    filterPlatform: 'Provider',
+    filterBillingMode: 'Billing Mode',
+    allGroups: 'All groups',
+    noGroups: 'No accessible groups. Contact admin or subscribe to get access.',
+    empty: 'No models yet',
+    emptyFiltered: 'No models match the current filters',
+    exclusiveGroup: 'Exclusive group',
+    input: 'Input',
+    output: 'Output',
+    cacheRead: 'Cache read',
+    cacheWrite: 'Cache write',
+    perRequest: 'Per request',
+    imageOutput: 'Image output',
+    noPricing: 'Pricing not configured',
+    tiered: 'Tiered',
+    tieredHint: 'Tiered pricing across token ranges',
+    availableIn: 'In',
+    billingToken: 'Per token',
+    billingPerRequest: 'Per request',
+    billingImage: 'Per image',
+    standardPriceHint: 'Showing standard (×1) price. Pick a group on the left to see your effective price.'
   },
 
   affiliate: {
