@@ -2,38 +2,42 @@
   <AppLayout wide>
     <TablePageLayout>
       <template #filters>
-        <div class="flex flex-wrap items-center gap-3">
-          <!-- Left: Search + Filters -->
-          <div class="flex-1 sm:max-w-64">
-            <input
-              v-model="searchQuery"
-              type="text"
-              :placeholder="t('admin.announcements.searchAnnouncements')"
-              class="input"
-              @input="handleSearch"
-            />
-          </div>
-          <Select
-            v-model="filters.status"
-            :options="statusFilterOptions"
-            class="w-40"
-            @change="handleStatusChange"
+        <!-- 移动端：搜索单独一行，筛选 + 按钮共享一行；按钮 whitespace-nowrap 防止文字换行 -->
+        <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+          <!-- 搜索：移动端全宽，桌面端 256px -->
+          <input
+            v-model="searchQuery"
+            type="text"
+            :placeholder="t('admin.announcements.searchAnnouncements')"
+            class="input w-full sm:w-64"
+            @input="handleSearch"
           />
 
-          <!-- Right: Action buttons -->
-          <div class="flex flex-1 flex-wrap items-center justify-end gap-2">
-            <button
-              @click="loadAnnouncements"
-              :disabled="loading"
-              class="btn btn-secondary"
-              :title="t('common.refresh')"
-            >
-              <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
-            </button>
-            <button @click="openCreateDialog" class="btn btn-primary">
-              <Icon name="plus" size="md" class="mr-1" />
-              {{ t('admin.announcements.createAnnouncement') }}
-            </button>
+          <div class="flex items-center gap-2 sm:flex-1">
+            <Select
+              v-model="filters.status"
+              :options="statusFilterOptions"
+              class="w-32 sm:w-40"
+              @change="handleStatusChange"
+            />
+
+            <!-- 操作按钮：右对齐 + shrink-0 + whitespace-nowrap，避免被挤压换行 -->
+            <div class="flex flex-1 items-center justify-end gap-2">
+              <button
+                @click="loadAnnouncements"
+                :disabled="loading"
+                class="btn btn-secondary shrink-0"
+                :title="t('common.refresh')"
+              >
+                <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
+              </button>
+              <button @click="openCreateDialog" class="btn btn-primary shrink-0 whitespace-nowrap">
+                <Icon name="plus" size="md" class="mr-1" />
+                <!-- 小屏只显示"创建"两个字，避免按钮被挤压换行 -->
+                <span class="hidden sm:inline">{{ t('admin.announcements.createAnnouncement') }}</span>
+                <span class="sm:hidden">{{ t('common.create') }}</span>
+              </button>
+            </div>
           </div>
         </div>
       </template>

@@ -2,7 +2,7 @@
   <AppLayout wide>
     <div class="space-y-5">
       <!-- 顶部工具栏：days switcher + 刷新 -->
-      <div class="flex items-center justify-end gap-2">
+      <div class="flex flex-wrap items-center justify-end gap-2">
         <div class="flex items-center gap-1 rounded-full bg-gray-100 p-1 dark:bg-dark-800">
           <button
             v-for="d in DAYS_OPTIONS"

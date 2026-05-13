@@ -51,7 +51,8 @@
             <template v-else>
             <!-- 充值主卡：白底简洁 + 右侧 amber 结算栏（视觉聚焦） -->
             <section class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-18px_rgba(15,23,42,0.18)] dark:border-dark-700/60 dark:bg-dark-800/40">
-              <div class="grid lg:grid-cols-[minmax(0,1fr)_340px]">
+              <!-- md 起就用左右两栏（之前 lg 才触发，平板上单列拉伸过宽）-->
+              <div class="grid md:grid-cols-[minmax(0,1fr)_300px] lg:grid-cols-[minmax(0,1fr)_340px]">
                 <!-- 左：表单区（白底） -->
                 <div class="space-y-5 p-5 sm:p-6">
                   <!-- 顶部：充值账户信息 + 钱包图标 -->
@@ -91,7 +92,7 @@
                 </div>
 
                 <!-- 右：结算栏（白底为主 + 极淡 amber 装饰 + amber 按钮强调） -->
-                <aside class="relative border-t border-gray-100 bg-gray-50/40 p-6 dark:border-dark-700/60 dark:bg-dark-800/30 lg:border-l lg:border-t-0">
+                <aside class="relative border-t border-gray-100 bg-gray-50/40 p-6 dark:border-dark-700/60 dark:bg-dark-800/30 md:border-l md:border-t-0">
                   <!-- 实付金额：左侧 amber 强调条 + 金额放大到 5xl，建立明确视觉锚点 -->
                   <div class="relative pl-4">
                     <span class="absolute left-0 top-1 h-[calc(100%-0.5rem)] w-[3px] rounded-full bg-gradient-to-b from-amber-400 to-amber-500" aria-hidden="true"></span>
@@ -232,7 +233,7 @@
               </div>
               <section :class="['overflow-hidden rounded-2xl border bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:bg-dark-800/40 dark:shadow-none', planBorderClass]">
                 <div :class="['h-1.5', planAccentClass]" />
-                <div class="grid gap-0 lg:grid-cols-[minmax(0,1fr)_320px]">
+                <div class="grid gap-0 md:grid-cols-[minmax(0,1fr)_280px] lg:grid-cols-[minmax(0,1fr)_320px]">
                   <div class="p-5 sm:p-6">
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                       <div class="flex min-w-0 items-start gap-3">

@@ -3,7 +3,7 @@
     <h3 class="mb-4 text-sm font-semibold text-gray-900 dark:text-white">
       {{ t('payment.admin.dailyRevenue') }}
     </h3>
-    <div class="h-64">
+    <div class="h-52 sm:h-64">
       <div v-if="loading" class="flex h-full items-center justify-center">
         <LoadingSpinner size="md" />
       </div>

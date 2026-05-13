@@ -52,7 +52,7 @@
             <button
               @click="loadGroups"
               :disabled="loading"
-              class="btn btn-secondary"
+              class="btn btn-secondary shrink-0"
               :title="t('common.refresh')"
             >
               <Icon
@@ -63,19 +63,20 @@
             </button>
             <button
               @click="openSortModal"
-              class="btn btn-secondary"
+              class="btn btn-secondary shrink-0 whitespace-nowrap"
               :title="t('admin.groups.sortOrder')"
             >
-              <Icon name="arrowsUpDown" size="md" class="mr-2" />
-              {{ t("admin.groups.sortOrder") }}
+              <Icon name="arrowsUpDown" size="md" class="sm:mr-2" />
+              <span class="hidden sm:inline">{{ t("admin.groups.sortOrder") }}</span>
             </button>
             <button
               @click="showCreateModal = true"
-              class="btn btn-primary"
+              class="btn btn-primary shrink-0 whitespace-nowrap"
               data-tour="groups-create-btn"
             >
               <Icon name="plus" size="md" class="mr-2" />
-              {{ t("admin.groups.createGroup") }}
+              <span class="hidden sm:inline">{{ t("admin.groups.createGroup") }}</span>
+              <span class="sm:hidden">{{ t("common.create") }}</span>
             </button>
           </div>
         </div>

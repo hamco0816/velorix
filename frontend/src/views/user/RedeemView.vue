@@ -3,8 +3,8 @@
     <div class="space-y-5">
       <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <div class="redeem-stat-card">
-              <div class="mb-6 flex items-start justify-between gap-4">
-                <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-900/25 dark:text-sky-300">
+              <div class="mb-4 flex items-start justify-between gap-3 sm:mb-6 sm:gap-4">
+                <div class="flex h-10 w-10 items-center justify-center sm:h-12 sm:w-12 rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-900/25 dark:text-sky-300">
                   <Icon name="creditCard" size="lg" />
                 </div>
                 <span class="inline-flex items-center rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-900/25 dark:text-emerald-300">
@@ -15,14 +15,14 @@
               <p class="text-sm font-medium text-gray-500 dark:text-dark-400">
                 {{ t('redeem.currentBalance') }}
               </p>
-              <p class="mt-2 text-4xl font-semibold text-gray-950 dark:text-white">
+              <p class="mt-2 text-2xl font-semibold text-gray-950 sm:text-3xl dark:text-white">
                 ${{ user?.balance?.toFixed(2) || '0.00' }}
               </p>
             </div>
 
             <div class="redeem-stat-card">
-              <div class="mb-6 flex items-start justify-between gap-4">
-                <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-900/25 dark:text-emerald-300">
+              <div class="mb-4 flex items-start justify-between gap-3 sm:mb-6 sm:gap-4">
+                <div class="flex h-10 w-10 items-center justify-center sm:h-12 sm:w-12 rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-900/25 dark:text-emerald-300">
                   <Icon name="bolt" size="lg" />
                 </div>
                 <span class="rounded-md bg-sky-50 px-2.5 py-1 text-xs font-medium text-sky-700 dark:bg-sky-900/25 dark:text-sky-300">
@@ -32,14 +32,14 @@
               <p class="text-sm font-medium text-gray-500 dark:text-dark-400">
                 {{ t('redeem.concurrency') }}
               </p>
-              <p class="mt-2 text-4xl font-semibold text-gray-950 dark:text-white">
+              <p class="mt-2 text-2xl font-semibold text-gray-950 sm:text-3xl dark:text-white">
                 {{ user?.concurrency || 0 }}
               </p>
             </div>
 
             <div class="redeem-stat-card">
-              <div class="mb-6 flex items-start justify-between gap-4">
-                <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-900/25 dark:text-amber-300">
+              <div class="mb-4 flex items-start justify-between gap-3 sm:mb-6 sm:gap-4">
+                <div class="flex h-10 w-10 items-center justify-center sm:h-12 sm:w-12 rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-900/25 dark:text-amber-300">
                   <Icon name="badge" size="lg" />
                 </div>
                 <span class="rounded-md bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 dark:bg-amber-900/25 dark:text-amber-300">
@@ -58,8 +58,8 @@
             </div>
 
             <div class="redeem-stat-card">
-              <div class="mb-6 flex items-start justify-between gap-4">
-                <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-teal-50 text-teal-600 dark:bg-teal-900/25 dark:text-teal-300">
+              <div class="mb-4 flex items-start justify-between gap-3 sm:mb-6 sm:gap-4">
+                <div class="flex h-10 w-10 items-center justify-center sm:h-12 sm:w-12 rounded-lg bg-teal-50 text-teal-600 dark:bg-teal-900/25 dark:text-teal-300">
                   <Icon name="shield" size="lg" />
                 </div>
                 <span :class="['rounded-md px-2.5 py-1 text-xs font-medium', accountStatusBadgeClass]">
@@ -69,7 +69,7 @@
               <p class="text-sm font-medium text-gray-500 dark:text-dark-400">
                 {{ t('redeem.accountStatus') }}
               </p>
-              <p class="mt-2 text-4xl font-semibold text-gray-950 dark:text-white">
+              <p class="mt-2 text-2xl font-semibold text-gray-950 sm:text-3xl dark:text-white">
                 {{ accountStatusLabel }}
               </p>
               <p :class="['mt-2 text-xs font-medium', accountStatusClass]">
@@ -654,7 +654,12 @@ onMounted(async () => {
 }
 
 .redeem-stat-card {
-  padding: 1.5rem;
+  padding: 1rem;
+}
+@media (min-width: 640px) {
+  .redeem-stat-card {
+    padding: 1.5rem;
+  }
 }
 
 .dark .redeem-panel,

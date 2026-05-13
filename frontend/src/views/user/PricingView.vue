@@ -38,7 +38,7 @@
             <span class="tabular-nums opacity-90">{{ countdownLabel(selectedGroup) }}</span>
           </span>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
           <!-- 货币切换：USD 标准价 / CNY 换算后价 -->
           <div class="inline-flex rounded-lg border border-gray-200/70 bg-white p-0.5 text-xs dark:border-dark-700/60 dark:bg-dark-800/40">
             <button
@@ -94,10 +94,32 @@
         </div>
       </div>
 
+      <!-- 移动端：筛选面板折叠按钮（lg 以下显示）-->
+      <button
+        type="button"
+        class="flex w-full items-center justify-between rounded-xl border border-gray-200/70 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:border-gray-300 dark:border-dark-700/60 dark:bg-dark-800/40 dark:text-dark-200 lg:hidden"
+        @click="mobileFiltersOpen = !mobileFiltersOpen"
+      >
+        <span class="inline-flex items-center gap-2">
+          <Icon name="filter" size="sm" class="text-gray-400" />
+          {{ t('pricing.filterPanelToggle') }}
+          <span
+            v-if="activeFilterCount > 0"
+            class="inline-flex items-center justify-center rounded-full bg-brand-100 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-brand-700 dark:bg-brand-500/20 dark:text-brand-300"
+          >
+            {{ activeFilterCount }}
+          </span>
+        </span>
+        <Icon name="chevronDown" size="sm" :class="['transition-transform', mobileFiltersOpen ? 'rotate-180' : '']" />
+      </button>
+
       <!-- 主体：左侧筛选 + 右侧网格 -->
       <div class="grid gap-5 lg:grid-cols-[300px_minmax(0,1fr)]">
-        <!-- 左侧筛选 panel：sticky 跟随滚动；字号 + 间距增大 -->
-        <aside class="lg:sticky lg:top-20 lg:self-start">
+        <!-- 左侧筛选 panel：sticky 跟随滚动；字号 + 间距增大；移动端默认折叠 -->
+        <aside
+          class="lg:sticky lg:top-20 lg:self-start"
+          :class="mobileFiltersOpen ? '' : 'hidden lg:block'"
+        >
           <div class="surface-card card-emerald space-y-5 p-5">
             <!-- 我可用的分组 -->
             <section>
@@ -495,6 +517,16 @@ const searchQuery = ref('')
 const selectedGroupId = ref<number | null>(null)
 const selectedPlatform = ref<string | null>(null)
 const selectedBillingMode = ref<BillingMode | null>(null)
+// 移动端筛选面板折叠状态：默认折叠，避免列表被推到屏幕外
+const mobileFiltersOpen = ref(false)
+// 已选筛选数量（用作折叠按钮上的角标，让用户一眼看到当前有几个生效中的过滤条件）
+const activeFilterCount = computed(() => {
+  let n = 0
+  if (selectedGroupId.value !== null) n++
+  if (selectedPlatform.value !== null) n++
+  if (selectedBillingMode.value !== null) n++
+  return n
+})
 
 // ============ 货币 ============
 // 站点计价模型说明：

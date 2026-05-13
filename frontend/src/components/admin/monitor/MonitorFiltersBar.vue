@@ -35,26 +35,27 @@
     </div>
 
     <!-- Right: Actions -->
-    <div class="flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-3 lg:w-auto">
+    <div class="flex w-full flex-shrink-0 flex-wrap items-center justify-end gap-2 lg:w-auto lg:gap-3">
       <button
         @click="$emit('reload')"
         :disabled="loading"
-        class="btn btn-secondary"
+        class="btn btn-secondary shrink-0"
         :title="t('common.refresh')"
       >
         <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
       </button>
       <button
         @click="$emit('manage-templates')"
-        class="btn btn-secondary"
+        class="btn btn-secondary shrink-0 whitespace-nowrap"
         :title="t('admin.channelMonitor.template.manageButton')"
       >
-        <Icon name="cog" size="md" class="mr-2" />
-        {{ t('admin.channelMonitor.template.manageButton') }}
+        <Icon name="cog" size="md" class="sm:mr-2" />
+        <span class="hidden sm:inline">{{ t('admin.channelMonitor.template.manageButton') }}</span>
       </button>
-      <button @click="$emit('create')" class="btn btn-primary">
+      <button @click="$emit('create')" class="btn btn-primary shrink-0 whitespace-nowrap">
         <Icon name="plus" size="md" class="mr-2" />
-        {{ t('admin.channelMonitor.createButton') }}
+        <span class="hidden sm:inline">{{ t('admin.channelMonitor.createButton') }}</span>
+        <span class="sm:hidden">{{ t('common.create') }}</span>
       </button>
     </div>
   </div>

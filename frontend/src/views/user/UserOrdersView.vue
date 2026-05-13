@@ -9,9 +9,10 @@
             <button @click="fetchOrders" :disabled="loading" class="btn btn-secondary btn-sm" :title="t('common.refresh')">
               <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
             </button>
-            <button class="btn btn-primary btn-sm" @click="router.push('/purchase')">
+            <button class="btn btn-primary btn-sm shrink-0 whitespace-nowrap" @click="router.push('/purchase')">
               <Icon name="plus" size="sm" class="mr-1.5" />
-              {{ t('payment.result.backToRecharge') }}
+              <span class="hidden sm:inline">{{ t('payment.result.backToRecharge') }}</span>
+              <span class="sm:hidden">{{ t('payment.result.backToRechargeShort') }}</span>
             </button>
           </div>
         </div>

@@ -54,7 +54,7 @@
           <transition name="dropdown">
             <div
               v-if="contactDropdownOpen"
-              class="dropdown right-0 mt-2 w-80 p-3"
+              class="dropdown right-0 mt-2 w-[min(20rem,calc(100vw-1.5rem))] max-w-[20rem] p-3"
             >
               <p class="mb-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">
                 {{ t('common.contactSupport') }}
@@ -78,10 +78,11 @@
         <SubscriptionProgressMini v-if="user" />
 
         <!-- Balance Display：品牌橙浅底点睛，是头部最具品牌识别度的视觉锚点 -->
+        <!-- 移动端也显示（之前 sm:flex 完全隐藏），仅紧凑显示余额数字 -->
         <router-link
           v-if="user"
           :to="{ path: '/purchase', query: { tab: 'recharge' } }"
-          class="hidden items-center gap-2 rounded-md bg-brand-50 px-3 py-1.5 ring-1 ring-inset ring-brand-200/60 transition-colors hover:bg-brand-100 dark:bg-brand-500/10 dark:ring-brand-500/20 dark:hover:bg-brand-500/15 sm:flex"
+          class="flex items-center gap-1.5 rounded-md bg-brand-50 px-2 py-1.5 ring-1 ring-inset ring-brand-200/60 transition-colors hover:bg-brand-100 dark:bg-brand-500/10 dark:ring-brand-500/20 dark:hover:bg-brand-500/15 sm:gap-2 sm:px-3"
           :title="t('nav.buySubscription')"
         >
           <svg

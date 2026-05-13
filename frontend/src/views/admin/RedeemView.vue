@@ -31,16 +31,19 @@
             <button
               @click="loadCodes"
               :disabled="loading"
-              class="btn btn-secondary"
+              class="btn btn-secondary shrink-0"
               :title="t('common.refresh')"
             >
               <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
             </button>
-            <button @click="handleExportCodes" class="btn btn-secondary">
-              {{ t('admin.redeem.exportCsv') }}
+            <button @click="handleExportCodes" class="btn btn-secondary shrink-0 whitespace-nowrap">
+              <span class="hidden sm:inline">{{ t('admin.redeem.exportCsv') }}</span>
+              <span class="sm:hidden">{{ t('usage.exportCsvShort') }}</span>
             </button>
-            <button @click="showGenerateDialog = true" class="btn btn-primary">
-              {{ t('admin.redeem.generateCodes') }}
+            <button @click="showGenerateDialog = true" class="btn btn-primary shrink-0 whitespace-nowrap">
+              <Icon name="plus" size="sm" class="mr-1.5" />
+              <span class="hidden sm:inline">{{ t('admin.redeem.generateCodes') }}</span>
+              <span class="sm:hidden">{{ t('admin.redeem.generateCodesShort') }}</span>
             </button>
           </div>
         </div>

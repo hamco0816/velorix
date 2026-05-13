@@ -41,9 +41,10 @@
         >
           <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
         </button>
-        <button @click="showCreateModal = true" class="btn btn-primary" data-tour="keys-create-btn">
+        <button @click="showCreateModal = true" class="btn btn-primary shrink-0 whitespace-nowrap" data-tour="keys-create-btn">
           <Icon name="plus" size="md" class="mr-2" />
-          {{ t('keys.createKey') }}
+          <span class="hidden sm:inline">{{ t('keys.createKey') }}</span>
+          <span class="sm:hidden">{{ t('common.create') }}</span>
         </button>
       </div>
       </template>
@@ -997,7 +998,7 @@
       <div
         v-if="groupSelectorKeyId !== null && dropdownPosition"
         ref="dropdownRef"
-        class="animate-in fade-in slide-in-from-top-2 fixed z-[100000020] w-max min-w-[380px] overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-black/5 duration-200 dark:bg-dark-800 dark:ring-white/10"
+        class="animate-in fade-in slide-in-from-top-2 fixed z-[100000020] w-max min-w-[min(380px,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-black/5 duration-200 dark:bg-dark-800 dark:ring-white/10"
         style="pointer-events: auto !important;"
         :style="{
           top: dropdownPosition.top !== undefined ? dropdownPosition.top + 'px' : undefined,

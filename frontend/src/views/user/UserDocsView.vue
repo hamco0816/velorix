@@ -25,8 +25,9 @@
             <p class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">不同客户端走不同协议，Base URL 后缀差一个 /v1 就会 404 或 401</p>
           </div>
         </header>
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200/60 dark:divide-dark-700/60">
+        <!-- 桌面：表格视图（min-w 保证列宽，窄屏下父容器横向滚动） -->
+        <div class="hidden overflow-x-auto sm:block">
+          <table class="min-w-[720px] divide-y divide-gray-200/60 dark:divide-dark-700/60">
             <thead class="bg-gray-50/60 dark:bg-dark-800/60">
               <tr>
                 <th class="px-4 py-3 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">客户端</th>
@@ -42,14 +43,27 @@
                     {{ row.client }}
                   </span>
                 </td>
-                <td class="px-4 py-3 text-xs text-gray-600 dark:text-dark-300">{{ row.protocol }}</td>
+                <td class="whitespace-nowrap px-4 py-3 text-xs text-gray-600 dark:text-dark-300">{{ row.protocol }}</td>
                 <td class="px-4 py-3">
-                  <code class="block break-all font-mono text-xs" :class="row.urlClass">{{ row.url }}</code>
+                  <code class="block whitespace-nowrap font-mono text-xs" :class="row.urlClass">{{ row.url }}</code>
                 </td>
                 <td class="px-4 py-3 text-xs text-gray-500 dark:text-dark-400">{{ row.note }}</td>
               </tr>
             </tbody>
           </table>
+        </div>
+        <!-- 移动端：堆叠卡片视图，每条占一整行，避免表格挤成竖字 -->
+        <div class="divide-y divide-gray-100 dark:divide-dark-700/60 sm:hidden">
+          <div v-for="row in baseUrlMatrix" :key="row.client" class="space-y-2 p-4">
+            <div class="flex items-center justify-between gap-2">
+              <span class="inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium" :class="row.tagClass">
+                {{ row.client }}
+              </span>
+              <span class="text-[11px] text-gray-500 dark:text-dark-400">{{ row.protocol }}</span>
+            </div>
+            <code class="block overflow-x-auto rounded-md bg-gray-50 px-2 py-1.5 font-mono text-xs dark:bg-dark-800" :class="row.urlClass">{{ row.url }}</code>
+            <p class="text-xs leading-5 text-gray-500 dark:text-dark-400">{{ row.note }}</p>
+          </div>
         </div>
       </section>
 

@@ -70,9 +70,9 @@
       </template>
 
       <template #filters>
-        <div class="flex flex-wrap items-end gap-4">
+        <div class="flex flex-wrap items-end gap-3 sm:gap-4">
           <!-- API Key Filter -->
-          <div class="min-w-[200px]">
+          <div class="w-full min-w-0 sm:w-auto sm:min-w-[200px]">
             <label class="input-label">{{ t('usage.apiKeyFilter') }}</label>
             <Select
               v-model="filters.api_key_id"
@@ -83,7 +83,7 @@
           </div>
 
           <!-- Date Range Filter -->
-          <div>
+          <div class="w-full sm:w-auto">
             <label class="input-label">{{ t('usage.timeRange') }}</label>
             <DateRangePicker
               v-model:start-date="startDate"
@@ -92,13 +92,13 @@
             />
           </div>
 
-          <!-- Actions -->
-          <div class="ml-auto flex items-center gap-2">
+          <!-- Actions：移动端独占一行，桌面端右对齐 -->
+          <div class="flex w-full items-center gap-2 sm:ml-auto sm:w-auto">
             <button
               type="button"
               @click="applyFilters"
               :disabled="loading"
-              class="btn btn-secondary btn-sm"
+              class="btn btn-secondary btn-sm shrink-0"
               :title="t('common.refresh')"
               :aria-label="t('common.refresh')"
             >
@@ -107,7 +107,7 @@
             <button
               type="button"
               @click="resetFilters"
-              class="btn btn-secondary btn-sm"
+              class="btn btn-secondary btn-sm shrink-0"
               :title="t('common.reset')"
               :aria-label="t('common.reset')"
             >
@@ -117,7 +117,7 @@
               type="button"
               @click="exportToCSV"
               :disabled="exporting"
-              class="btn btn-primary"
+              class="btn btn-primary shrink-0 whitespace-nowrap"
             >
               <Icon
                 name="download"
@@ -125,7 +125,8 @@
                 class="mr-1.5"
                 :class="exporting ? 'animate-pulse' : ''"
               />
-              {{ exporting ? t('usage.exporting') : t('usage.exportCsv') }}
+              <span class="hidden sm:inline">{{ exporting ? t('usage.exporting') : t('usage.exportCsv') }}</span>
+              <span class="sm:hidden">{{ exporting ? '...' : t('usage.exportCsvShort') }}</span>
             </button>
           </div>
         </div>
