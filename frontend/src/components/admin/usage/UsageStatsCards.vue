@@ -25,9 +25,13 @@
           {{ formatTokens(stats?.total_tokens || 0) }}
         </p>
         <p class="mt-1 text-xs tabular-nums text-gray-500 dark:text-dark-400">
-          <span>{{ t('usage.in') }} {{ formatTokens(stats?.total_input_tokens || 0) }}</span>
+          <span :title="t('usage.tokenIconHint.input')" class="cursor-help">{{ t('usage.in') }} {{ formatTokens(stats?.total_input_tokens || 0) }}</span>
           <span class="mx-1 text-gray-300 dark:text-dark-600">·</span>
-          <span>{{ t('usage.out') }} {{ formatTokens(stats?.total_output_tokens || 0) }}</span>
+          <span :title="t('usage.tokenIconHint.output')" class="cursor-help">{{ t('usage.out') }} {{ formatTokens(stats?.total_output_tokens || 0) }}</span>
+          <template v-if="(stats?.total_cache_tokens || 0) > 0">
+            <span class="mx-1 text-gray-300 dark:text-dark-600">·</span>
+            <span :title="t('usage.tokenIconHint.cacheRead')" class="cursor-help">{{ t('usage.cache') }} {{ formatTokens(stats?.total_cache_tokens || 0) }}</span>
+          </template>
         </p>
       </div>
     </div>

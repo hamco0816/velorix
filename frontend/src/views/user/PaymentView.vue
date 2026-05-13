@@ -1,8 +1,8 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <div class="payment-page space-y-5">
       <div v-if="loading" class="flex items-center justify-center py-20">
-        <div class="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
+        <LoadingSpinner size="md" />
       </div>
       <template v-else>
         <!-- Tab Switcher：Notion 风下划线分段，黑色 indicator + 13px 字号 -->
@@ -39,9 +39,15 @@
         <template v-else>
           <!-- Top-up Tab -->
           <template v-if="activeTab === 'recharge'">
-            <div v-if="enabledMethods.length === 0" class="rounded-2xl border border-gray-200/70 bg-white py-16 text-center dark:border-dark-700/60 dark:bg-dark-800/40">
-              <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('payment.notAvailable') }}</p>
-            </div>
+            <EmptyState
+              v-if="enabledMethods.length === 0"
+              variant="amber"
+              :description="t('payment.notAvailable')"
+            >
+              <template #icon>
+                <Icon name="creditCard" class="empty-state-icon" />
+              </template>
+            </EmptyState>
             <template v-else>
             <!-- 充值主卡：白底简洁 + 右侧 amber 结算栏（视觉聚焦） -->
             <section class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-18px_rgba(15,23,42,0.18)] dark:border-dark-700/60 dark:bg-dark-800/40">
@@ -86,12 +92,17 @@
 
                 <!-- 右：结算栏（白底为主 + 极淡 amber 装饰 + amber 按钮强调） -->
                 <aside class="relative border-t border-gray-100 bg-gray-50/40 p-6 dark:border-dark-700/60 dark:bg-dark-800/30 lg:border-l lg:border-t-0">
-                  <p class="text-[11px] font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400">
-                    {{ t('payment.actualPay') }}
-                  </p>
-                  <p class="mt-1.5 text-4xl font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">
-                    ¥{{ totalAmount.toFixed(2) }}
-                  </p>
+                  <!-- 实付金额：左侧 amber 强调条 + 金额放大到 5xl，建立明确视觉锚点 -->
+                  <div class="relative pl-4">
+                    <span class="absolute left-0 top-1 h-[calc(100%-0.5rem)] w-[3px] rounded-full bg-gradient-to-b from-amber-400 to-amber-500" aria-hidden="true"></span>
+                    <p class="text-[11px] font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400">
+                      {{ t('payment.actualPay') }}
+                    </p>
+                    <p class="mt-1.5 flex items-baseline gap-1 text-gray-900 dark:text-white">
+                      <span class="text-xl font-semibold tabular-nums leading-none text-gray-500 dark:text-dark-400">¥</span>
+                      <span class="text-5xl font-bold tabular-nums tracking-tight leading-none">{{ totalAmount.toFixed(2) }}</span>
+                    </p>
+                  </div>
 
                   <!-- 费用明细：极简列表 -->
                   <div class="mt-5 space-y-2 border-t border-gray-100 pt-4 text-sm dark:border-dark-700/60">
@@ -362,12 +373,15 @@
             </template>
             <!-- Plan list -->
             <template v-else>
-              <div v-if="checkout.plans.length === 0" class="rounded-2xl border border-gray-200/70 bg-white py-16 text-center dark:border-dark-700/60 dark:bg-dark-800/40">
-                <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-50 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-700/40 dark:ring-dark-600/60">
-                  <Icon name="gift" size="lg" class="text-gray-400" />
-                </div>
-                <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('payment.noPlans') }}</p>
-              </div>
+              <EmptyState
+                v-if="checkout.plans.length === 0"
+                variant="emerald"
+                :description="t('payment.noPlans')"
+              >
+                <template #icon>
+                  <Icon name="gift" class="empty-state-icon" />
+                </template>
+              </EmptyState>
               <template v-else>
                 <!-- 卡类型筛选：当套餐数量 > 1 且存在多种卡类型时才显示 -->
                 <div v-if="cardTypeFilters.length > 1" class="-mx-1 mb-1 flex flex-wrap gap-1 px-1">
@@ -494,6 +508,8 @@ import {
 import SubscriptionPlanCard from '@/components/payment/SubscriptionPlanCard.vue'
 import PaymentStatusPanel from '@/components/payment/PaymentStatusPanel.vue'
 import Icon from '@/components/icons/Icon.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import BrandIcon from '@/components/common/BrandIcon.vue'
 import ModelIcon from '@/components/common/ModelIcon.vue'
 import type { PaymentMethodOption } from '@/components/payment/PaymentMethodSelector.vue'

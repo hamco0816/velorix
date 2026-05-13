@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "clean:dist": "node scripts/clean-dist.mjs",
-    "prebuild": "node scripts/clean-dist.mjs",
+    "docs:sync": "node scripts/sync-public-docs.mjs",
+    "predev": "node scripts/sync-public-docs.mjs",
+    "prebuild": "node scripts/clean-dist.mjs && node scripts/sync-public-docs.mjs",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",

@@ -261,6 +261,79 @@
         </div>
       </section>
 
+      <!-- 下游对接：把 API 提供给第三方时该交付什么 -->
+      <section id="downstream" class="surface-card overflow-hidden scroll-mt-20">
+        <header class="flex items-start gap-3 border-b border-gray-200/60 bg-violet-50/40 px-6 py-4 dark:border-dark-700/60 dark:bg-violet-500/5">
+          <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300">
+            <Icon name="link" size="sm" :stroke-width="1.75" />
+          </span>
+          <div class="min-w-0 flex-1">
+            <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">下游对接 API</h2>
+            <p class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">把 API 提供给客户、代理商或第三方系统时，参考此节交付配置</p>
+          </div>
+          <div class="flex shrink-0 gap-2">
+            <a
+              :href="downstreamDocUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 rounded-lg border border-violet-300 bg-white px-3 py-1.5 text-xs font-semibold text-violet-700 transition-colors hover:bg-violet-50 dark:border-violet-500/40 dark:bg-dark-800 dark:text-violet-300 dark:hover:bg-violet-500/10"
+            >
+              <Icon name="externalLink" size="xs" />
+              <span>完整文档</span>
+            </a>
+            <button
+              type="button"
+              class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200/70 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-50 dark:border-dark-700/60 dark:bg-dark-800 dark:text-dark-200 dark:hover:bg-dark-700/60"
+              @click="copyDownstreamConfig"
+            >
+              <Icon name="copy" size="xs" />
+              <span>复制最小配置</span>
+            </button>
+          </div>
+        </header>
+
+        <div class="space-y-5 p-6">
+          <!-- 最小配置块：交付给下游的标准卡片 -->
+          <div class="rounded-xl border border-violet-200/60 bg-violet-50/40 p-4 dark:border-violet-500/20 dark:bg-violet-500/5">
+            <div class="mb-2 flex items-center gap-2">
+              <Icon name="cube" size="sm" class="text-violet-600 dark:text-violet-300" />
+              <span class="text-sm font-semibold text-gray-900 dark:text-white">最小交付配置（推荐 OpenAI 兼容路径）</span>
+            </div>
+            <pre class="snippet-pre overflow-x-auto rounded-lg bg-slate-950 p-3 text-[11px] leading-5 text-slate-100"><code>{{ downstreamMinimalConfig }}</code></pre>
+          </div>
+
+          <!-- 关键提醒：四点高频踩坑 -->
+          <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <article
+              v-for="tip in downstreamTips"
+              :key="tip.title"
+              class="rounded-xl border border-gray-200/70 bg-white p-3.5 dark:border-dark-700/60 dark:bg-dark-800/40"
+            >
+              <div class="flex items-start gap-2.5">
+                <span :class="['flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg', tip.iconClass]">
+                  <Icon :name="(tip.icon as any)" size="xs" :stroke-width="1.75" />
+                </span>
+                <div class="min-w-0">
+                  <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ tip.title }}</h3>
+                  <p class="mt-1 text-xs leading-5 text-gray-600 dark:text-dark-300">{{ tip.desc }}</p>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <!-- 提示：完整文档里包含的内容 -->
+          <div class="rounded-xl border border-sky-200/60 bg-sky-50/40 p-3.5 dark:border-sky-500/20 dark:bg-sky-500/5">
+            <div class="flex items-start gap-2.5">
+              <Icon name="infoCircle" size="sm" class="mt-0.5 flex-shrink-0 text-sky-600 dark:text-sky-300" />
+              <p class="text-xs leading-5 text-sky-900 dark:text-sky-100">
+                <span class="font-semibold">完整文档包含：</span>
+                Base URL 速查、鉴权方式、所有支持的接口路径、模型查询、计费与限流详解、<code class="docs-hint-code">/v1/usage</code> 返回结构、错误码表、Codex/Gemini/Claude 三种客户端的对接示例、上线检查清单。把链接整体发给下游即可。
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- 常见错误 + 使用提醒（lg 起并排，原来 xl 太晚） -->
       <section id="troubleshoot" class="grid grid-cols-1 gap-4 lg:grid-cols-2 scroll-mt-20">
         <article class="surface-card overflow-hidden">
@@ -349,6 +422,7 @@ const tocItems = [
   { id: 'snippets', label: '接入示例' },
   { id: 'models', label: '模型选择' },
   { id: 'advanced', label: '高级用法' },
+  { id: 'downstream', label: '下游对接' },
   { id: 'troubleshoot', label: '排障' },
   { id: 'sources', label: '官方参考' }
 ]
@@ -433,6 +507,53 @@ const openAIBaseUrl = computed(() => `${siteRootUrl.value}/v1`)
 const geminiBaseUrl = computed(() => `${siteRootUrl.value}/v1beta`)
 // codexDirectBaseUrl 已不再单独展示（合并进 baseUrlMatrix）；如未来需要 Codex 直连入口，可参考 backend-api/codex 路径
 const customEndpoints = computed(() => appStore.cachedPublicSettings?.custom_endpoints || [])
+
+// 下游对接：完整文档（位于 public/docs/）+ 最小配置 + 高频提醒
+const downstreamDocUrl = '/docs/downstream-api-integration.md'
+
+const downstreamMinimalConfig = computed(() => `Base URL: ${openAIBaseUrl.value}
+API Key: sk-xxxxxxxx
+鉴权方式: Authorization: Bearer sk-xxxxxxxx
+推荐接口: /v1/responses 或 /v1/chat/completions
+模型名查询: GET ${openAIBaseUrl.value}/models
+用量查询: GET ${openAIBaseUrl.value}/usage
+流式响应: 请求体加 "stream": true`)
+
+const downstreamTips = [
+  {
+    title: '鉴权放请求头',
+    icon: 'shield',
+    iconClass: 'bg-rose-50 text-rose-600 dark:bg-rose-500/15 dark:text-rose-300',
+    desc: '用 Authorization: Bearer ＿。把 Key 放到 URL 查询参数（?key= 或 ?api_key=）会被网关直接 400 拒绝。',
+  },
+  {
+    title: '模型名先查再填',
+    icon: 'search',
+    iconClass: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300',
+    desc: '不要凭印象写模型名。调 GET /v1/models 返回的 data[].id 才是分组实际开放的模型。',
+  },
+  {
+    title: '429 不一定是限速',
+    icon: 'exclamationCircle',
+    iconClass: 'bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300',
+    desc: '可能是余额不足、套餐额度耗尽、Key 配额耗尽、并发超限、RPM 超限五种之一。先看 /v1/usage 自检。',
+  },
+  {
+    title: '流式响应调大超时',
+    icon: 'clock',
+    iconClass: 'bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300',
+    desc: '代码生成或 Agent 场景建议 HTTP 读取超时 10–60 分钟，并确认 Nginx/Cloudflare 等代理层没有更短的超时设置。',
+  },
+]
+
+async function copyDownstreamConfig(): Promise<void> {
+  try {
+    await navigator.clipboard.writeText(downstreamMinimalConfig.value)
+    appStore.showSuccess('已复制最小配置')
+  } catch {
+    appStore.showError('复制失败，请手动选中文本')
+  }
+}
 
 // Base URL 速查表：客户端 ↔ 应该填的 Base URL 映射
 const baseUrlMatrix = computed(() => [

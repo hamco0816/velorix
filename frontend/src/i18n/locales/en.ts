@@ -993,6 +993,7 @@ export default {
     unknown: 'Unknown',
     in: 'In',
     out: 'Out',
+    cache: 'Cache',
     inputTokenPrice: 'Input price',
     outputTokenPrice: 'Output price',
     perMillionTokens: '/ 1M tokens',
@@ -1017,7 +1018,15 @@ export default {
     exportExcelSuccess: 'Usage data exported successfully (Excel format)',
     exportExcelFailed: 'Failed to export usage data',
     imageUnit: ' images',
-    userAgent: 'User-Agent'
+    userAgent: 'User-Agent',
+    tokenIconHint: {
+      input: 'Input tokens: prompt tokens you sent to the model',
+      output: 'Output tokens: tokens the model returned to you',
+      cacheRead: 'Cache read: this request hit a previously cached prompt (cheaper)',
+      cacheWrite: 'Cache creation: this request wrote prompt content into cache (slightly more expensive once, cheaper on later reads)',
+      cacheTtl1h: '1-hour cache TTL',
+      cacheTtlOverridden: 'Cache TTL was adjusted by the server'
+    }
   },
 
   // Shared keys for channel monitor (admin + user views)
@@ -1263,7 +1272,21 @@ export default {
     codeRedeemSuccess: 'Code redeemed successfully!',
     failedToRedeem: 'Failed to redeem code. Please check the code and try again.',
     subscriptionRefreshFailed: 'Redeemed successfully, but failed to refresh subscription status.',
-    pleaseEnterCode: 'Please enter a redeem code'
+    pleaseEnterCode: 'Please enter a redeem code',
+    planLabel: 'Plan',
+    currentPlan: 'Current plan',
+    accountStatus: 'Account status',
+    notSubscribed: 'Not subscribed',
+    noSubscription: 'No active subscription',
+    permanentValidity: 'No expiration',
+    validUntil: 'Valid until {date}',
+    statusNormal: 'Active',
+    statusBanned: 'Suspended',
+    statusNormalDesc: 'Service is operating normally',
+    statusBannedDesc: 'Account is currently disabled',
+    syncOnRedeem: 'Benefits sync automatically after redeem',
+    clipboardReadFailed: 'Failed to read clipboard',
+    paste: 'Paste'
   },
 
   // Profile

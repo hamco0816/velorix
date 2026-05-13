@@ -51,23 +51,21 @@
 
       <!-- Loading -->
       <div v-if="loading" class="flex items-center justify-center py-20">
-        <div class="h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
+        <LoadingSpinner size="md" />
       </div>
 
       <!-- Empty -->
-      <div
+      <EmptyState
         v-else-if="seats.length === 0"
-        class="rounded-2xl border border-gray-200/70 bg-white p-12 text-center dark:border-dark-700/60 dark:bg-dark-800/40"
+        variant="violet"
+        :description="t('exclusiveSeats.empty')"
+        :action-text="t('exclusiveSeats.browsePlans')"
+        @action="router.push('/purchase')"
       >
-        <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-50 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-700/40 dark:ring-dark-600/60">
-          <Icon name="badge" size="lg" class="text-gray-400" />
-        </div>
-        <p class="mb-5 text-sm text-gray-500 dark:text-gray-400">{{ t('exclusiveSeats.empty') }}</p>
-        <button class="btn btn-primary btn-sm" @click="router.push('/purchase')">
-          <Icon name="plus" size="sm" class="mr-1.5" />
-          {{ t('exclusiveSeats.browsePlans') }}
-        </button>
-      </div>
+        <template #icon>
+          <Icon name="badge" class="empty-state-icon" />
+        </template>
+      </EmptyState>
 
       <!-- 使用引导：用户有 active seat 时提醒需要 ApiKey；Notion 风克制 -->
       <div
@@ -272,6 +270,8 @@ import { extractI18nErrorMessage } from '@/utils/apiError'
 import type { ExclusiveSeat } from '@/types/payment'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import BaseDialog from '@/components/common/BaseDialog.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import Icon from '@/components/icons/Icon.vue'
 
 const { t } = useI18n()

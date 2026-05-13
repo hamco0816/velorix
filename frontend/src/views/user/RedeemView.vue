@@ -1,5 +1,5 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <div class="space-y-5">
       <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <div class="redeem-stat-card">
@@ -43,11 +43,11 @@
                   <Icon name="badge" size="lg" />
                 </div>
                 <span class="rounded-md bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 dark:bg-amber-900/25 dark:text-amber-300">
-                  套餐
+                  {{ t('redeem.planLabel') }}
                 </span>
               </div>
               <p class="text-sm font-medium text-gray-500 dark:text-dark-400">
-                当前套餐
+                {{ t('redeem.currentPlan') }}
               </p>
               <p class="mt-2 truncate text-4xl font-semibold text-gray-950 dark:text-white">
                 {{ activePlanLabel }}
@@ -67,7 +67,7 @@
                 </span>
               </div>
               <p class="text-sm font-medium text-gray-500 dark:text-dark-400">
-                账户状态
+                {{ t('redeem.accountStatus') }}
               </p>
               <p class="mt-2 text-4xl font-semibold text-gray-950 dark:text-white">
                 {{ accountStatusLabel }}
@@ -123,7 +123,7 @@
                       class="absolute inset-y-2 right-2 rounded-lg border border-gray-200 px-3 text-sm font-semibold text-sky-600 transition-colors hover:border-sky-300 hover:bg-sky-50 dark:border-dark-600 dark:text-sky-300 dark:hover:bg-sky-900/20"
                       @click="pasteRedeemCode"
                     >
-                      粘贴
+                      {{ t('redeem.paste') }}
                     </button>
                   </div>
                   <p class="input-hint mt-2">
@@ -405,7 +405,7 @@
                   {{ t('redeem.aboutCodes') }}
                 </h3>
                 <p class="mt-0.5 text-sm text-gray-500 dark:text-dark-400">
-                  兑换后权益会自动同步
+                  {{ t('redeem.syncOnRedeem') }}
                 </p>
               </div>
             </div>
@@ -433,7 +433,7 @@
               class="mt-5 rounded-xl border border-gray-100 bg-gray-50/80 p-3 dark:border-dark-700 dark:bg-dark-900/40"
             >
               <span class="mb-3 block text-sm font-semibold text-gray-800 dark:text-dark-100">
-                联系客服
+                {{ t('common.contactSupport') }}
               </span>
               <ContactMethodsDisplay
                 :methods="contactMethods"
@@ -494,18 +494,18 @@ const activeSubscription = computed(() =>
 )
 
 const activePlanLabel = computed(() =>
-  activeSubscription.value?.group?.name || (activeSubscription.value ? t('redeem.subscriptionAssigned') : '未开通'),
+  activeSubscription.value?.group?.name || (activeSubscription.value ? t('redeem.subscriptionAssigned') : t('redeem.notSubscribed')),
 )
 
 const activePlanMeta = computed(() => {
-  if (!activeSubscription.value) return '暂无订阅'
-  if (!activeSubscription.value.expires_at) return '长期有效'
-  return `有效期至 ${formatDateTime(activeSubscription.value.expires_at)}`
+  if (!activeSubscription.value) return t('redeem.noSubscription')
+  if (!activeSubscription.value.expires_at) return t('redeem.permanentValidity')
+  return t('redeem.validUntil', { date: formatDateTime(activeSubscription.value.expires_at) })
 })
 
-const accountStatusLabel = computed(() => (user.value?.status === 'active' ? '正常' : '已禁用'))
+const accountStatusLabel = computed(() => (user.value?.status === 'active' ? t('redeem.statusNormal') : t('redeem.statusBanned')))
 const accountStatusMeta = computed(() =>
-  user.value?.status === 'active' ? '服务运行正常' : '账号暂不可用',
+  user.value?.status === 'active' ? t('redeem.statusNormalDesc') : t('redeem.statusBannedDesc'),
 )
 const accountStatusClass = computed(() =>
   user.value?.status === 'active'
@@ -579,7 +579,7 @@ const pasteRedeemCode = async () => {
       redeemCode.value = text.trim()
     }
   } catch {
-    appStore.showWarning('无法读取剪贴板')
+    appStore.showWarning(t('redeem.clipboardReadFailed'))
   }
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <div class="space-y-5">
       <!-- Filters：emerald 主题（订单 / 完成氛围），用全局 .surface-card + .card-emerald 组合 -->
       <div class="surface-card card-emerald p-4">
@@ -90,7 +90,7 @@
           </div>
           <div class="mt-2 flex justify-between text-sm">
             <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.amount') }}</span>
-            <span class="text-gray-900 dark:text-white">${{ refundTarget.amount.toFixed(2) }}</span>
+            <span class="text-gray-900 dark:text-white">¥{{ refundTarget.pay_amount.toFixed(2) }}</span>
           </div>
         </div>
         <div>

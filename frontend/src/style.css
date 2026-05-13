@@ -938,23 +938,22 @@
     @apply mt-1 text-sm text-gray-500 dark:text-dark-400;
   }
 
-  /* ============ 空状态 ============ */
+  /* ============ 空状态：与 EmptyState 组件 scoped 样式保持一致 ============ */
   .empty-state {
-    @apply flex flex-col items-center justify-center px-4 py-12;
-    @apply text-center;
+    @apply flex flex-col items-center justify-center px-4 py-10 text-center;
   }
 
   .empty-state-icon {
-    @apply mb-4 h-16 w-16;
-    @apply text-gray-300 dark:text-dark-600;
+    @apply mb-4 h-14 w-14;
+    @apply text-gray-400 dark:text-dark-400;
   }
 
   .empty-state-title {
-    @apply mb-1 text-lg font-medium text-gray-900 dark:text-white;
+    @apply mb-1 text-base font-semibold tracking-tight text-gray-900 dark:text-white;
   }
 
   .empty-state-description {
-    @apply max-w-sm text-sm text-gray-500 dark:text-dark-400;
+    @apply max-w-sm text-sm leading-relaxed text-gray-500 dark:text-dark-400;
   }
 
   /* ============ 加载状态 ============ */

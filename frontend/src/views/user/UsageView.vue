@@ -28,8 +28,11 @@
                 {{ formatTokens(usageStats?.total_tokens || 0) }}
               </p>
               <p class="kpi-hint">
-                {{ t('usage.in') }} {{ formatTokens(usageStats?.total_input_tokens || 0) }} ·
-                {{ t('usage.out') }} {{ formatTokens(usageStats?.total_output_tokens || 0) }}
+                <span :title="t('usage.tokenIconHint.input')" class="cursor-help">{{ t('usage.in') }} {{ formatTokens(usageStats?.total_input_tokens || 0) }}</span> ·
+                <span :title="t('usage.tokenIconHint.output')" class="cursor-help">{{ t('usage.out') }} {{ formatTokens(usageStats?.total_output_tokens || 0) }}</span>
+                <template v-if="(usageStats?.total_cache_tokens || 0) > 0">
+                  · <span :title="t('usage.tokenIconHint.cacheRead')" class="cursor-help">{{ t('usage.cache') }} {{ formatTokens(usageStats?.total_cache_tokens || 0) }}</span>
+                </template>
               </p>
             </div>
           </div>
@@ -204,14 +207,14 @@
                 <!-- Input / Output Tokens -->
                 <div class="flex items-center gap-2">
                   <!-- Input -->
-                  <div class="inline-flex items-center gap-1">
+                  <div class="inline-flex items-center gap-1 cursor-help" :title="t('usage.tokenIconHint.input')">
                     <Icon name="arrowDown" size="sm" class="text-emerald-500" />
                     <span class="font-medium text-gray-900 dark:text-white">{{
                       row.input_tokens.toLocaleString()
                     }}</span>
                   </div>
                   <!-- Output -->
-                  <div class="inline-flex items-center gap-1">
+                  <div class="inline-flex items-center gap-1 cursor-help" :title="t('usage.tokenIconHint.output')">
                     <Icon name="arrowUp" size="sm" class="text-violet-500" />
                     <span class="font-medium text-gray-900 dark:text-white">{{
                       row.output_tokens.toLocaleString()
@@ -224,19 +227,19 @@
                   class="flex items-center gap-2"
                 >
                   <!-- Cache Read -->
-                  <div v-if="row.cache_read_tokens > 0" class="inline-flex items-center gap-1">
+                  <div v-if="row.cache_read_tokens > 0" class="inline-flex items-center gap-1 cursor-help" :title="t('usage.tokenIconHint.cacheRead')">
                     <Icon name="inbox" size="sm" class="text-sky-500" />
                     <span class="font-medium text-sky-600 dark:text-sky-400">{{
                       formatCacheTokens(row.cache_read_tokens)
                     }}</span>
                   </div>
                   <!-- Cache Write -->
-                  <div v-if="row.cache_creation_tokens > 0" class="inline-flex items-center gap-1">
+                  <div v-if="row.cache_creation_tokens > 0" class="inline-flex items-center gap-1 cursor-help" :title="t('usage.tokenIconHint.cacheWrite')">
                     <Icon name="edit" size="sm" class="text-amber-500" />
                     <span class="font-medium text-amber-600 dark:text-amber-400">{{
                       formatCacheTokens(row.cache_creation_tokens)
                     }}</span>
-                    <span v-if="row.cache_creation_1h_tokens > 0" class="inline-flex items-center rounded px-1 py-px text-[10px] font-medium leading-tight bg-orange-100 text-orange-600 ring-1 ring-inset ring-orange-200 dark:bg-orange-500/20 dark:text-orange-400 dark:ring-orange-500/30">1h</span>
+                    <span v-if="row.cache_creation_1h_tokens > 0" :title="t('usage.tokenIconHint.cacheTtl1h')" class="inline-flex items-center rounded px-1 py-px text-[10px] font-medium leading-tight bg-orange-100 text-orange-600 ring-1 ring-inset ring-orange-200 dark:bg-orange-500/20 dark:text-orange-400 dark:ring-orange-500/30 cursor-help">1h</span>
                     <span v-if="row.cache_ttl_overridden" :title="t('usage.cacheTtlOverriddenHint')" class="inline-flex items-center rounded px-1 py-px text-[10px] font-medium leading-tight bg-rose-100 text-rose-600 ring-1 ring-inset ring-rose-200 dark:bg-rose-500/20 dark:text-rose-400 dark:ring-rose-500/30 cursor-help">R</span>
                   </div>
                 </div>

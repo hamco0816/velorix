@@ -271,21 +271,19 @@
         <main>
           <!-- Loading -->
           <div v-if="loading" class="flex items-center justify-center py-16">
-            <div class="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent"></div>
+            <LoadingSpinner size="md" />
           </div>
 
           <!-- Empty -->
-          <div
+          <EmptyState
             v-else-if="filteredModels.length === 0"
-            class="rounded-2xl border border-gray-200/70 bg-white p-12 text-center dark:border-dark-700/60 dark:bg-dark-800/40"
+            variant="emerald"
+            :description="searchQuery || selectedPlatform || selectedBillingMode ? t('pricing.emptyFiltered') : t('pricing.empty')"
           >
-            <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-50 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-700/40 dark:ring-dark-600/60">
-              <Icon name="search" size="lg" class="text-gray-400" />
-            </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              {{ searchQuery || selectedPlatform || selectedBillingMode ? t('pricing.emptyFiltered') : t('pricing.empty') }}
-            </p>
-          </div>
+            <template #icon>
+              <Icon name="search" class="empty-state-icon" />
+            </template>
+          </EmptyState>
 
           <!-- Grid -->
           <div v-else class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -468,6 +466,8 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Icon from '@/components/icons/Icon.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import PlatformIcon from '@/components/common/PlatformIcon.vue'
 import userChannelsAPI, {
   type UserAvailableChannel,

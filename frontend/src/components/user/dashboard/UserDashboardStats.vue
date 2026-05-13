@@ -92,21 +92,29 @@
           </div>
           <p class="kpi-card-label">{{ t('dashboard.todayTokens') }}</p>
           <p class="kpi-card-value">{{ formatTokens(stats?.today_tokens || 0) }}</p>
-          <!-- 输入/输出 + 缓存读取/创建 分两行展示，保证四项加起来等于 total_tokens -->
+          <!-- 输入/输出 + 缓存读取/创建 分两行展示，保证四项加起来等于 total_tokens；每项 title 释义图标含义 -->
           <div class="kpi-card-hint space-y-0.5 tabular-nums">
             <p>
-              <Icon name="arrowDown" size="xs" class="mr-0.5 inline-block text-emerald-500" />
-              <span>{{ formatTokens(stats?.today_input_tokens || 0) }}</span>
+              <span :title="t('usage.tokenIconHint.input')" class="cursor-help">
+                <Icon name="arrowDown" size="xs" class="mr-0.5 inline-block text-emerald-500" />
+                <span>{{ formatTokens(stats?.today_input_tokens || 0) }}</span>
+              </span>
               <span class="mx-1 text-gray-300 dark:text-dark-600">·</span>
-              <Icon name="arrowUp" size="xs" class="mr-0.5 inline-block text-violet-500" />
-              <span>{{ formatTokens(stats?.today_output_tokens || 0) }}</span>
+              <span :title="t('usage.tokenIconHint.output')" class="cursor-help">
+                <Icon name="arrowUp" size="xs" class="mr-0.5 inline-block text-violet-500" />
+                <span>{{ formatTokens(stats?.today_output_tokens || 0) }}</span>
+              </span>
             </p>
             <p v-if="hasCacheToday">
-              <Icon name="inbox" size="xs" class="mr-0.5 inline-block text-sky-500" />
-              <span>{{ formatTokens(stats?.today_cache_read_tokens || 0) }}</span>
+              <span :title="t('usage.tokenIconHint.cacheRead')" class="cursor-help">
+                <Icon name="inbox" size="xs" class="mr-0.5 inline-block text-sky-500" />
+                <span>{{ formatTokens(stats?.today_cache_read_tokens || 0) }}</span>
+              </span>
               <span class="mx-1 text-gray-300 dark:text-dark-600">·</span>
-              <Icon name="edit" size="xs" class="mr-0.5 inline-block text-amber-500" />
-              <span>{{ formatTokens(stats?.today_cache_creation_tokens || 0) }}</span>
+              <span :title="t('usage.tokenIconHint.cacheWrite')" class="cursor-help">
+                <Icon name="edit" size="xs" class="mr-0.5 inline-block text-amber-500" />
+                <span>{{ formatTokens(stats?.today_cache_creation_tokens || 0) }}</span>
+              </span>
             </p>
           </div>
           <div v-if="hasSpark(tokensSeries)" class="kpi-card-spark">
@@ -124,18 +132,26 @@
             <p class="metric-value">{{ formatTokens(stats?.total_tokens || 0) }}</p>
             <div class="metric-hint space-y-0.5 tabular-nums">
               <p>
-                <Icon name="arrowDown" size="xs" class="mr-0.5 inline-block text-emerald-500" />
-                <span>{{ formatTokens(stats?.total_input_tokens || 0) }}</span>
+                <span :title="t('usage.tokenIconHint.input')" class="cursor-help">
+                  <Icon name="arrowDown" size="xs" class="mr-0.5 inline-block text-emerald-500" />
+                  <span>{{ formatTokens(stats?.total_input_tokens || 0) }}</span>
+                </span>
                 <span class="mx-1 text-gray-300 dark:text-dark-600">·</span>
-                <Icon name="arrowUp" size="xs" class="mr-0.5 inline-block text-violet-500" />
-                <span>{{ formatTokens(stats?.total_output_tokens || 0) }}</span>
+                <span :title="t('usage.tokenIconHint.output')" class="cursor-help">
+                  <Icon name="arrowUp" size="xs" class="mr-0.5 inline-block text-violet-500" />
+                  <span>{{ formatTokens(stats?.total_output_tokens || 0) }}</span>
+                </span>
               </p>
               <p v-if="hasCacheTotal">
-                <Icon name="inbox" size="xs" class="mr-0.5 inline-block text-sky-500" />
-                <span>{{ formatTokens(stats?.total_cache_read_tokens || 0) }}</span>
+                <span :title="t('usage.tokenIconHint.cacheRead')" class="cursor-help">
+                  <Icon name="inbox" size="xs" class="mr-0.5 inline-block text-sky-500" />
+                  <span>{{ formatTokens(stats?.total_cache_read_tokens || 0) }}</span>
+                </span>
                 <span class="mx-1 text-gray-300 dark:text-dark-600">·</span>
-                <Icon name="edit" size="xs" class="mr-0.5 inline-block text-amber-500" />
-                <span>{{ formatTokens(stats?.total_cache_creation_tokens || 0) }}</span>
+                <span :title="t('usage.tokenIconHint.cacheWrite')" class="cursor-help">
+                  <Icon name="edit" size="xs" class="mr-0.5 inline-block text-amber-500" />
+                  <span>{{ formatTokens(stats?.total_cache_creation_tokens || 0) }}</span>
+                </span>
               </p>
             </div>
           </div>

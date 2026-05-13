@@ -1002,6 +1002,7 @@ export default {
     unknown: '未知',
     in: '输入',
     out: '输出',
+    cache: '缓存',
     inputTokenPrice: '输入单价',
     outputTokenPrice: '输出单价',
     perMillionTokens: '/ 1M Token',
@@ -1026,7 +1027,15 @@ export default {
     exportExcelSuccess: '使用数据导出成功（Excel格式）',
     exportExcelFailed: '使用数据导出失败',
     imageUnit: '张',
-    userAgent: 'User-Agent'
+    userAgent: 'User-Agent',
+    tokenIconHint: {
+      input: '输入 Token：你发给模型的提示词字数',
+      output: '输出 Token：模型回复给你的内容字数',
+      cacheRead: '缓存读取：本次请求命中了之前的提示词缓存（更便宜）',
+      cacheWrite: '缓存创建：本次请求把提示词写入了缓存（首次稍贵，后续读取更便宜）',
+      cacheTtl1h: '1 小时缓存 TTL',
+      cacheTtlOverridden: '缓存 TTL 被服务端调整'
+    }
   },
 
   // Shared keys for channel monitor (admin + user views)
@@ -1272,7 +1281,21 @@ export default {
     codeRedeemSuccess: '兑换成功！',
     failedToRedeem: '兑换失败，请检查兑换码后重试。',
     subscriptionRefreshFailed: '兑换成功，但订阅状态刷新失败。',
-    pleaseEnterCode: '请输入兑换码'
+    pleaseEnterCode: '请输入兑换码',
+    planLabel: '套餐',
+    currentPlan: '当前套餐',
+    accountStatus: '账户状态',
+    notSubscribed: '未开通',
+    noSubscription: '暂无订阅',
+    permanentValidity: '长期有效',
+    validUntil: '有效期至 {date}',
+    statusNormal: '正常',
+    statusBanned: '已禁用',
+    statusNormalDesc: '服务运行正常',
+    statusBannedDesc: '账号暂不可用',
+    syncOnRedeem: '兑换后权益会自动同步',
+    clipboardReadFailed: '无法读取剪贴板',
+    paste: '粘贴'
   },
 
   // Profile
