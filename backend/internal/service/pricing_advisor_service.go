@@ -93,7 +93,7 @@ func (s *PricingAdvisorService) GetTierStats(ctx context.Context, params Pricing
 			   date_trunc('hour', u.created_at) AS hour,
 			   COALESCE(SUM(u.total_cost), 0) AS cost
 		FROM usage_log u
-		JOIN account a ON a.id = u.account_id
+		JOIN accounts a ON a.id = u.account_id
 		WHERE u.created_at >= $1
 		  AND ($2::text = '' OR a.platform = $2)
 		GROUP BY u.account_id, a.platform, a.subscription_tier, hour
@@ -216,7 +216,7 @@ func (s *PricingAdvisorService) GetTierTrend(ctx context.Context, params Pricing
 			   COALESCE(SUM(u.total_cost), 0) AS cost,
 			   COUNT(DISTINCT u.account_id) AS accounts
 		FROM usage_log u
-		JOIN account a ON a.id = u.account_id
+		JOIN accounts a ON a.id = u.account_id
 		WHERE u.created_at >= $1
 		  AND ($2::text = '' OR a.platform = $2)
 		GROUP BY a.platform, a.subscription_tier, day
