@@ -184,13 +184,20 @@
             <div class="flex flex-col">
               <div class="flex items-center gap-1.5">
                 <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
-                <!-- 订阅档位角标：标过的显示档位名，没标过的不显示（鼓励 admin 去标） -->
+                <!-- 订阅档位角标：标过的显示档位名；OAuth 类账号未标的显示橙色提醒 -->
                 <span
                   v-if="row.subscription_tier"
                   class="inline-flex items-center rounded bg-violet-50 px-1.5 py-0.5 text-[10px] font-medium text-violet-700 dark:bg-violet-500/15 dark:text-violet-300"
                   :title="t('admin.accounts.subscriptionTier')"
                 >
                   {{ formatSubscriptionTier(row.subscription_tier) }}
+                </span>
+                <span
+                  v-else-if="needsSubscriptionTier(row)"
+                  class="inline-flex items-center rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
+                  :title="t('admin.accounts.tierMissingHint')"
+                >
+                  {{ t('admin.accounts.tierMissing') }}
                 </span>
               </div>
               <span
@@ -1028,6 +1035,18 @@ function getAntigravityTierLabel(row: any): string | null {
 function formatSubscriptionTier(tier: string): string {
   if (!tier) return ''
   return tier.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+}
+
+// 判断账号是否「需要」订阅档位（用来决定要不要显示「未标档位」橙色角标）。
+// 只有 OAuth 类订阅账号（Pro/Max/Plus/Team 等）才有档位概念；
+// API key / bedrock / 上游透传等按 token 计费的账号没有档位。
+function needsSubscriptionTier(row: any): boolean {
+  if (!row || row.subscription_tier) return false
+  const type = row.type
+  const isOAuthLike = type === 'oauth' || type === 'setup-token'
+  if (!isOAuthLike) return false
+  const platform = row.platform
+  return platform === 'anthropic' || platform === 'openai' || platform === 'gemini'
 }
 
 function getOpenAICompactState(row: any): 'supported' | 'unsupported' | 'unknown' | null {
