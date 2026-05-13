@@ -57,7 +57,7 @@
       <!-- Empty -->
       <div
         v-else-if="seats.length === 0"
-        class="surface-card card-violet p-12 text-center"
+        class="rounded-2xl border border-gray-200/70 bg-white p-12 text-center dark:border-dark-700/60 dark:bg-dark-800/40"
       >
         <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-50 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-700/40 dark:ring-dark-600/60">
           <Icon name="badge" size="lg" class="text-gray-400" />
@@ -93,7 +93,7 @@
       <!-- Seats list -->
       <div v-if="seats.length > 0" class="grid gap-4 lg:grid-cols-2">
         <div v-for="seat in seats" :key="seat.id"
-          class="surface-card card-violet overflow-hidden transition-shadow hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-18px_rgba(15,23,42,0.22)]">
+          class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-shadow hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-18px_rgba(15,23,42,0.22)] dark:border-dark-700/60 dark:bg-dark-800/40">
           <!-- Header -->
           <div class="flex items-center gap-3 border-b border-gray-100 px-4 py-3 dark:border-dark-700/60">
             <div :class="['flex h-10 w-10 items-center justify-center rounded-xl', statusIconClass(seat.status)]">

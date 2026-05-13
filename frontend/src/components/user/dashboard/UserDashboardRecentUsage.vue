@@ -58,21 +58,8 @@ const formatCost = (c: number) => c.toFixed(4)
 </script>
 
 <style scoped>
-/* 最近使用：indigo 主题（用量/记录辅助色，与 UsageView 呼应） */
 .surface-card {
-  @apply rounded-2xl;
-  border: 1px solid rgb(199 210 254 / 0.7);
-  background:
-    radial-gradient(circle at 100% 0%, rgb(99 102 241 / 0.08), transparent 32%),
-    radial-gradient(circle at 0% 100%, rgb(79 70 229 / 0.04), transparent 38%),
-    linear-gradient(135deg, rgb(238 242 255), rgb(255 255 255) 55%, rgb(224 231 255));
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
-}
-:root.dark .surface-card {
-  border-color: rgb(55 48 163 / 0.4);
-  background:
-    radial-gradient(circle at 100% 0%, rgb(99 102 241 / 0.08), transparent 32%),
-    radial-gradient(circle at 0% 100%, rgb(79 70 229 / 0.04), transparent 38%),
-    linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
+  @apply rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)];
+  @apply dark:border-dark-700/60 dark:bg-dark-800/40;
 }
 </style>

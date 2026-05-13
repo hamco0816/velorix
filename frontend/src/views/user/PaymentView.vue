@@ -84,48 +84,48 @@
                   />
                 </div>
 
-                <!-- 右：amber 结算栏（视觉聚焦，集中 amber 色） -->
-                <aside class="recharge-summary border-t border-amber-200/50 p-5 dark:border-amber-500/30 lg:border-l lg:border-t-0">
-                  <p class="text-[11px] font-semibold uppercase tracking-wider text-amber-700/80 dark:text-amber-300/80">
+                <!-- 右：结算栏（白底为主 + 极淡 amber 装饰 + amber 按钮强调） -->
+                <aside class="relative border-t border-gray-100 bg-gray-50/40 p-6 dark:border-dark-700/60 dark:bg-dark-800/30 lg:border-l lg:border-t-0">
+                  <p class="text-[11px] font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400">
                     {{ t('payment.actualPay') }}
                   </p>
-                  <p class="mt-2 text-4xl font-semibold tabular-nums tracking-tight text-amber-900 dark:text-amber-100">
+                  <p class="mt-1.5 text-4xl font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">
                     ¥{{ totalAmount.toFixed(2) }}
                   </p>
 
-                  <!-- 费用明细：紧凑列表 -->
-                  <div class="mt-4 space-y-2 border-t border-amber-200/30 pt-4 text-sm dark:border-amber-500/20">
+                  <!-- 费用明细：极简列表 -->
+                  <div class="mt-5 space-y-2 border-t border-gray-100 pt-4 text-sm dark:border-dark-700/60">
                     <div class="flex justify-between">
-                      <span class="text-amber-800/80 dark:text-amber-200/80">{{ t('payment.paymentAmount') }}</span>
-                      <span class="font-medium tabular-nums text-amber-900 dark:text-amber-100">¥{{ validAmount.toFixed(2) }}</span>
+                      <span class="text-gray-500 dark:text-dark-400">{{ t('payment.paymentAmount') }}</span>
+                      <span class="font-medium tabular-nums text-gray-900 dark:text-white">¥{{ validAmount.toFixed(2) }}</span>
                     </div>
                     <div v-if="feeRate > 0" class="flex justify-between">
-                      <span class="text-amber-800/80 dark:text-amber-200/80">{{ t('payment.fee') }} ({{ feeRate }}%)</span>
-                      <span class="font-medium tabular-nums text-amber-900 dark:text-amber-100">¥{{ feeAmount.toFixed(2) }}</span>
+                      <span class="text-gray-500 dark:text-dark-400">{{ t('payment.fee') }} ({{ feeRate }}%)</span>
+                      <span class="font-medium tabular-nums text-gray-900 dark:text-white">¥{{ feeAmount.toFixed(2) }}</span>
                     </div>
                     <div v-if="balanceRechargeMultiplier !== 1" class="flex justify-between">
-                      <span class="text-amber-800/80 dark:text-amber-200/80">{{ t('payment.creditedBalance') }}</span>
-                      <span class="font-medium tabular-nums text-emerald-700 dark:text-emerald-300">${{ creditedAmount.toFixed(2) }}</span>
+                      <span class="text-gray-500 dark:text-dark-400">{{ t('payment.creditedBalance') }}</span>
+                      <span class="font-medium tabular-nums text-emerald-600 dark:text-emerald-400">${{ creditedAmount.toFixed(2) }}</span>
                     </div>
                   </div>
 
-                  <p v-if="balanceRechargeMultiplier !== 1" class="mt-3 text-[11px] leading-relaxed text-amber-700/70 dark:text-amber-300/70">
+                  <p v-if="balanceRechargeMultiplier !== 1" class="mt-3 text-[11px] leading-relaxed text-gray-500 dark:text-dark-400">
                     {{ t('payment.rechargeRatePreview', { usd: balanceRechargeMultiplier.toFixed(2) }) }}
                   </p>
 
-                  <!-- 确认支付按钮：amber 渐变 + 大字号，匹配右侧主题色 -->
+                  <!-- 确认支付按钮：gray-900 实色（专业稳重）+ hover amber 提示 -->
                   <button
-                    class="mt-5 w-full rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 text-sm font-semibold text-white shadow-[0_8px_20px_-8px_rgba(245,158,11,0.6)] transition-all hover:from-amber-600 hover:to-orange-600 hover:shadow-[0_12px_24px_-8px_rgba(245,158,11,0.7)] disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400 disabled:shadow-none dark:disabled:from-dark-700 dark:disabled:to-dark-700 dark:disabled:text-dark-400"
+                    class="mt-6 w-full rounded-xl bg-gray-900 px-4 py-3 text-sm font-semibold text-white shadow-[0_4px_12px_-2px_rgba(15,23,42,0.25)] transition-all hover:bg-gray-800 hover:shadow-[0_8px_20px_-4px_rgba(15,23,42,0.35)] disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100 dark:disabled:bg-dark-700 dark:disabled:text-dark-400"
                     :disabled="!canSubmit || submitting"
                     @click="handleSubmitRecharge"
                   >
                     <span v-if="submitting" class="flex items-center justify-center gap-2">
-                      <span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                      <span class="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent opacity-60"></span>
                       {{ t('common.processing') }}
                     </span>
                     <span v-else class="flex items-center justify-center gap-2">
-                      <Icon name="check" size="sm" :stroke-width="2.5" />
                       {{ t('payment.createOrder') }}
+                      <Icon name="arrowRight" size="sm" :stroke-width="2.5" />
                     </span>
                   </button>
                 </aside>

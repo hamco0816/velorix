@@ -49,21 +49,8 @@ const { t } = useI18n()
 </script>
 
 <style scoped>
-/* 快速操作：amber 主题（操作 / 充值氛围，跟 PaymentView 的钱包色一致） */
 .surface-card {
-  @apply rounded-2xl;
-  border: 1px solid rgb(254 215 170 / 0.7);
-  background:
-    radial-gradient(circle at 100% 0%, rgb(245 158 11 / 0.08), transparent 32%),
-    radial-gradient(circle at 0% 100%, rgb(249 115 22 / 0.04), transparent 38%),
-    linear-gradient(135deg, rgb(255 251 235), rgb(255 255 255) 55%, rgb(254 243 199));
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
-}
-:root.dark .surface-card {
-  border-color: rgb(120 53 15 / 0.4);
-  background:
-    radial-gradient(circle at 100% 0%, rgb(245 158 11 / 0.08), transparent 32%),
-    radial-gradient(circle at 0% 100%, rgb(249 115 22 / 0.04), transparent 38%),
-    linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
+  @apply rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)];
+  @apply dark:border-dark-700/60 dark:bg-dark-800/40;
 }
 </style>

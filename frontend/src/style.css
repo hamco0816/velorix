@@ -438,52 +438,28 @@
   }
 
   /* ============ 卡片：去过度圆角与浮起动画，靠极淡阴影 + 中性边框区分层级 ============ */
-  /* ============================================================
-   * 卡片基础类：所有卡片都不再是"纯白色"，而是带极淡多色渐变 + 微妙径向光晕，
-   * 让白色框有"纸感温度"。每个色系变体（card-amber/sky/emerald/...）
-   * 在基础渐变上叠加对应色调的 radial gradient，让页面可选不同主题。
-   *
-   * 默认 .card 用极淡 gray 渐变（中性，所有页面都能用）。
-   * 页面想要强调主题色时可加 `.card-amber` 等变体类。
-   * ============================================================ */
+  /* 卡片基础类：纯白底 + 柔边 + 极轻阴影（Notion / Linear 风克制设计）
+     主题色变体（card-amber/sky/emerald 等）仅用于"单张主容器"，不要用在重复列表项上 */
   .card {
+    @apply bg-white dark:bg-dark-800/50;
     @apply rounded-lg;
     @apply border border-gray-200 dark:border-dark-700/60;
+    @apply shadow-card;
     @apply transition-colors duration-200;
-    background:
-      radial-gradient(circle at 100% 0%, rgb(148 163 184 / 0.05), transparent 38%),
-      radial-gradient(circle at 0% 100%, rgb(148 163 184 / 0.04), transparent 42%),
-      linear-gradient(135deg, rgb(255 255 255), rgb(252 252 253) 55%, rgb(248 250 252));
-    box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 0 0 1px rgb(255 255 255 / 0.6) inset;
   }
 
-  :root.dark .card {
-    background:
-      radial-gradient(circle at 100% 0%, rgb(148 163 184 / 0.04), transparent 38%),
-      radial-gradient(circle at 0% 100%, rgb(148 163 184 / 0.03), transparent 42%),
-      linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
-    box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
-  }
-
-  /* surface-card：Notion 风温和宽阔卡片，与 .card 走同色调但更圆润 */
+  /* surface-card：Notion 风温和宽阔卡片，仪表盘/运维监控等数据面板专用 */
   .surface-card {
-    @apply rounded-2xl border border-gray-200/70 transition-all;
-    @apply dark:border-dark-700/60;
-    background:
-      radial-gradient(circle at 100% 0%, rgb(148 163 184 / 0.05), transparent 38%),
-      radial-gradient(circle at 0% 100%, rgb(148 163 184 / 0.04), transparent 42%),
-      linear-gradient(135deg, rgb(255 255 255), rgb(252 252 253) 55%, rgb(248 250 252));
-    box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+    @apply rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all;
+    @apply dark:border-dark-700/60 dark:bg-dark-800/40;
   }
 
-  :root.dark .surface-card {
-    background:
-      radial-gradient(circle at 100% 0%, rgb(148 163 184 / 0.04), transparent 38%),
-      radial-gradient(circle at 0% 100%, rgb(148 163 184 / 0.03), transparent 42%),
-      linear-gradient(135deg, rgb(30 41 59 / 0.5), rgb(17 24 39 / 0.4));
-  }
-
-  /* —— 主题色卡片变体 —— 用于强调页面主题色，叠加在 .card / .surface-card 上 */
+  /* ============================================================
+   * 主题色卡片变体（仅供"单张主容器"使用，不要用在重复列表项上！）
+   *
+   * ❌ 错误用法：模型卡列表中每张都加 card-emerald → 整页一片绿色
+   * ✅ 正确用法：左侧筛选 panel / 单张订单详情 / hero 区使用，作为视觉锚点
+   * ============================================================ */
 
   /* amber：钱包 / 充值氛围（PaymentView） */
   .card-amber {

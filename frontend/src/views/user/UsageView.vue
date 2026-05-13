@@ -947,25 +947,23 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* KPI 卡：indigo 染色（使用记录氛围）— 浅多层渐变 + 微 hover 阴影 */
+/* KPI 卡：白底 + 仅顶部细 indigo accent bar，色彩克制不抢戏 */
 .kpi-card {
-  @apply flex items-start gap-3 rounded-2xl p-4 transition-shadow;
-  border: 1px solid rgb(199 210 254 / 0.7);
-  background:
-    radial-gradient(circle at 100% 0%, rgb(99 102 241 / 0.10), transparent 32%),
-    radial-gradient(circle at 0% 100%, rgb(79 70 229 / 0.06), transparent 38%),
-    linear-gradient(135deg, rgb(238 242 255), rgb(255 255 255) 55%, rgb(224 231 255));
+  @apply relative flex items-start gap-3 overflow-hidden rounded-2xl border border-gray-200/70 bg-white p-4 transition-shadow dark:border-dark-700/60 dark:bg-dark-800/40;
   box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
 }
-:root.dark .kpi-card {
-  border-color: rgb(55 48 163 / 0.4);
-  background:
-    radial-gradient(circle at 100% 0%, rgb(99 102 241 / 0.10), transparent 32%),
-    radial-gradient(circle at 0% 100%, rgb(79 70 229 / 0.06), transparent 38%),
-    linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, rgb(99 102 241), rgb(168 85 247));
+  opacity: 0.5;
 }
 .kpi-card:hover {
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -18px rgb(67 56 202 / 0.32);
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -18px rgb(15 23 42 / 0.22);
 }
 
 /* KPI 图标筐：圆角方块 + 主题色背景 */

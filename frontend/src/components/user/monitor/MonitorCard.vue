@@ -135,26 +135,23 @@ const extraModelsCountLabel = computed(() => {
 </script>
 
 <style scoped>
-/* 渠道状态卡：sky 主题（信号 / 连通氛围） */
+/* 渠道状态卡：中性白底（列表中 N 张卡，染色会让整页同色，状态色已通过 chip 表达） */
 .monitor-card {
   border-radius: 1rem;
-  border: 1px solid rgb(186 230 253 / 0.7);
-  background:
-    radial-gradient(circle at 100% 0%, rgb(14 165 233 / 0.10), transparent 32%),
-    radial-gradient(circle at 0% 100%, rgb(59 130 246 / 0.05), transparent 38%),
-    linear-gradient(135deg, rgb(240 249 255), rgb(255 255 255) 55%, rgb(224 242 254));
+  border: 1px solid rgb(229 231 235 / 0.8);
+  background: rgb(255 255 255 / 0.85);
   box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
   backdrop-filter: blur(14px);
 }
 :root.dark .monitor-card {
-  border-color: rgb(7 89 133 / 0.4);
-  background:
-    radial-gradient(circle at 100% 0%, rgb(14 165 233 / 0.10), transparent 32%),
-    radial-gradient(circle at 0% 100%, rgb(59 130 246 / 0.05), transparent 38%),
-    linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
+  border-color: rgb(55 65 81 / 0.7);
+  background: rgb(31 41 55 / 0.6);
 }
 .monitor-card:hover {
-  border-color: rgb(125 211 252 / 0.9);
-  box-shadow: 0 12px 28px rgb(14 165 233 / 0.14);
+  border-color: rgb(209 213 219);
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 12px 28px -16px rgb(15 23 42 / 0.18);
+}
+:root.dark .monitor-card:hover {
+  border-color: rgb(99 102 241 / 0.4);
 }
 </style>

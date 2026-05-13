@@ -644,15 +644,12 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* redeem 统计卡 + 主面板 — 沿用 .surface-card 全局色卡片 + .card-rose 主题色（兑换氛围） */
+/* redeem 统计卡 + 主面板：白底（4 张卡 / 多个面板，染色会让整页同色） */
 .redeem-panel,
 .redeem-stat-card {
   border-radius: 1rem;
-  border: 1px solid rgb(254 205 211 / 0.7);
-  background:
-    radial-gradient(circle at 100% 0%, rgb(244 63 94 / 0.10), transparent 32%),
-    radial-gradient(circle at 0% 100%, rgb(236 72 153 / 0.06), transparent 38%),
-    linear-gradient(135deg, rgb(255 241 242), rgb(255 255 255) 55%, rgb(252 231 243));
+  border: 1px solid rgb(229 231 235);
+  background: rgb(255 255 255);
   box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
 }
 
@@ -662,11 +659,8 @@ onMounted(async () => {
 
 .dark .redeem-panel,
 .dark .redeem-stat-card {
-  border-color: rgb(136 19 55 / 0.4);
-  background:
-    radial-gradient(circle at 100% 0%, rgb(244 63 94 / 0.10), transparent 32%),
-    radial-gradient(circle at 0% 100%, rgb(236 72 153 / 0.06), transparent 38%),
-    linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
+  border-color: rgb(55 65 81 / 0.6);
+  background: rgb(31 41 55 / 0.4);
   box-shadow: none;
 }
 

@@ -17,14 +17,14 @@
           :key="amt"
           type="button"
           :class="[
-            'group/amt relative flex flex-col items-center justify-center rounded-xl border px-3 py-2.5 text-center font-semibold transition-all',
+            'relative flex flex-col items-center justify-center rounded-xl border px-3 py-2.5 text-center font-semibold transition-all',
             modelValue === amt
-              ? 'border-amber-500 bg-amber-500 text-white shadow-[0_4px_12px_-2px_rgba(245,158,11,0.4)] dark:bg-amber-500 dark:border-amber-400'
-              : 'border-gray-200/80 bg-white text-gray-700 hover:border-amber-300 hover:bg-amber-50/40 hover:text-amber-700 dark:border-dark-700/60 dark:bg-dark-800/60 dark:text-gray-200 dark:hover:border-amber-500/50 dark:hover:bg-amber-500/10 dark:hover:text-amber-300',
+              ? 'border-gray-900 bg-white text-gray-900 ring-1 ring-gray-900 dark:border-white dark:bg-dark-800 dark:text-white dark:ring-white'
+              : 'border-gray-200 bg-white text-gray-700 hover:border-gray-400 hover:text-gray-900 dark:border-dark-700/60 dark:bg-dark-800/60 dark:text-gray-200 dark:hover:border-dark-500 dark:hover:text-white',
           ]"
           @click="selectAmount(amt)"
         >
-          <span :class="['text-[10px] font-medium tracking-wide', modelValue === amt ? 'text-white/70' : 'text-gray-400 dark:text-dark-400']">¥</span>
+          <span :class="['text-[10px] font-medium tracking-wide', modelValue === amt ? 'text-gray-500' : 'text-gray-400 dark:text-dark-400']">¥</span>
           <span class="text-base tabular-nums leading-tight">{{ amt }}</span>
         </button>
       </div>
@@ -35,8 +35,8 @@
       <label class="mb-2 block text-sm font-semibold text-gray-800 dark:text-gray-100">
         {{ t('payment.customAmount') }}
       </label>
-      <div class="relative rounded-xl border border-gray-200 bg-white transition-colors focus-within:border-amber-400 focus-within:ring-2 focus-within:ring-amber-500/15 dark:border-dark-700/60 dark:bg-dark-800/60 dark:focus-within:border-amber-500/70">
-        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-amber-500/70 dark:text-amber-300/70">
+      <div class="relative rounded-xl border border-gray-200 bg-white transition-colors focus-within:border-gray-900 focus-within:ring-2 focus-within:ring-gray-900/10 dark:border-dark-700/60 dark:bg-dark-800/60 dark:focus-within:border-white">
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-400 dark:text-dark-400">
           ¥
         </span>
         <input
