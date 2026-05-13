@@ -3495,6 +3495,7 @@ const subscriptionTierOptions = computed(() => {
       { value: 'plus', label: 'Plus' },
       { value: 'pro_5x', label: 'Pro 5x' },
       { value: 'pro_20x', label: 'Pro 20x' },
+      { value: 'team', label: 'Team' },
     ]
   }
   if (form.platform === 'anthropic') {
@@ -3504,6 +3505,7 @@ const subscriptionTierOptions = computed(() => {
       { value: 'pro', label: 'Pro' },
       { value: 'max_5x', label: 'Max 5x' },
       { value: 'max_20x', label: 'Max 20x' },
+      { value: 'team', label: 'Team' },
     ]
   }
   if (form.platform === 'gemini') {
