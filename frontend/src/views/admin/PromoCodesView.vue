@@ -25,14 +25,15 @@
             <button
               @click="loadCodes"
               :disabled="loading"
-              class="btn btn-secondary"
+              class="btn btn-secondary shrink-0"
               :title="t('common.refresh')"
             >
               <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
             </button>
-            <button @click="showCreateDialog = true" class="btn btn-primary">
+            <button @click="showCreateDialog = true" class="btn btn-primary shrink-0 whitespace-nowrap">
               <Icon name="plus" size="md" class="mr-1" />
-              {{ t('admin.promo.createCode') }}
+              <span class="hidden sm:inline">{{ t('admin.promo.createCode') }}</span>
+              <span class="sm:hidden">{{ t('common.create') }}</span>
             </button>
           </div>
         </div>

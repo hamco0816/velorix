@@ -10,24 +10,25 @@
         <div class="w-full sm:w-64">
           <Select v-model="selectedGroupID" :options="groupOptions" @change="loadInventoryAndSeats" />
         </div>
-        <button @click="loadInventoryAndSeats" :disabled="!selectedGroupID || loading" class="btn btn-secondary btn-sm" :title="t('common.refresh')">
+        <button @click="loadInventoryAndSeats" :disabled="!selectedGroupID || loading" class="btn btn-secondary btn-sm shrink-0" :title="t('common.refresh')">
           <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
         </button>
-        <button @click="grantDialogOpen = true" :disabled="!selectedGroupID" class="btn btn-primary btn-sm ml-auto">
+        <button @click="grantDialogOpen = true" :disabled="!selectedGroupID" class="btn btn-primary btn-sm ml-auto shrink-0 whitespace-nowrap">
           <Icon name="plus" size="sm" class="mr-1.5" />
-          {{ t('payment.admin.exclusivePools.grantButton') }}
+          <span class="hidden sm:inline">{{ t('payment.admin.exclusivePools.grantButton') }}</span>
+          <span class="sm:hidden">{{ t('common.create') }}</span>
         </button>
       </div>
 
-      <!-- 库存看板 -->
-      <div v-if="inventory" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <!-- 库存看板：移动端 2 列 -->
+      <div v-if="inventory" class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <div class="metric-card">
           <span class="metric-icon bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300">
             <Icon name="badge" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0 flex-1">
             <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.statTotal') }}</p>
-            <p class="mt-1 text-[24px] font-semibold leading-tight tabular-nums text-gray-900 dark:text-white">{{ inventory.total }}</p>
+            <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[24px] text-gray-900 dark:text-white">{{ inventory.total }}</p>
           </div>
         </div>
         <div class="metric-card">
@@ -38,7 +39,7 @@
             <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400" :title="t('payment.admin.exclusivePools.statSchedulableHint')">
               {{ t('payment.admin.exclusivePools.statAvailableNow') }}
             </p>
-            <p class="mt-1 text-[24px] font-semibold leading-tight tabular-nums text-emerald-600 dark:text-emerald-400">
+            <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[24px] text-emerald-600 dark:text-emerald-400">
               {{ typeof inventory.schedulable === 'number' ? inventory.schedulable : inventory.free }}
             </p>
             <p v-if="typeof inventory.schedulable === 'number' && inventory.schedulable !== inventory.free"
@@ -53,7 +54,7 @@
           </span>
           <div class="min-w-0 flex-1">
             <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.statUsed') }}</p>
-            <p class="mt-1 text-[24px] font-semibold leading-tight tabular-nums text-sky-600 dark:text-sky-400">{{ inventory.used }}</p>
+            <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[24px] text-sky-600 dark:text-sky-400">{{ inventory.used }}</p>
           </div>
         </div>
         <!-- 7 天内到期：可点击筛选 seat 列表，运营预警入口 -->
@@ -69,7 +70,7 @@
           </span>
           <div class="min-w-0 flex-1">
             <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.statExpiring') }}</p>
-            <p class="mt-1 text-[24px] font-semibold leading-tight tabular-nums text-amber-600 dark:text-amber-400">{{ inventory.expiring_in_7 }}</p>
+            <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[24px] text-amber-600 dark:text-amber-400">{{ inventory.expiring_in_7 }}</p>
             <p v-if="inventory.expiring_in_7 > 0" class="mt-1 text-[11px] text-amber-700/80 dark:text-amber-300/70">
               {{ expiringFilter ? t('payment.admin.exclusivePools.statExpiringClickClear') : t('payment.admin.exclusivePools.statExpiringClickFilter') }}
             </p>

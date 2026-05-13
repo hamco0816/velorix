@@ -6,34 +6,35 @@
       </div>
 
       <template v-else-if="detail">
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div class="card p-5">
-            <p class="flex items-center gap-1.5 text-sm text-gray-500 dark:text-dark-400">
-              <Icon name="dollar" size="sm" class="text-primary-500" />
-              {{ t('affiliate.stats.rebateRate') }}
+        <!-- 移动端 2 列防止 4 张卡纵向堆成长长一条 -->
+        <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          <div class="card p-3 sm:p-5">
+            <p class="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-dark-400">
+              <Icon name="dollar" size="sm" class="shrink-0 text-primary-500" />
+              <span class="truncate">{{ t('affiliate.stats.rebateRate') }}</span>
             </p>
-            <p class="mt-2 text-2xl font-semibold text-primary-600 dark:text-primary-400">
-              {{ formattedRebateRate }}<span class="ml-0.5 text-base font-medium">%</span>
+            <p class="mt-2 text-xl font-semibold text-primary-600 sm:text-2xl dark:text-primary-400">
+              {{ formattedRebateRate }}<span class="ml-0.5 text-sm font-medium sm:text-base">%</span>
             </p>
-            <p class="mt-1 text-xs text-gray-400 dark:text-dark-500">
+            <p class="mt-1 hidden text-xs text-gray-400 sm:block dark:text-dark-500">
               {{ t('affiliate.stats.rebateRateHint') }}
             </p>
           </div>
-          <div class="card p-5">
-            <p class="text-sm text-gray-500 dark:text-dark-400">{{ t('affiliate.stats.invitedUsers') }}</p>
-            <p class="mt-2 text-2xl font-semibold text-gray-900 dark:text-white">
+          <div class="card p-3 sm:p-5">
+            <p class="text-xs sm:text-sm text-gray-500 dark:text-dark-400">{{ t('affiliate.stats.invitedUsers') }}</p>
+            <p class="mt-2 text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">
               {{ formatCount(detail.aff_count) }}
             </p>
           </div>
-          <div class="card p-5">
-            <p class="text-sm text-gray-500 dark:text-dark-400">{{ t('affiliate.stats.availableQuota') }}</p>
-            <p class="mt-2 text-2xl font-semibold text-emerald-600 dark:text-emerald-400">
+          <div class="card p-3 sm:p-5">
+            <p class="text-xs sm:text-sm text-gray-500 dark:text-dark-400">{{ t('affiliate.stats.availableQuota') }}</p>
+            <p class="mt-2 text-xl font-semibold text-emerald-600 sm:text-2xl dark:text-emerald-400 tabular-nums">
               ¥{{ detail.aff_quota.toFixed(2) }}
             </p>
           </div>
-          <div class="card p-5">
-            <p class="text-sm text-gray-500 dark:text-dark-400">{{ t('affiliate.stats.totalQuota') }}</p>
-            <p class="mt-2 text-2xl font-semibold text-gray-900 dark:text-white">
+          <div class="card p-3 sm:p-5">
+            <p class="text-xs sm:text-sm text-gray-500 dark:text-dark-400">{{ t('affiliate.stats.totalQuota') }}</p>
+            <p class="mt-2 text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white tabular-nums">
               ¥{{ detail.aff_history_quota.toFixed(2) }}
             </p>
             <p v-if="detail.aff_frozen_quota > 0" class="mt-1 text-xs text-amber-600 dark:text-amber-400">
@@ -47,24 +48,25 @@
           <p class="mt-1 text-sm text-gray-500 dark:text-dark-400">{{ t('affiliate.description') }}</p>
 
           <div class="mt-5 grid gap-4 md:grid-cols-2">
-            <div class="space-y-2">
+            <div class="space-y-2 min-w-0">
               <p class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('affiliate.yourCode') }}</p>
               <div class="flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 dark:border-dark-700 dark:bg-dark-900">
-                <code class="flex-1 truncate text-sm font-semibold text-gray-900 dark:text-white">{{ detail.aff_code }}</code>
-                <button class="btn btn-secondary btn-sm" @click="copyCode">
+                <code class="min-w-0 flex-1 truncate text-sm font-semibold text-gray-900 dark:text-white">{{ detail.aff_code }}</code>
+                <!-- 移动端 icon-only 防止按钮被挤压 -->
+                <button class="btn btn-secondary btn-sm shrink-0 whitespace-nowrap" @click="copyCode" :title="t('affiliate.copyCode')">
                   <Icon name="copy" size="sm" />
-                  <span>{{ t('affiliate.copyCode') }}</span>
+                  <span class="hidden sm:inline">{{ t('affiliate.copyCode') }}</span>
                 </button>
               </div>
             </div>
 
-            <div class="space-y-2">
+            <div class="space-y-2 min-w-0">
               <p class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('affiliate.inviteLink') }}</p>
               <div class="flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 dark:border-dark-700 dark:bg-dark-900">
-                <code class="flex-1 truncate text-sm text-gray-700 dark:text-gray-300">{{ inviteLink }}</code>
-                <button class="btn btn-secondary btn-sm" @click="copyInviteLink">
+                <code class="min-w-0 flex-1 truncate text-sm text-gray-700 dark:text-gray-300">{{ inviteLink }}</code>
+                <button class="btn btn-secondary btn-sm shrink-0 whitespace-nowrap" @click="copyInviteLink" :title="t('affiliate.copyLink')">
                   <Icon name="copy" size="sm" />
-                  <span>{{ t('affiliate.copyLink') }}</span>
+                  <span class="hidden sm:inline">{{ t('affiliate.copyLink') }}</span>
                 </button>
               </div>
             </div>

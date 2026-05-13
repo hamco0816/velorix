@@ -52,9 +52,11 @@
             <Icon name="chevronDown" size="xs" class="hidden sm:inline text-gray-400" />
           </button>
           <transition name="dropdown">
+            <!-- 移动端：用 fixed + inset-x-2 让 popover 在视口内左右各留 8px，不再被 right-0 推到屏幕外
+                 桌面端 (sm+)：恢复 absolute right-0 锚到按钮右边 -->
             <div
               v-if="contactDropdownOpen"
-              class="dropdown right-0 mt-2 w-[min(20rem,calc(100vw-1.5rem))] max-w-[20rem] p-3"
+              class="dropdown fixed inset-x-2 top-16 max-h-[calc(100vh-5rem)] overflow-y-auto p-3 sm:absolute sm:inset-x-auto sm:right-0 sm:top-auto sm:mt-2 sm:max-h-none sm:w-80 sm:overflow-visible"
             >
               <p class="mb-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">
                 {{ t('common.contactSupport') }}

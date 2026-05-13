@@ -308,11 +308,11 @@
           </EmptyState>
 
           <!-- Grid -->
-          <div v-else class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div v-else class="grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
             <div
               v-for="model in filteredModels"
               :key="`${model.platform}-${model.name}`"
-              class="flex flex-col rounded-2xl border border-gray-200/70 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all hover:border-gray-300 hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_4px_16px_-8px_rgba(15,23,42,0.12)] dark:border-dark-700/60 dark:bg-dark-800/40 dark:hover:border-dark-500"
+              class="flex flex-col rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all hover:border-gray-300 hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_4px_16px_-8px_rgba(15,23,42,0.12)] sm:p-5 dark:border-dark-700/60 dark:bg-dark-800/40 dark:hover:border-dark-500"
             >
               <!-- Header：平台 icon + 模型名 + 计费 chip -->
               <div class="flex items-start gap-3">

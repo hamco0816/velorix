@@ -9,8 +9,8 @@
         </p>
       </div>
 
-      <section class="surface-card p-5">
-        <div class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(190px,1fr)_minmax(190px,1fr)_minmax(190px,1fr)_minmax(320px,1.25fr)_auto]">
+      <section class="surface-card p-4 sm:p-5">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-[minmax(190px,1fr)_minmax(190px,1fr)_minmax(190px,1fr)_minmax(320px,1.25fr)_auto]">
           <label class="space-y-2">
             <span class="filter-label">状态</span>
             <Select
@@ -74,7 +74,7 @@
           </span>
           <div class="min-w-0 flex-1">
             <p class="text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ stat.label }}</p>
-            <p class="mt-1 text-[24px] font-semibold leading-tight tabular-nums text-gray-900 dark:text-white">{{ stat.value }}</p>
+            <p class="mt-1 text-xl font-semibold leading-tight tabular-nums text-gray-900 sm:text-[24px] dark:text-white">{{ stat.value }}</p>
             <p class="mt-1 text-xs text-gray-400 dark:text-dark-500">{{ stat.hint }}</p>
           </div>
         </div>

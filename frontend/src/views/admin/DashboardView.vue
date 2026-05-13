@@ -40,7 +40,8 @@
             </h2>
             <span class="text-xs text-gray-400 dark:text-dark-500">{{ todayLabel }}</span>
           </div>
-          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <!-- 移动端 2 列：4 张卡叠成 2×2 比单列长长一条更紧凑 -->
+          <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             <!-- 今日请求 -->
             <div class="kpi-card">
               <div class="kpi-card-header">
@@ -153,7 +154,8 @@
           <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">
             {{ t('admin.dashboard.systemHealth') }}
           </h2>
-          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <!-- 移动端 2 列：4 张卡叠成 2×2 比单列长长一条更紧凑 -->
+          <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
             <!-- 账号 -->
             <div class="metric-card">
               <div class="metric-icon metric-icon-amber">
@@ -759,7 +761,7 @@ onBeforeUnmount(() => {
 
 /* ============ KPI 主卡：白底 + 不同 metric-icon 区分 ============ */
 .kpi-card {
-  @apply relative flex flex-col gap-1 overflow-hidden rounded-2xl border border-gray-200/70 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-200;
+  @apply relative flex flex-col gap-1 overflow-hidden rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-200 sm:p-5;
   @apply dark:border-dark-700/60 dark:bg-dark-800/40;
 }
 .kpi-card:hover {
@@ -779,7 +781,7 @@ onBeforeUnmount(() => {
 }
 
 .kpi-card-value {
-  @apply mt-1 flex items-baseline gap-1.5 text-[30px] font-semibold leading-tight tabular-nums text-gray-900 dark:text-white;
+  @apply mt-1 flex items-baseline gap-1.5 text-2xl font-semibold leading-tight tabular-nums text-gray-900 sm:text-[30px] dark:text-white;
 }
 
 .kpi-card-hint {
@@ -788,7 +790,7 @@ onBeforeUnmount(() => {
 
 /* sparkline 贴底显示，撑满卡片下半，让数据"有图形回应" */
 .kpi-card-spark {
-  @apply -mx-5 -mb-5 mt-4 h-10;
+  @apply -mx-4 -mb-4 mt-4 h-10 sm:-mx-5 sm:-mb-5;
 }
 .kpi-card-spark > svg {
   @apply h-full w-full;
@@ -796,7 +798,7 @@ onBeforeUnmount(() => {
 
 /* ============ 系统健康度副卡：白底，metric-icon 已区分 ============ */
 .metric-card {
-  @apply flex items-start gap-3 rounded-2xl border border-gray-200/70 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-200;
+  @apply flex items-start gap-3 rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-200 sm:p-5;
   @apply dark:border-dark-700/60 dark:bg-dark-800/40;
 }
 .metric-card:hover {

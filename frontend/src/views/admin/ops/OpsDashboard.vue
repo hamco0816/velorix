@@ -41,10 +41,10 @@
 
       <!-- Row: Concurrency + Throughput -->
       <div v-if="opsEnabled && !(loading && !hasLoadedOnce)" class="grid grid-cols-1 gap-4 lg:grid-cols-4">
-        <div class="lg:col-span-1 min-h-[360px]">
+        <div class="min-h-[280px] sm:min-h-[360px] lg:col-span-1">
           <OpsConcurrencyCard :platform-filter="platform" :group-id-filter="groupId" :refresh-token="dashboardRefreshToken" />
         </div>
-        <div class="lg:col-span-1 min-h-[360px]">
+        <div class="min-h-[280px] sm:min-h-[360px] lg:col-span-1">
           <OpsSwitchRateTrendChart
             :points="switchTrend?.points ?? []"
             :loading="loadingSwitchTrend"
@@ -52,7 +52,7 @@
             :fullscreen="isFullscreen"
           />
         </div>
-        <div class="lg:col-span-2 min-h-[360px]">
+        <div class="min-h-[280px] sm:min-h-[360px] lg:col-span-2">
           <OpsThroughputTrendChart
             :points="throughputTrend?.points ?? []"
             :by-platform="throughputTrend?.by_platform ?? []"

@@ -1,7 +1,8 @@
 <template>
   <AppLayout wide>
     <div class="space-y-5">
-      <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <!-- 移动端 2 列防止 4 张卡纵向堆成长长一条；md+ 仍可 2 列；xl 起 4 列 -->
+      <section class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
             <div class="redeem-stat-card">
               <div class="mb-4 flex items-start justify-between gap-3 sm:mb-6 sm:gap-4">
                 <div class="flex h-10 w-10 items-center justify-center sm:h-12 sm:w-12 rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-900/25 dark:text-sky-300">

@@ -953,7 +953,7 @@ onMounted(() => {
 <style scoped>
 /* KPI 卡：白底 + 仅顶部细 indigo accent bar，色彩克制不抢戏 */
 .kpi-card {
-  @apply relative flex items-start gap-3 overflow-hidden rounded-2xl border border-gray-200/70 bg-white p-4 transition-shadow dark:border-dark-700/60 dark:bg-dark-800/40;
+  @apply relative flex items-start gap-2.5 overflow-hidden rounded-2xl border border-gray-200/70 bg-white p-3 transition-shadow sm:gap-3 sm:p-4 dark:border-dark-700/60 dark:bg-dark-800/40;
   box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
 }
 .kpi-card::before {
@@ -972,7 +972,7 @@ onMounted(() => {
 
 /* KPI 图标筐：圆角方块 + 主题色背景 */
 .kpi-icon {
-  @apply inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl;
+  @apply inline-flex h-8 w-8 flex-none items-center justify-center rounded-xl sm:h-10 sm:w-10;
 }
 .kpi-icon-sky {
   @apply bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300;
@@ -991,7 +991,7 @@ onMounted(() => {
   @apply text-[12px] font-medium text-gray-500 dark:text-dark-400;
 }
 .kpi-value {
-  @apply mt-0.5 text-[22px] font-semibold leading-tight tracking-tight text-gray-900 dark:text-white tabular-nums;
+  @apply mt-0.5 text-lg font-semibold leading-tight tracking-tight text-gray-900 sm:text-[22px] dark:text-white tabular-nums;
 }
 .kpi-hint {
   @apply mt-1 text-[11px] text-gray-500 dark:text-dark-400;
