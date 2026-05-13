@@ -8,12 +8,17 @@
             v-for="opt in platformOptions"
             :key="opt.value"
             type="button"
-            class="rounded-md px-3 py-1.5 text-xs font-medium transition-colors"
+            class="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors"
             :class="platform === opt.value
               ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
               : 'text-gray-600 hover:text-gray-900 dark:text-dark-300 dark:hover:text-white'"
             @click="platform = opt.value"
           >
+            <PlatformIcon
+              v-if="opt.value"
+              :platform="opt.value as GroupPlatform"
+              size="xs"
+            />
             {{ opt.label }}
           </button>
         </div>
