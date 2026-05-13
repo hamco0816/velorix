@@ -52,6 +52,8 @@ type channelMonitorUserListItem struct {
 	Availability7d       float64                              `json:"availability_7d"`
 	ExtraModels          []dto.ChannelMonitorExtraModelStatus `json:"extra_models"`
 	Timeline             []channelMonitorUserTimelinePoint    `json:"timeline"`
+	IntervalSeconds      int                                  `json:"interval_seconds"`
+	LastCheckedAt        *string                              `json:"last_checked_at"`
 }
 
 // channelMonitorUserTimelinePoint 主模型最近一次检测的 timeline 点。
@@ -99,6 +101,11 @@ func userMonitorViewToItem(v *service.UserMonitorView) channelMonitorUserListIte
 			CheckedAt:     p.CheckedAt.UTC().Format(time.RFC3339),
 		})
 	}
+	var lastCheckedAt *string
+	if v.LastCheckedAt != nil {
+		s := v.LastCheckedAt.UTC().Format(time.RFC3339)
+		lastCheckedAt = &s
+	}
 	return channelMonitorUserListItem{
 		ID:                   v.ID,
 		Name:                 v.Name,
@@ -111,6 +118,8 @@ func userMonitorViewToItem(v *service.UserMonitorView) channelMonitorUserListIte
 		Availability7d:       v.Availability7d,
 		ExtraModels:          extras,
 		Timeline:             timeline,
+		IntervalSeconds:      v.IntervalSeconds,
+		LastCheckedAt:        lastCheckedAt,
 	}
 }
 

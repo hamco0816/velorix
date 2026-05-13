@@ -354,6 +354,7 @@ export default {
   contactMethods: {
     viewQrCode: '点击查看二维码',
     scanQrHint: '使用手机扫描二维码以联系/加入',
+    popoverHint: '点击带 QR 标识的条目可查看二维码',
   },
 
   // Common
@@ -5656,11 +5657,12 @@ export default {
         contactMethodAddQr: '上传二维码（可选）',
         contactMethodUploadQr: '上传图片',
         contactMethodReplaceQr: '更换图片',
-        contactMethodQrHint: '建议 ≤48KB，PNG/JPG/WebP/GIF。直接 base64 存到设置，用户点联系方式时弹出大图扫码。',
+        contactMethodQrHint: '支持 PNG/JPG/WebP/GIF，单张 ≤5MB。系统自动压缩到 ≤64KB 存储，QR 码扫描不受影响。',
         contactMethodQrTypeError: '仅支持 PNG / JPG / WebP / GIF 图片',
-        contactMethodQrSizeError: '图片 {sizeKb}KB 超过 {maxKb}KB 上限，请先压缩',
-        contactMethodQrTooBigAfterEncode: '图片转 base64 后超过后端 64KB 上限，请压缩后重传',
+        contactMethodQrSizeError: '图片 {sizeKb}KB 超过 {maxKb}KB 上限，请压缩后重传',
+        contactMethodQrTooBigAfterEncode: '压缩后仍超过 64KB 上限，请尝试更简单的 QR 码图片',
         contactMethodQrReadError: '读取图片失败，请重试',
+        contactMethodQrCompressed: '原图 {originalKb}KB，已自动压缩至 {finalKb}KB',
         docUrl: '文档链接',
         docUrlHint: '文档网站的链接。留空则隐藏文档链接。',
         docUrlPlaceholder: 'https://docs.example.com',

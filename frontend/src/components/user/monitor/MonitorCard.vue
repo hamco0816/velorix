@@ -73,7 +73,7 @@
     <!-- Timeline -->
     <MonitorTimeline
       :buckets="item.timeline"
-      :countdown-seconds="countdownSeconds"
+      :countdown-seconds="cardCountdownSeconds"
     />
   </button>
 </template>
@@ -86,6 +86,7 @@ import {
   useChannelMonitorFormat,
   providerGradient,
 } from '@/composables/useChannelMonitorFormat'
+import { useNowTick } from '@/composables/useNowTick'
 import ProviderIcon from './ProviderIcon.vue'
 import MonitorMetricPair from './MonitorMetricPair.vue'
 import MonitorAvailabilityRow from './MonitorAvailabilityRow.vue'
@@ -101,6 +102,7 @@ const props = defineProps<{
   item: UserMonitorView
   window: '7d' | '15d' | '30d'
   availabilityValue: number | null
+  /** 兜底倒计时（来自页面级 autoRefresh）。仅在监控数据缺少 interval/last_checked_at 时使用 */
   countdownSeconds: number
 }>()
 
@@ -117,6 +119,20 @@ const {
   providerBadgeClass,
   formatLatency,
 } = useChannelMonitorFormat()
+
+// 每秒驱动倒计时重算：last_checked_at + interval_seconds - now
+const now = useNowTick()
+const cardCountdownSeconds = computed<number>(() => {
+  const interval = props.item.interval_seconds
+  const lastCheckedAt = props.item.last_checked_at
+  // 没有探测过 / 没有间隔配置 → 回退到页面级倒计时
+  if (!interval || interval <= 0 || !lastCheckedAt) return props.countdownSeconds
+  const lastMs = Date.parse(lastCheckedAt)
+  if (Number.isNaN(lastMs)) return props.countdownSeconds
+  const nextProbeAt = lastMs + interval * 1000
+  const remainingMs = nextProbeAt - now.value
+  return Math.max(0, Math.ceil(remainingMs / 1000))
+})
 
 const providerTintClass = computed(() =>
   PROVIDER_TINT[props.item.provider] ?? 'text-gray-500 dark:text-gray-300'

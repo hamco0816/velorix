@@ -4162,6 +4162,9 @@
                             <p v-if="contactQrError[index]" class="text-[11px] text-red-600 dark:text-red-400">
                               {{ contactQrError[index] }}
                             </p>
+                            <p v-else-if="contactQrInfo[index]" class="text-[11px] text-emerald-600 dark:text-emerald-400">
+                              {{ contactQrInfo[index] }}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -6869,8 +6872,10 @@ function contactValuePlaceholder(type: string) {
 // 仅 png/jpeg/webp/gif；MIME 在 accept 已限制，这里二次防御。
 const expandedQrIndex = ref<number | null>(null);
 const contactQrError = ref<Record<number, string>>({});
-const MAX_QR_FILE_BYTES = 48 * 1024; // 48KB 原图 → base64 ≈ 64KB，对齐后端上限
+const contactQrInfo = ref<Record<number, string>>({}); // 压缩成功后的提示
+const MAX_QR_INPUT_BYTES = 5 * 1024 * 1024; // 输入图最大 5MB，再大不让传（防恶意）
 const MAX_QR_DATAURL_LEN = 65536; // 跟 backend maxContactImageDataLen 一致
+const QR_TARGET_DIMENSION = 600; // 压缩目标边长（QR 码 500-600px 完全可扫）
 
 // AI 审核测试弹窗：admin 配好 AI 后用典型样本验证模型 + prompt 是否准
 const aiReviewTestOpen = ref(false);
@@ -6931,42 +6936,92 @@ const aiTestResultBorder = computed(() => {
   }
 });
 
-function onContactQrFileChange(event: Event, index: number) {
+// 把图片画到 canvas 上缩放：等比缩到 maxDim 边长以内，
+// 优先输出 PNG（无损，最适合 QR），太大就回退到逐档降质的 JPEG
+async function compressQrImage(file: File): Promise<{ dataUrl: string; sizeBytes: number }> {
+  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const image = new Image();
+    image.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve(image);
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("image load failed"));
+    };
+    image.src = url;
+  });
+
+  let width = img.width;
+  let height = img.height;
+  if (width > QR_TARGET_DIMENSION || height > QR_TARGET_DIMENSION) {
+    const ratio = Math.min(QR_TARGET_DIMENSION / width, QR_TARGET_DIMENSION / height);
+    width = Math.round(width * ratio);
+    height = Math.round(height * ratio);
+  }
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("canvas 2d context unavailable");
+  // 白底：透明 PNG 输出后 base64 也会大，铺白底既保证扫码识别，又利于压缩
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, width, height);
+  ctx.drawImage(img, 0, 0, width, height);
+
+  // 优先 PNG（无损），太大再走 JPEG 逐档降质
+  let dataUrl = canvas.toDataURL("image/png");
+  if (dataUrl.length > MAX_QR_DATAURL_LEN) {
+    for (const quality of [0.92, 0.85, 0.75, 0.65, 0.55]) {
+      dataUrl = canvas.toDataURL("image/jpeg", quality);
+      if (dataUrl.length <= MAX_QR_DATAURL_LEN) break;
+    }
+  }
+  return { dataUrl, sizeBytes: dataUrl.length };
+}
+
+async function onContactQrFileChange(event: Event, index: number) {
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0];
   target.value = ""; // 允许重复选同一文件
   if (!file) return;
   delete contactQrError.value[index];
+  delete contactQrInfo.value[index];
+
   if (!/^image\/(png|jpe?g|webp|gif)$/i.test(file.type)) {
     contactQrError.value[index] = t("admin.settings.site.contactMethodQrTypeError");
     return;
   }
-  if (file.size > MAX_QR_FILE_BYTES) {
-    // 给出具体大小，方便用户判断要压缩多少
+  if (file.size > MAX_QR_INPUT_BYTES) {
     contactQrError.value[index] = t("admin.settings.site.contactMethodQrSizeError", {
       sizeKb: Math.round(file.size / 1024),
-      maxKb: Math.round(MAX_QR_FILE_BYTES / 1024),
+      maxKb: Math.round(MAX_QR_INPUT_BYTES / 1024),
     });
     return;
   }
-  const reader = new FileReader();
-  reader.onload = () => {
-    const dataUrl = String(reader.result || "");
-    if (!dataUrl.startsWith("data:image/")) {
-      contactQrError.value[index] = t("admin.settings.site.contactMethodQrTypeError");
-      return;
-    }
+
+  try {
+    const { dataUrl, sizeBytes } = await compressQrImage(file);
     if (dataUrl.length > MAX_QR_DATAURL_LEN) {
       contactQrError.value[index] = t("admin.settings.site.contactMethodQrTooBigAfterEncode");
       return;
     }
     const method = form.contact_methods[index];
-    if (method) method.image_data = dataUrl;
-  };
-  reader.onerror = () => {
+    if (!method) return;
+    method.image_data = dataUrl;
+
+    // 仅在原图较大（>64KB）时提示用户已自动压缩，避免普通小图也弹提示
+    if (file.size > 64 * 1024) {
+      contactQrInfo.value[index] = t("admin.settings.site.contactMethodQrCompressed", {
+        originalKb: Math.round(file.size / 1024),
+        finalKb: Math.round(sizeBytes / 1024),
+      });
+    }
+  } catch {
     contactQrError.value[index] = t("admin.settings.site.contactMethodQrReadError");
-  };
-  reader.readAsDataURL(file);
+  }
 }
 
 function formatTablePageSizeOptions(options: number[]): string {

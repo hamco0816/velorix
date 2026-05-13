@@ -2,7 +2,7 @@
   <AppLayout wide>
     <MonitorHero
       :overall-status="overallStatus"
-      :interval-seconds="DEFAULT_INTERVAL_SECONDS"
+      :interval-seconds="systemDefaultInterval"
       :window="currentWindow"
       :loading="loading"
       :auto-refresh="autoRefresh"
@@ -65,10 +65,24 @@ const detailTarget = ref<UserMonitorView | null>(null)
 
 let abortController: AbortController | null = null
 
+// 取后台「全局监控默认间隔」设置，没配置时回退到内置常量
+// 改这个值前端就跟着改，避免后端 600s 探测、前端却 60s 倒计时的体验割裂
+const systemDefaultInterval = ((): number => {
+  const configured = appStore.cachedPublicSettings?.channel_monitor_default_interval_seconds
+  return configured && configured > 0 ? configured : DEFAULT_INTERVAL_SECONDS
+})()
+
+// 可选轮询间隔：固定档位 + 系统配置值（若不在固定档位内则插入并按升序排列）
+const STANDARD_INTERVALS: readonly number[] = [30, 60, 120, 300, 600, 1800]
+const intervalOptions: readonly number[] = (() => {
+  if (STANDARD_INTERVALS.includes(systemDefaultInterval)) return STANDARD_INTERVALS
+  return [...STANDARD_INTERVALS, systemDefaultInterval].sort((a, b) => a - b)
+})()
+
 const autoRefresh = useAutoRefresh({
   storageKey: 'channel-status-auto-refresh',
-  intervals: [30, 60, 120] as const,
-  defaultInterval: DEFAULT_INTERVAL_SECONDS,
+  intervals: intervalOptions,
+  defaultInterval: systemDefaultInterval,
   onRefresh: () => reload(true),
   shouldPause: () => document.hidden || loading.value,
 })
@@ -118,7 +132,7 @@ async function reload(silent = false) {
   } finally {
     if (abortController === ctrl) {
       if (!silent) loading.value = false
-      countdown.value = DEFAULT_INTERVAL_SECONDS
+      autoRefresh.resetCountdown()
       abortController = null
     }
   }

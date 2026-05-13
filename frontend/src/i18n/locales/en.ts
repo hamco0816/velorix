@@ -349,6 +349,7 @@ export default {
   contactMethods: {
     viewQrCode: 'Click to view QR code',
     scanQrHint: 'Scan the QR code with your phone to contact us / join',
+    popoverHint: 'Items marked with QR can be clicked to reveal the code',
   },
 
   // Common
@@ -5493,11 +5494,12 @@ export default {
         contactMethodAddQr: 'Upload QR (optional)',
         contactMethodUploadQr: 'Upload image',
         contactMethodReplaceQr: 'Replace image',
-        contactMethodQrHint: 'Recommend ≤48KB. PNG/JPG/WebP/GIF. Stored inline as base64 in settings; users click the contact entry to view the QR full-size.',
+        contactMethodQrHint: 'PNG / JPG / WebP / GIF, up to 5MB. Auto-compressed to ≤64KB while keeping the QR scannable.',
         contactMethodQrTypeError: 'Only PNG / JPG / WebP / GIF are supported',
         contactMethodQrSizeError: 'Image {sizeKb}KB exceeds the {maxKb}KB limit, please compress first',
-        contactMethodQrTooBigAfterEncode: 'Base64-encoded size exceeds the backend 64KB limit; please compress and retry',
+        contactMethodQrTooBigAfterEncode: 'Even after compression it exceeds the 64KB limit. Try a simpler QR image.',
         contactMethodQrReadError: 'Failed to read image, please try again',
+        contactMethodQrCompressed: 'Original {originalKb}KB, auto-compressed to {finalKb}KB',
         docUrl: 'Documentation URL',
         docUrlPlaceholder: 'https://docs.example.com',
         docUrlHint: 'Link to your documentation site. Leave empty to hide the documentation link.',

@@ -38,6 +38,39 @@
           <span class="hidden sm:inline">{{ t('nav.docs') }}</span>
         </a>
 
+        <!-- Contact 联系方式 popover：默认展示 QQ/微信/QQ群 文字+号码，
+             有 image_data 的点击弹出二维码（复用 ContactMethodsDisplay 的逻辑） -->
+        <div v-if="hasContactMethods" class="relative" ref="contactDropdownRef">
+          <button
+            type="button"
+            class="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-white"
+            :aria-label="t('common.contactSupport')"
+            @click="contactDropdownOpen = !contactDropdownOpen"
+          >
+            <Icon name="chat" size="sm" />
+            <span class="hidden sm:inline">{{ t('common.contactSupport') }}</span>
+            <Icon name="chevronDown" size="xs" class="hidden sm:inline text-gray-400" />
+          </button>
+          <transition name="dropdown">
+            <div
+              v-if="contactDropdownOpen"
+              class="dropdown right-0 mt-2 w-80 p-3"
+            >
+              <p class="mb-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">
+                {{ t('common.contactSupport') }}
+              </p>
+              <ContactMethodsDisplay
+                :methods="contactMethods"
+                :legacy-info="contactInfo"
+                :show-label="true"
+              />
+              <p class="mt-2 px-1 text-[11px] text-gray-400 dark:text-gray-500">
+                {{ t('contactMethods.popoverHint') }}
+              </p>
+            </div>
+          </transition>
+        </div>
+
         <!-- Language Switcher -->
         <LocaleSwitcher />
 
@@ -134,21 +167,6 @@
                 </router-link>
               </div>
 
-              <!-- Contact Support (only show if configured) -->
-              <div
-                v-if="hasContactMethods"
-                class="border-t border-gray-100 px-4 py-2.5 dark:border-dark-700"
-              >
-                <p class="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  {{ t('common.contactSupport') }}
-                </p>
-                <ContactMethodsDisplay
-                  :methods="contactMethods"
-                  :legacy-info="contactInfo"
-                  compact
-                />
-              </div>
-
               <div v-if="showOnboardingButton" class="border-t border-gray-100 py-1 dark:border-dark-700">
                 <button @click="handleReplayGuide" class="dropdown-item w-full">
                   <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
@@ -212,6 +230,8 @@ const onboardingStore = useOnboardingStore()
 const user = computed(() => authStore.user)
 const dropdownOpen = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
+const contactDropdownOpen = ref(false)
+const contactDropdownRef = ref<HTMLElement | null>(null)
 const contactInfo = computed(() => appStore.contactInfo)
 const contactMethods = computed(() => appStore.contactMethods)
 const hasContactMethods = computed(() => contactMethods.value.length > 0 || !!contactInfo.value)
@@ -297,6 +317,9 @@ function handleReplayGuide() {
 function handleClickOutside(event: MouseEvent) {
   if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
     closeDropdown()
+  }
+  if (contactDropdownRef.value && !contactDropdownRef.value.contains(event.target as Node)) {
+    contactDropdownOpen.value = false
   }
 }
 

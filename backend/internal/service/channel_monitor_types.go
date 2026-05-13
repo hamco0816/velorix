@@ -114,6 +114,8 @@ type UserMonitorView struct {
 	Availability7d       float64 // 0-100
 	ExtraModels          []ExtraModelStatus
 	Timeline             []UserMonitorTimelinePoint // 主模型最近 N 个历史点（按 checked_at DESC，最新在前）
+	IntervalSeconds      int                        // 该监控配置的探测间隔（秒），用于前端按实际配置展示倒计时
+	LastCheckedAt        *time.Time                 // 最近一次探测时间，nil 表示尚未探测过
 }
 
 // UserMonitorTimelinePoint 用户视图 timeline 单点数据（去除 message 以减小响应体）。

@@ -239,6 +239,8 @@ func buildUserViewFromSummary(
 		Availability7d:   summary.Availability7d,
 		ExtraModels:      summary.ExtraModels,
 		Timeline:         buildTimelinePoints(timelineEntries),
+		IntervalSeconds:  m.IntervalSeconds,
+		LastCheckedAt:    m.LastCheckedAt,
 	}
 	if primaryLatest != nil {
 		view.PrimaryPingLatencyMs = primaryLatest.PingLatencyMs

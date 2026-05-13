@@ -33,6 +33,10 @@ export interface UserMonitorView {
   availability_7d: number
   extra_models: UserMonitorExtraModel[]
   timeline: MonitorTimelinePoint[]
+  /** 该监控配置的探测间隔（秒）。前端按这个值算"下次刷新还有 X 秒" */
+  interval_seconds: number
+  /** 最近一次探测时间（RFC3339）。为 null 表示尚未探测过 */
+  last_checked_at: string | null
 }
 
 export interface UserMonitorListResponse {
