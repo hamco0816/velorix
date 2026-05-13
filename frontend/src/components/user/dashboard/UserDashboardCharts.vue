@@ -80,8 +80,21 @@ const doughnutOptions = {
 </script>
 
 <style scoped>
+/* 图表卡片：violet 主题（呼应仪表盘整体 violet 调） */
 .surface-card {
-  @apply rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)];
-  @apply dark:border-dark-700/60 dark:bg-dark-800/40;
+  @apply rounded-2xl;
+  border: 1px solid rgb(221 214 254 / 0.7);
+  background:
+    radial-gradient(circle at 100% 0%, rgb(139 92 246 / 0.08), transparent 32%),
+    radial-gradient(circle at 0% 100%, rgb(168 85 247 / 0.04), transparent 38%),
+    linear-gradient(135deg, rgb(245 243 255), rgb(255 255 255) 55%, rgb(243 232 255));
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+}
+:root.dark .surface-card {
+  border-color: rgb(76 29 149 / 0.4);
+  background:
+    radial-gradient(circle at 100% 0%, rgb(139 92 246 / 0.08), transparent 32%),
+    radial-gradient(circle at 0% 100%, rgb(168 85 247 / 0.04), transparent 38%),
+    linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
 }
 </style>

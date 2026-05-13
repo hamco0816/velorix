@@ -1,22 +1,6 @@
 <template>
   <AppLayout>
-    <div class="space-y-5">
-      <!-- Hero：emerald 渐变标题区，标识推广返利业务色 -->
-      <header class="page-hero page-hero-emerald">
-        <div class="relative z-10 max-w-3xl">
-          <span class="page-hero-tag page-hero-tag-emerald">
-            <Icon name="gift" size="sm" />
-            {{ t('affiliate.title') }}
-          </span>
-          <h1 class="mt-3 text-2xl font-semibold tracking-tight text-gray-950 dark:text-white md:text-[28px]">
-            {{ t('affiliate.title') }}
-          </h1>
-          <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600 dark:text-dark-200">
-            {{ t('affiliate.description') }}
-          </p>
-        </div>
-      </header>
-
+    <div class="affiliate-page space-y-5">
       <div v-if="loading" class="flex justify-center py-12">
         <div
           class="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent"
@@ -241,3 +225,21 @@ onMounted(() => {
   void loadAffiliateDetail()
 })
 </script>
+
+<style scoped>
+/* 邀请返利页：rose 染色（营销 / 礼物氛围） */
+.affiliate-page :deep(.card) {
+  border-color: rgb(254 205 211 / 0.7);
+  background:
+    radial-gradient(circle at 100% 0%, rgb(244 63 94 / 0.10), transparent 32%),
+    radial-gradient(circle at 0% 100%, rgb(236 72 153 / 0.05), transparent 38%),
+    linear-gradient(135deg, rgb(255 241 242), rgb(255 255 255) 55%, rgb(252 231 243));
+}
+:root.dark .affiliate-page :deep(.card) {
+  border-color: rgb(136 19 55 / 0.4);
+  background:
+    radial-gradient(circle at 100% 0%, rgb(244 63 94 / 0.10), transparent 32%),
+    radial-gradient(circle at 0% 100%, rgb(236 72 153 / 0.05), transparent 38%),
+    linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
+}
+</style>

@@ -1,7 +1,7 @@
 <template>
   <button
     type="button"
-    class="group text-left p-5 rounded-2xl min-h-[280px] w-full bg-white/70 backdrop-blur-xl border border-gray-200/80 shadow-card dark:bg-dark-800/60 dark:border-dark-700/70 hover:-translate-y-1 hover:shadow-card-hover dark:hover:border-primary-500/30 hover:border-gray-300 transition-all duration-300 ease-out flex flex-col"
+    class="monitor-card group flex min-h-[280px] w-full flex-col p-5 text-left transition-all duration-300 ease-out hover:-translate-y-1"
     @click="emit('click')"
   >
     <!-- Header: icon + name/model + status chip -->
@@ -133,3 +133,28 @@ const extraModelsCountLabel = computed(() => {
   return t('monitorCommon.extraModelsCount', { n: count })
 })
 </script>
+
+<style scoped>
+/* 渠道状态卡：sky 主题（信号 / 连通氛围） */
+.monitor-card {
+  border-radius: 1rem;
+  border: 1px solid rgb(186 230 253 / 0.7);
+  background:
+    radial-gradient(circle at 100% 0%, rgb(14 165 233 / 0.10), transparent 32%),
+    radial-gradient(circle at 0% 100%, rgb(59 130 246 / 0.05), transparent 38%),
+    linear-gradient(135deg, rgb(240 249 255), rgb(255 255 255) 55%, rgb(224 242 254));
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+  backdrop-filter: blur(14px);
+}
+:root.dark .monitor-card {
+  border-color: rgb(7 89 133 / 0.4);
+  background:
+    radial-gradient(circle at 100% 0%, rgb(14 165 233 / 0.10), transparent 32%),
+    radial-gradient(circle at 0% 100%, rgb(59 130 246 / 0.05), transparent 38%),
+    linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
+}
+.monitor-card:hover {
+  border-color: rgb(125 211 252 / 0.9);
+  box-shadow: 0 12px 28px rgb(14 165 233 / 0.14);
+}
+</style>

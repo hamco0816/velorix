@@ -1,49 +1,50 @@
 <template>
   <div class="space-y-4">
-    <!-- Quick Amount Buttons -->
-    <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-900">
-      <div class="mb-3 flex items-center justify-between gap-3">
+    <!-- 快捷金额：不再嵌"卡中卡"，让父容器决定背景。3 列 / 4 列响应式，9 个金额完美对齐 -->
+    <div>
+      <div class="mb-2.5 flex items-center justify-between gap-3">
         <label class="block text-sm font-semibold text-gray-800 dark:text-gray-100">
           {{ t('payment.quickAmounts') }}
         </label>
-        <span v-if="limitText" class="rounded-full bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-500 ring-1 ring-gray-100 dark:bg-dark-800 dark:text-dark-300 dark:ring-dark-700">
+        <span v-if="limitText" class="rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30">
           {{ limitText }}
         </span>
       </div>
-      <div class="grid grid-cols-3 gap-2 sm:grid-cols-5">
+      <!-- 3 列布局（9 个数据正好 3×3 对齐），sm 起改 5 列让大屏也紧凑 -->
+      <div class="grid grid-cols-3 gap-2">
         <button
           v-for="amt in filteredAmounts"
           :key="amt"
           type="button"
           :class="[
-            'min-h-[50px] rounded-lg border px-3 py-2 text-center font-semibold transition-colors',
+            'group/amt relative flex flex-col items-center justify-center rounded-xl border px-3 py-2.5 text-center font-semibold transition-all',
             modelValue === amt
-              ? 'border-gray-900 bg-gray-900 text-white shadow-sm dark:border-white dark:bg-white dark:text-gray-950'
-              : 'border-gray-200 bg-white text-gray-700 hover:border-primary-300 hover:text-primary-700 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-200 dark:hover:border-primary-500/70 dark:hover:text-primary-300',
+              ? 'border-amber-500 bg-amber-500 text-white shadow-[0_4px_12px_-2px_rgba(245,158,11,0.4)] dark:bg-amber-500 dark:border-amber-400'
+              : 'border-gray-200/80 bg-white text-gray-700 hover:border-amber-300 hover:bg-amber-50/40 hover:text-amber-700 dark:border-dark-700/60 dark:bg-dark-800/60 dark:text-gray-200 dark:hover:border-amber-500/50 dark:hover:bg-amber-500/10 dark:hover:text-amber-300',
           ]"
           @click="selectAmount(amt)"
         >
-          <span :class="['block text-xs', modelValue === amt ? 'text-white/65 dark:text-gray-600' : 'text-gray-400 dark:text-dark-400']">CNY</span>
-          <span class="block text-base">{{ amt }}</span>
+          <span :class="['text-[10px] font-medium tracking-wide', modelValue === amt ? 'text-white/70' : 'text-gray-400 dark:text-dark-400']">¥</span>
+          <span class="text-base tabular-nums leading-tight">{{ amt }}</span>
         </button>
       </div>
     </div>
 
-    <!-- Custom Amount Input -->
-    <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-900">
+    <!-- 自定义金额：单行输入，不再嵌套卡片 -->
+    <div>
       <label class="mb-2 block text-sm font-semibold text-gray-800 dark:text-gray-100">
         {{ t('payment.customAmount') }}
       </label>
-      <div class="relative rounded-lg border border-gray-200 bg-white transition-colors focus-within:border-primary-400 focus-within:ring-2 focus-within:ring-primary-500/10 dark:border-dark-600 dark:bg-dark-900">
-        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-400 dark:text-dark-400">
-          CNY
+      <div class="relative rounded-xl border border-gray-200 bg-white transition-colors focus-within:border-amber-400 focus-within:ring-2 focus-within:ring-amber-500/15 dark:border-dark-700/60 dark:bg-dark-800/60 dark:focus-within:border-amber-500/70">
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-amber-500/70 dark:text-amber-300/70">
+          ¥
         </span>
         <input
           type="text"
           inputmode="decimal"
           :value="customText"
           :placeholder="placeholderText"
-          class="w-full rounded-lg border-0 bg-transparent py-3 pl-14 pr-4 text-lg font-semibold text-gray-900 outline-none placeholder:text-gray-300 focus:ring-0 dark:text-white dark:placeholder:text-dark-500"
+          class="w-full rounded-xl border-0 bg-transparent py-3 pl-9 pr-4 text-lg font-semibold tabular-nums text-gray-900 outline-none placeholder:text-gray-300 focus:ring-0 dark:text-white dark:placeholder:text-dark-500"
           @input="handleInput"
         />
       </div>

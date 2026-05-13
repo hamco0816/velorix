@@ -726,12 +726,12 @@ function buildSelfNavItems(withDashboard: boolean): NavItem[] {
     items.push({ path: '/dashboard', label: t('nav.dashboard'), icon: DashboardIcon, iconColor: 'text-sky-500 dark:text-sky-400' })
   }
   items.push(
-    // —— 支付 / 兑换：高频付费场景前置 ——
+    // —— 核心入口：API 密钥（最高频）→ 支付链路（充值/兑换/订单） ——
+    { path: '/keys', label: t('nav.apiKeys'), icon: KeyIcon, iconColor: 'text-sky-500 dark:text-sky-400' },
     { path: '/purchase', label: t('nav.buySubscription'), icon: RechargeSubscriptionIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true, featureFlag: flagPayment },
     { path: '/redeem', label: t('nav.redeem'), icon: GiftIcon, iconColor: 'text-rose-500 dark:text-rose-400', hideInSimpleMode: true },
     { path: '/orders', label: t('nav.myOrders'), icon: OrderListIcon, iconColor: 'text-amber-500 dark:text-amber-400', hideInSimpleMode: true, featureFlag: flagPayment },
-    // —— 核心使用：密钥 / 订阅 / 独享号 / 用量 ——
-    { path: '/keys', label: t('nav.apiKeys'), icon: KeyIcon, iconColor: 'text-sky-500 dark:text-sky-400' },
+    // —— 订阅 / 独享号 / 用量 ——
     { path: '/subscriptions', label: t('nav.mySubscriptions'), icon: CreditCardIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true },
     { path: '/seats', label: t('nav.mySeats'), icon: BadgeIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true, featureFlag: flagPayment },
     { path: '/usage', label: t('nav.usage'), icon: ChartIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true },

@@ -98,7 +98,7 @@
       <div class="grid gap-5 lg:grid-cols-[300px_minmax(0,1fr)]">
         <!-- 左侧筛选 panel：sticky 跟随滚动；字号 + 间距增大 -->
         <aside class="lg:sticky lg:top-20 lg:self-start">
-          <div class="space-y-5 rounded-2xl border border-gray-200/70 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40">
+          <div class="surface-card card-emerald space-y-5 p-5">
             <!-- 我可用的分组 -->
             <section>
               <div class="mb-2.5 flex items-center justify-between">
@@ -277,7 +277,7 @@
           <!-- Empty -->
           <div
             v-else-if="filteredModels.length === 0"
-            class="rounded-2xl border border-gray-200/70 bg-white p-12 text-center dark:border-dark-700/60 dark:bg-dark-800/40"
+            class="surface-card card-emerald p-12 text-center"
           >
             <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-50 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-700/40 dark:ring-dark-600/60">
               <Icon name="search" size="lg" class="text-gray-400" />
@@ -292,7 +292,7 @@
             <div
               v-for="model in filteredModels"
               :key="`${model.platform}-${model.name}`"
-              class="flex flex-col rounded-2xl border border-gray-200/70 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-colors hover:border-gray-300 dark:border-dark-700/60 dark:bg-dark-800/40 dark:hover:border-dark-500"
+              class="surface-card card-emerald flex flex-col p-5 transition-colors hover:border-emerald-300/80 dark:hover:border-emerald-500/40"
             >
               <!-- Header：平台 icon + 模型名 + 计费 chip -->
               <div class="flex items-start gap-3">

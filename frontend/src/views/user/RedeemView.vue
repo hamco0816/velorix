@@ -1,31 +1,6 @@
 <template>
   <AppLayout>
-    <div class="mx-auto max-w-[1440px] space-y-5">
-      <section class="redeem-hero">
-        <div class="relative z-10 max-w-2xl">
-          <p class="text-sm font-semibold text-sky-700 dark:text-sky-200">
-            {{ t('redeem.title') }}
-          </p>
-          <h1 class="mt-3 text-3xl font-semibold tracking-normal text-gray-950 dark:text-white md:text-4xl">
-            Hi, {{ displayName }}
-          </h1>
-          <p class="mt-3 text-sm leading-6 text-gray-600 dark:text-dark-200 md:text-base">
-            {{ t('redeem.description') }}
-          </p>
-        </div>
-        <div class="redeem-hero-art" aria-hidden="true">
-          <div class="redeem-hero-gift">
-            <Icon name="gift" size="xl" class="text-sky-600" />
-          </div>
-          <div class="redeem-hero-chip redeem-hero-chip-left">
-            <Icon name="creditCard" size="md" />
-          </div>
-          <div class="redeem-hero-chip redeem-hero-chip-right">
-            <Icon name="terminal" size="md" />
-          </div>
-        </div>
-      </section>
-
+    <div class="space-y-5">
       <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <div class="redeem-stat-card">
               <div class="mb-6 flex items-start justify-between gap-4">
@@ -514,8 +489,6 @@ const contactInfo = ref('')
 const contactMethods = ref<ContactMethod[]>([])
 const hasContactMethods = computed(() => contactMethods.value.length > 0 || !!contactInfo.value)
 
-const displayName = computed(() => user.value?.username || appStore.siteName || 'Velorix')
-
 const activeSubscription = computed(() =>
   subscriptionStore.activeSubscriptions.find((item) => item.status === 'active') || null,
 )
@@ -671,92 +644,16 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.redeem-hero {
-  position: relative;
-  display: flex;
-  min-height: 10rem;
-  align-items: center;
-  justify-content: space-between;
-  overflow: hidden;
-  border-radius: 0.5rem;
-  border: 1px solid rgb(219 234 254);
-  background:
-    radial-gradient(circle at 76% 22%, rgb(56 189 248 / 0.26), transparent 28%),
-    radial-gradient(circle at 94% 12%, rgb(168 85 247 / 0.18), transparent 24%),
-    linear-gradient(135deg, rgb(240 249 255), rgb(255 255 255) 48%, rgb(245 243 255));
-  padding: 2rem;
-  box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
-}
-
-.dark .redeem-hero {
-  border-color: rgb(55 65 81);
-  background:
-    radial-gradient(circle at 76% 22%, rgb(14 165 233 / 0.16), transparent 30%),
-    radial-gradient(circle at 94% 12%, rgb(139 92 246 / 0.14), transparent 24%),
-    linear-gradient(135deg, rgb(15 23 42), rgb(17 24 39));
-  box-shadow: none;
-}
-
-.redeem-hero-art {
-  position: absolute;
-  inset-block: 0;
-  right: 3rem;
-  display: none;
-  width: 26rem;
-}
-
-.redeem-hero-gift,
-.redeem-hero-chip {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgb(226 232 240 / 0.9);
-  background: rgb(255 255 255 / 0.82);
-  box-shadow: 0 22px 44px -30px rgb(37 99 235 / 0.65);
-  backdrop-filter: blur(14px);
-}
-
-.redeem-hero-gift {
-  right: 7rem;
-  top: 2.15rem;
-  height: 7rem;
-  width: 7rem;
-  border-radius: 1.75rem;
-}
-
-.redeem-hero-chip {
-  height: 3.25rem;
-  width: 3.25rem;
-  border-radius: 1rem;
-  color: rgb(37 99 235);
-}
-
-.redeem-hero-chip-left {
-  left: 4.5rem;
-  top: 4.5rem;
-  transform: rotate(-12deg);
-}
-
-.redeem-hero-chip-right {
-  right: 1.5rem;
-  top: 3.25rem;
-  transform: rotate(10deg);
-}
-
-.dark .redeem-hero-gift,
-.dark .redeem-hero-chip {
-  border-color: rgb(75 85 99 / 0.9);
-  background: rgb(31 41 55 / 0.78);
-  box-shadow: none;
-}
-
+/* redeem 统计卡 + 主面板 — 沿用 .surface-card 全局色卡片 + .card-rose 主题色（兑换氛围） */
 .redeem-panel,
 .redeem-stat-card {
-  border-radius: 0.5rem;
-  border: 1px solid rgb(229 231 235);
-  background: rgb(255 255 255);
-  box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
+  border-radius: 1rem;
+  border: 1px solid rgb(254 205 211 / 0.7);
+  background:
+    radial-gradient(circle at 100% 0%, rgb(244 63 94 / 0.10), transparent 32%),
+    radial-gradient(circle at 0% 100%, rgb(236 72 153 / 0.06), transparent 38%),
+    linear-gradient(135deg, rgb(255 241 242), rgb(255 255 255) 55%, rgb(252 231 243));
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
 }
 
 .redeem-stat-card {
@@ -765,15 +662,12 @@ onMounted(async () => {
 
 .dark .redeem-panel,
 .dark .redeem-stat-card {
-  border-color: rgb(55 65 81);
-  background: rgb(31 41 55);
+  border-color: rgb(136 19 55 / 0.4);
+  background:
+    radial-gradient(circle at 100% 0%, rgb(244 63 94 / 0.10), transparent 32%),
+    radial-gradient(circle at 0% 100%, rgb(236 72 153 / 0.06), transparent 38%),
+    linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
   box-shadow: none;
-}
-
-@media (min-width: 1024px) {
-  .redeem-hero-art {
-    display: block;
-  }
 }
 
 .fade-enter-active,

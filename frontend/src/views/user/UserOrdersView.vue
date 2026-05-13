@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <div class="mx-auto max-w-[1440px] space-y-5">
+    <div class="space-y-5">
       <!-- Filters：emerald 主题（订单 / 完成氛围），用全局 .surface-card + .card-emerald 组合 -->
       <div class="surface-card card-emerald p-4">
         <div class="flex flex-wrap items-center gap-3">

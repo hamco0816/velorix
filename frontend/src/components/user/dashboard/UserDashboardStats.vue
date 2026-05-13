@@ -231,10 +231,26 @@ const formatDuration = (ms: number) => ms >= 1000 ? `${(ms / 1000).toFixed(2)}s`
 </script>
 
 <style scoped>
+/* 用户仪表盘 KPI 卡：violet 染色（核心数据氛围） */
 .kpi-card {
-  @apply relative flex flex-col gap-1 overflow-hidden rounded-2xl border border-gray-200/70 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-200;
-  @apply dark:border-dark-700/60 dark:bg-dark-800/40;
-  @apply hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-[0_8px_24px_rgba(15,23,42,0.08)] dark:hover:border-dark-600;
+  @apply relative flex flex-col gap-1 overflow-hidden rounded-2xl p-5 transition-all duration-200;
+  border: 1px solid rgb(221 214 254 / 0.7);
+  background:
+    radial-gradient(circle at 100% 0%, rgb(139 92 246 / 0.10), transparent 32%),
+    radial-gradient(circle at 0% 100%, rgb(168 85 247 / 0.06), transparent 38%),
+    linear-gradient(135deg, rgb(245 243 255), rgb(255 255 255) 55%, rgb(243 232 255));
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+}
+:root.dark .kpi-card {
+  border-color: rgb(76 29 149 / 0.4);
+  background:
+    radial-gradient(circle at 100% 0%, rgb(139 92 246 / 0.10), transparent 32%),
+    radial-gradient(circle at 0% 100%, rgb(168 85 247 / 0.06), transparent 38%),
+    linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
+}
+.kpi-card:hover {
+  border-color: rgb(196 181 253 / 0.9);
+  box-shadow: 0 8px 24px rgb(139 92 246 / 0.10);
 }
 
 .kpi-card-header { @apply flex items-start justify-between gap-2; }
@@ -244,10 +260,26 @@ const formatDuration = (ms: number) => ms >= 1000 ? `${(ms / 1000).toFixed(2)}s`
 .kpi-card-spark { @apply -mx-5 -mb-5 mt-4 h-10; }
 .kpi-card-spark > svg { @apply h-full w-full; }
 
+/* 用户仪表盘次级 metric 卡：sky 染色（信息辅助色） */
 .metric-card {
-  @apply flex items-start gap-3 rounded-2xl border border-gray-200/70 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-200;
-  @apply dark:border-dark-700/60 dark:bg-dark-800/40;
-  @apply hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-[0_4px_16px_rgba(15,23,42,0.06)] dark:hover:border-dark-600;
+  @apply flex items-start gap-3 rounded-2xl p-5 transition-all duration-200;
+  border: 1px solid rgb(186 230 253 / 0.7);
+  background:
+    radial-gradient(circle at 100% 0%, rgb(14 165 233 / 0.10), transparent 32%),
+    radial-gradient(circle at 0% 100%, rgb(59 130 246 / 0.06), transparent 38%),
+    linear-gradient(135deg, rgb(240 249 255), rgb(255 255 255) 55%, rgb(224 242 254));
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+}
+:root.dark .metric-card {
+  border-color: rgb(7 89 133 / 0.4);
+  background:
+    radial-gradient(circle at 100% 0%, rgb(14 165 233 / 0.10), transparent 32%),
+    radial-gradient(circle at 0% 100%, rgb(59 130 246 / 0.06), transparent 38%),
+    linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
+}
+.metric-card:hover {
+  border-color: rgb(125 211 252 / 0.9);
+  box-shadow: 0 4px 16px rgb(14 165 233 / 0.10);
 }
 
 .metric-icon { @apply flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl; }
