@@ -4141,7 +4141,7 @@
                               {{ t("common.delete") }}
                             </button>
                           </div>
-                          <div class="flex-1 space-y-2">
+                          <div class="min-w-0 flex-1 space-y-2">
                             <input
                               :id="`contact-qr-upload-${index}`"
                               type="file"
@@ -4149,9 +4149,10 @@
                               class="hidden"
                               @change="onContactQrFileChange($event, index)"
                             />
+                            <!-- w-fit 让按钮只占文字宽度，不再撑满整行 -->
                             <label
                               :for="`contact-qr-upload-${index}`"
-                              class="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:border-primary-300 hover:text-primary-700 dark:border-dark-600 dark:bg-dark-700 dark:text-gray-200"
+                              class="inline-flex w-fit cursor-pointer items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:border-primary-300 hover:text-primary-700 dark:border-dark-600 dark:bg-dark-700 dark:text-gray-200"
                             >
                               <Icon name="plus" size="xs" />
                               {{ method.image_data ? t("admin.settings.site.contactMethodReplaceQr") : t("admin.settings.site.contactMethodUploadQr") }}
@@ -4159,7 +4160,7 @@
                             <p class="text-[11px] text-gray-500 dark:text-gray-400">
                               {{ t("admin.settings.site.contactMethodQrHint") }}
                             </p>
-                            <p v-if="contactQrError[index]" class="text-[11px] text-red-600 dark:text-red-400">
+                            <p v-if="contactQrError[index]" class="break-words text-[11px] text-red-600 dark:text-red-400">
                               {{ contactQrError[index] }}
                             </p>
                             <p v-else-if="contactQrInfo[index]" class="text-[11px] text-emerald-600 dark:text-emerald-400">
@@ -6993,25 +6994,51 @@ const aiTestResultBorder = computed(() => {
   }
 });
 
+// 读图：先试 createObjectURL，失败回退到 FileReader.readAsDataURL（HEIC 之类的 blob URL 加载会失败但 base64 一般可读）
+async function loadImageFromFile(file: File): Promise<HTMLImageElement> {
+  const loadFromSrc = (src: string, revoke: () => void) =>
+    new Promise<HTMLImageElement>((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => {
+        revoke();
+        resolve(image);
+      };
+      image.onerror = (e) => {
+        revoke();
+        reject(new Error(`image decode failed: ${e instanceof Event ? 'unknown' : String(e)}`));
+      };
+      image.src = src;
+    });
+
+  // 1. 首选 createObjectURL（快、省内存）
+  try {
+    const url = URL.createObjectURL(file);
+    return await loadFromSrc(url, () => URL.revokeObjectURL(url));
+  } catch (err) {
+    console.warn('[contactQr] createObjectURL load failed, fallback to FileReader', err);
+  }
+
+  // 2. 兜底：用 FileReader 读 base64 dataURL
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(new Error('FileReader.readAsDataURL failed'));
+    reader.readAsDataURL(file);
+  });
+  return loadFromSrc(dataUrl, () => undefined);
+}
+
 // 把图片画到 canvas 上缩放：等比缩到 maxDim 边长以内，
 // 优先输出 PNG（无损，最适合 QR），太大就回退到逐档降质的 JPEG
 async function compressQrImage(file: File): Promise<{ dataUrl: string; sizeBytes: number }> {
-  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-    const url = URL.createObjectURL(file);
-    const image = new Image();
-    image.onload = () => {
-      URL.revokeObjectURL(url);
-      resolve(image);
-    };
-    image.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error("image load failed"));
-    };
-    image.src = url;
-  });
+  const img = await loadImageFromFile(file);
 
   let width = img.width;
   let height = img.height;
+  // 防御性：宽高为 0 或负值 → 直接抛错（极少见但要兜底）
+  if (!width || !height || width < 1 || height < 1) {
+    throw new Error(`invalid image dimensions: ${width}x${height}`);
+  }
   if (width > QR_TARGET_DIMENSION || height > QR_TARGET_DIMENSION) {
     const ratio = Math.min(QR_TARGET_DIMENSION / width, QR_TARGET_DIMENSION / height);
     width = Math.round(width * ratio);
@@ -7031,7 +7058,7 @@ async function compressQrImage(file: File): Promise<{ dataUrl: string; sizeBytes
   // 优先 PNG（无损），太大再走 JPEG 逐档降质
   let dataUrl = canvas.toDataURL("image/png");
   if (dataUrl.length > MAX_QR_DATAURL_LEN) {
-    for (const quality of [0.92, 0.85, 0.75, 0.65, 0.55]) {
+    for (const quality of [0.92, 0.85, 0.75, 0.65, 0.55, 0.45]) {
       dataUrl = canvas.toDataURL("image/jpeg", quality);
       if (dataUrl.length <= MAX_QR_DATAURL_LEN) break;
     }
@@ -7076,8 +7103,13 @@ async function onContactQrFileChange(event: Event, index: number) {
         finalKb: Math.round(sizeBytes / 1024),
       });
     }
-  } catch {
-    contactQrError.value[index] = t("admin.settings.site.contactMethodQrReadError");
+  } catch (err) {
+    // 打 console 让用户右键审查时能看到真实失败原因（HEIC / 文件损坏 / 跨域 etc）
+    console.error('[contactQr] compress failed:', err);
+    const msg = (err as Error)?.message || '';
+    contactQrError.value[index] = msg
+      ? `${t("admin.settings.site.contactMethodQrReadError")}（${msg}）`
+      : t("admin.settings.site.contactMethodQrReadError");
   }
 }
 

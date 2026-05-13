@@ -210,6 +210,7 @@ func AccountFromServiceShallow(a *service.Account) *Account {
 		Notes:                   a.Notes,
 		Platform:                a.Platform,
 		Type:                    a.Type,
+		SubscriptionTier:        a.SubscriptionTier,
 		Credentials:             a.Credentials,
 		Extra:                   a.Extra,
 		ProxyID:                 a.ProxyID,

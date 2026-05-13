@@ -100,7 +100,14 @@
     </div>
 
     <!-- Plan Edit Dialog -->
-    <PlanEditDialog :show="showPlanDialog" :plan="editingPlan" :groups="groups" @close="showPlanDialog = false" @saved="loadPlans" />
+    <PlanEditDialog
+      :show="showPlanDialog"
+      :plan="editingPlan"
+      :groups="groups"
+      :prefill="planPrefill"
+      @close="closePlanDialog"
+      @saved="onPlanSaved"
+    />
 
     <ConfirmDialog :show="showDeletePlanDialog" :title="t('payment.admin.deletePlan')" :message="t('payment.admin.deletePlanConfirm')" :confirm-text="t('common.delete')" danger @confirm="handleDeletePlan" @cancel="showDeletePlanDialog = false" />
   </AppLayout>
@@ -109,6 +116,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRoute, useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import { adminPaymentAPI } from '@/api/admin/payment'
 import { extractI18nErrorMessage } from '@/utils/apiError'
@@ -127,6 +135,51 @@ import { derivePlanCardType, cardTypeBadgeClass } from '@/utils/planCardType'
 
 const { t } = useI18n()
 const appStore = useAppStore()
+const route = useRoute()
+const router = useRouter()
+
+/**
+ * 定价助手"用此建议创建套餐"链路：route.query 带 prefill=1 + name/price/limit_usd 时，
+ * 自动打开创建对话框并预填这些值。打开后立即清掉 query，避免刷新页面重复触发。
+ */
+const planPrefill = ref<{
+  name?: string
+  price?: number
+  daily_limit_usd?: number
+  weekly_limit_usd?: number
+  monthly_limit_usd?: number
+} | null>(null)
+
+function tryConsumePrefillFromQuery() {
+  if (route.query.prefill !== '1') return
+  const num = (v: unknown): number | undefined => {
+    if (v === null || v === undefined) return undefined
+    const n = Number(v)
+    return Number.isFinite(n) && n >= 0 ? n : undefined
+  }
+  planPrefill.value = {
+    name: typeof route.query.name === 'string' ? route.query.name : undefined,
+    price: num(route.query.price),
+    daily_limit_usd: num(route.query.daily_limit_usd),
+    weekly_limit_usd: num(route.query.weekly_limit_usd),
+    monthly_limit_usd: num(route.query.monthly_limit_usd),
+  }
+  editingPlan.value = null
+  showPlanDialog.value = true
+  // 清掉 query，刷新或返回时不会再次触发
+  void router.replace({ path: route.path, query: {} })
+}
+
+function closePlanDialog() {
+  showPlanDialog.value = false
+  // 关闭后清掉 prefill，下次手动点"创建"时是空白表单
+  planPrefill.value = null
+}
+
+function onPlanSaved() {
+  planPrefill.value = null
+  loadPlans()
+}
 
 // ==================== Groups ====================
 
@@ -221,8 +274,9 @@ async function handleDeletePlan() {
 
 // ==================== Lifecycle ====================
 
-onMounted(() => {
-  loadGroups()
-  loadPlans()
+onMounted(async () => {
+  // 先加载 groups + plans，再消费 prefill；这样对话框打开时 groups 已就位（select 能展示）
+  await Promise.all([loadGroups(), loadPlans()])
+  tryConsumePrefillFromQuery()
 })
 </script>

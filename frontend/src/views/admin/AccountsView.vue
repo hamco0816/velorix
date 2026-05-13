@@ -182,7 +182,17 @@
           </template>
           <template #cell-name="{ row, value }">
             <div class="flex flex-col">
-              <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+              <div class="flex items-center gap-1.5">
+                <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+                <!-- 订阅档位角标：标过的显示档位名，没标过的不显示（鼓励 admin 去标） -->
+                <span
+                  v-if="row.subscription_tier"
+                  class="inline-flex items-center rounded bg-violet-50 px-1.5 py-0.5 text-[10px] font-medium text-violet-700 dark:bg-violet-500/15 dark:text-violet-300"
+                  :title="t('admin.accounts.subscriptionTier')"
+                >
+                  {{ formatSubscriptionTier(row.subscription_tier) }}
+                </span>
+              </div>
               <span
                 v-if="row.extra?.email_address"
                 class="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[200px]"
@@ -1012,6 +1022,12 @@ function getAntigravityTierLabel(row: any): string | null {
     case 'g1-ultra-tier': return t('admin.accounts.tier.ultra')
     default: return null
   }
+}
+
+// 订阅档位短标签：pro_5x → "Pro 5x"
+function formatSubscriptionTier(tier: string): string {
+  if (!tier) return ''
+  return tier.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
 }
 
 function getOpenAICompactState(row: any): 'supported' | 'unsupported' | 'unknown' | null {

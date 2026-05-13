@@ -94,6 +94,18 @@ func RegisterAdminRoutes(
 
 		// 邀请返利（专属用户管理）
 		registerAffiliateRoutes(admin, h)
+
+		// 订阅定价助手：按账号档位聚合 5h/7d 用量统计 + 30 天趋势
+		registerPricingAdvisorRoutes(admin, h)
+	}
+}
+
+// registerPricingAdvisorRoutes 注册订阅定价助手路由
+func registerPricingAdvisorRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
+	advisor := admin.Group("/pricing-advisor")
+	{
+		advisor.GET("/tier-stats", h.Admin.PricingAdvisor.TierStats)
+		advisor.GET("/tier-trend", h.Admin.PricingAdvisor.TierTrend)
 	}
 }
 

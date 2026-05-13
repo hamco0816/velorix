@@ -833,6 +833,8 @@ const adminNavItems = computed((): NavItem[] => {
     { path: '/admin/subscriptions', label: t('nav.subscriptions'), icon: CreditCardIcon, iconColor: 'text-teal-500 dark:text-teal-400', hideInSimpleMode: true },
     // 模型定价总览：admin 没有自定义渠道定价时也能看到 GitHub 拉的默认价格 + 倍率换算
     { path: '/admin/pricing/models', label: t('nav.modelPricing'), icon: PriceTagIcon, iconColor: 'text-amber-500 dark:text-amber-400', hideInSimpleMode: true },
+    // 订阅定价助手：按账号档位聚合用量统计 + ROI 计算器，辅助设置订阅限额
+    { path: '/admin/pricing/advisor', label: t('nav.pricingAdvisor'), icon: ChartIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true },
     // —— 运营：使用记录 / 兑换码 / 优惠码 / 公告 / 邀请 ——
     { path: '/admin/usage', label: t('nav.usage'), icon: ChartIcon, iconColor: 'text-violet-500 dark:text-violet-400' },
     { path: '/admin/redeem', label: t('nav.redeemCodes'), icon: TicketIcon, iconColor: 'text-sky-500 dark:text-sky-400', hideInSimpleMode: true },

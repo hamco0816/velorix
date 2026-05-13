@@ -148,6 +148,17 @@ const props = defineProps<{
   show: boolean
   plan: SubscriptionPlan | null
   groups: AdminGroup[]
+  /**
+   * 创建新套餐时的预填值（来自订阅定价助手"用此建议创建套餐"）。
+   * 仅在 plan === null（创建模式）下生效；plan != null（编辑模式）下忽略。
+   */
+  prefill?: Partial<{
+    name: string
+    price: number
+    daily_limit_usd: number
+    weekly_limit_usd: number
+    monthly_limit_usd: number
+  }> | null
 }>()
 
 const emit = defineEmits<{
@@ -226,11 +237,23 @@ watch(() => props.show, (visible) => {
     })
     planFeaturesText.value = (props.plan.features || []).join('\n')
   } else {
+    // 创建模式：默认值 + 可选的 prefill 覆盖（来自定价助手"用此建议创建"链路）
+    const p = props.prefill || {}
     Object.assign(planForm, {
-      name: '', group_id: null, description: '', price: 0, original_price: 0,
-      validity_days: 30, validity_unit: 'days', sort_order: 0, for_sale: true,
+      name: p.name ?? '',
+      group_id: null,
+      description: '',
+      price: p.price ?? 0,
+      original_price: 0,
+      validity_days: 30,
+      validity_unit: 'days',
+      sort_order: 0,
+      for_sale: true,
       kind: 'shared',
-      daily_limit_usd: null, weekly_limit_usd: null, monthly_limit_usd: null, rate_multiplier: null,
+      daily_limit_usd: p.daily_limit_usd ?? null,
+      weekly_limit_usd: p.weekly_limit_usd ?? null,
+      monthly_limit_usd: p.monthly_limit_usd ?? null,
+      rate_multiplier: null,
     })
     planFeaturesText.value = ''
   }

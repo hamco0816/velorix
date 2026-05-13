@@ -813,6 +813,8 @@ export interface Account {
   notes?: string | null
   platform: AccountPlatform
   type: AccountType
+  /** 订阅档位（free / plus / pro / pro_5x / pro_20x / max_5x / max_20x 等，按 platform 不同含义不同） */
+  subscription_tier?: string
   credentials?: Record<string, unknown>
   // Extra fields including Codex usage, OpenAI compact capability, and model-level rate limits.
   extra?: (CodexUsageSnapshot & OpenAICompactState & {
@@ -1002,6 +1004,7 @@ export interface CreateAccountRequest {
   notes?: string | null
   platform: AccountPlatform
   type: AccountType
+  subscription_tier?: string
   credentials: Record<string, unknown>
   extra?: Record<string, unknown>
   proxy_id?: number | null
@@ -1019,6 +1022,7 @@ export interface UpdateAccountRequest {
   name?: string
   notes?: string | null
   type?: AccountType
+  subscription_tier?: string
   credentials?: Record<string, unknown>
   extra?: Record<string, unknown>
   proxy_id?: number | null

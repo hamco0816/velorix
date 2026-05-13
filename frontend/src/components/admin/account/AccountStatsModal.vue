@@ -459,6 +459,7 @@ import ModelDistributionChart from '@/components/charts/ModelDistributionChart.v
 import EndpointDistributionChart from '@/components/charts/EndpointDistributionChart.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { adminAPI } from '@/api/admin'
+import { formatCompactNumber } from '@/utils/format'
 import type { Account, AccountUsageStatsResponse } from '@/types'
 
 ChartJS.register(
@@ -684,16 +685,8 @@ const formatNumber = (value: number): string => {
   return value.toLocaleString()
 }
 
-const formatTokens = (value: number): string => {
-  if (value >= 1_000_000_000) {
-    return `${(value / 1_000_000_000).toFixed(2)}B`
-  } else if (value >= 1_000_000) {
-    return `${(value / 1_000_000).toFixed(2)}M`
-  } else if (value >= 1_000) {
-    return `${(value / 1_000).toFixed(2)}K`
-  }
-  return value.toLocaleString()
-}
+// 走全局 formatCompactNumber，统一支持到 T/P 单位
+const formatTokens = (value: number): string => formatCompactNumber(value, { decimals: 2 })
 
 const formatDuration = (ms: number): string => {
   if (ms >= 1000) {

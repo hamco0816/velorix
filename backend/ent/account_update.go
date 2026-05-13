@@ -119,6 +119,26 @@ func (_u *AccountUpdate) SetNillableType(v *string) *AccountUpdate {
 	return _u
 }
 
+// SetSubscriptionTier sets the "subscription_tier" field.
+func (_u *AccountUpdate) SetSubscriptionTier(v string) *AccountUpdate {
+	_u.mutation.SetSubscriptionTier(v)
+	return _u
+}
+
+// SetNillableSubscriptionTier sets the "subscription_tier" field if the given value is not nil.
+func (_u *AccountUpdate) SetNillableSubscriptionTier(v *string) *AccountUpdate {
+	if v != nil {
+		_u.SetSubscriptionTier(*v)
+	}
+	return _u
+}
+
+// ClearSubscriptionTier clears the value of the "subscription_tier" field.
+func (_u *AccountUpdate) ClearSubscriptionTier() *AccountUpdate {
+	_u.mutation.ClearSubscriptionTier()
+	return _u
+}
+
 // SetCredentials sets the "credentials" field.
 func (_u *AccountUpdate) SetCredentials(v map[string]interface{}) *AccountUpdate {
 	_u.mutation.SetCredentials(v)
@@ -677,6 +697,11 @@ func (_u *AccountUpdate) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Account.type": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.SubscriptionTier(); ok {
+		if err := account.SubscriptionTierValidator(v); err != nil {
+			return &ValidationError{Name: "subscription_tier", err: fmt.Errorf(`ent: validator failed for field "Account.subscription_tier": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Status(); ok {
 		if err := account.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Account.status": %w`, err)}
@@ -725,6 +750,12 @@ func (_u *AccountUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(account.FieldType, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.SubscriptionTier(); ok {
+		_spec.SetField(account.FieldSubscriptionTier, field.TypeString, value)
+	}
+	if _u.mutation.SubscriptionTierCleared() {
+		_spec.ClearField(account.FieldSubscriptionTier, field.TypeString)
 	}
 	if value, ok := _u.mutation.Credentials(); ok {
 		_spec.SetField(account.FieldCredentials, field.TypeJSON, value)
@@ -1079,6 +1110,26 @@ func (_u *AccountUpdateOne) SetNillableType(v *string) *AccountUpdateOne {
 	if v != nil {
 		_u.SetType(*v)
 	}
+	return _u
+}
+
+// SetSubscriptionTier sets the "subscription_tier" field.
+func (_u *AccountUpdateOne) SetSubscriptionTier(v string) *AccountUpdateOne {
+	_u.mutation.SetSubscriptionTier(v)
+	return _u
+}
+
+// SetNillableSubscriptionTier sets the "subscription_tier" field if the given value is not nil.
+func (_u *AccountUpdateOne) SetNillableSubscriptionTier(v *string) *AccountUpdateOne {
+	if v != nil {
+		_u.SetSubscriptionTier(*v)
+	}
+	return _u
+}
+
+// ClearSubscriptionTier clears the value of the "subscription_tier" field.
+func (_u *AccountUpdateOne) ClearSubscriptionTier() *AccountUpdateOne {
+	_u.mutation.ClearSubscriptionTier()
 	return _u
 }
 
@@ -1653,6 +1704,11 @@ func (_u *AccountUpdateOne) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Account.type": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.SubscriptionTier(); ok {
+		if err := account.SubscriptionTierValidator(v); err != nil {
+			return &ValidationError{Name: "subscription_tier", err: fmt.Errorf(`ent: validator failed for field "Account.subscription_tier": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Status(); ok {
 		if err := account.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Account.status": %w`, err)}
@@ -1718,6 +1774,12 @@ func (_u *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err er
 	}
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(account.FieldType, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.SubscriptionTier(); ok {
+		_spec.SetField(account.FieldSubscriptionTier, field.TypeString, value)
+	}
+	if _u.mutation.SubscriptionTierCleared() {
+		_spec.ClearField(account.FieldSubscriptionTier, field.TypeString)
 	}
 	if value, ok := _u.mutation.Credentials(); ok {
 		_spec.SetField(account.FieldCredentials, field.TypeJSON, value)

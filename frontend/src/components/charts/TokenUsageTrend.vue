@@ -41,6 +41,7 @@ import {
 } from 'chart.js'
 import { Line } from 'vue-chartjs'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import { formatCompactNumber } from '@/utils/format'
 import Icon from '@/components/icons/Icon.vue'
 import type { TrendDataPoint } from '@/types'
 
@@ -212,16 +213,8 @@ const lineOptions = computed(() => ({
   }
 }))
 
-const formatTokens = (value: number): string => {
-  if (value >= 1_000_000_000) {
-    return `${(value / 1_000_000_000).toFixed(2)}B`
-  } else if (value >= 1_000_000) {
-    return `${(value / 1_000_000).toFixed(2)}M`
-  } else if (value >= 1_000) {
-    return `${(value / 1_000).toFixed(2)}K`
-  }
-  return value.toLocaleString()
-}
+// 走全局 formatCompactNumber，统一支持到 T/P 单位
+const formatTokens = (value: number): string => formatCompactNumber(value, { decimals: 2 })
 
 const formatCost = (value: number): string => {
   if (value >= 1000) {

@@ -71,6 +71,17 @@ func (Account) Fields() []ent.Field {
 			MaxLen(20).
 			NotEmpty(),
 
+		// subscription_tier: 账号订阅档位（用于定价助手数据驱动定额）
+		// 取值约定（按 platform 分）：
+		//   openai: "free" | "plus" | "pro_5x" | "pro_20x"
+		//   anthropic: "free" | "pro" | "max_5x" | "max_20x"
+		//   gemini: "free" | "pro" | "ultra"
+		// 空字符串表示未标记，统计时会单独归类为"未分类"
+		field.String("subscription_tier").
+			MaxLen(32).
+			Optional().
+			Default(""),
+
 		// credentials: 认证凭证，以 JSONB 格式存储
 		// 结构取决于 type 字段：
 		// - api_key: {"api_key": "sk-xxx"}

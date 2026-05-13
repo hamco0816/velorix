@@ -99,6 +99,20 @@ func (_c *AccountCreate) SetType(v string) *AccountCreate {
 	return _c
 }
 
+// SetSubscriptionTier sets the "subscription_tier" field.
+func (_c *AccountCreate) SetSubscriptionTier(v string) *AccountCreate {
+	_c.mutation.SetSubscriptionTier(v)
+	return _c
+}
+
+// SetNillableSubscriptionTier sets the "subscription_tier" field if the given value is not nil.
+func (_c *AccountCreate) SetNillableSubscriptionTier(v *string) *AccountCreate {
+	if v != nil {
+		_c.SetSubscriptionTier(*v)
+	}
+	return _c
+}
+
 // SetCredentials sets the "credentials" field.
 func (_c *AccountCreate) SetCredentials(v map[string]interface{}) *AccountCreate {
 	_c.mutation.SetCredentials(v)
@@ -477,6 +491,10 @@ func (_c *AccountCreate) defaults() error {
 		v := account.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := _c.mutation.SubscriptionTier(); !ok {
+		v := account.DefaultSubscriptionTier
+		_c.mutation.SetSubscriptionTier(v)
+	}
 	if _, ok := _c.mutation.Credentials(); !ok {
 		if account.DefaultCredentials == nil {
 			return fmt.Errorf("ent: uninitialized account.DefaultCredentials (forgotten import ent/runtime?)")
@@ -548,6 +566,11 @@ func (_c *AccountCreate) check() error {
 	if v, ok := _c.mutation.GetType(); ok {
 		if err := account.TypeValidator(v); err != nil {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Account.type": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.SubscriptionTier(); ok {
+		if err := account.SubscriptionTierValidator(v); err != nil {
+			return &ValidationError{Name: "subscription_tier", err: fmt.Errorf(`ent: validator failed for field "Account.subscription_tier": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.Credentials(); !ok {
@@ -638,6 +661,10 @@ func (_c *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.GetType(); ok {
 		_spec.SetField(account.FieldType, field.TypeString, value)
 		_node.Type = value
+	}
+	if value, ok := _c.mutation.SubscriptionTier(); ok {
+		_spec.SetField(account.FieldSubscriptionTier, field.TypeString, value)
+		_node.SubscriptionTier = value
 	}
 	if value, ok := _c.mutation.Credentials(); ok {
 		_spec.SetField(account.FieldCredentials, field.TypeJSON, value)
@@ -909,6 +936,24 @@ func (u *AccountUpsert) SetType(v string) *AccountUpsert {
 // UpdateType sets the "type" field to the value that was provided on create.
 func (u *AccountUpsert) UpdateType() *AccountUpsert {
 	u.SetExcluded(account.FieldType)
+	return u
+}
+
+// SetSubscriptionTier sets the "subscription_tier" field.
+func (u *AccountUpsert) SetSubscriptionTier(v string) *AccountUpsert {
+	u.Set(account.FieldSubscriptionTier, v)
+	return u
+}
+
+// UpdateSubscriptionTier sets the "subscription_tier" field to the value that was provided on create.
+func (u *AccountUpsert) UpdateSubscriptionTier() *AccountUpsert {
+	u.SetExcluded(account.FieldSubscriptionTier)
+	return u
+}
+
+// ClearSubscriptionTier clears the value of the "subscription_tier" field.
+func (u *AccountUpsert) ClearSubscriptionTier() *AccountUpsert {
+	u.SetNull(account.FieldSubscriptionTier)
 	return u
 }
 
@@ -1430,6 +1475,27 @@ func (u *AccountUpsertOne) SetType(v string) *AccountUpsertOne {
 func (u *AccountUpsertOne) UpdateType() *AccountUpsertOne {
 	return u.Update(func(s *AccountUpsert) {
 		s.UpdateType()
+	})
+}
+
+// SetSubscriptionTier sets the "subscription_tier" field.
+func (u *AccountUpsertOne) SetSubscriptionTier(v string) *AccountUpsertOne {
+	return u.Update(func(s *AccountUpsert) {
+		s.SetSubscriptionTier(v)
+	})
+}
+
+// UpdateSubscriptionTier sets the "subscription_tier" field to the value that was provided on create.
+func (u *AccountUpsertOne) UpdateSubscriptionTier() *AccountUpsertOne {
+	return u.Update(func(s *AccountUpsert) {
+		s.UpdateSubscriptionTier()
+	})
+}
+
+// ClearSubscriptionTier clears the value of the "subscription_tier" field.
+func (u *AccountUpsertOne) ClearSubscriptionTier() *AccountUpsertOne {
+	return u.Update(func(s *AccountUpsert) {
+		s.ClearSubscriptionTier()
 	})
 }
 
@@ -2180,6 +2246,27 @@ func (u *AccountUpsertBulk) SetType(v string) *AccountUpsertBulk {
 func (u *AccountUpsertBulk) UpdateType() *AccountUpsertBulk {
 	return u.Update(func(s *AccountUpsert) {
 		s.UpdateType()
+	})
+}
+
+// SetSubscriptionTier sets the "subscription_tier" field.
+func (u *AccountUpsertBulk) SetSubscriptionTier(v string) *AccountUpsertBulk {
+	return u.Update(func(s *AccountUpsert) {
+		s.SetSubscriptionTier(v)
+	})
+}
+
+// UpdateSubscriptionTier sets the "subscription_tier" field to the value that was provided on create.
+func (u *AccountUpsertBulk) UpdateSubscriptionTier() *AccountUpsertBulk {
+	return u.Update(func(s *AccountUpsert) {
+		s.UpdateSubscriptionTier()
+	})
+}
+
+// ClearSubscriptionTier clears the value of the "subscription_tier" field.
+func (u *AccountUpsertBulk) ClearSubscriptionTier() *AccountUpsertBulk {
+	return u.Update(func(s *AccountUpsert) {
+		s.ClearSubscriptionTier()
 	})
 }
 

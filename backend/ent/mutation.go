@@ -2284,6 +2284,7 @@ type AccountMutation struct {
 	notes                     *string
 	platform                  *string
 	_type                     *string
+	subscription_tier         *string
 	credentials               *map[string]interface{}
 	extra                     *map[string]interface{}
 	concurrency               *int
@@ -2698,6 +2699,55 @@ func (m *AccountMutation) OldType(ctx context.Context) (v string, err error) {
 // ResetType resets all changes to the "type" field.
 func (m *AccountMutation) ResetType() {
 	m._type = nil
+}
+
+// SetSubscriptionTier sets the "subscription_tier" field.
+func (m *AccountMutation) SetSubscriptionTier(s string) {
+	m.subscription_tier = &s
+}
+
+// SubscriptionTier returns the value of the "subscription_tier" field in the mutation.
+func (m *AccountMutation) SubscriptionTier() (r string, exists bool) {
+	v := m.subscription_tier
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubscriptionTier returns the old "subscription_tier" field's value of the Account entity.
+// If the Account object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountMutation) OldSubscriptionTier(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubscriptionTier is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubscriptionTier requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubscriptionTier: %w", err)
+	}
+	return oldValue.SubscriptionTier, nil
+}
+
+// ClearSubscriptionTier clears the value of the "subscription_tier" field.
+func (m *AccountMutation) ClearSubscriptionTier() {
+	m.subscription_tier = nil
+	m.clearedFields[account.FieldSubscriptionTier] = struct{}{}
+}
+
+// SubscriptionTierCleared returns if the "subscription_tier" field was cleared in this mutation.
+func (m *AccountMutation) SubscriptionTierCleared() bool {
+	_, ok := m.clearedFields[account.FieldSubscriptionTier]
+	return ok
+}
+
+// ResetSubscriptionTier resets all changes to the "subscription_tier" field.
+func (m *AccountMutation) ResetSubscriptionTier() {
+	m.subscription_tier = nil
+	delete(m.clearedFields, account.FieldSubscriptionTier)
 }
 
 // SetCredentials sets the "credentials" field.
@@ -3945,7 +3995,7 @@ func (m *AccountMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AccountMutation) Fields() []string {
-	fields := make([]string, 0, 29)
+	fields := make([]string, 0, 30)
 	if m.created_at != nil {
 		fields = append(fields, account.FieldCreatedAt)
 	}
@@ -3966,6 +4016,9 @@ func (m *AccountMutation) Fields() []string {
 	}
 	if m._type != nil {
 		fields = append(fields, account.FieldType)
+	}
+	if m.subscription_tier != nil {
+		fields = append(fields, account.FieldSubscriptionTier)
 	}
 	if m.credentials != nil {
 		fields = append(fields, account.FieldCredentials)
@@ -4055,6 +4108,8 @@ func (m *AccountMutation) Field(name string) (ent.Value, bool) {
 		return m.Platform()
 	case account.FieldType:
 		return m.GetType()
+	case account.FieldSubscriptionTier:
+		return m.SubscriptionTier()
 	case account.FieldCredentials:
 		return m.Credentials()
 	case account.FieldExtra:
@@ -4122,6 +4177,8 @@ func (m *AccountMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldPlatform(ctx)
 	case account.FieldType:
 		return m.OldType(ctx)
+	case account.FieldSubscriptionTier:
+		return m.OldSubscriptionTier(ctx)
 	case account.FieldCredentials:
 		return m.OldCredentials(ctx)
 	case account.FieldExtra:
@@ -4223,6 +4280,13 @@ func (m *AccountMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetType(v)
+		return nil
+	case account.FieldSubscriptionTier:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubscriptionTier(v)
 		return nil
 	case account.FieldCredentials:
 		v, ok := value.(map[string]interface{})
@@ -4477,6 +4541,9 @@ func (m *AccountMutation) ClearedFields() []string {
 	if m.FieldCleared(account.FieldNotes) {
 		fields = append(fields, account.FieldNotes)
 	}
+	if m.FieldCleared(account.FieldSubscriptionTier) {
+		fields = append(fields, account.FieldSubscriptionTier)
+	}
 	if m.FieldCleared(account.FieldProxyID) {
 		fields = append(fields, account.FieldProxyID)
 	}
@@ -4538,6 +4605,9 @@ func (m *AccountMutation) ClearField(name string) error {
 		return nil
 	case account.FieldNotes:
 		m.ClearNotes()
+		return nil
+	case account.FieldSubscriptionTier:
+		m.ClearSubscriptionTier()
 		return nil
 	case account.FieldProxyID:
 		m.ClearProxyID()
@@ -4609,6 +4679,9 @@ func (m *AccountMutation) ResetField(name string) error {
 		return nil
 	case account.FieldType:
 		m.ResetType()
+		return nil
+	case account.FieldSubscriptionTier:
+		m.ResetSubscriptionTier()
 		return nil
 	case account.FieldCredentials:
 		m.ResetCredentials()

@@ -174,7 +174,7 @@
             白名单为空
           </div>
           <div v-else class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-dark-700">
+            <table class="w-full min-w-[480px] divide-y divide-gray-200 dark:divide-dark-700">
               <thead class="bg-gray-50 dark:bg-dark-800">
                 <tr>
                   <th class="table-th">User ID</th>
@@ -221,7 +221,7 @@
             时间窗口内无规则命中数据
           </div>
           <div v-else class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-dark-700">
+            <table class="w-full min-w-[920px] divide-y divide-gray-200 dark:divide-dark-700">
               <thead class="bg-gray-50 dark:bg-dark-800">
                 <tr>
                   <th class="table-th">规则词</th>
@@ -270,7 +270,7 @@
 
       <section class="surface-card overflow-hidden">
         <div class="overflow-x-auto px-4 pt-4">
-          <table class="min-w-full divide-y divide-gray-200 dark:divide-dark-700">
+          <table class="w-full min-w-[960px] divide-y divide-gray-200 dark:divide-dark-700">
             <thead class="bg-gray-50 dark:bg-dark-800">
               <tr>
                 <th class="table-th">时间</th>

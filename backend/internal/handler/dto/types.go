@@ -163,6 +163,7 @@ type Account struct {
 	Notes              *string        `json:"notes"`
 	Platform           string         `json:"platform"`
 	Type               string         `json:"type"`
+	SubscriptionTier   string         `json:"subscription_tier"`
 	Credentials        map[string]any `json:"credentials"`
 	Extra              map[string]any `json:"extra"`
 	ProxyID            *int64         `json:"proxy_id"`

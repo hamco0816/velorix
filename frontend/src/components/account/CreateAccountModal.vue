@@ -67,6 +67,17 @@
         <p class="input-hint">{{ t('admin.accounts.notesHint') }}</p>
       </div>
 
+      <!-- 订阅档位：可选；用于定价助手按档位聚合用量统计 -->
+      <div>
+        <label class="input-label">{{ t('admin.accounts.subscriptionTier') }}</label>
+        <Select
+          v-model="form.subscription_tier"
+          :options="subscriptionTierOptions"
+          :placeholder="t('admin.accounts.subscriptionTierPlaceholder')"
+        />
+        <p class="input-hint">{{ t('admin.accounts.subscriptionTierHint') }}</p>
+      </div>
+
       <!-- Platform Selection - Segmented Control Style -->
       <div>
         <label class="input-label">{{ t('admin.accounts.platform') }}</label>
@@ -3463,6 +3474,7 @@ const form = reactive({
   notes: '',
   platform: 'anthropic' as AccountPlatform,
   type: 'oauth' as AccountType, // Will be 'oauth', 'setup-token', or 'apikey'
+  subscription_tier: '' as string, // 订阅档位（用于定价助手）
   credentials: {} as Record<string, unknown>,
   proxy_id: null as number | null,
   concurrency: 10,
@@ -3471,6 +3483,38 @@ const form = reactive({
   rate_multiplier: 1,
   group_ids: [] as number[],
   expires_at: null as number | null
+})
+
+// 订阅档位下拉：按 platform 动态切换可选档位（保留空选项 = 未分类）
+const subscriptionTierOptions = computed(() => {
+  const base = [{ value: '', label: t('admin.accounts.tierUnclassified') }]
+  if (form.platform === 'openai') {
+    return [
+      ...base,
+      { value: 'free', label: 'Free' },
+      { value: 'plus', label: 'Plus' },
+      { value: 'pro_5x', label: 'Pro 5x' },
+      { value: 'pro_20x', label: 'Pro 20x' },
+    ]
+  }
+  if (form.platform === 'anthropic') {
+    return [
+      ...base,
+      { value: 'free', label: 'Free' },
+      { value: 'pro', label: 'Pro' },
+      { value: 'max_5x', label: 'Max 5x' },
+      { value: 'max_20x', label: 'Max 20x' },
+    ]
+  }
+  if (form.platform === 'gemini') {
+    return [
+      ...base,
+      { value: 'free', label: 'Free' },
+      { value: 'pro', label: 'Pro' },
+      { value: 'ultra', label: 'Ultra' },
+    ]
+  }
+  return base
 })
 
 // Helper to check if current type needs OAuth flow
@@ -4513,6 +4557,7 @@ const createAccountAndFinish = async (
     notes: form.notes,
     platform,
     type,
+    subscription_tier: form.subscription_tier || undefined,
     credentials,
     extra: finalExtra,
     proxy_id: form.proxy_id,

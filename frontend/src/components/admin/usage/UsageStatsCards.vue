@@ -73,6 +73,7 @@
 import { useI18n } from 'vue-i18n'
 import type { AdminUsageStatsResponse } from '@/api/admin/usage'
 import Icon from '@/components/icons/Icon.vue'
+import { formatCompactNumber } from '@/utils/format'
 
 defineProps<{ stats: AdminUsageStatsResponse | null }>()
 
@@ -81,12 +82,8 @@ const { t } = useI18n()
 const formatDuration = (ms: number) =>
   ms < 1000 ? `${ms.toFixed(0)}ms` : `${(ms / 1000).toFixed(2)}s`
 
-const formatTokens = (value: number) => {
-  if (value >= 1e9) return (value / 1e9).toFixed(2) + 'B'
-  if (value >= 1e6) return (value / 1e6).toFixed(2) + 'M'
-  if (value >= 1e3) return (value / 1e3).toFixed(2) + 'K'
-  return value.toLocaleString()
-}
+// 走全局 formatCompactNumber，统一支持到 T/P 单位；保留 2 位小数与原有显示风格一致
+const formatTokens = (value: number) => formatCompactNumber(value, { decimals: 2 })
 </script>
 
 <style scoped>

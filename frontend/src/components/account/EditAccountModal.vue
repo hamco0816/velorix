@@ -26,6 +26,17 @@
         <p class="input-hint">{{ t('admin.accounts.notesHint') }}</p>
       </div>
 
+      <!-- 订阅档位（用于定价助手按档位聚合用量统计） -->
+      <div>
+        <label class="input-label">{{ t('admin.accounts.subscriptionTier') }}</label>
+        <Select
+          v-model="form.subscription_tier"
+          :options="subscriptionTierOptions"
+          :placeholder="t('admin.accounts.subscriptionTierPlaceholder')"
+        />
+        <p class="input-hint">{{ t('admin.accounts.subscriptionTierHint') }}</p>
+      </div>
+
       <!-- API Key fields (only for apikey type) -->
       <div v-if="account.type === 'apikey'" class="space-y-4">
         <div>
@@ -2396,6 +2407,7 @@ const mixedChannelWarningMessageText = computed(() => {
 const form = reactive({
   name: '',
   notes: '',
+  subscription_tier: '' as string, // 订阅档位（用于定价助手）
   proxy_id: null as number | null,
   concurrency: 1,
   load_factor: null as number | null,
@@ -2404,6 +2416,39 @@ const form = reactive({
   status: 'active' as 'active' | 'inactive' | 'error',
   group_ids: [] as number[],
   expires_at: null as number | null
+})
+
+// 订阅档位下拉：按 platform 动态切换可选档位
+const subscriptionTierOptions = computed(() => {
+  const base = [{ value: '', label: t('admin.accounts.tierUnclassified') }]
+  const platform = props.account?.platform
+  if (platform === 'openai') {
+    return [
+      ...base,
+      { value: 'free', label: 'Free' },
+      { value: 'plus', label: 'Plus' },
+      { value: 'pro_5x', label: 'Pro 5x' },
+      { value: 'pro_20x', label: 'Pro 20x' },
+    ]
+  }
+  if (platform === 'anthropic') {
+    return [
+      ...base,
+      { value: 'free', label: 'Free' },
+      { value: 'pro', label: 'Pro' },
+      { value: 'max_5x', label: 'Max 5x' },
+      { value: 'max_20x', label: 'Max 20x' },
+    ]
+  }
+  if (platform === 'gemini') {
+    return [
+      ...base,
+      { value: 'free', label: 'Free' },
+      { value: 'pro', label: 'Pro' },
+      { value: 'ultra', label: 'Ultra' },
+    ]
+  }
+  return base
 })
 
 const statusOptions = computed(() => {
@@ -2450,6 +2495,7 @@ const syncFormFromAccount = (newAccount: Account | null) => {
   mixedChannelWarningAction.value = null
   form.name = newAccount.name
   form.notes = newAccount.notes || ''
+  form.subscription_tier = newAccount.subscription_tier || ''
   form.proxy_id = newAccount.proxy_id
   form.concurrency = newAccount.concurrency
   form.load_factor = newAccount.load_factor ?? null

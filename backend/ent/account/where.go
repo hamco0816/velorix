@@ -90,6 +90,11 @@ func Type(v string) predicate.Account {
 	return predicate.Account(sql.FieldEQ(FieldType, v))
 }
 
+// SubscriptionTier applies equality check predicate on the "subscription_tier" field. It's identical to SubscriptionTierEQ.
+func SubscriptionTier(v string) predicate.Account {
+	return predicate.Account(sql.FieldEQ(FieldSubscriptionTier, v))
+}
+
 // ProxyID applies equality check predicate on the "proxy_id" field. It's identical to ProxyIDEQ.
 func ProxyID(v int64) predicate.Account {
 	return predicate.Account(sql.FieldEQ(FieldProxyID, v))
@@ -588,6 +593,81 @@ func TypeEqualFold(v string) predicate.Account {
 // TypeContainsFold applies the ContainsFold predicate on the "type" field.
 func TypeContainsFold(v string) predicate.Account {
 	return predicate.Account(sql.FieldContainsFold(FieldType, v))
+}
+
+// SubscriptionTierEQ applies the EQ predicate on the "subscription_tier" field.
+func SubscriptionTierEQ(v string) predicate.Account {
+	return predicate.Account(sql.FieldEQ(FieldSubscriptionTier, v))
+}
+
+// SubscriptionTierNEQ applies the NEQ predicate on the "subscription_tier" field.
+func SubscriptionTierNEQ(v string) predicate.Account {
+	return predicate.Account(sql.FieldNEQ(FieldSubscriptionTier, v))
+}
+
+// SubscriptionTierIn applies the In predicate on the "subscription_tier" field.
+func SubscriptionTierIn(vs ...string) predicate.Account {
+	return predicate.Account(sql.FieldIn(FieldSubscriptionTier, vs...))
+}
+
+// SubscriptionTierNotIn applies the NotIn predicate on the "subscription_tier" field.
+func SubscriptionTierNotIn(vs ...string) predicate.Account {
+	return predicate.Account(sql.FieldNotIn(FieldSubscriptionTier, vs...))
+}
+
+// SubscriptionTierGT applies the GT predicate on the "subscription_tier" field.
+func SubscriptionTierGT(v string) predicate.Account {
+	return predicate.Account(sql.FieldGT(FieldSubscriptionTier, v))
+}
+
+// SubscriptionTierGTE applies the GTE predicate on the "subscription_tier" field.
+func SubscriptionTierGTE(v string) predicate.Account {
+	return predicate.Account(sql.FieldGTE(FieldSubscriptionTier, v))
+}
+
+// SubscriptionTierLT applies the LT predicate on the "subscription_tier" field.
+func SubscriptionTierLT(v string) predicate.Account {
+	return predicate.Account(sql.FieldLT(FieldSubscriptionTier, v))
+}
+
+// SubscriptionTierLTE applies the LTE predicate on the "subscription_tier" field.
+func SubscriptionTierLTE(v string) predicate.Account {
+	return predicate.Account(sql.FieldLTE(FieldSubscriptionTier, v))
+}
+
+// SubscriptionTierContains applies the Contains predicate on the "subscription_tier" field.
+func SubscriptionTierContains(v string) predicate.Account {
+	return predicate.Account(sql.FieldContains(FieldSubscriptionTier, v))
+}
+
+// SubscriptionTierHasPrefix applies the HasPrefix predicate on the "subscription_tier" field.
+func SubscriptionTierHasPrefix(v string) predicate.Account {
+	return predicate.Account(sql.FieldHasPrefix(FieldSubscriptionTier, v))
+}
+
+// SubscriptionTierHasSuffix applies the HasSuffix predicate on the "subscription_tier" field.
+func SubscriptionTierHasSuffix(v string) predicate.Account {
+	return predicate.Account(sql.FieldHasSuffix(FieldSubscriptionTier, v))
+}
+
+// SubscriptionTierIsNil applies the IsNil predicate on the "subscription_tier" field.
+func SubscriptionTierIsNil() predicate.Account {
+	return predicate.Account(sql.FieldIsNull(FieldSubscriptionTier))
+}
+
+// SubscriptionTierNotNil applies the NotNil predicate on the "subscription_tier" field.
+func SubscriptionTierNotNil() predicate.Account {
+	return predicate.Account(sql.FieldNotNull(FieldSubscriptionTier))
+}
+
+// SubscriptionTierEqualFold applies the EqualFold predicate on the "subscription_tier" field.
+func SubscriptionTierEqualFold(v string) predicate.Account {
+	return predicate.Account(sql.FieldEqualFold(FieldSubscriptionTier, v))
+}
+
+// SubscriptionTierContainsFold applies the ContainsFold predicate on the "subscription_tier" field.
+func SubscriptionTierContainsFold(v string) predicate.Account {
+	return predicate.Account(sql.FieldContainsFold(FieldSubscriptionTier, v))
 }
 
 // ProxyIDEQ applies the EQ predicate on the "proxy_id" field.

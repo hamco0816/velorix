@@ -279,6 +279,7 @@ type CreateAccountInput struct {
 	Notes              *string
 	Platform           string
 	Type               string
+	SubscriptionTier   string // 订阅档位（用于定价助手）
 	Credentials        map[string]any
 	Extra              map[string]any
 	ProxyID            *int64
@@ -299,7 +300,8 @@ type CreateAccountInput struct {
 type UpdateAccountInput struct {
 	Name                  string
 	Notes                 *string
-	Type                  string // Account type: oauth, setup-token, apikey
+	Type                  string  // Account type: oauth, setup-token, apikey
+	SubscriptionTier      *string // 订阅档位（用 *string 区分"未提供"和"清空"）
 	Credentials           map[string]any
 	Extra                 map[string]any
 	ProxyID               *int64
@@ -2417,17 +2419,18 @@ func (s *adminServiceImpl) CreateAccount(ctx context.Context, input *CreateAccou
 	}
 
 	account := &Account{
-		Name:        input.Name,
-		Notes:       normalizeAccountNotes(input.Notes),
-		Platform:    input.Platform,
-		Type:        input.Type,
-		Credentials: input.Credentials,
-		Extra:       input.Extra,
-		ProxyID:     input.ProxyID,
-		Concurrency: input.Concurrency,
-		Priority:    input.Priority,
-		Status:      StatusActive,
-		Schedulable: true,
+		Name:             input.Name,
+		Notes:            normalizeAccountNotes(input.Notes),
+		Platform:         input.Platform,
+		Type:             input.Type,
+		SubscriptionTier: input.SubscriptionTier,
+		Credentials:      input.Credentials,
+		Extra:            input.Extra,
+		ProxyID:          input.ProxyID,
+		Concurrency:      input.Concurrency,
+		Priority:         input.Priority,
+		Status:           StatusActive,
+		Schedulable:      true,
 	}
 	// 预计算固定时间重置的下次重置时间
 	if account.Extra != nil {
@@ -2508,6 +2511,9 @@ func (s *adminServiceImpl) UpdateAccount(ctx context.Context, id int64, input *U
 	}
 	if input.Type != "" {
 		account.Type = input.Type
+	}
+	if input.SubscriptionTier != nil {
+		account.SubscriptionTier = *input.SubscriptionTier
 	}
 	if input.Notes != nil {
 		account.Notes = normalizeAccountNotes(input.Notes)

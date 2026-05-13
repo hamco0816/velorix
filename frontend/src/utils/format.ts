@@ -238,34 +238,60 @@ export function formatCostFixed(amount: number, fractionDigits: number = 4): str
   return amount.toFixed(fractionDigits)
 }
 
+// 大数字单位换算阶梯，从大到小排列；新增 P/T 是为高吞吐场景预留
+// 不引入更高单位（如 E = 10^18），因为 token 计数还远没到那个量级
+const COMPACT_NUMBER_SCALES = [
+  { threshold: 1_000_000_000_000_000, suffix: 'P', divisor: 1_000_000_000_000_000 }, // Peta
+  { threshold: 1_000_000_000_000, suffix: 'T', divisor: 1_000_000_000_000 },        // Tera
+  { threshold: 1_000_000_000, suffix: 'B', divisor: 1_000_000_000 },                // Billion
+  { threshold: 1_000_000, suffix: 'M', divisor: 1_000_000 },                        // Million
+  { threshold: 1_000, suffix: 'K', divisor: 1_000 },                                // Kilo
+] as const
+
+type CompactNumberScale = (typeof COMPACT_NUMBER_SCALES)[number]['suffix']
+
 /**
  * 格式化 token 数量（>=1M 显示为 M，>=1K 显示为 K，保留 1 位小数）
  * @param tokens token 数量
- * @returns 格式化后的字符串，如 "950", "1.2K", "3.5M"
+ * @returns 格式化后的字符串，如 "950", "1.2K", "3.5M", "1.2B", "5.0T"
  */
 export function formatTokensK(tokens: number): string {
-  if (tokens >= 1_000_000) return `${(tokens / 1_000_000).toFixed(1)}M`
-  if (tokens >= 1000) return `${(tokens / 1000).toFixed(1)}K`
-  return tokens.toString()
+  return formatCompactNumber(tokens)
 }
 
 /**
- * 格式化大数字（K/M/B，保留 1 位小数）
+ * 格式化大数字（K/M/B/T/P）。
  * @param num 数字
- * @param options allowBillions=false 时最高只显示到 M
+ * @param options
+ *   - allowBillions=false：最高只显示到 M（用于"请求数"这种不会上 B 的指标，避免误导）
+ *   - maxScale：最高展示到哪一档（默认 P，即支持所有阶梯）。例如设为 'M' 时 1B 会显示为 "1000.0M"。
+ *   - decimals：保留小数位数（默认 1）
  */
 export function formatCompactNumber(
   num: number | null | undefined,
-  options?: { allowBillions?: boolean }
+  options?: {
+    allowBillions?: boolean
+    maxScale?: CompactNumberScale
+    decimals?: number
+  }
 ): string {
   if (num === null || num === undefined) return '0'
 
   const abs = Math.abs(num)
   const allowBillions = options?.allowBillions !== false
+  const decimals = options?.decimals ?? 1
+  // 老接口 allowBillions=false 等价于 maxScale='M'
+  const maxScale: CompactNumberScale = options?.maxScale ?? (allowBillions ? 'P' : 'M')
 
-  if (allowBillions && abs >= 1_000_000_000) return `${(num / 1_000_000_000).toFixed(1)}B`
-  if (abs >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`
-  if (abs >= 1_000) return `${(num / 1_000).toFixed(1)}K`
+  // 跳过所有比 maxScale 更高的档位，保证不会显示超出预期的单位
+  const maxScaleIdx = COMPACT_NUMBER_SCALES.findIndex((s) => s.suffix === maxScale)
+  const usable = maxScaleIdx >= 0 ? COMPACT_NUMBER_SCALES.slice(maxScaleIdx) : COMPACT_NUMBER_SCALES
+
+  for (const scale of usable) {
+    if (abs >= scale.threshold) {
+      return `${(num / scale.divisor).toFixed(decimals)}${scale.suffix}`
+    }
+  }
   return num.toString()
 }
 

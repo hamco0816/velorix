@@ -41,6 +41,7 @@
 import { useI18n } from 'vue-i18n'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import type { UserBreakdownItem } from '@/types'
+import { formatCompactNumber } from '@/utils/format'
 
 const { t } = useI18n()
 
@@ -49,12 +50,8 @@ defineProps<{
   loading?: boolean
 }>()
 
-const formatTokens = (value: number): string => {
-  if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(2)}B`
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(2)}M`
-  if (value >= 1_000) return `${(value / 1_000).toFixed(2)}K`
-  return value.toLocaleString()
-}
+// 走全局 formatCompactNumber，统一支持到 T/P 单位
+const formatTokens = (value: number): string => formatCompactNumber(value, { decimals: 2 })
 
 const formatCost = (value: number): string => {
   if (value >= 1000) return (value / 1000).toFixed(2) + 'K'

@@ -29,6 +29,8 @@ const (
 	FieldPlatform = "platform"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
+	// FieldSubscriptionTier holds the string denoting the subscription_tier field in the database.
+	FieldSubscriptionTier = "subscription_tier"
 	// FieldCredentials holds the string denoting the credentials field in the database.
 	FieldCredentials = "credentials"
 	// FieldExtra holds the string denoting the extra field in the database.
@@ -121,6 +123,7 @@ var Columns = []string{
 	FieldNotes,
 	FieldPlatform,
 	FieldType,
+	FieldSubscriptionTier,
 	FieldCredentials,
 	FieldExtra,
 	FieldProxyID,
@@ -181,6 +184,10 @@ var (
 	PlatformValidator func(string) error
 	// TypeValidator is a validator for the "type" field. It is called by the builders before save.
 	TypeValidator func(string) error
+	// DefaultSubscriptionTier holds the default value on creation for the "subscription_tier" field.
+	DefaultSubscriptionTier string
+	// SubscriptionTierValidator is a validator for the "subscription_tier" field. It is called by the builders before save.
+	SubscriptionTierValidator func(string) error
 	// DefaultCredentials holds the default value on creation for the "credentials" field.
 	DefaultCredentials func() map[string]interface{}
 	// DefaultExtra holds the default value on creation for the "extra" field.
@@ -244,6 +251,11 @@ func ByPlatform(opts ...sql.OrderTermOption) OrderOption {
 // ByType orders the results by the type field.
 func ByType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldType, opts...).ToFunc()
+}
+
+// BySubscriptionTier orders the results by the subscription_tier field.
+func BySubscriptionTier(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSubscriptionTier, opts...).ToFunc()
 }
 
 // ByProxyID orders the results by the proxy_id field.

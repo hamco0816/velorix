@@ -358,6 +358,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
+import { formatCompactNumber } from '@/utils/format'
 
 const { t } = useI18n()
 import { adminAPI } from '@/api/admin'
@@ -602,13 +603,9 @@ const userTrendChartData = computed(() => {
   return { labels: sortedDates, datasets }
 })
 
-const formatTokens = (value: number | undefined): string => {
-  if (value === undefined || value === null) return '0'
-  if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(2)}B`
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(2)}M`
-  if (value >= 1_000) return `${(value / 1_000).toFixed(2)}K`
-  return value.toLocaleString()
-}
+// 走全局 formatCompactNumber，统一支持到 T/P 单位
+const formatTokens = (value: number | undefined): string =>
+  formatCompactNumber(value, { decimals: 2 })
 
 const formatNumber = (value: number): string => value.toLocaleString()
 
