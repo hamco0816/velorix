@@ -27,9 +27,9 @@ func NewPricingAdvisorService(db *sql.DB) *PricingAdvisorService {
 // TierStats 单个 (platform, tier) 分位统计。
 type TierStats struct {
 	Platform         string  `json:"platform"`
-	Tier             string  `json:"tier"`             // 空字符串表示未分类
-	SampleAccounts   int     `json:"sample_accounts"`  // 样本账号数
-	Window5hAvg      float64 `json:"window_5h_avg"`    // 每账号过去 N 天 5h 滑窗成本峰值的均值（USD）
+	Tier             string  `json:"tier"`            // 空字符串表示未分类
+	SampleAccounts   int     `json:"sample_accounts"` // 样本账号数
+	Window5hAvg      float64 `json:"window_5h_avg"`   // 每账号过去 N 天 5h 滑窗成本峰值的均值（USD）
 	Window5hP50      float64 `json:"window_5h_p50"`
 	Window5hP95      float64 `json:"window_5h_p95"`
 	Window5hMax      float64 `json:"window_5h_max"`

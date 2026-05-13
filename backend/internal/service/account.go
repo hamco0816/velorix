@@ -17,19 +17,19 @@ import (
 )
 
 type Account struct {
-	ID          int64
-	Name        string
-	Notes       *string
-	Platform    string
-	Type        string
+	ID       int64
+	Name     string
+	Notes    *string
+	Platform string
+	Type     string
 	// SubscriptionTier 账号订阅档位（用于定价助手按档位聚合用量）
 	// 取值约定见 ent/schema/account.go 的 subscription_tier 字段注释
 	SubscriptionTier string
 	Credentials      map[string]any
 	Extra            map[string]any
 	ProxyID          *int64
-	Concurrency int
-	Priority    int
+	Concurrency      int
+	Priority         int
 	// RateMultiplier 账号计费倍率（>=0，允许 0 表示该账号计费为 0）。
 	// 使用指针用于兼容旧版本调度缓存（Redis）中缺字段的情况：nil 表示按 1.0 处理。
 	RateMultiplier     *float64
