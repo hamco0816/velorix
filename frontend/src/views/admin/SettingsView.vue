@@ -1444,12 +1444,12 @@
                     <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.registration.aiReviewApiKeyId") }}
                     </label>
-                    <input
-                      v-model.number="form.ai_review_api_key_id"
-                      type="number"
-                      min="0"
-                      class="input text-sm"
-                      placeholder="123"
+                    <Select
+                      v-model="form.ai_review_api_key_id"
+                      :options="aiReviewApiKeyOptions"
+                      :placeholder="aiReviewApiKeysLoading ? t('common.loading') : t('admin.settings.registration.aiReviewApiKeySelectPlaceholder')"
+                      :disabled="aiReviewApiKeysLoading"
+                      searchable
                     />
                     <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.registration.aiReviewApiKeyIdNote") }}
@@ -1459,12 +1459,12 @@
                     <label class="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.registration.aiReviewGroupId") }}
                     </label>
-                    <input
-                      v-model.number="form.ai_review_group_id"
-                      type="number"
-                      min="0"
-                      class="input text-sm"
-                      placeholder="1"
+                    <Select
+                      v-model="form.ai_review_group_id"
+                      :options="aiReviewGroupOptions"
+                      :placeholder="aiReviewGroupsLoading ? t('common.loading') : t('admin.settings.registration.aiReviewGroupSelectPlaceholder')"
+                      :disabled="aiReviewGroupsLoading"
+                      searchable
                     />
                     <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.registration.aiReviewGroupIdNote") }}
@@ -5985,11 +5985,14 @@ import type {
 } from "@/api/admin/settings";
 import type {
   AdminGroup,
+  ApiKey,
   Proxy,
   NotifyEmailEntry,
   ContactMethod,
   ContactMethodType,
 } from "@/types";
+import { keysAPI } from "@/api/keys";
+import type { SelectOption } from "@/components/common/Select.vue";
 import type { ProviderInstance } from "@/types/payment";
 import AppLayout from "@/components/layout/AppLayout.vue";
 import Icon from "@/components/icons/Icon.vue";
@@ -6876,6 +6879,60 @@ const contactQrInfo = ref<Record<number, string>>({}); // 压缩成功后的提�
 const MAX_QR_INPUT_BYTES = 5 * 1024 * 1024; // 输入图最大 5MB，再大不让传（防恶意）
 const MAX_QR_DATAURL_LEN = 65536; // 跟 backend maxContactImageDataLen 一致
 const QR_TARGET_DIMENSION = 600; // 压缩目标边长（QR 码 500-600px 完全可扫）
+
+// AI 审核 API Key / 分组下拉选项：避免让 admin 手填 ID
+// 复用 keysAPI（返回当前登录用户的 keys，admin 用自己的 key 调内部 AI）
+// 复用 adminAPI.groups.getAll 列所有可调度分组
+const aiReviewApiKeys = ref<ApiKey[]>([]);
+const aiReviewGroups = ref<AdminGroup[]>([]);
+const aiReviewApiKeysLoading = ref(false);
+const aiReviewGroupsLoading = ref(false);
+async function loadAIReviewOptions() {
+  if (aiReviewApiKeys.value.length === 0 && !aiReviewApiKeysLoading.value) {
+    aiReviewApiKeysLoading.value = true;
+    try {
+      // 一次拉满 admin 自己的 key 列表（admin 通常没几个 key）
+      const res = await keysAPI.list(1, 100);
+      aiReviewApiKeys.value = res.items || [];
+    } catch (_err) {
+      aiReviewApiKeys.value = [];
+    } finally {
+      aiReviewApiKeysLoading.value = false;
+    }
+  }
+  if (aiReviewGroups.value.length === 0 && !aiReviewGroupsLoading.value) {
+    aiReviewGroupsLoading.value = true;
+    try {
+      aiReviewGroups.value = await adminAPI.groups.getAll();
+    } catch (_err) {
+      aiReviewGroups.value = [];
+    } finally {
+      aiReviewGroupsLoading.value = false;
+    }
+  }
+}
+const aiReviewApiKeyOptions = computed<SelectOption[]>(() => [
+  { value: 0, label: t("admin.settings.registration.aiReviewApiKeyNotSelected") },
+  ...aiReviewApiKeys.value.map((k) => ({
+    value: k.id,
+    label: `${k.name} (#${k.id})`,
+  })),
+]);
+const aiReviewGroupOptions = computed<SelectOption[]>(() => [
+  { value: 0, label: t("admin.settings.registration.aiReviewGroupNotSelected") },
+  ...aiReviewGroups.value.map((g) => ({
+    value: g.id,
+    label: `${g.name} · ${g.platform}`,
+  })),
+]);
+// 启用 AI 审核时按需加载选项（避免页面初始化就拉这两个接口）
+watch(
+  () => form.ai_review_enabled,
+  (enabled) => {
+    if (enabled) void loadAIReviewOptions();
+  },
+  { immediate: true },
+);
 
 // AI 审核测试弹窗：admin 配好 AI 后用典型样本验证模型 + prompt 是否准
 const aiReviewTestOpen = ref(false);

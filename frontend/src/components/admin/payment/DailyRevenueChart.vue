@@ -82,7 +82,10 @@ const chartOptions = {
       type: 'linear' as const,
       display: true,
       position: 'left' as const,
-      title: { display: true, text: t('payment.admin.revenue') },
+      title: { display: true, text: `${t('payment.admin.revenue')} (¥)` },
+      ticks: {
+        callback: (value: number | string) => `¥${Number(value).toFixed(0)}`,
+      },
     },
     y1: {
       type: 'linear' as const,
@@ -94,6 +97,19 @@ const chartOptions = {
   },
   plugins: {
     legend: { position: 'top' as const },
+    tooltip: {
+      callbacks: {
+        // 收入序列显示 ¥ 前缀，订单数序列保持纯数字
+        label: (ctx: { dataset: { label?: string }; parsed: { y: number | null } }) => {
+          const label = ctx.dataset.label || ''
+          const y = ctx.parsed.y ?? 0
+          if (label === t('payment.admin.revenue')) {
+            return `${label}: ¥${y.toFixed(2)}`
+          }
+          return `${label}: ${y}`
+        },
+      },
+    },
   }
 }
 </script>

@@ -1916,7 +1916,26 @@ export default {
         historyQuotaAfter: 'Historical Rebate After',
         invitedAt: 'Invited At',
         rebatedAt: 'Rebated At',
-        transferredAt: 'Transferred At'
+        transferredAt: 'Transferred At',
+        quickRange: 'Quick range',
+        rangeAll: 'All',
+        rangeToday: 'Today',
+        range7d: 'Last 7 days',
+        range30d: 'Last 30 days',
+        empty: {
+          invites: {
+            title: 'No invite records yet',
+            description: 'When users sign up through your invite link and the binding succeeds, records will appear here.'
+          },
+          rebates: {
+            title: 'No rebate records yet',
+            description: 'When invitees place eligible recharge orders, rebates are credited automatically and shown here.'
+          },
+          transfers: {
+            title: 'No transfer records yet',
+            description: 'When affiliates move their rebate quota into wallet balance, the transfers appear here.'
+          }
+        }
       },
       overview: {
         title: 'Affiliate User Overview',
@@ -5247,10 +5266,14 @@ export default {
         ipLimitWindowNote: 'Recommended 60 (1 hour); range 1–1440',
         aiReviewTitle: 'AI Content Review for Risk Events',
         aiReviewHint: 'When a sensitive-filter rule triggers, asynchronously call an LLM to classify the content (pass / flag / reject) and write the result back to the risk event. Reuses your own ApiKey + group + model; no external Moderation API needed.',
-        aiReviewApiKeyId: 'ApiKey ID',
-        aiReviewApiKeyIdNote: 'Find the ID on the ApiKey management page. The review will consume this key\'s quota.',
-        aiReviewGroupId: 'Group ID',
-        aiReviewGroupIdNote: 'Find the ID on the Groups page. Determines which platform / routing.',
+        aiReviewApiKeyId: 'ApiKey',
+        aiReviewApiKeyIdNote: 'Pick one of your own ApiKeys. The review will consume this key\'s quota.',
+        aiReviewApiKeySelectPlaceholder: 'Select an ApiKey…',
+        aiReviewApiKeyNotSelected: '— Not selected —',
+        aiReviewGroupId: 'Group',
+        aiReviewGroupIdNote: 'Determines which platform / routing path the review uses.',
+        aiReviewGroupSelectPlaceholder: 'Select a group…',
+        aiReviewGroupNotSelected: '— Not selected —',
         aiReviewModel: 'Review Model',
         aiReviewModelNote: 'Recommend a cheap model such as claude-haiku-4-5 / gpt-5-mini.',
         aiReviewBillingWarn: 'Reviews go through the full gateway billing path of the chosen ApiKey. Use a cheap model + max 256 tokens per call; cost per review is typically < $0.001.',

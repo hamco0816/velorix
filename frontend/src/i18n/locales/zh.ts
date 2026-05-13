@@ -1942,7 +1942,26 @@ export default {
         historyQuotaAfter: '提取后历史返利',
         invitedAt: '邀请时间',
         rebatedAt: '返利时间',
-        transferredAt: '提取时间'
+        transferredAt: '提取时间',
+        quickRange: '快速选择',
+        rangeAll: '全部',
+        rangeToday: '今天',
+        range7d: '近 7 天',
+        range30d: '近 30 天',
+        empty: {
+          invites: {
+            title: '暂无邀请记录',
+            description: '当用户通过你站点的邀请链接注册并完成绑定后，记录会出现在这里。'
+          },
+          rebates: {
+            title: '暂无返利记录',
+            description: '当被邀请人产生符合条件的充值订单时，返利会自动入账并显示在这里。'
+          },
+          transfers: {
+            title: '暂无提取记录',
+            description: '当邀请人将返利配额转入钱包余额时，提取记录会显示在这里。'
+          }
+        }
       },
       overview: {
         title: '用户返利概览',
@@ -5415,10 +5434,14 @@ export default {
         ipLimitWindowNote: '推荐 60（1 小时）；范围 1–1440',
         aiReviewTitle: 'AI 审核风控事件',
         aiReviewHint: '风控规则拦截到内容后，异步调用 LLM 做二次内容分类（pass / flag / reject），结果回写到风控记录。复用项目自己的 ApiKey + 分组 + 模型，不依赖外部 Moderation API。',
-        aiReviewApiKeyId: 'ApiKey ID',
-        aiReviewApiKeyIdNote: '在 ApiKey 管理页面查看 ID。审核会消耗该 Key 的额度。',
-        aiReviewGroupId: '分组 ID',
-        aiReviewGroupIdNote: '在分组管理页面查看 ID。决定走哪个平台 / 调度链路。',
+        aiReviewApiKeyId: 'ApiKey',
+        aiReviewApiKeyIdNote: '从你自己的 ApiKey 中选一把。审核会消耗该 Key 的额度。',
+        aiReviewApiKeySelectPlaceholder: '选择一把 ApiKey…',
+        aiReviewApiKeyNotSelected: '— 未选择 —',
+        aiReviewGroupId: '分组',
+        aiReviewGroupIdNote: '决定走哪个平台 / 调度链路。',
+        aiReviewGroupSelectPlaceholder: '选择一个分组…',
+        aiReviewGroupNotSelected: '— 未选择 —',
         aiReviewModel: '审核模型',
         aiReviewModelNote: '推荐用便宜模型，如 claude-haiku-4-5 / gpt-5-mini。',
         aiReviewBillingWarn: '审核会按上面填的 ApiKey 走完整 gateway 链路并扣费。建议用便宜模型 + 单次请求 ≤ 256 tokens，单次审核成本通常 < $0.001。',

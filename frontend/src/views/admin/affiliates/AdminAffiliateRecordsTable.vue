@@ -1,17 +1,37 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <TablePageLayout>
       <template #filters>
-        <div class="flex flex-wrap items-center gap-3">
-          <div class="relative w-full md:w-80">
-            <Icon name="search" size="md" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input v-model="filters.search" type="text" class="input pl-10" :placeholder="t('admin.affiliates.records.searchPlaceholder')" @input="debounceLoad" />
+        <div class="flex flex-col gap-3">
+          <!-- 顶部：搜索 + 日期范围 + 刷新 -->
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="relative w-full md:w-80">
+              <Icon name="search" size="md" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input v-model="filters.search" type="text" class="input pl-10" :placeholder="t('admin.affiliates.records.searchPlaceholder')" @input="debounceLoad" />
+            </div>
+            <input v-model="filters.start_at" type="date" class="input w-full sm:w-44" :title="t('admin.affiliates.records.startAt')" @change="reloadFromFirstPage" />
+            <span class="text-xs text-gray-400">→</span>
+            <input v-model="filters.end_at" type="date" class="input w-full sm:w-44" :title="t('admin.affiliates.records.endAt')" @change="reloadFromFirstPage" />
+            <button class="btn btn-secondary px-2 md:px-3" :disabled="loading" :title="t('common.refresh')" @click="loadRecords">
+              <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
+            </button>
           </div>
-          <input v-model="filters.start_at" type="date" class="input w-full sm:w-44" :title="t('admin.affiliates.records.startAt')" @change="reloadFromFirstPage" />
-          <input v-model="filters.end_at" type="date" class="input w-full sm:w-44" :title="t('admin.affiliates.records.endAt')" @change="reloadFromFirstPage" />
-          <button class="btn btn-secondary px-2 md:px-3" :disabled="loading" :title="t('common.refresh')" @click="loadRecords">
-            <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
-          </button>
+          <!-- 快速日期预设：让 admin 一键看常用区间，不用手动选日期 -->
+          <div class="flex flex-wrap items-center gap-1.5">
+            <span class="text-xs font-medium text-gray-400 dark:text-dark-500">{{ t('admin.affiliates.records.quickRange') }}:</span>
+            <button
+              v-for="preset in datePresets"
+              :key="preset.key"
+              type="button"
+              class="rounded-md px-2.5 py-1 text-xs font-medium transition-colors"
+              :class="activeDatePreset === preset.key
+                ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-800 dark:text-dark-300 dark:hover:bg-dark-700'"
+              @click="applyDatePreset(preset.key)"
+            >
+              {{ preset.label }}
+            </button>
+          </div>
         </div>
       </template>
 
@@ -26,6 +46,17 @@
           :sort-storage-key="sortStorageKey"
           @sort="handleSort"
         >
+          <template #empty>
+            <EmptyState
+              :variant="emptyStateVariant"
+              :title="t(`admin.affiliates.records.empty.${type}.title`)"
+              :description="t(`admin.affiliates.records.empty.${type}.description`)"
+            >
+              <template #icon>
+                <Icon :name="emptyStateIcon" class="empty-state-icon" />
+              </template>
+            </EmptyState>
+          </template>
           <template #cell-inviter="{ row }">
             <UserCell
               :id="row.inviter_id"
@@ -133,8 +164,8 @@
           <OverviewStat :label="t('admin.affiliates.overview.rebateRate')" :value="formatPercent(selectedOverview.rebate_rate_percent)" />
           <OverviewStat :label="t('admin.affiliates.overview.invitedCount')" :value="String(selectedOverview.invited_count)" />
           <OverviewStat :label="t('admin.affiliates.overview.rebatedInviteeCount')" :value="String(selectedOverview.rebated_invitee_count)" />
-          <OverviewStat :label="t('admin.affiliates.overview.availableQuota')" :value="'$' + formatAmount(selectedOverview.available_quota)" />
-          <OverviewStat :label="t('admin.affiliates.overview.historyQuota')" :value="'$' + formatAmount(selectedOverview.history_quota)" />
+          <OverviewStat :label="t('admin.affiliates.overview.availableQuota')" :value="'¥' + formatAmount(selectedOverview.available_quota)" />
+          <OverviewStat :label="t('admin.affiliates.overview.historyQuota')" :value="'¥' + formatAmount(selectedOverview.history_quota)" />
         </div>
       </div>
     </BaseDialog>
@@ -150,6 +181,7 @@ import DataTable from '@/components/common/DataTable.vue'
 import Pagination from '@/components/common/Pagination.vue'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
 import Icon from '@/components/icons/Icon.vue'
 import OrderStatusBadge from '@/components/payment/OrderStatusBadge.vue'
 import type { Column } from '@/components/common/types'
@@ -213,6 +245,18 @@ const columns = computed<Column[]>(() => {
 
 const sortStorageKey = computed(() => `admin-affiliate-${props.type}-table-sort`)
 
+// 三个 tab 用不同的主题色 + 图标，让空状态有辨识度
+const emptyStateVariant = computed<'emerald' | 'amber' | 'sky'>(() => {
+  if (props.type === 'invites') return 'emerald'
+  if (props.type === 'rebates') return 'amber'
+  return 'sky'
+})
+const emptyStateIcon = computed<'users' | 'dollar' | 'arrowRight'>(() => {
+  if (props.type === 'invites') return 'users'
+  if (props.type === 'rebates') return 'dollar'
+  return 'arrowRight'
+})
+
 function loadInitialSortState(): { sort_by: string; sort_order: 'asc' | 'desc' } {
   const fallback = { sort_by: 'created_at', sort_order: 'desc' as 'asc' | 'desc' }
   try {
@@ -231,6 +275,58 @@ function loadInitialSortState(): { sort_by: string; sort_order: 'asc' | 'desc' }
 }
 
 const sortState = reactive(loadInitialSortState())
+
+// 快速日期预设：今天 / 7天 / 30天 / 全部 — 直接改 filters.start_at + filters.end_at 并触发查询
+type DatePresetKey = 'all' | 'today' | '7d' | '30d'
+const datePresets = computed<Array<{ key: DatePresetKey; label: string }>>(() => [
+  { key: 'all', label: t('admin.affiliates.records.rangeAll') },
+  { key: 'today', label: t('admin.affiliates.records.rangeToday') },
+  { key: '7d', label: t('admin.affiliates.records.range7d') },
+  { key: '30d', label: t('admin.affiliates.records.range30d') },
+])
+
+function ymd(date: Date): string {
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
+
+const activeDatePreset = computed<DatePresetKey | null>(() => {
+  const start = filters.start_at
+  const end = filters.end_at
+  if (!start && !end) return 'all'
+  const today = ymd(new Date())
+  if (start === today && end === today) return 'today'
+  const d7 = ymd(new Date(Date.now() - 6 * 86400000))
+  if (start === d7 && end === today) return '7d'
+  const d30 = ymd(new Date(Date.now() - 29 * 86400000))
+  if (start === d30 && end === today) return '30d'
+  return null
+})
+
+function applyDatePreset(key: DatePresetKey) {
+  const today = ymd(new Date())
+  switch (key) {
+    case 'all':
+      filters.start_at = ''
+      filters.end_at = ''
+      break
+    case 'today':
+      filters.start_at = today
+      filters.end_at = today
+      break
+    case '7d':
+      filters.start_at = ymd(new Date(Date.now() - 6 * 86400000))
+      filters.end_at = today
+      break
+    case '30d':
+      filters.start_at = ymd(new Date(Date.now() - 29 * 86400000))
+      filters.end_at = today
+      break
+  }
+  reloadFromFirstPage()
+}
 
 function userTimezone(): string {
   try {
@@ -371,7 +467,7 @@ const AmountText = defineComponent({
       class: amountProps.strong
         ? 'text-sm font-semibold text-emerald-600 dark:text-emerald-400'
         : 'text-sm text-gray-900 dark:text-white',
-    }, `$${formatAmount(amountProps.value)}`)
+    }, `¥${formatAmount(amountProps.value)}`)
   },
 })
 
