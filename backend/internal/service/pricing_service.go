@@ -888,9 +888,14 @@ type PricingListEntry struct {
 	OutputCostPerToken          float64 `json:"output_cost_per_token"`
 	CacheReadInputTokenCost     float64 `json:"cache_read_input_token_cost"`
 	CacheCreationInputTokenCost float64 `json:"cache_creation_input_token_cost"`
-	OutputCostPerImage          float64 `json:"output_cost_per_image"`
-	SupportsPromptCaching       bool    `json:"supports_prompt_caching"`
-	SupportsServiceTier         bool    `json:"supports_service_tier"`
+	// 图片生成的两套计价口径，一个模型通常只填一个：
+	//   - OutputCostPerImage      ：每张图片单价（Gemini Image 等用这个）
+	//   - OutputCostPerImageToken ：每个图片 token 单价（GPT-image 系列用这个）
+	// 之前漏掉后者，导致 gpt-image-* 在前端展示 "-"。前端按非零字段决定单位（per_image vs per_image_token）。
+	OutputCostPerImage      float64 `json:"output_cost_per_image"`
+	OutputCostPerImageToken float64 `json:"output_cost_per_image_token"`
+	SupportsPromptCaching   bool    `json:"supports_prompt_caching"`
+	SupportsServiceTier     bool    `json:"supports_service_tier"`
 }
 
 // ListAllModels 返回全量已加载的模型定价列表（按 model name 字典序），用于 admin 模型定价总览页面。
@@ -913,6 +918,7 @@ func (s *PricingService) ListAllModels() []PricingListEntry {
 			CacheReadInputTokenCost:     p.CacheReadInputTokenCost,
 			CacheCreationInputTokenCost: p.CacheCreationInputTokenCost,
 			OutputCostPerImage:          p.OutputCostPerImage,
+			OutputCostPerImageToken:     p.OutputCostPerImageToken,
 			SupportsPromptCaching:       p.SupportsPromptCaching,
 			SupportsServiceTier:         p.SupportsServiceTier,
 		})

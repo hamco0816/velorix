@@ -6980,6 +6980,8 @@ export default {
       createPlan: 'Create Plan',
       editPlan: 'Edit Plan',
       deletePlan: 'Delete Plan',
+      searchPlaceholder: 'Search by name / description / features / group...',
+      searchMatched: '{n} / {total} matched',
       deletePlanConfirm: 'Are you sure you want to delete this plan?',
       originalPrice: 'Original Price',
       price: 'Price',

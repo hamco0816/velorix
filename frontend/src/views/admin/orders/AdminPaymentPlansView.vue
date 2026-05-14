@@ -1,47 +1,98 @@
 <template>
   <AppLayout wide>
     <div class="space-y-5">
-      <!-- 工具栏：右侧刷新 + 创建按钮 -->
-      <div class="flex items-center justify-end gap-2">
-        <button @click="loadPlans" :disabled="plansLoading" class="btn btn-secondary btn-sm" :title="t('common.refresh')">
-          <Icon name="refresh" size="sm" :class="plansLoading ? 'animate-spin' : ''" />
-        </button>
-        <button @click="openPlanEdit(null)" class="btn btn-primary">
-          <Icon name="plus" size="sm" class="mr-1.5" />
-          {{ t('payment.admin.createPlan') }}
-        </button>
+      <!-- 工具栏：左侧搜索 + 右侧刷新 + 创建按钮 -->
+      <div class="flex items-center gap-2">
+        <div class="relative max-w-sm flex-1">
+          <Icon name="search" size="sm" class="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            v-model="searchQuery"
+            type="text"
+            class="input pl-9"
+            :placeholder="t('payment.admin.searchPlaceholder')"
+          />
+          <button
+            v-if="searchQuery"
+            type="button"
+            class="absolute right-2 top-1/2 -translate-y-1/2 rounded p-0.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-dark-700"
+            @click="searchQuery = ''"
+            :title="t('common.clear')"
+          >
+            <Icon name="x" size="xs" />
+          </button>
+        </div>
+        <span v-if="searchQuery" class="text-xs text-gray-500 dark:text-dark-400">
+          {{ t('payment.admin.searchMatched', { n: filteredPlans.length, total: plans.length }) }}
+        </span>
+        <div class="ml-auto flex items-center gap-2">
+          <button @click="loadPlans" :disabled="plansLoading" class="btn btn-secondary btn-sm" :title="t('common.refresh')">
+            <Icon name="refresh" size="sm" :class="plansLoading ? 'animate-spin' : ''" />
+          </button>
+          <button @click="openPlanEdit(null)" class="btn btn-primary">
+            <Icon name="plus" size="sm" class="mr-1.5" />
+            {{ t('payment.admin.createPlan') }}
+          </button>
+        </div>
       </div>
 
       <!-- Plans Table -->
-      <DataTable :columns="planColumns" :data="plans" :loading="plansLoading">
+      <DataTable :columns="planColumns" :data="filteredPlans" :loading="plansLoading">
         <template #cell-name="{ value, row }">
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="text-sm font-medium" :class="getPlanNameClass(row.group_id)">{{ value }}</span>
-            <span
-              v-if="row.kind === 'exclusive'"
-              class="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-semibold text-violet-700 ring-1 ring-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:ring-violet-900/50"
-              :title="t('payment.admin.planKindExclusiveHint')"
+          <div class="space-y-1">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-sm font-medium" :class="getPlanNameClass(row.group_id)">{{ value }}</span>
+              <span
+                v-if="row.kind === 'exclusive'"
+                class="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-semibold text-violet-700 ring-1 ring-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:ring-violet-900/50"
+                :title="t('payment.admin.planKindExclusiveHint')"
+              >
+                <Icon name="badge" size="xs" :stroke-width="2.5" />
+                {{ t('payment.admin.kindBadgeExclusive') }}
+              </span>
+              <span
+                v-for="ct in [derivePlanCardType(row.validity_days, row.validity_unit)]"
+                :key="ct"
+                v-show="ct !== 'custom'"
+                :class="['inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold', cardTypeBadgeClass(ct)]"
+              >
+                {{ t(`payment.admin.cardType.${ct}`) }}
+              </span>
+              <!-- 独立档位徽章：plan 有自定义限额覆盖时展示，方便管理员一眼识别 -->
+              <span
+                v-if="hasPlanLimitOverride(row)"
+                class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-semibold text-indigo-700 ring-1 ring-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:ring-indigo-900/50"
+                :title="t('payment.admin.limitOverrideHint')"
+              >
+                <Icon name="badge" size="xs" :stroke-width="2.5" />
+                {{ t('payment.planCard.tierBadge') }}
+              </span>
+            </div>
+            <!-- 套餐描述：admin 列表里直接看到说明文字（多行 truncate 到 2 行），hover 看完整 -->
+            <p
+              v-if="row.description"
+              class="line-clamp-2 max-w-md whitespace-normal text-xs text-gray-500 dark:text-dark-400"
+              :title="row.description"
             >
-              <Icon name="badge" size="xs" :stroke-width="2.5" />
-              {{ t('payment.admin.kindBadgeExclusive') }}
-            </span>
-            <span
-              v-for="ct in [derivePlanCardType(row.validity_days, row.validity_unit)]"
-              :key="ct"
-              v-show="ct !== 'custom'"
-              :class="['inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold', cardTypeBadgeClass(ct)]"
-            >
-              {{ t(`payment.admin.cardType.${ct}`) }}
-            </span>
-            <!-- 独立档位徽章：plan 有自定义限额覆盖时展示，方便管理员一眼识别 -->
-            <span
-              v-if="hasPlanLimitOverride(row)"
-              class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-semibold text-indigo-700 ring-1 ring-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:ring-indigo-900/50"
-              :title="t('payment.admin.limitOverrideHint')"
-            >
-              <Icon name="badge" size="xs" :stroke-width="2.5" />
-              {{ t('payment.planCard.tierBadge') }}
-            </span>
+              {{ row.description }}
+            </p>
+            <!-- 套餐特性 chips：紧凑展示前 3 条，更多用 +N 隐藏 -->
+            <div v-if="row.features && row.features.length > 0" class="flex flex-wrap gap-1">
+              <span
+                v-for="(f, idx) in row.features.slice(0, 3)"
+                :key="idx"
+                class="inline-flex max-w-[16rem] truncate rounded bg-gray-50 px-1.5 py-0.5 text-[10px] text-gray-600 dark:bg-dark-800 dark:text-dark-300"
+                :title="f"
+              >
+                {{ f }}
+              </span>
+              <span
+                v-if="row.features.length > 3"
+                class="inline-flex rounded bg-gray-50 px-1.5 py-0.5 text-[10px] text-gray-500 dark:bg-dark-800 dark:text-dark-400"
+                :title="row.features.slice(3).join('\n')"
+              >
+                +{{ row.features.length - 3 }}
+              </span>
+            </div>
           </div>
         </template>
         <template #cell-group_id="{ value }">
@@ -83,6 +134,10 @@
             <Icon :name="value ? 'checkCircle' : 'ban'" size="xs" :stroke-width="2" />
             {{ value ? t('payment.admin.onSale') : t('payment.admin.offSale') }}
           </button>
+        </template>
+        <!-- 排序：value 为 0 时（后端 omitempty 导致 undefined）默认显示 0，避免空白看上去像数据缺失 -->
+        <template #cell-sort_order="{ value }">
+          <span class="text-sm tabular-nums">{{ value ?? 0 }}</span>
         </template>
         <template #cell-actions="{ row }">
           <div class="flex items-center justify-center gap-2">
@@ -223,6 +278,21 @@ const showPlanDialog = ref(false)
 const showDeletePlanDialog = ref(false)
 const editingPlan = ref<SubscriptionPlan | null>(null)
 const deletingPlanId = ref<number | null>(null)
+
+// 搜索：模糊匹配 name / description / features / 关联分组名
+const searchQuery = ref('')
+const filteredPlans = computed<SubscriptionPlan[]>(() => {
+  const q = searchQuery.value.trim().toLowerCase()
+  if (!q) return plans.value
+  return plans.value.filter((p) => {
+    if (p.name.toLowerCase().includes(q)) return true
+    if (p.description && p.description.toLowerCase().includes(q)) return true
+    if (p.features && p.features.some((f) => f.toLowerCase().includes(q))) return true
+    const g = getGroup(p.group_id)
+    if (g && g.name.toLowerCase().includes(q)) return true
+    return false
+  })
+})
 
 const planColumns = computed((): Column[] => [
   { key: 'id', label: 'ID', numeric: true },

@@ -340,16 +340,20 @@ func psSliceContains(sl []string, s string) bool {
 }
 
 // Subscription validity period unit constants.
+// 前端 PlanEditDialog 发的是复数 ("days" / "weeks" / "months")，
+// 早期代码只匹配单数，导致"写 1 选周"被当 1 天计算。这里两种都收。
 const (
-	validityUnitWeek  = "week"
-	validityUnitMonth = "month"
+	validityUnitWeek   = "week"
+	validityUnitWeeks  = "weeks"
+	validityUnitMonth  = "month"
+	validityUnitMonths = "months"
 )
 
 func psComputeValidityDays(days int, unit string) int {
 	switch unit {
-	case validityUnitWeek:
+	case validityUnitWeek, validityUnitWeeks:
 		return days * 7
-	case validityUnitMonth:
+	case validityUnitMonth, validityUnitMonths:
 		return days * 30
 	default:
 		return days

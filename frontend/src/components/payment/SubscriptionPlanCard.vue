@@ -240,7 +240,12 @@ const MODEL_SCOPE_META: Record<string, { label: string; iconModel: string }> = {
   gemini_image: { label: 'Imagen', iconModel: 'imagen-3' },
 }
 
+// supported_model_scopes 是 antigravity 平台专属字段（用来选 claude / gemini_text / gemini_image 子能力）。
+// 非 antigravity 平台（openai / anthropic / gemini）该字段无意义——但 GroupsView createForm 默认会塞一组
+// antigravity scope 进去，结果 GPT 套餐卡片误显示 "Claude · Gemini · Imagen"。
+// 这里强制只在 antigravity 平台才渲染 scope chips，根治视觉错乱。
 const modelScopeItems = computed(() => {
+  if (platform.value !== 'antigravity') return []
   const scopes = props.plan.supported_model_scopes
   if (!scopes || scopes.length === 0) return []
   return scopes.map(s => ({

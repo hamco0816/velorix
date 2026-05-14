@@ -7169,6 +7169,8 @@ export default {
       createPlan: '创建套餐',
       editPlan: '编辑套餐',
       deletePlan: '删除套餐',
+      searchPlaceholder: '搜索套餐名 / 描述 / 特性 / 分组...',
+      searchMatched: '匹配 {n} / {total}',
       deletePlanConfirm: '确定要删除此套餐吗？',
       originalPrice: '原价',
       price: '价格',
