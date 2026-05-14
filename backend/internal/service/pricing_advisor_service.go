@@ -398,8 +398,9 @@ func maxFloat(xs []float64) float64 {
 
 // collectAccountCaps 反推每个账号的上游 cap（USD）：cap = 当前窗口已消耗 / utilization。
 //
-// utilization 来自 accounts.extra 里的被动采样（session_window_utilization、passive_usage_7d_utilization），
-// 当前窗口已消耗直接从 usage_logs 按时间求和。
+// utilization 来自 accounts.extra 里的被动采样，兼容 Anthropic（session_window_utilization /
+// passive_usage_7d_utilization，0-1）和 OpenAI Codex（codex_5h_used_percent /
+// codex_7d_used_percent，0-100）两种字段命名；当前窗口已消耗直接从 usage_logs 按时间求和。
 //
 // 算法要点：
 //   - 只对 util ≥ 0.05 的账号反推：util 太小（接近 0）反推值噪声极大，例如 util=0.01,cost=0.5
@@ -419,15 +420,24 @@ func (s *PricingAdvisorService) collectAccountCaps(ctx context.Context, byAccoun
 	since5h := now.Add(-5 * time.Hour)
 	since7d := now.Add(-7 * 24 * time.Hour)
 
-	// 一次拉所有账号的 util + 5h/7d 窗口实际消耗。把窗口求和放进 SQL 比 Go 侧再循环一遍 buckets 更省。
+	// utilization 兼容两种字段命名（不同平台被动采样 key 不同）：
+	//   - Anthropic：session_window_utilization (5h, 0-1)、passive_usage_7d_utilization (7d, 0-1)
+	//   - OpenAI Codex：codex_5h_used_percent (5h, 0-100)、codex_7d_used_percent (7d, 0-100)
+	// GREATEST 取两套字段最大值（一个平台一般只写其中一套，另一套是 0）。
 	rows, err := s.db.QueryContext(ctx, `
 		SELECT a.id,
-			   COALESCE((a.extra->>'session_window_utilization')::float, 0)     AS util_5h,
-			   COALESCE((a.extra->>'passive_usage_7d_utilization')::float, 0)   AS util_7d,
+			   GREATEST(
+				 COALESCE((a.extra->>'session_window_utilization')::float, 0),
+				 COALESCE((a.extra->>'codex_5h_used_percent')::float / 100.0, 0)
+			   ) AS util_5h,
+			   GREATEST(
+				 COALESCE((a.extra->>'passive_usage_7d_utilization')::float, 0),
+				 COALESCE((a.extra->>'codex_7d_used_percent')::float / 100.0, 0)
+			   ) AS util_7d,
 			   COALESCE((SELECT SUM(total_cost) FROM usage_logs
-						 WHERE account_id = a.id AND created_at >= $1), 0)      AS cost_5h,
+						 WHERE account_id = a.id AND created_at >= $1), 0) AS cost_5h,
 			   COALESCE((SELECT SUM(total_cost) FROM usage_logs
-						 WHERE account_id = a.id AND created_at >= $2), 0)      AS cost_7d
+						 WHERE account_id = a.id AND created_at >= $2), 0) AS cost_7d
 		FROM accounts a
 		WHERE a.deleted_at IS NULL
 		  AND ($3::text = '' OR a.platform = $3)
