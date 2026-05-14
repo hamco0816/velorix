@@ -265,17 +265,24 @@
                         <span class="block text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.rate') }}</span>
                         <span :class="['mt-1 block text-lg font-semibold tabular-nums tracking-tight', planTextClass]">{{ selectedPlanRateDisplay }}</span>
                       </div>
-                      <div v-if="selectedPlan.daily_limit_usd != null" class="rounded-xl bg-gray-50/70 px-4 py-3 dark:bg-dark-800/40">
+                      <!-- 限额展示规则（见 utils/planLimits.ts）：
+                           - value > 0 → 具体额度
+                           - value <= 0 → 绿色"无限制"
+                           - 被更紧的限额覆盖（如 weekly >= daily × 7）→ 自动隐藏，不放出来误导用户 -->
+                      <div v-if="selectedPlanLimitVisibility.showDaily" class="rounded-xl bg-gray-50/70 px-4 py-3 dark:bg-dark-800/40">
                         <span class="block text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.dailyLimit') }}</span>
-                        <span class="mt-1 block text-lg font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">${{ selectedPlan.daily_limit_usd }}</span>
+                        <span v-if="(selectedPlan.daily_limit_usd ?? 0) > 0" class="mt-1 block text-lg font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">${{ selectedPlan.daily_limit_usd }}</span>
+                        <span v-else class="mt-1 block text-lg font-semibold tracking-tight text-emerald-600 dark:text-emerald-400">{{ t('payment.planCard.unlimited') }}</span>
                       </div>
-                      <div v-if="selectedPlan.weekly_limit_usd != null" class="rounded-xl bg-gray-50/70 px-4 py-3 dark:bg-dark-800/40">
+                      <div v-if="selectedPlanLimitVisibility.showWeekly" class="rounded-xl bg-gray-50/70 px-4 py-3 dark:bg-dark-800/40">
                         <span class="block text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.weeklyLimit') }}</span>
-                        <span class="mt-1 block text-lg font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">${{ selectedPlan.weekly_limit_usd }}</span>
+                        <span v-if="(selectedPlan.weekly_limit_usd ?? 0) > 0" class="mt-1 block text-lg font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">${{ selectedPlan.weekly_limit_usd }}</span>
+                        <span v-else class="mt-1 block text-lg font-semibold tracking-tight text-emerald-600 dark:text-emerald-400">{{ t('payment.planCard.unlimited') }}</span>
                       </div>
-                      <div v-if="selectedPlan.monthly_limit_usd != null" class="rounded-xl bg-gray-50/70 px-4 py-3 dark:bg-dark-800/40">
+                      <div v-if="selectedPlanLimitVisibility.showMonthly" class="rounded-xl bg-gray-50/70 px-4 py-3 dark:bg-dark-800/40">
                         <span class="block text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.monthlyLimit') }}</span>
-                        <span class="mt-1 block text-lg font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">${{ selectedPlan.monthly_limit_usd }}</span>
+                        <span v-if="(selectedPlan.monthly_limit_usd ?? 0) > 0" class="mt-1 block text-lg font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">${{ selectedPlan.monthly_limit_usd }}</span>
+                        <span v-else class="mt-1 block text-lg font-semibold tracking-tight text-emerald-600 dark:text-emerald-400">{{ t('payment.planCard.unlimited') }}</span>
                       </div>
                       <div v-if="selectedPlan.daily_limit_usd == null && selectedPlan.weekly_limit_usd == null && selectedPlan.monthly_limit_usd == null" class="rounded-xl bg-gray-50/70 px-4 py-3 dark:bg-dark-800/40">
                         <span class="block text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.quota') }}</span>
@@ -311,7 +318,8 @@
 
                   <aside class="border-t border-gray-100 bg-gray-50/60 p-5 dark:border-dark-700/60 dark:bg-dark-800/30 lg:border-l lg:border-t-0">
                     <div class="rounded-2xl border border-gray-200/70 bg-white px-4 py-5 text-center dark:border-dark-700/60 dark:bg-dark-800/40">
-                      <p class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.amountLabel') }}</p>
+                      <!-- 订阅场景下用"套餐金额"更准确，"充值金额"是余额充值的措辞 -->
+                      <p class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planAmount') }}</p>
                       <div class="mt-2 flex items-end justify-center gap-1.5 whitespace-nowrap">
                         <span :class="['mb-1.5 text-2xl font-semibold leading-none', planTextClass]">¥</span>
                         <span :class="['text-5xl font-semibold leading-none tracking-tight tabular-nums', planTextClass]">{{ selectedPlan.price }}</span>
@@ -332,7 +340,7 @@
 
                     <div class="mt-4 space-y-3 rounded-2xl border border-gray-200/70 bg-white p-4 text-sm dark:border-dark-700/60 dark:bg-dark-800/40">
                       <div class="flex justify-between gap-4">
-                        <span class="text-gray-500 dark:text-gray-400">{{ t('payment.amountLabel') }}</span>
+                        <span class="text-gray-500 dark:text-gray-400">{{ t('payment.planAmount') }}</span>
                         <span class="font-medium tabular-nums text-gray-900 dark:text-white">¥{{ selectedPlan.price.toFixed(2) }}</span>
                       </div>
                       <div v-if="feeRate > 0 && selectedPlan.price > 0" class="flex justify-between gap-4">
@@ -497,6 +505,7 @@ import {
   writePaymentRecoverySnapshot,
 } from '@/components/payment/paymentFlow'
 import { collectCardTypes, derivePlanCardType, type PlanCardType } from '@/utils/planCardType'
+import { getEffectiveLimitVisibility } from '@/utils/planLimits'
 import {
   platformAccentBarClass,
   platformBadgeLightClass,
@@ -996,7 +1005,14 @@ const selectedPlanPlatformBrand = computed<'claude' | 'openai' | 'gemini' | null
 const selectedPlanPlatformInitial = computed(() => platformLabel(selectedPlan.value?.group_platform || '').charAt(0).toUpperCase())
 const selectedPlanRateDisplay = computed(() => {
   const rate = selectedPlan.value?.rate_multiplier ?? 1
-  return `×${Number(rate.toPrecision(10))}`
+  const base = `×${Number(rate.toPrecision(10))}`
+  // 倍率 < 1 = 折扣，把"几折"显式标出来；中国用户更熟悉"6 折"这种说法
+  if (rate > 0 && rate < 1) {
+    // 0.6 → 6折，0.85 → 8.5折，0.5 → 5折
+    const discount = Number((rate * 10).toFixed(1))
+    return `${base} · ${discount}折`
+  }
+  return base
 })
 const selectedPlanDiscountText = computed(() => {
   const plan = selectedPlan.value
@@ -1004,7 +1020,21 @@ const selectedPlanDiscountText = computed(() => {
   const pct = Math.round((1 - plan.price / plan.original_price) * 100)
   return pct > 0 ? `-${pct}%` : ''
 })
+// 限额可视性：废限额自动隐藏。规则见 utils/planLimits.ts
+const selectedPlanLimitVisibility = computed(() => {
+  if (!selectedPlan.value) return { showDaily: false, showWeekly: false, showMonthly: false }
+  return getEffectiveLimitVisibility({
+    daily_limit_usd: selectedPlan.value.daily_limit_usd,
+    weekly_limit_usd: selectedPlan.value.weekly_limit_usd,
+    monthly_limit_usd: selectedPlan.value.monthly_limit_usd,
+  })
+})
+
 const selectedPlanModelScopeItems = computed(() => {
+  // supported_model_scopes 仅对 antigravity 平台有意义（选 claude / gemini_text / gemini_image 子能力）。
+  // 其它单平台套餐（openai / anthropic / gemini）的 scope 字段是 createForm 默认值的残留，展示出来会误导用户
+  // （例如 GPT 周卡显示 "Claude · Gemini · Imagen"）。这里加平台守门。
+  if (selectedPlan.value?.group_platform !== 'antigravity') return []
   const scopes = selectedPlan.value?.supported_model_scopes
   if (!scopes || scopes.length === 0) return []
   return scopes.map(s => ({

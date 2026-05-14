@@ -94,17 +94,22 @@
           <span class="block text-[11px] font-medium text-gray-400 dark:text-dark-500">{{ t('payment.planCard.rate') }}</span>
           <span :class="['mt-1 block text-base font-bold', textClass]">{{ rateDisplay }}</span>
         </div>
-        <div v-if="plan.daily_limit_usd != null" class="rounded-lg bg-white px-3 py-2.5 dark:bg-dark-900/70">
+        <!-- 限额：value > 0 显示具体额度；value <= 0 显示"无限制"。
+             被更紧限额覆盖的"废限额"由 limitVisibility 自动隐藏，避免用户看到 ×0.6 倍率 + 周$280 + 月$1200 这种没意义的并列。 -->
+        <div v-if="limitVisibility.showDaily" class="rounded-lg bg-white px-3 py-2.5 dark:bg-dark-900/70">
           <span class="block text-[11px] font-medium text-gray-400 dark:text-dark-500">{{ t('payment.planCard.dailyLimit') }}</span>
-          <span class="mt-1 block text-base font-bold text-gray-900 dark:text-white">${{ plan.daily_limit_usd }}</span>
+          <span v-if="(plan.daily_limit_usd ?? 0) > 0" class="mt-1 block text-base font-bold text-gray-900 dark:text-white">${{ plan.daily_limit_usd }}</span>
+          <span v-else class="mt-1 block text-base font-bold text-emerald-600 dark:text-emerald-400">{{ t('payment.planCard.unlimited') }}</span>
         </div>
-        <div v-if="plan.weekly_limit_usd != null" class="rounded-lg bg-white px-3 py-2.5 dark:bg-dark-900/70">
+        <div v-if="limitVisibility.showWeekly" class="rounded-lg bg-white px-3 py-2.5 dark:bg-dark-900/70">
           <span class="block text-[11px] font-medium text-gray-400 dark:text-dark-500">{{ t('payment.planCard.weeklyLimit') }}</span>
-          <span class="mt-1 block text-base font-bold text-gray-900 dark:text-white">${{ plan.weekly_limit_usd }}</span>
+          <span v-if="(plan.weekly_limit_usd ?? 0) > 0" class="mt-1 block text-base font-bold text-gray-900 dark:text-white">${{ plan.weekly_limit_usd }}</span>
+          <span v-else class="mt-1 block text-base font-bold text-emerald-600 dark:text-emerald-400">{{ t('payment.planCard.unlimited') }}</span>
         </div>
-        <div v-if="plan.monthly_limit_usd != null" class="rounded-lg bg-white px-3 py-2.5 dark:bg-dark-900/70">
+        <div v-if="limitVisibility.showMonthly" class="rounded-lg bg-white px-3 py-2.5 dark:bg-dark-900/70">
           <span class="block text-[11px] font-medium text-gray-400 dark:text-dark-500">{{ t('payment.planCard.monthlyLimit') }}</span>
-          <span class="mt-1 block text-base font-bold text-gray-900 dark:text-white">${{ plan.monthly_limit_usd }}</span>
+          <span v-if="(plan.monthly_limit_usd ?? 0) > 0" class="mt-1 block text-base font-bold text-gray-900 dark:text-white">${{ plan.monthly_limit_usd }}</span>
+          <span v-else class="mt-1 block text-base font-bold text-emerald-600 dark:text-emerald-400">{{ t('payment.planCard.unlimited') }}</span>
         </div>
         <div v-if="plan.daily_limit_usd == null && plan.weekly_limit_usd == null && plan.monthly_limit_usd == null" class="rounded-lg bg-white px-3 py-2.5 dark:bg-dark-900/70">
           <span class="block text-[11px] font-medium text-gray-400 dark:text-dark-500">{{ t('payment.planCard.quota') }}</span>
@@ -175,6 +180,7 @@ import {
   platformLabel,
 } from '@/utils/platformColors'
 import { derivePlanCardType, cardTypeBadgeClass } from '@/utils/planCardType'
+import { getEffectiveLimitVisibility } from '@/utils/planLimits'
 
 const props = defineProps<{ plan: SubscriptionPlan; activeSubscriptions?: UserSubscription[] }>()
 const emit = defineEmits<{ select: [plan: SubscriptionPlan] }>()
@@ -233,6 +239,15 @@ const rateDisplay = computed(() => {
   const rate = props.plan.rate_multiplier ?? 1
   return `×${Number(rate.toPrecision(10))}`
 })
+
+// 限额可视性：废限额自动隐藏（被更紧的限额覆盖时不展示，避免用户困惑）
+const limitVisibility = computed(() =>
+  getEffectiveLimitVisibility({
+    daily_limit_usd: props.plan.daily_limit_usd,
+    weekly_limit_usd: props.plan.weekly_limit_usd,
+    monthly_limit_usd: props.plan.monthly_limit_usd,
+  })
+)
 
 const MODEL_SCOPE_META: Record<string, { label: string; iconModel: string }> = {
   claude: { label: 'Claude', iconModel: 'claude-3-5-sonnet' },

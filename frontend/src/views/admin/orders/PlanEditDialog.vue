@@ -74,14 +74,29 @@
           <div>
             <label class="input-label">{{ t('payment.admin.planDailyLimitUSD') }}</label>
             <input v-model.number="planForm.daily_limit_usd" type="number" step="0.01" min="0" class="input" :placeholder="t('payment.admin.limitInheritGroup')" />
+            <p class="mt-1 text-[11px] leading-relaxed text-gray-400 dark:text-dark-500">
+              {{ t('payment.admin.limitHint') }}
+            </p>
           </div>
           <div>
             <label class="input-label">{{ t('payment.admin.planWeeklyLimitUSD') }}</label>
-            <input v-model.number="planForm.weekly_limit_usd" type="number" step="0.01" min="0" class="input" :placeholder="t('payment.admin.limitInheritGroup')" />
+            <input v-model.number="planForm.weekly_limit_usd" type="number" step="0.01" min="0" class="input"
+                   :class="limitWarnings.weekly ? 'border-amber-400 focus:border-amber-500 focus:ring-amber-300/40 dark:border-amber-500/60' : ''"
+                   :placeholder="t('payment.admin.limitInheritGroup')" />
+            <p v-if="limitWarnings.weekly" class="mt-1 flex items-start gap-1 text-[11px] leading-relaxed text-amber-600 dark:text-amber-400">
+              <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
+              <span>{{ t('payment.admin.warnWeeklyRedundant', { max: Math.floor(limitWarnings.weekly.effectiveMax) }) }}</span>
+            </p>
           </div>
           <div>
             <label class="input-label">{{ t('payment.admin.planMonthlyLimitUSD') }}</label>
-            <input v-model.number="planForm.monthly_limit_usd" type="number" step="0.01" min="0" class="input" :placeholder="t('payment.admin.limitInheritGroup')" />
+            <input v-model.number="planForm.monthly_limit_usd" type="number" step="0.01" min="0" class="input"
+                   :class="limitWarnings.monthly ? 'border-amber-400 focus:border-amber-500 focus:ring-amber-300/40 dark:border-amber-500/60' : ''"
+                   :placeholder="t('payment.admin.limitInheritGroup')" />
+            <p v-if="limitWarnings.monthly" class="mt-1 flex items-start gap-1 text-[11px] leading-relaxed text-amber-600 dark:text-amber-400">
+              <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
+              <span>{{ t('payment.admin.warnMonthlyRedundant_' + limitWarnings.monthly.cappedBy, { max: Math.floor(limitWarnings.monthly.effectiveMax) }) }}</span>
+            </p>
           </div>
           <div>
             <label class="input-label">{{ t('payment.admin.planRateMultiplier') }}</label>
@@ -143,6 +158,7 @@ import Select from '@/components/common/Select.vue'
 import Icon from '@/components/icons/Icon.vue'
 import GroupBadge from '@/components/common/GroupBadge.vue'
 import { platformTextClass } from '@/utils/platformColors'
+import { validatePlanLimits } from '@/utils/planLimits'
 
 const props = defineProps<{
   show: boolean
@@ -189,6 +205,16 @@ const planForm = reactive({
   rate_multiplier: null as number | null,
 })
 const planFeaturesText = ref('')
+
+// 跨字段限额校验：weekly >= daily × 7 或 monthly >= 更紧限额折算月上限 时给 admin 提示
+// 不阻断提交，让 admin 自主决定（万一是故意配的）
+const limitWarnings = computed(() =>
+  validatePlanLimits(
+    planForm.daily_limit_usd,
+    planForm.weekly_limit_usd,
+    planForm.monthly_limit_usd,
+  )
+)
 
 const validityUnitOptions = computed(() => [
   { value: 'days', label: t('payment.admin.days') },
