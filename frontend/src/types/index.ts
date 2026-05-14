@@ -546,6 +546,8 @@ export interface AdminGroup extends Group {
   account_count?: number
   active_account_count?: number
   rate_limited_account_count?: number
+  // 活跃订阅数（status=active 且未过期），用于 admin 列表展示分组真实负载
+  active_subscription_count?: number
 
   // OpenAI Messages 调度配置（仅 openai 平台使用）
   default_mapped_model?: string

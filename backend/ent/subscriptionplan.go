@@ -39,6 +39,8 @@ type SubscriptionPlan struct {
 	ForSale bool `json:"for_sale,omitempty"`
 	// SortOrder holds the value of the "sort_order" field.
 	SortOrder int `json:"sort_order,omitempty"`
+	// IsPopular holds the value of the "is_popular" field.
+	IsPopular bool `json:"is_popular,omitempty"`
 	// Kind holds the value of the "kind" field.
 	Kind string `json:"kind,omitempty"`
 	// DailyLimitUsd holds the value of the "daily_limit_usd" field.
@@ -61,7 +63,7 @@ func (*SubscriptionPlan) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case subscriptionplan.FieldForSale:
+		case subscriptionplan.FieldForSale, subscriptionplan.FieldIsPopular:
 			values[i] = new(sql.NullBool)
 		case subscriptionplan.FieldPrice, subscriptionplan.FieldOriginalPrice, subscriptionplan.FieldDailyLimitUsd, subscriptionplan.FieldWeeklyLimitUsd, subscriptionplan.FieldMonthlyLimitUsd, subscriptionplan.FieldRateMultiplier:
 			values[i] = new(sql.NullFloat64)
@@ -158,6 +160,12 @@ func (_m *SubscriptionPlan) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field sort_order", values[i])
 			} else if value.Valid {
 				_m.SortOrder = int(value.Int64)
+			}
+		case subscriptionplan.FieldIsPopular:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_popular", values[i])
+			} else if value.Valid {
+				_m.IsPopular = value.Bool
 			}
 		case subscriptionplan.FieldKind:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -275,6 +283,9 @@ func (_m *SubscriptionPlan) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("sort_order=")
 	builder.WriteString(fmt.Sprintf("%v", _m.SortOrder))
+	builder.WriteString(", ")
+	builder.WriteString("is_popular=")
+	builder.WriteString(fmt.Sprintf("%v", _m.IsPopular))
 	builder.WriteString(", ")
 	builder.WriteString("kind=")
 	builder.WriteString(_m.Kind)

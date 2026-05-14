@@ -152,6 +152,8 @@ type AdminGroup struct {
 	AccountCount            int64          `json:"account_count,omitempty"`
 	ActiveAccountCount      int64          `json:"active_account_count,omitempty"`
 	RateLimitedAccountCount int64          `json:"rate_limited_account_count,omitempty"`
+	// 活跃订阅数（migration N/A，计算字段）：admin 列表用来快速看出哪些分组真实有用户在用
+	ActiveSubscriptionCount int64          `json:"active_subscription_count,omitempty"`
 
 	// 分组排序
 	SortOrder int `json:"sort_order"`

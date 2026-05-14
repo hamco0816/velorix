@@ -237,6 +237,22 @@
             </button>
           </template>
 
+          <!-- 活跃订阅数：单数字 + 单位，0 用灰色弱化（提示这个分组没在卖） -->
+          <template #cell-active_subscription_count="{ row }">
+            <span
+              :class="[
+                'inline-flex items-baseline gap-1 font-mono tabular-nums',
+                (row.active_subscription_count || 0) > 0
+                  ? 'text-gray-900 dark:text-white'
+                  : 'text-gray-400 dark:text-dark-500',
+              ]"
+              :title="t('admin.groups.activeSubscriptionsHint')"
+            >
+              <span class="font-semibold">{{ row.active_subscription_count || 0 }}</span>
+              <span class="text-[10px] text-gray-400">{{ t('admin.groups.subscriptionsUnit') }}</span>
+            </span>
+          </template>
+
           <template #cell-capacity="{ row }">
             <GroupCapacityBadge
               v-if="capacityMap.get(row.id)"
@@ -3034,6 +3050,12 @@ const columns = computed<Column[]>(() => [
     // 账号数列内是"可用 X 个 / 限流 Y / 总量 Z"三行 chip 组合，不是单纯数字；
     // 设 left 让 chip 块整体贴左对齐，跟其他文本列基线一致
     align: "left",
+  },
+  {
+    key: "active_subscription_count",
+    label: t("admin.groups.columns.subscriptions"),
+    sortable: true,
+    align: "center",
   },
   {
     key: "capacity",

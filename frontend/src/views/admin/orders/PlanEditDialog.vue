@@ -135,6 +135,26 @@
           {{ t('payment.admin.forSaleOff') }}
         </span>
       </div>
+
+      <!-- 主推 toggle：勾选后用户端订阅卡显示 ⭐ 徽章 + 琥珀描边，引导用户优先选这档 -->
+      <div class="mt-3 flex items-center gap-3 rounded-lg border border-amber-200/60 bg-amber-50/40 px-3 py-2 dark:border-amber-500/20 dark:bg-amber-500/5">
+        <Icon name="sparkles" size="sm" class="text-amber-500" />
+        <label class="text-sm text-gray-700 dark:text-gray-300">{{ t('payment.admin.isPopular') }}</label>
+        <button
+          type="button"
+          :class="[
+            'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2',
+            planForm.is_popular ? 'bg-amber-500' : 'bg-gray-300 dark:bg-dark-600'
+          ]"
+          @click="planForm.is_popular = !planForm.is_popular"
+        >
+          <span :class="[
+            'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+            planForm.is_popular ? 'translate-x-5' : 'translate-x-0'
+          ]" />
+        </button>
+        <span class="ml-auto text-[11px] text-gray-500 dark:text-dark-400">{{ t('payment.admin.isPopularHint') }}</span>
+      </div>
     </form>
     <template #footer>
       <div class="flex justify-end gap-3">
@@ -197,6 +217,7 @@ const planForm = reactive({
   validity_unit: 'days',
   sort_order: 0,
   for_sale: true,
+  is_popular: false,
   kind: 'shared' as 'shared' | 'exclusive',
   // 套餐级覆盖字段：null/0 表示沿用 group 默认值
   daily_limit_usd: null as number | null,
@@ -256,6 +277,7 @@ watch(() => props.show, (visible) => {
       validity_unit: props.plan.validity_unit || 'days',
       sort_order: props.plan.sort_order || 0,
       for_sale: props.plan.for_sale,
+      is_popular: props.plan.is_popular === true,
       kind: props.plan.kind || 'shared',
       daily_limit_usd: (props.plan as any).daily_limit_usd ?? null,
       weekly_limit_usd: (props.plan as any).weekly_limit_usd ?? null,
@@ -276,6 +298,7 @@ watch(() => props.show, (visible) => {
       validity_unit: 'days',
       sort_order: 0,
       for_sale: true,
+      is_popular: false,
       kind: 'shared',
       daily_limit_usd: p.daily_limit_usd ?? null,
       weekly_limit_usd: p.weekly_limit_usd ?? null,
@@ -306,6 +329,7 @@ function buildPlanPayload() {
     validity_unit: planForm.validity_unit,
     sort_order: planForm.sort_order,
     for_sale: planForm.for_sale,
+    is_popular: planForm.is_popular,
     features,
     kind: planForm.kind,
     daily_limit_usd: optionalLimit(planForm.daily_limit_usd),

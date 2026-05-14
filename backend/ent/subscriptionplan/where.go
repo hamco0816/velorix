@@ -109,6 +109,11 @@ func SortOrder(v int) predicate.SubscriptionPlan {
 	return predicate.SubscriptionPlan(sql.FieldEQ(FieldSortOrder, v))
 }
 
+// IsPopular applies equality check predicate on the "is_popular" field. It's identical to IsPopularEQ.
+func IsPopular(v bool) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldEQ(FieldIsPopular, v))
+}
+
 // Kind applies equality check predicate on the "kind" field. It's identical to KindEQ.
 func Kind(v string) predicate.SubscriptionPlan {
 	return predicate.SubscriptionPlan(sql.FieldEQ(FieldKind, v))
@@ -687,6 +692,16 @@ func SortOrderLT(v int) predicate.SubscriptionPlan {
 // SortOrderLTE applies the LTE predicate on the "sort_order" field.
 func SortOrderLTE(v int) predicate.SubscriptionPlan {
 	return predicate.SubscriptionPlan(sql.FieldLTE(FieldSortOrder, v))
+}
+
+// IsPopularEQ applies the EQ predicate on the "is_popular" field.
+func IsPopularEQ(v bool) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldEQ(FieldIsPopular, v))
+}
+
+// IsPopularNEQ applies the NEQ predicate on the "is_popular" field.
+func IsPopularNEQ(v bool) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldNEQ(FieldIsPopular, v))
 }
 
 // KindEQ applies the EQ predicate on the "kind" field.

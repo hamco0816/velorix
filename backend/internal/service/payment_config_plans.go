@@ -174,7 +174,7 @@ func (s *PaymentConfigService) CreatePlan(ctx context.Context, req CreatePlanReq
 		SetGroupID(req.GroupID).SetName(req.Name).SetDescription(req.Description).
 		SetPrice(req.Price).SetValidityDays(req.ValidityDays).SetValidityUnit(req.ValidityUnit).
 		SetFeatures(req.Features).SetProductName(req.ProductName).
-		SetForSale(req.ForSale).SetSortOrder(req.SortOrder).SetKind(kind)
+		SetForSale(req.ForSale).SetSortOrder(req.SortOrder).SetIsPopular(req.IsPopular).SetKind(kind)
 	if req.OriginalPrice != nil {
 		b.SetOriginalPrice(*req.OriginalPrice)
 	}
@@ -262,6 +262,9 @@ func (s *PaymentConfigService) UpdatePlan(ctx context.Context, id int64, req Upd
 	}
 	if req.SortOrder != nil {
 		u.SetSortOrder(*req.SortOrder)
+	}
+	if req.IsPopular != nil {
+		u.SetIsPopular(*req.IsPopular)
 	}
 	if req.Kind != nil {
 		kind, err := normalizePlanKind(*req.Kind)

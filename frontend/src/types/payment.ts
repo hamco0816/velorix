@@ -126,6 +126,8 @@ export interface SubscriptionPlan {
   features: string[]
   for_sale: boolean
   sort_order: number
+  /** 主推标记（migration 143）：admin 标记的"⭐主推"档位，订阅卡会显示徽章吸引用户视觉 */
+  is_popular?: boolean
   /** 'shared' = 共享池套餐；'exclusive' = 独享池套餐（购买后独占一个账号） */
   kind?: 'shared' | 'exclusive'
   /** 独享池套餐的剩余库存数；shared 套餐为 undefined */

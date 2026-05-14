@@ -307,6 +307,13 @@ func (r *groupRepository) ListWithFilters(ctx context.Context, params pagination
 		}
 	}
 
+	// 活跃订阅数：独立批量查询，失败不阻断主流程（计数缺失就显示 0）
+	if subCounts, subErr := r.loadActiveSubscriptionCounts(ctx, groupIDs); subErr == nil {
+		for i := range outGroups {
+			outGroups[i].ActiveSubscriptionCount = subCounts[outGroups[i].ID]
+		}
+	}
+
 	return outGroups, paginationResultFromTotal(int64(total), params), nil
 }
 
@@ -335,6 +342,13 @@ func (r *groupRepository) listWithAccountCountSort(ctx context.Context, q *dbent
 		outGroups[i].AccountCount = c.Total
 		outGroups[i].ActiveAccountCount = c.Active
 		outGroups[i].RateLimitedAccountCount = c.RateLimited
+	}
+
+	// 同主路径：活跃订阅数失败不阻断
+	if subCounts, subErr := r.loadActiveSubscriptionCounts(ctx, groupIDs); subErr == nil {
+		for i := range outGroups {
+			outGroups[i].ActiveSubscriptionCount = subCounts[outGroups[i].ID]
+		}
 	}
 
 	sortOrder := params.NormalizedSortOrder(pagination.SortOrderDesc)
@@ -709,6 +723,49 @@ func (r *groupRepository) loadAccountCounts(ctx context.Context, groupIDs []int6
 		return nil, err
 	}
 
+	return counts, nil
+}
+
+// loadActiveSubscriptionCounts 批量查询多个分组下的活跃订阅数。
+// "活跃" = status=active AND expires_at > NOW() AND 未软删除。
+// 单条 SQL 走 GROUP BY 一次拉完，避免 N+1。
+func (r *groupRepository) loadActiveSubscriptionCounts(ctx context.Context, groupIDs []int64) (counts map[int64]int64, err error) {
+	counts = make(map[int64]int64, len(groupIDs))
+	if len(groupIDs) == 0 {
+		return counts, nil
+	}
+
+	rows, err := r.sql.QueryContext(
+		ctx,
+		`SELECT group_id, COUNT(*) AS active_count
+		FROM user_subscriptions
+		WHERE group_id = ANY($1)
+		  AND status = 'active'
+		  AND expires_at > NOW()
+		  AND deleted_at IS NULL
+		GROUP BY group_id`,
+		pq.Array(groupIDs),
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if closeErr := rows.Close(); closeErr != nil && err == nil {
+			err = closeErr
+			counts = nil
+		}
+	}()
+
+	for rows.Next() {
+		var groupID, c int64
+		if err = rows.Scan(&groupID, &c); err != nil {
+			return nil, err
+		}
+		counts[groupID] = c
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
 	return counts, nil
 }
 

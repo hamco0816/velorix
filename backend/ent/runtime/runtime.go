@@ -1560,18 +1560,22 @@ func init() {
 	subscriptionplanDescSortOrder := subscriptionplanFields[10].Descriptor()
 	// subscriptionplan.DefaultSortOrder holds the default value on creation for the sort_order field.
 	subscriptionplan.DefaultSortOrder = subscriptionplanDescSortOrder.Default.(int)
+	// subscriptionplanDescIsPopular is the schema descriptor for is_popular field.
+	subscriptionplanDescIsPopular := subscriptionplanFields[11].Descriptor()
+	// subscriptionplan.DefaultIsPopular holds the default value on creation for the is_popular field.
+	subscriptionplan.DefaultIsPopular = subscriptionplanDescIsPopular.Default.(bool)
 	// subscriptionplanDescKind is the schema descriptor for kind field.
-	subscriptionplanDescKind := subscriptionplanFields[11].Descriptor()
+	subscriptionplanDescKind := subscriptionplanFields[12].Descriptor()
 	// subscriptionplan.DefaultKind holds the default value on creation for the kind field.
 	subscriptionplan.DefaultKind = subscriptionplanDescKind.Default.(string)
 	// subscriptionplan.KindValidator is a validator for the "kind" field. It is called by the builders before save.
 	subscriptionplan.KindValidator = subscriptionplanDescKind.Validators[0].(func(string) error)
 	// subscriptionplanDescCreatedAt is the schema descriptor for created_at field.
-	subscriptionplanDescCreatedAt := subscriptionplanFields[16].Descriptor()
+	subscriptionplanDescCreatedAt := subscriptionplanFields[17].Descriptor()
 	// subscriptionplan.DefaultCreatedAt holds the default value on creation for the created_at field.
 	subscriptionplan.DefaultCreatedAt = subscriptionplanDescCreatedAt.Default.(func() time.Time)
 	// subscriptionplanDescUpdatedAt is the schema descriptor for updated_at field.
-	subscriptionplanDescUpdatedAt := subscriptionplanFields[17].Descriptor()
+	subscriptionplanDescUpdatedAt := subscriptionplanFields[18].Descriptor()
 	// subscriptionplan.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	subscriptionplan.DefaultUpdatedAt = subscriptionplanDescUpdatedAt.Default.(func() time.Time)
 	// subscriptionplan.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

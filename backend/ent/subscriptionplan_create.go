@@ -152,6 +152,20 @@ func (_c *SubscriptionPlanCreate) SetNillableSortOrder(v *int) *SubscriptionPlan
 	return _c
 }
 
+// SetIsPopular sets the "is_popular" field.
+func (_c *SubscriptionPlanCreate) SetIsPopular(v bool) *SubscriptionPlanCreate {
+	_c.mutation.SetIsPopular(v)
+	return _c
+}
+
+// SetNillableIsPopular sets the "is_popular" field if the given value is not nil.
+func (_c *SubscriptionPlanCreate) SetNillableIsPopular(v *bool) *SubscriptionPlanCreate {
+	if v != nil {
+		_c.SetIsPopular(*v)
+	}
+	return _c
+}
+
 // SetKind sets the "kind" field.
 func (_c *SubscriptionPlanCreate) SetKind(v string) *SubscriptionPlanCreate {
 	_c.mutation.SetKind(v)
@@ -313,6 +327,10 @@ func (_c *SubscriptionPlanCreate) defaults() {
 		v := subscriptionplan.DefaultSortOrder
 		_c.mutation.SetSortOrder(v)
 	}
+	if _, ok := _c.mutation.IsPopular(); !ok {
+		v := subscriptionplan.DefaultIsPopular
+		_c.mutation.SetIsPopular(v)
+	}
 	if _, ok := _c.mutation.Kind(); !ok {
 		v := subscriptionplan.DefaultKind
 		_c.mutation.SetKind(v)
@@ -373,6 +391,9 @@ func (_c *SubscriptionPlanCreate) check() error {
 	}
 	if _, ok := _c.mutation.SortOrder(); !ok {
 		return &ValidationError{Name: "sort_order", err: errors.New(`ent: missing required field "SubscriptionPlan.sort_order"`)}
+	}
+	if _, ok := _c.mutation.IsPopular(); !ok {
+		return &ValidationError{Name: "is_popular", err: errors.New(`ent: missing required field "SubscriptionPlan.is_popular"`)}
 	}
 	if _, ok := _c.mutation.Kind(); !ok {
 		return &ValidationError{Name: "kind", err: errors.New(`ent: missing required field "SubscriptionPlan.kind"`)}
@@ -458,6 +479,10 @@ func (_c *SubscriptionPlanCreate) createSpec() (*SubscriptionPlan, *sqlgraph.Cre
 	if value, ok := _c.mutation.SortOrder(); ok {
 		_spec.SetField(subscriptionplan.FieldSortOrder, field.TypeInt, value)
 		_node.SortOrder = value
+	}
+	if value, ok := _c.mutation.IsPopular(); ok {
+		_spec.SetField(subscriptionplan.FieldIsPopular, field.TypeBool, value)
+		_node.IsPopular = value
 	}
 	if value, ok := _c.mutation.Kind(); ok {
 		_spec.SetField(subscriptionplan.FieldKind, field.TypeString, value)
@@ -704,6 +729,18 @@ func (u *SubscriptionPlanUpsert) UpdateSortOrder() *SubscriptionPlanUpsert {
 // AddSortOrder adds v to the "sort_order" field.
 func (u *SubscriptionPlanUpsert) AddSortOrder(v int) *SubscriptionPlanUpsert {
 	u.Add(subscriptionplan.FieldSortOrder, v)
+	return u
+}
+
+// SetIsPopular sets the "is_popular" field.
+func (u *SubscriptionPlanUpsert) SetIsPopular(v bool) *SubscriptionPlanUpsert {
+	u.Set(subscriptionplan.FieldIsPopular, v)
+	return u
+}
+
+// UpdateIsPopular sets the "is_popular" field to the value that was provided on create.
+func (u *SubscriptionPlanUpsert) UpdateIsPopular() *SubscriptionPlanUpsert {
+	u.SetExcluded(subscriptionplan.FieldIsPopular)
 	return u
 }
 
@@ -1065,6 +1102,20 @@ func (u *SubscriptionPlanUpsertOne) AddSortOrder(v int) *SubscriptionPlanUpsertO
 func (u *SubscriptionPlanUpsertOne) UpdateSortOrder() *SubscriptionPlanUpsertOne {
 	return u.Update(func(s *SubscriptionPlanUpsert) {
 		s.UpdateSortOrder()
+	})
+}
+
+// SetIsPopular sets the "is_popular" field.
+func (u *SubscriptionPlanUpsertOne) SetIsPopular(v bool) *SubscriptionPlanUpsertOne {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.SetIsPopular(v)
+	})
+}
+
+// UpdateIsPopular sets the "is_popular" field to the value that was provided on create.
+func (u *SubscriptionPlanUpsertOne) UpdateIsPopular() *SubscriptionPlanUpsertOne {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.UpdateIsPopular()
 	})
 }
 
@@ -1612,6 +1663,20 @@ func (u *SubscriptionPlanUpsertBulk) AddSortOrder(v int) *SubscriptionPlanUpsert
 func (u *SubscriptionPlanUpsertBulk) UpdateSortOrder() *SubscriptionPlanUpsertBulk {
 	return u.Update(func(s *SubscriptionPlanUpsert) {
 		s.UpdateSortOrder()
+	})
+}
+
+// SetIsPopular sets the "is_popular" field.
+func (u *SubscriptionPlanUpsertBulk) SetIsPopular(v bool) *SubscriptionPlanUpsertBulk {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.SetIsPopular(v)
+	})
+}
+
+// UpdateIsPopular sets the "is_popular" field to the value that was provided on create.
+func (u *SubscriptionPlanUpsertBulk) UpdateIsPopular() *SubscriptionPlanUpsertBulk {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.UpdateIsPopular()
 	})
 }
 

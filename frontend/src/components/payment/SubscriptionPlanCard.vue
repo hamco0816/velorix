@@ -3,13 +3,32 @@
        避免整张卡片被绿/橙色边框包围造成视觉冲击 -->
   <div
     :class="[
-      'plan-card group relative flex min-h-[250px] flex-col overflow-hidden rounded-lg border bg-white transition-colors dark:bg-dark-900',
+      'plan-card group relative flex min-h-[250px] flex-col overflow-hidden rounded-lg border-2 bg-white transition-colors dark:bg-dark-900',
       soldOut
         ? 'border-gray-200 opacity-65 grayscale dark:border-dark-700'
-        : 'border-gray-200 hover:border-gray-300 dark:border-dark-700 dark:hover:border-dark-500',
+        : isPopular
+          ? 'border-amber-400/80 shadow-amber-100 hover:border-amber-500 dark:border-amber-500/60 dark:hover:border-amber-400/80'
+          : 'border-gray-200 hover:border-gray-300 dark:border-dark-700 dark:hover:border-dark-500',
     ]"
   >
-    <!-- 售罄角标：右上角红色斜带，最强的视觉提示 -->
+    <!-- 主推角标：右上角斜带，渐变 + 内层白线高光 + 暖色光晕，比平铺 badge 更显眼。
+         purely SVG（sparkles 图标），无 emoji，符合系统设计规范。 -->
+    <div
+      v-if="isPopular && !soldOut"
+      class="popular-ribbon pointer-events-none absolute right-0 top-0 z-10 overflow-hidden"
+    >
+      <div class="relative h-[96px] w-[96px]">
+        <!-- 外圈：渐变带 + 双层阴影（深色投影 + 暖色光晕） -->
+        <div class="absolute -right-[28px] top-[20px] flex w-[136px] rotate-45 flex-col items-center justify-center bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 py-[5px] text-white shadow-[0_2px_10px_rgba(245,158,11,0.55),0_1px_3px_rgba(0,0,0,0.25)] ring-1 ring-inset ring-white/35">
+          <span class="flex items-center gap-[3px] text-[11px] font-extrabold uppercase tracking-[0.12em] drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)]">
+            <Icon name="sparkles" size="xs" :stroke-width="2.75" />
+            {{ t('payment.planCard.popularBadge') }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 售罄角标：右上角红色斜带；与主推角标互斥（售罄优先） -->
     <div
       v-if="soldOut"
       class="pointer-events-none absolute right-0 top-0 z-10 overflow-hidden"
@@ -58,6 +77,12 @@
                 <span v-if="plan.kind === 'exclusive' && stockInfo"
                   :class="['inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold', stockInfo.cls]">
                   {{ stockInfo.text }}
+                </span>
+                <!-- 已订阅状态：同一 group 已有活跃订阅时显示，3 个色档让用户看到紧迫感 -->
+                <span v-if="subscriptionInfo"
+                  :class="['inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1', subscriptionChipClass]">
+                  <Icon name="checkCircle" size="xs" :stroke-width="2.5" />
+                  {{ t('payment.planCard.subscribed', { days: subscriptionInfo.daysRemaining }) }}
                 </span>
               </div>
             </div>
@@ -187,9 +212,38 @@ const emit = defineEmits<{ select: [plan: SubscriptionPlan] }>()
 const { t } = useI18n()
 
 const platform = computed(() => props.plan.group_platform || '')
-const isRenewal = computed(() =>
-  props.activeSubscriptions?.some(s => s.group_id === props.plan.group_id && s.status === 'active') ?? false
+// 找到与当前 plan 同 group 的活跃订阅（最多一个）；用于"已订阅"状态提示和续费 CTA
+const matchingActiveSubscription = computed(() =>
+  props.activeSubscriptions?.find(s => s.group_id === props.plan.group_id && s.status === 'active') ?? null
 )
+const isRenewal = computed(() => matchingActiveSubscription.value !== null)
+
+// 剩余天数 + 颜色档：> 7 天 = 中性 emerald；3-7 天 = amber 预警；≤ 3 天 = rose 强提醒
+// 让重度续费用户在卡片角上直接看到"还剩 N 天"，不用切到"我的订阅"页核对
+const subscriptionInfo = computed(() => {
+  const sub = matchingActiveSubscription.value
+  if (!sub || !sub.expires_at) return null
+  const expiresAt = new Date(sub.expires_at)
+  if (Number.isNaN(expiresAt.getTime())) return null
+  const msRemaining = expiresAt.getTime() - Date.now()
+  const daysRemaining = Math.max(0, Math.ceil(msRemaining / (1000 * 60 * 60 * 24)))
+  let tone: 'neutral' | 'warning' | 'urgent' = 'neutral'
+  if (daysRemaining <= 3) tone = 'urgent'
+  else if (daysRemaining <= 7) tone = 'warning'
+  return { daysRemaining, tone }
+})
+
+const subscriptionChipClass = computed(() => {
+  if (!subscriptionInfo.value) return ''
+  switch (subscriptionInfo.value.tone) {
+    case 'urgent':
+      return 'bg-rose-50 text-rose-700 ring-rose-200 dark:bg-rose-900/20 dark:text-rose-300 dark:ring-rose-900/50'
+    case 'warning':
+      return 'bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:ring-amber-900/50'
+    default:
+      return 'bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:ring-emerald-900/50'
+  }
+})
 
 // Derived color classes from central config（accent bar / border / 主按钮已统一为中性色，platform 色仅用在 badge / 价格 / 折扣 / 模型对勾）
 const badgeLightClass = computed(() => platformBadgeLightClass(platform.value))
@@ -240,6 +294,9 @@ const rateDisplay = computed(() => {
   return `×${Number(rate.toPrecision(10))}`
 })
 
+// 主推标记：admin 在 plan 上勾选 is_popular 后，卡片显示琥珀角标 + 描边强化
+const isPopular = computed(() => props.plan.is_popular === true)
+
 // 限额可视性：废限额自动隐藏（被更紧的限额覆盖时不展示，避免用户困惑）
 const limitVisibility = computed(() =>
   getEffectiveLimitVisibility({
@@ -289,5 +346,37 @@ const validitySuffix = computed(() => {
 :global(:root.dark) .plan-card,
 :global(:root.dark) .plan-card:hover {
   box-shadow: none;
+}
+
+/* 主推徽章：缓慢"扫光"动效，强化高级感（5s 一次，淡淡的不抢戏）。
+   用 ::after 叠一条 45° 白色半透明斜光带，从徽章左侧扫到右侧。
+   prefers-reduced-motion 用户禁用动画。 */
+.popular-ribbon > div > div {
+  position: absolute; /* 保留 inline 的定位继承 */
+  overflow: hidden;
+}
+.popular-ribbon > div > div::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.45) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  animation: popular-shine 5s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes popular-shine {
+  0%, 60% { transform: translateX(-100%); }
+  80% { transform: translateX(100%); }
+  100% { transform: translateX(100%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .popular-ribbon > div > div::after {
+    animation: none;
+  }
 }
 </style>

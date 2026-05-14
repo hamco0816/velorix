@@ -318,8 +318,8 @@
 
                   <aside class="border-t border-gray-100 bg-gray-50/60 p-5 dark:border-dark-700/60 dark:bg-dark-800/30 lg:border-l lg:border-t-0">
                     <div class="rounded-2xl border border-gray-200/70 bg-white px-4 py-5 text-center dark:border-dark-700/60 dark:bg-dark-800/40">
-                      <!-- 订阅场景下用"套餐金额"更准确，"充值金额"是余额充值的措辞 -->
-                      <p class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planAmount') }}</p>
+                      <!-- 订阅场景：用"支付金额"避免跟"套餐金额（USD 限额单位）"混淆，也不沿用余额充值的"充值金额" -->
+                      <p class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.paymentAmount') }}</p>
                       <div class="mt-2 flex items-end justify-center gap-1.5 whitespace-nowrap">
                         <span :class="['mb-1.5 text-2xl font-semibold leading-none', planTextClass]">¥</span>
                         <span :class="['text-5xl font-semibold leading-none tracking-tight tabular-nums', planTextClass]">{{ selectedPlan.price }}</span>
@@ -340,7 +340,7 @@
 
                     <div class="mt-4 space-y-3 rounded-2xl border border-gray-200/70 bg-white p-4 text-sm dark:border-dark-700/60 dark:bg-dark-800/40">
                       <div class="flex justify-between gap-4">
-                        <span class="text-gray-500 dark:text-gray-400">{{ t('payment.planAmount') }}</span>
+                        <span class="text-gray-500 dark:text-gray-400">{{ t('payment.paymentAmount') }}</span>
                         <span class="font-medium tabular-nums text-gray-900 dark:text-white">¥{{ selectedPlan.price.toFixed(2) }}</span>
                       </div>
                       <div v-if="feeRate > 0 && selectedPlan.price > 0" class="flex justify-between gap-4">
@@ -385,7 +385,8 @@
               <EmptyState
                 v-if="checkout.plans.length === 0"
                 variant="emerald"
-                :description="t('payment.noPlans')"
+                :title="t('payment.noPlansTitle')"
+                :description="t('payment.noPlansHint')"
               >
                 <template #icon>
                   <Icon name="gift" class="empty-state-icon" />
@@ -1005,14 +1006,7 @@ const selectedPlanPlatformBrand = computed<'claude' | 'openai' | 'gemini' | null
 const selectedPlanPlatformInitial = computed(() => platformLabel(selectedPlan.value?.group_platform || '').charAt(0).toUpperCase())
 const selectedPlanRateDisplay = computed(() => {
   const rate = selectedPlan.value?.rate_multiplier ?? 1
-  const base = `×${Number(rate.toPrecision(10))}`
-  // 倍率 < 1 = 折扣，把"几折"显式标出来；中国用户更熟悉"6 折"这种说法
-  if (rate > 0 && rate < 1) {
-    // 0.6 → 6折，0.85 → 8.5折，0.5 → 5折
-    const discount = Number((rate * 10).toFixed(1))
-    return `${base} · ${discount}折`
-  }
-  return base
+  return `×${Number(rate.toPrecision(10))}`
 })
 const selectedPlanDiscountText = computed(() => {
   const plan = selectedPlan.value

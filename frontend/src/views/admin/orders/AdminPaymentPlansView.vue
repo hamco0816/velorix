@@ -35,12 +35,74 @@
         </div>
       </div>
 
+      <!-- 批量操作工具栏：仅当有选中时显示，避免占视觉空间 -->
+      <div v-if="selectedIds.size > 0" class="flex items-center gap-3 rounded-lg border border-primary-200/60 bg-primary-50/40 px-4 py-2 text-sm dark:border-primary-500/20 dark:bg-primary-500/5">
+        <span class="font-medium text-primary-700 dark:text-primary-300">
+          {{ t('payment.admin.bulkSelected', { n: selectedIds.size }) }}
+        </span>
+        <button
+          type="button"
+          :disabled="bulkActionLoading"
+          class="inline-flex items-center gap-1 rounded-md border border-emerald-200 bg-white px-2.5 py-1 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-50 disabled:opacity-50 dark:border-emerald-900/50 dark:bg-dark-800 dark:text-emerald-300 dark:hover:bg-emerald-950/20"
+          @click="bulkSetForSale(true)"
+        >
+          <Icon name="checkCircle" size="xs" />
+          {{ t('payment.admin.bulkActionEnable') }}
+        </button>
+        <button
+          type="button"
+          :disabled="bulkActionLoading"
+          class="inline-flex items-center gap-1 rounded-md border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-50 dark:border-dark-600 dark:bg-dark-800 dark:text-dark-300 dark:hover:bg-dark-700"
+          @click="bulkSetForSale(false)"
+        >
+          <Icon name="ban" size="xs" />
+          {{ t('payment.admin.bulkActionDisable') }}
+        </button>
+        <button
+          type="button"
+          class="ml-auto text-xs text-gray-500 hover:text-gray-700 dark:text-dark-400 dark:hover:text-dark-200"
+          @click="clearSelection"
+        >
+          {{ t('common.clear') }}
+        </button>
+      </div>
+
       <!-- Plans Table -->
       <DataTable :columns="planColumns" :data="filteredPlans" :loading="plansLoading">
+        <!-- 复选框列：表头主复选 + 行内复选；indeterminate 状态表示"部分已选" -->
+        <template #header-__select>
+          <input
+            type="checkbox"
+            class="h-4 w-4 cursor-pointer rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-700"
+            :checked="allVisibleSelected"
+            :indeterminate="someVisibleSelected"
+            :title="t('payment.admin.bulkSelectAll')"
+            @change="toggleSelectAllVisible"
+          />
+        </template>
+        <template #cell-__select="{ row }">
+          <input
+            type="checkbox"
+            class="h-4 w-4 cursor-pointer rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-600 dark:bg-dark-700"
+            :checked="selectedIds.has(row.id)"
+            @change="toggleSelect(row.id)"
+            @click.stop
+          />
+        </template>
         <template #cell-name="{ value, row }">
           <div class="space-y-1">
             <div class="flex flex-wrap items-center gap-2">
               <span class="text-sm font-medium" :class="getPlanNameClass(row.group_id)">{{ value }}</span>
+              <!-- 主推标识：admin 一眼分清哪些档是主推（同 group 多档时尤其有用）。
+                   渐变填充 + sparkles 图标，跟用户端徽章保持视觉一致。 -->
+              <span
+                v-if="row.is_popular"
+                class="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm"
+                :title="t('payment.admin.isPopularHint')"
+              >
+                <Icon name="sparkles" size="xs" :stroke-width="2.5" />
+                {{ t('payment.admin.popularBadgeShort') }}
+              </span>
               <span
                 v-if="row.kind === 'exclusive'"
                 class="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-semibold text-violet-700 ring-1 ring-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:ring-violet-900/50"
@@ -279,6 +341,74 @@ const showDeletePlanDialog = ref(false)
 const editingPlan = ref<SubscriptionPlan | null>(null)
 const deletingPlanId = ref<number | null>(null)
 
+// 批量选择：跨筛选保留（用 Set 而非数组）。开启/关闭多档套餐时显著加速。
+const selectedIds = ref<Set<number>>(new Set())
+function toggleSelect(id: number) {
+  const s = new Set(selectedIds.value)
+  if (s.has(id)) s.delete(id)
+  else s.add(id)
+  selectedIds.value = s
+}
+function clearSelection() {
+  selectedIds.value = new Set()
+}
+function toggleSelectAllVisible() {
+  // 一致性：当前所有可见行都已选 → 全部取消；否则把可见行加入选择
+  const allSelected = filteredPlans.value.length > 0 && filteredPlans.value.every((p) => selectedIds.value.has(p.id))
+  if (allSelected) {
+    const s = new Set(selectedIds.value)
+    filteredPlans.value.forEach((p) => s.delete(p.id))
+    selectedIds.value = s
+  } else {
+    const s = new Set(selectedIds.value)
+    filteredPlans.value.forEach((p) => s.add(p.id))
+    selectedIds.value = s
+  }
+}
+const allVisibleSelected = computed(
+  () => filteredPlans.value.length > 0 && filteredPlans.value.every((p) => selectedIds.value.has(p.id))
+)
+const someVisibleSelected = computed(
+  () => !allVisibleSelected.value && filteredPlans.value.some((p) => selectedIds.value.has(p.id))
+)
+
+const bulkActionLoading = ref(false)
+async function bulkSetForSale(forSale: boolean) {
+  if (selectedIds.value.size === 0 || bulkActionLoading.value) return
+  bulkActionLoading.value = true
+  // 并行触发但限流——避免一次 100 个 PUT 把后端打爆
+  const ids = Array.from(selectedIds.value)
+  let succeeded = 0
+  try {
+    for (let i = 0; i < ids.length; i += 5) {
+      const chunk = ids.slice(i, i + 5)
+      await Promise.all(
+        chunk.map((id) =>
+          adminPaymentAPI
+            .updatePlan(id, { for_sale: forSale })
+            .then(() => {
+              const target = plans.value.find((p) => p.id === id)
+              if (target) target.for_sale = forSale
+              succeeded++
+            })
+            .catch(() => {
+              /* 单条失败不阻断；最后给汇总错误 */
+            })
+        )
+      )
+    }
+    if (succeeded > 0) {
+      appStore.showSuccess(t('payment.admin.bulkActionDone', { n: succeeded }))
+    }
+    if (succeeded < ids.length) {
+      appStore.showError(t('payment.admin.bulkActionPartialFail', { n: ids.length - succeeded }))
+    }
+    clearSelection()
+  } finally {
+    bulkActionLoading.value = false
+  }
+}
+
 // 搜索：模糊匹配 name / description / features / 关联分组名
 const searchQuery = ref('')
 const filteredPlans = computed<SubscriptionPlan[]>(() => {
@@ -295,13 +425,15 @@ const filteredPlans = computed<SubscriptionPlan[]>(() => {
 })
 
 const planColumns = computed((): Column[] => [
-  { key: 'id', label: 'ID', numeric: true },
-  { key: 'name', label: t('payment.admin.planName') },
+  // __select 列：批量选择用的复选框，不可排序、不参与排序键持久化
+  { key: '__select', label: '', align: 'center' },
+  { key: 'id', label: 'ID', numeric: true, sortable: true },
+  { key: 'name', label: t('payment.admin.planName'), sortable: true },
   { key: 'group_id', label: t('payment.admin.group') },
-  { key: 'price', label: t('payment.admin.price'), numeric: true },
-  { key: 'validity_days', label: t('payment.admin.validityDays'), numeric: true },
-  { key: 'for_sale', label: t('payment.admin.forSale'), align: 'center' },
-  { key: 'sort_order', label: t('payment.admin.sortOrder'), numeric: true },
+  { key: 'price', label: t('payment.admin.price'), numeric: true, sortable: true },
+  { key: 'validity_days', label: t('payment.admin.validityDays'), numeric: true, sortable: true },
+  { key: 'for_sale', label: t('payment.admin.forSale'), align: 'center', sortable: true },
+  { key: 'sort_order', label: t('payment.admin.sortOrder'), numeric: true, sortable: true },
   { key: 'actions', label: t('common.actions'), align: 'center' },
 ])
 

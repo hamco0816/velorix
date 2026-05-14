@@ -80,6 +80,9 @@ type Group struct {
 	AccountCount            int64
 	ActiveAccountCount      int64
 	RateLimitedAccountCount int64
+	// ActiveSubscriptionCount 当前活跃订阅数（user_subscriptions 中 status=active 且未过期）。
+	// 用于 admin 分组列表一眼看出哪些分组有真实用户负载、哪些是闲置分组。
+	ActiveSubscriptionCount int64
 }
 
 func (g *Group) IsActive() bool {

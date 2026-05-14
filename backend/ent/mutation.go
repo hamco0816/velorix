@@ -33598,6 +33598,7 @@ type SubscriptionPlanMutation struct {
 	for_sale             *bool
 	sort_order           *int
 	addsort_order        *int
+	is_popular           *bool
 	kind                 *string
 	daily_limit_usd      *float64
 	adddaily_limit_usd   *float64
@@ -34223,6 +34224,42 @@ func (m *SubscriptionPlanMutation) ResetSortOrder() {
 	m.addsort_order = nil
 }
 
+// SetIsPopular sets the "is_popular" field.
+func (m *SubscriptionPlanMutation) SetIsPopular(b bool) {
+	m.is_popular = &b
+}
+
+// IsPopular returns the value of the "is_popular" field in the mutation.
+func (m *SubscriptionPlanMutation) IsPopular() (r bool, exists bool) {
+	v := m.is_popular
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsPopular returns the old "is_popular" field's value of the SubscriptionPlan entity.
+// If the SubscriptionPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscriptionPlanMutation) OldIsPopular(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsPopular is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsPopular requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsPopular: %w", err)
+	}
+	return oldValue.IsPopular, nil
+}
+
+// ResetIsPopular resets all changes to the "is_popular" field.
+func (m *SubscriptionPlanMutation) ResetIsPopular() {
+	m.is_popular = nil
+}
+
 // SetKind sets the "kind" field.
 func (m *SubscriptionPlanMutation) SetKind(s string) {
 	m.kind = &s
@@ -34645,7 +34682,7 @@ func (m *SubscriptionPlanMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscriptionPlanMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 19)
 	if m.group_id != nil {
 		fields = append(fields, subscriptionplan.FieldGroupID)
 	}
@@ -34678,6 +34715,9 @@ func (m *SubscriptionPlanMutation) Fields() []string {
 	}
 	if m.sort_order != nil {
 		fields = append(fields, subscriptionplan.FieldSortOrder)
+	}
+	if m.is_popular != nil {
+		fields = append(fields, subscriptionplan.FieldIsPopular)
 	}
 	if m.kind != nil {
 		fields = append(fields, subscriptionplan.FieldKind)
@@ -34730,6 +34770,8 @@ func (m *SubscriptionPlanMutation) Field(name string) (ent.Value, bool) {
 		return m.ForSale()
 	case subscriptionplan.FieldSortOrder:
 		return m.SortOrder()
+	case subscriptionplan.FieldIsPopular:
+		return m.IsPopular()
 	case subscriptionplan.FieldKind:
 		return m.Kind()
 	case subscriptionplan.FieldDailyLimitUsd:
@@ -34775,6 +34817,8 @@ func (m *SubscriptionPlanMutation) OldField(ctx context.Context, name string) (e
 		return m.OldForSale(ctx)
 	case subscriptionplan.FieldSortOrder:
 		return m.OldSortOrder(ctx)
+	case subscriptionplan.FieldIsPopular:
+		return m.OldIsPopular(ctx)
 	case subscriptionplan.FieldKind:
 		return m.OldKind(ctx)
 	case subscriptionplan.FieldDailyLimitUsd:
@@ -34874,6 +34918,13 @@ func (m *SubscriptionPlanMutation) SetField(name string, value ent.Value) error 
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSortOrder(v)
+		return nil
+	case subscriptionplan.FieldIsPopular:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsPopular(v)
 		return nil
 	case subscriptionplan.FieldKind:
 		v, ok := value.(string)
@@ -35149,6 +35200,9 @@ func (m *SubscriptionPlanMutation) ResetField(name string) error {
 		return nil
 	case subscriptionplan.FieldSortOrder:
 		m.ResetSortOrder()
+		return nil
+	case subscriptionplan.FieldIsPopular:
+		m.ResetIsPopular()
 		return nil
 	case subscriptionplan.FieldKind:
 		m.ResetKind()

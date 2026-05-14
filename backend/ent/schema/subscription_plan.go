@@ -58,6 +58,11 @@ func (SubscriptionPlan) Fields() []ent.Field {
 			Default(true),
 		field.Int("sort_order").
 			Default(0),
+		// 主推标记：admin 在某档套餐打上"⭐主推"后，前端订阅卡片角上展示徽章，
+		// 强化用户视觉聚焦在主推档（通常是 Pro 那一档），提升转化。
+		// 不影响排序，sort_order 仍然是显示顺序的唯一来源。
+		field.Bool("is_popular").
+			Default(false),
 		// 套餐类型：shared = 共享池订阅（用户共享 group 内账号）
 		// exclusive = 独享池订阅（购买后从 group 池子里独占分配一个账号）
 		field.String("kind").

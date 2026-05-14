@@ -65,6 +65,7 @@ func (h *PaymentHandler) GetPlansPublic(c *gin.Context) {
 		Features      string   `json:"features"`
 		ProductName   string   `json:"product_name"`
 		SortOrder     int      `json:"sort_order"`
+		IsPopular     bool     `json:"is_popular"`
 	}
 	result := make([]publicPlan, 0, len(plans))
 	for _, p := range plans {
@@ -73,6 +74,7 @@ func (h *PaymentHandler) GetPlansPublic(c *gin.Context) {
 			Price: p.Price, OriginalPrice: p.OriginalPrice,
 			ValidityDays: p.ValidityDays, ValidityUnit: p.ValidityUnit,
 			Features: p.Features, ProductName: p.ProductName, SortOrder: p.SortOrder,
+			IsPopular: p.IsPopular,
 		})
 	}
 	response.Success(c, result)
@@ -101,6 +103,7 @@ func (h *PaymentHandler) GetPlans(c *gin.Context) {
 		ProductName   string   `json:"product_name"`
 		ForSale       bool     `json:"for_sale"`
 		SortOrder     int      `json:"sort_order"`
+		IsPopular     bool     `json:"is_popular"`
 		Kind          string   `json:"kind"`
 		// 独享池套餐才有效；shared 套餐为 nil（不显示库存信息）
 		StockAvailable *int `json:"stock_available,omitempty"`
@@ -131,7 +134,7 @@ func (h *PaymentHandler) GetPlans(c *gin.Context) {
 			Name: p.Name, Description: p.Description, Price: p.Price, OriginalPrice: p.OriginalPrice,
 			ValidityDays: p.ValidityDays, ValidityUnit: p.ValidityUnit, Features: p.Features,
 			ProductName: p.ProductName, ForSale: p.ForSale, SortOrder: p.SortOrder,
-			Kind: p.Kind,
+			IsPopular: p.IsPopular, Kind: p.Kind,
 		}
 		if p.Kind == "exclusive" {
 			s := stockByGroup[p.GroupID]

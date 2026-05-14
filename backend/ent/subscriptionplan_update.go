@@ -223,6 +223,20 @@ func (_u *SubscriptionPlanUpdate) AddSortOrder(v int) *SubscriptionPlanUpdate {
 	return _u
 }
 
+// SetIsPopular sets the "is_popular" field.
+func (_u *SubscriptionPlanUpdate) SetIsPopular(v bool) *SubscriptionPlanUpdate {
+	_u.mutation.SetIsPopular(v)
+	return _u
+}
+
+// SetNillableIsPopular sets the "is_popular" field if the given value is not nil.
+func (_u *SubscriptionPlanUpdate) SetNillableIsPopular(v *bool) *SubscriptionPlanUpdate {
+	if v != nil {
+		_u.SetIsPopular(*v)
+	}
+	return _u
+}
+
 // SetKind sets the "kind" field.
 func (_u *SubscriptionPlanUpdate) SetKind(v string) *SubscriptionPlanUpdate {
 	_u.mutation.SetKind(v)
@@ -480,6 +494,9 @@ func (_u *SubscriptionPlanUpdate) sqlSave(ctx context.Context) (_node int, err e
 	if value, ok := _u.mutation.AddedSortOrder(); ok {
 		_spec.AddField(subscriptionplan.FieldSortOrder, field.TypeInt, value)
 	}
+	if value, ok := _u.mutation.IsPopular(); ok {
+		_spec.SetField(subscriptionplan.FieldIsPopular, field.TypeBool, value)
+	}
 	if value, ok := _u.mutation.Kind(); ok {
 		_spec.SetField(subscriptionplan.FieldKind, field.TypeString, value)
 	}
@@ -734,6 +751,20 @@ func (_u *SubscriptionPlanUpdateOne) SetNillableSortOrder(v *int) *SubscriptionP
 // AddSortOrder adds value to the "sort_order" field.
 func (_u *SubscriptionPlanUpdateOne) AddSortOrder(v int) *SubscriptionPlanUpdateOne {
 	_u.mutation.AddSortOrder(v)
+	return _u
+}
+
+// SetIsPopular sets the "is_popular" field.
+func (_u *SubscriptionPlanUpdateOne) SetIsPopular(v bool) *SubscriptionPlanUpdateOne {
+	_u.mutation.SetIsPopular(v)
+	return _u
+}
+
+// SetNillableIsPopular sets the "is_popular" field if the given value is not nil.
+func (_u *SubscriptionPlanUpdateOne) SetNillableIsPopular(v *bool) *SubscriptionPlanUpdateOne {
+	if v != nil {
+		_u.SetIsPopular(*v)
+	}
 	return _u
 }
 
@@ -1023,6 +1054,9 @@ func (_u *SubscriptionPlanUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 	}
 	if value, ok := _u.mutation.AddedSortOrder(); ok {
 		_spec.AddField(subscriptionplan.FieldSortOrder, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.IsPopular(); ok {
+		_spec.SetField(subscriptionplan.FieldIsPopular, field.TypeBool, value)
 	}
 	if value, ok := _u.mutation.Kind(); ok {
 		_spec.SetField(subscriptionplan.FieldKind, field.TypeString, value)
