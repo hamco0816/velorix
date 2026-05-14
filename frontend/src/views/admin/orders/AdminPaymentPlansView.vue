@@ -148,6 +148,7 @@ const planPrefill = ref<{
   daily_limit_usd?: number
   weekly_limit_usd?: number
   monthly_limit_usd?: number
+  rate_multiplier?: number
 } | null>(null)
 
 function tryConsumePrefillFromQuery() {
@@ -163,6 +164,7 @@ function tryConsumePrefillFromQuery() {
     daily_limit_usd: num(route.query.daily_limit_usd),
     weekly_limit_usd: num(route.query.weekly_limit_usd),
     monthly_limit_usd: num(route.query.monthly_limit_usd),
+    rate_multiplier: num(route.query.rate_multiplier),
   }
   editingPlan.value = null
   showPlanDialog.value = true

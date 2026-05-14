@@ -158,6 +158,7 @@ const props = defineProps<{
     daily_limit_usd: number
     weekly_limit_usd: number
     monthly_limit_usd: number
+    rate_multiplier: number
   }> | null
 }>()
 
@@ -253,7 +254,7 @@ watch(() => props.show, (visible) => {
       daily_limit_usd: p.daily_limit_usd ?? null,
       weekly_limit_usd: p.weekly_limit_usd ?? null,
       monthly_limit_usd: p.monthly_limit_usd ?? null,
-      rate_multiplier: null,
+      rate_multiplier: p.rate_multiplier ?? null,
     })
     planFeaturesText.value = ''
   }

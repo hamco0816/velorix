@@ -225,7 +225,7 @@
                   <input v-model.number="calcUsersPerAccount" type="number" min="1" step="1" class="input" placeholder="5" />
                 </div>
               </div>
-              <div class="grid grid-cols-3 gap-3">
+              <div class="grid grid-cols-2 gap-3">
                 <div>
                   <label class="input-label cursor-help" :title="t('admin.pricingAdvisor.calculator.markupTip')">
                     {{ t('admin.pricingAdvisor.calculator.markup') }}
@@ -246,6 +246,8 @@
                     <span class="text-sm text-gray-500 dark:text-dark-400">%</span>
                   </div>
                 </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
                 <div>
                   <label class="input-label cursor-help" :title="t('admin.pricingAdvisor.calculator.safetyTip')">
                     {{ t('admin.pricingAdvisor.calculator.safety') }}
@@ -253,7 +255,40 @@
                   </label>
                   <input v-model.number="calcSafety" type="number" min="0.3" max="1.5" step="0.1" class="input" placeholder="0.8" />
                 </div>
+                <div>
+                  <label class="input-label cursor-help" :title="t('admin.pricingAdvisor.calculator.rateMultiplierTip')">
+                    {{ t('admin.pricingAdvisor.calculator.rateMultiplier') }}
+                    <Icon name="infoCircle" size="xs" class="ml-0.5 inline-block text-gray-400" />
+                  </label>
+                  <input v-model.number="calcRateMultiplier" type="number" min="0.1" max="10" step="0.1" class="input" placeholder="1" />
+                </div>
               </div>
+
+              <!-- 高级：手动 cap 覆盖。1 样本 + 无 utilization 场景下回退值会偏低，让 admin 直接输入真实 cap。 -->
+              <details class="rounded-lg border border-gray-200/60 bg-gray-50/40 px-3 py-2 dark:border-dark-700/60 dark:bg-dark-800/30">
+                <summary class="cursor-pointer text-xs font-medium text-gray-600 dark:text-dark-300">
+                  {{ t('admin.pricingAdvisor.calculator.capOverrideTitle') }}
+                </summary>
+                <p class="mt-2 text-[11px] leading-relaxed text-gray-500 dark:text-dark-400">
+                  {{ t('admin.pricingAdvisor.calculator.capOverrideHint') }}
+                </p>
+                <div class="mt-2 grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="input-label">{{ t('admin.pricingAdvisor.calculator.capOverride5h') }}</label>
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-sm text-gray-500 dark:text-dark-400">$</span>
+                      <input v-model.number="calcCapOverride5h" type="number" min="0" step="1" class="input flex-1" :placeholder="String(((calcResult?.cap5hUsd ?? 0)).toFixed(0))" />
+                    </div>
+                  </div>
+                  <div>
+                    <label class="input-label">{{ t('admin.pricingAdvisor.calculator.capOverride7d') }}</label>
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-sm text-gray-500 dark:text-dark-400">$</span>
+                      <input v-model.number="calcCapOverride7d" type="number" min="0" step="1" class="input flex-1" :placeholder="String(((calcResult?.cap7dUsd ?? 0)).toFixed(0))" />
+                    </div>
+                  </div>
+                </div>
+              </details>
 
               <!-- 结果区：上层主结果（建议月费 + 期望月利润）；下层每用户 5h/日/周/月限额（反推自上游 cap） -->
               <div v-if="calcResult" class="mt-4 space-y-3">
@@ -310,7 +345,10 @@
                   </p>
                   <div class="grid grid-cols-4 gap-2 text-center">
                     <div>
-                      <p class="text-[10px] text-gray-500 dark:text-dark-400">{{ t('admin.pricingAdvisor.calculator.suggested5h') }}</p>
+                      <p class="text-[10px] text-gray-500 dark:text-dark-400">
+                        {{ t('admin.pricingAdvisor.calculator.suggested5h') }}
+                        <span class="text-gray-400 dark:text-dark-500">{{ t('admin.pricingAdvisor.calculator.suggested5hRefMark') }}</span>
+                      </p>
                       <p class="mt-0.5 text-sm font-semibold tabular-nums text-gray-900 dark:text-white">${{ calcResult.fiveHourLimitUsd.toFixed(2) }}</p>
                     </div>
                     <div>
@@ -326,25 +364,19 @@
                       <p class="mt-0.5 text-sm font-semibold tabular-nums text-gray-900 dark:text-white">${{ calcResult.monthlyLimitUsd.toFixed(2) }}</p>
                     </div>
                   </div>
-                  <!-- 数据来源说明：让 admin 看出 cap 是反推还是回退、分别是多少 -->
+                  <!-- 数据来源说明：5h / 7d 各自标 source（手动覆盖 / utilization 反推 / 7d_P95 兜底） -->
                   <p class="mt-2 text-center text-[10px] text-gray-500 dark:text-dark-400">
-                    {{ calcResult.capSource === 'reversed'
-                      ? t('admin.pricingAdvisor.calculator.limitsSourceReversed', {
-                          cap5h: calcResult.cap5hUsd.toFixed(2),
-                          cap7d: calcResult.cap7dUsd.toFixed(2),
-                          samples: calcResult.capSampleCount,
-                          n: calcResult.n,
-                          safety: calcResult.safety,
-                        })
-                      : t('admin.pricingAdvisor.calculator.limitsSourceFallback', {
-                          cap5h: calcResult.cap5hUsd.toFixed(2),
-                          cap7d: calcResult.cap7dUsd.toFixed(2),
-                          n: calcResult.n,
-                          safety: calcResult.safety,
-                        })
-                    }}
+                    {{ t('admin.pricingAdvisor.calculator.limitsSourceLine', {
+                      cap5h: calcResult.cap5hUsd.toFixed(2),
+                      cap5hSrc: t('admin.pricingAdvisor.calculator.capSource_' + calcResult.cap5hSource),
+                      cap7d: calcResult.cap7dUsd.toFixed(2),
+                      cap7dSrc: t('admin.pricingAdvisor.calculator.capSource_' + calcResult.cap7dSource),
+                      n: calcResult.n,
+                      safety: calcResult.safety,
+                      mul: calcResult.rateMul,
+                    }) }}
                   </p>
-                  <!-- 4 条限额是独立约束，提醒 admin 实际生效是最严的那条 -->
+                  <!-- 4 条限额是独立约束，提醒 admin 实际生效是最严的那条；同时强调 5h 套餐不存档 -->
                   <p class="mt-1 text-center text-[10px] italic text-gray-400 dark:text-dark-500">
                     {{ t('admin.pricingAdvisor.calculator.limitsCapsIndependentNote') }}
                   </p>
@@ -488,6 +520,8 @@ function applyToPlan() {
       daily_limit_usd: r.dailyLimitUsd.toFixed(2),
       weekly_limit_usd: r.weeklyLimitUsd.toFixed(2),
       monthly_limit_usd: r.monthlyLimitUsd.toFixed(2),
+      // 套餐倍率：admin 在计算器里设了非 1 倍率时把它带过去；plan 默认值不写，避免覆盖 group
+      ...(r.rateMul !== 1 ? { rate_multiplier: r.rateMul.toFixed(2) } : {}),
     },
   })
 }
@@ -500,12 +534,15 @@ function formatTier(tier: string): string {
 
 // ── ROI 计算器 ──
 // 计算逻辑：从档位反推上游 cap（cap = 当前窗口已耗费 / utilization%），按 N 个用户均分；
-// 没有 cap 样本时回退到 7d_P95 估计（peak 接近 cap）。详见 calcResult。
+// 没有 cap 样本时回退到 7d_P95 估计；admin 也可以手动覆盖 cap。详见 calcResult。
 const calcCost = ref<number>(1400)
 const calcUsersPerAccount = ref<number>(5) // 单账号承载用户数 N
 const calcMarkup = ref<number>(30) // 期望加价率 % (profit/cost)
 const calcSafety = ref<number>(0.8)
 const calcOccupancy = ref<number>(80) // 上座率 %（卖出去几成座位才算盈亏平衡）
+const calcRateMultiplier = ref<number>(1) // 套餐倍率：用户实际扣费 = 上游成本 × 倍率
+const calcCapOverride5h = ref<number | null>(null) // 手动覆盖 5h cap（USD），留空走自动反推/回退
+const calcCapOverride7d = ref<number | null>(null) // 手动覆盖 7d cap（USD）
 const calcTierKey = ref<string>('') // 跟 selectedKey 联动
 
 watch(selectedKey, (val) => {
@@ -539,41 +576,47 @@ const calcResult = computed(() => {
   const markup = Math.max(0, Math.min(500, calcMarkup.value || 0))
   const n = Math.max(1, Math.floor(calcUsersPerAccount.value || 1))
   const occupancy = Math.max(1, Math.min(100, calcOccupancy.value || 100)) / 100
+  const rateMul = Math.max(0.1, Math.min(10, calcRateMultiplier.value || 1))
 
-  // 1) 优先用反推 cap（cap = 已耗费 / utilization）。无可用 util 样本时回退用 7d_P95（接近 cap）。
-  //    用 P95 而不是 P50：P50 是中位账号峰值，会低估真实 cap；P95 是 95% 账号能跑到的水平，更接近上游硬上限。
-  const useReversedCap = tier.cap_sample_count > 0 && tier.cap_5h_usd > 0 && tier.cap_7d_usd > 0
-  const cap5hUsd = useReversedCap ? tier.cap_5h_usd : tier.window_5h_p95
-  const cap7dUsd = useReversedCap ? tier.cap_7d_usd : tier.window_7d_p95
-  const capSource: 'reversed' | 'fallback' = useReversedCap ? 'reversed' : 'fallback'
+  // 1) cap 选取，5h 与 7d 各自独立判断（不能因为 5h 没采到就把 7d 也降级）：
+  //    优先级：手动 override > utilization 反推（util ≥ 5%）> 7d_P95 兜底
+  const has5hReversed = tier.cap_sample_count > 0 && tier.cap_5h_usd > 0
+  const has7dReversed = tier.cap_sample_count > 0 && tier.cap_7d_usd > 0
+  const override5h = calcCapOverride5h.value && calcCapOverride5h.value > 0 ? calcCapOverride5h.value : null
+  const override7d = calcCapOverride7d.value && calcCapOverride7d.value > 0 ? calcCapOverride7d.value : null
+  const cap5hUsd = override5h ?? (has5hReversed ? tier.cap_5h_usd : tier.window_5h_p95)
+  const cap7dUsd = override7d ?? (has7dReversed ? tier.cap_7d_usd : tier.window_7d_p95)
+  const cap5hSource: 'override' | 'reversed' | 'fallback' = override5h ? 'override' : has5hReversed ? 'reversed' : 'fallback'
+  const cap7dSource: 'override' | 'reversed' | 'fallback' = override7d ? 'override' : has7dReversed ? 'reversed' : 'fallback'
 
-  // 2) 限额按 N 均分：
-  //    - 5h 限额 = cap_5h × safety / N
-  //    - 周限额 = cap_7d × safety / N
-  //    - 日限额 = 周限额 / 7（用户希望的均匀分布）
-  //    - 月限额 = 周限额 × 4（用户给的简化系数；理论 30/7≈4.286，× 4 偏保守不易超卖）
-  const fiveHourLimitUsd = (cap5hUsd * safety) / n
-  const weeklyLimitUsd = (cap7dUsd * safety) / n
+  // 2) 限额按 N 均分，再按套餐倍率换算成"用户侧 ActualCost"单位：
+  //    - 上游 cap 是原始美元成本；用户的 limit 字段实际扣的是 ActualCost = 上游成本 × rate_multiplier
+  //    - 所以 user_limit = cap × safety × rate_multiplier / N（倍率=1 时无影响）
+  const fiveHourLimitUsd = (cap5hUsd * safety * rateMul) / n
+  const weeklyLimitUsd = (cap7dUsd * safety * rateMul) / n
   const dailyLimitUsd = weeklyLimitUsd / 7
   const monthlyLimitUsd = weeklyLimitUsd * 4
 
-  // 3) 建议月费：基于"加价率"（profit/cost），不是利润率。例 cost=¥1400, markup=30% → revenue=¥1820
-  //    考虑上座率：实际只有 N×occupancy 个座位真正卖出，所以 raw = revenue / (N × occupancy)
+  // 3) 统一 effectiveSeats（既给定价用，也给利润用），避免之前 price 用 n×occ、profit 用 floor(n×occ) 不一致。
+  //    用浮点而不是 floor：N=1、occ=80% 时 effective=0.8 → 1 个用户的实际定价摊到 0.8 个"期望付费用户"上。
+  const effectiveSeats = Math.max(0.1, n * occupancy)
+
+  // 4) 建议月费/人：基于"加价率"（profit/cost）。例 cost=¥1400, markup=30% → revenue 目标=¥1820，按 effectiveSeats 摊。
   const totalRevenueCny = cost * (1 + markup / 100)
-  const rawPriceCny = totalRevenueCny / Math.max(1, n * occupancy)
+  const rawPriceCny = totalRevenueCny / effectiveSeats
   const priceCny = roundPriceCny(rawPriceCny)
 
-  // 4) 利润分两种口径：
-  //    - 满座月利润 = price × N - cost（最理想）
-  //    - 期望月利润 = price × (N × occupancy) - cost（按上座率）
+  // 5) 利润分两种口径：
+  //    - 满座月利润 = price × N - cost（N 个座都卖出去的上限）
+  //    - 期望月利润 = price × effectiveSeats - cost（按上座率，effectiveSeats 是浮点数）
   const monthlyProfitFullCny = priceCny * n - cost
-  const monthlyProfitExpectedCny = priceCny * Math.floor(n * occupancy) - cost
+  const monthlyProfitExpectedCny = priceCny * effectiveSeats - cost
 
-  // 5) 风险提示
+  // 6) 风险提示
   let warning = ''
   if (!tier.has_enough_samples) {
     warning = t('admin.pricingAdvisor.calculator.warnSamplesLow')
-  } else if (capSource === 'fallback') {
+  } else if (cap5hSource === 'fallback' || cap7dSource === 'fallback') {
     warning = t('admin.pricingAdvisor.calculator.warnNoCapSample')
   } else if (n > 50) {
     warning = t('admin.pricingAdvisor.calculator.warnNTooHigh')
@@ -589,14 +632,17 @@ const calcResult = computed(() => {
     fiveHourLimitUsd,
     cap5hUsd,
     cap7dUsd,
-    capSource,
+    cap5hSource,
+    cap7dSource,
     capSampleCount: tier.cap_sample_count,
     monthlyProfitFullCny,
     monthlyProfitExpectedCny,
+    effectiveSeats,
     warning,
     n,
     safety,
     occupancy,
+    rateMul,
     usdToCny: USD_TO_CNY,
   }
 })
