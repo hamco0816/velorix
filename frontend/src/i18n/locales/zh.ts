@@ -1180,6 +1180,8 @@ export default {
     cacheWrite: '缓存创建',
     perRequest: '每次请求',
     imageOutput: '图片输出',
+    imageOutputUnitPerImage: '($/张)',
+    imageOutputUnitPerToken: '($/MTok)',
     noPricing: '未配置定价',
     tiered: '阶梯',
     tieredHint: '此模型按 token 区间分档定价',

@@ -1171,6 +1171,8 @@ export default {
     cacheWrite: 'Cache write',
     perRequest: 'Per request',
     imageOutput: 'Image output',
+    imageOutputUnitPerImage: '($/image)',
+    imageOutputUnitPerToken: '($/MTok)',
     noPricing: 'Pricing not configured',
     tiered: 'Tiered',
     tieredHint: 'Tiered pricing across token ranges',

@@ -15,7 +15,8 @@ export interface PricingModelEntry {
   output_cost_per_token: number
   cache_read_input_token_cost: number
   cache_creation_input_token_cost: number
-  output_cost_per_image: number
+  output_cost_per_image: number       // 每张图片单价（部分模型有，如 gemini-2.5-flash-image）
+  output_cost_per_image_token: number // 每个图片 token 单价（GPT 系列图片模型主要用这个，如 gpt-image-1.5）
   supports_prompt_caching: boolean
   supports_service_tier: boolean
 }

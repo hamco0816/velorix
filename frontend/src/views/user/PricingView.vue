@@ -368,9 +368,18 @@
                 <!-- Image 计费 -->
                 <template v-else-if="model.billingMode === 'image'">
                   <div class="flex items-center justify-between">
-                    <span class="text-gray-500 dark:text-dark-400">{{ t('pricing.imageOutput') }}</span>
+                    <span class="text-gray-500 dark:text-dark-400">
+                      {{ t('pricing.imageOutput') }}
+                      <span v-if="model.imageOutputPriceUnit === 'per_image'" class="ml-1 text-xs text-gray-400">{{ t('pricing.imageOutputUnitPerImage') }}</span>
+                      <span v-else-if="model.imageOutputPriceUnit === 'per_image_token'" class="ml-1 text-xs text-gray-400">{{ t('pricing.imageOutputUnitPerToken') }}</span>
+                    </span>
                     <span class="text-base font-semibold tabular-nums text-gray-900 dark:text-white">
-                      {{ formatPrice(applyRate(model.imageOutputPrice)) }}
+                      <template v-if="model.imageOutputPriceUnit === 'per_image_token'">
+                        {{ formatPrice(applyRate(model.imageOutputPrice != null ? model.imageOutputPrice * 1_000_000 : null)) }}
+                      </template>
+                      <template v-else>
+                        {{ formatPrice(applyRate(model.imageOutputPrice)) }}
+                      </template>
                     </span>
                   </div>
                 </template>
@@ -700,6 +709,8 @@ interface FlatModel {
   cacheWritePrice: number | null
   perRequestPrice: number | null
   imageOutputPrice: number | null
+  // 图片输出价的单位：per_image=每张、per_image_token=每个图片 token；channel 自定义来源默认按渠道侧的 per_token 含义。
+  imageOutputPriceUnit: 'per_image' | 'per_image_token' | null
   accessibleGroups: UserAvailableGroup[]
 }
 
@@ -726,6 +737,8 @@ const allModels = computed<FlatModel[]>(() => {
             cacheWritePrice: p?.cache_write_price ?? null,
             perRequestPrice: p?.per_request_price ?? null,
             imageOutputPrice: p?.image_output_price ?? null,
+            // 渠道自定义的 image_output_price 语义就是 per-token（与渠道编辑器的"图片输出 $/MTok"一致）
+            imageOutputPriceUnit: p?.image_output_price != null ? 'per_image_token' : null,
             accessibleGroups: [],
           }
           map.set(key, entry)
@@ -750,18 +763,28 @@ const allModels = computed<FlatModel[]>(() => {
     // 推断 billing mode：mode === 'image_generation' → image，其它都按 token
     const mode: BillingMode = entry.mode === 'image_generation' ? 'image' : 'token'
 
+    // 图片输出价：优先取 per-image 单价（litellm 部分模型有，如 Gemini Image），
+    // 没有就 fallback 到 per-image-token 单价（GPT 系列图片模型，如 gpt-image-1.5）。
+    // 二者单位不同，但前端展示用同一个字段，详细单位由 imageOutputPriceUnit 区分。
+    const imagePerImage = entry.output_cost_per_image || 0
+    const imagePerImageToken = entry.output_cost_per_image_token || 0
+    const imagePrice = imagePerImage > 0 ? imagePerImage : imagePerImageToken
+    const imageUnit: 'per_image' | 'per_image_token' | null =
+      imagePerImage > 0 ? 'per_image' : imagePerImageToken > 0 ? 'per_image_token' : null
+
     map.set(key, {
       name: entry.model,
       platform,
       fromChannel: false,
-      hasPricing: entry.input_cost_per_token > 0 || entry.output_cost_per_token > 0 || entry.output_cost_per_image > 0,
+      hasPricing: entry.input_cost_per_token > 0 || entry.output_cost_per_token > 0 || imagePrice > 0,
       billingMode: mode,
       inputPrice: entry.input_cost_per_token || null,
       outputPrice: entry.output_cost_per_token || null,
       cacheReadPrice: entry.cache_read_input_token_cost || null,
       cacheWritePrice: entry.cache_creation_input_token_cost || null,
       perRequestPrice: null,
-      imageOutputPrice: entry.output_cost_per_image || null,
+      imageOutputPrice: imagePrice || null,
+      imageOutputPriceUnit: imageUnit,
       // 全量模型自动关联该平台的所有可访问分组
       accessibleGroups: platformToGroups.value.get(platform) ?? [],
     })
