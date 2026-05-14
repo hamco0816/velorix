@@ -144,12 +144,13 @@ func (s *OpsService) runAIReview(ctx context.Context, eventID int64, prompt stri
 	}
 
 	gatewayURL := s.buildLocalGatewayURL()
+	platform := apiKeyGroupPlatform(apiKey)
 	truncated := prompt
 	if len(truncated) > aiReviewMaxPromptLen {
 		truncated = truncated[:aiReviewMaxPromptLen]
 	}
 
-	result, provider, callErr := s.callAIReviewLLM(ctx, gatewayURL, apiKey.Key, cfg.model, truncated)
+	result, provider, callErr := s.callAIReviewLLM(ctx, gatewayURL, apiKey.Key, cfg.model, truncated, platform)
 	if callErr != nil {
 		s.writeAIReviewResult(ctx, eventID, false, provider, AIReviewResult{
 			Verdict: "error",
@@ -164,6 +165,15 @@ func (s *OpsService) runAIReview(ctx context.Context, eventID int64, prompt stri
 	if result.Verdict == "pass" {
 		s.tryAutoArchiveEvent(ctx, eventID, fmt.Sprintf("ai_auto_cleared: %s", result.Reason))
 	}
+}
+
+// apiKeyGroupPlatform 取 apiKey 绑定分组的 platform；分组缺失或未加载时返回空串，
+// callAIReviewLLM 会按 Anthropic 默认走（兼容历史只配 Anthropic 分组的部署）。
+func apiKeyGroupPlatform(k *APIKey) string {
+	if k == nil || k.Group == nil {
+		return ""
+	}
+	return k.Group.Platform
 }
 
 // aiReviewConfig 运行时配置快照
@@ -197,49 +207,91 @@ func (s *OpsService) buildLocalGatewayURL() string {
 	return fmt.Sprintf("http://127.0.0.1:%d", port)
 }
 
-// callAIReviewLLM 走本地 gateway 调 LLM。
+// callAIReviewLLM 走本地 gateway 调 LLM。按 platform 分别构造 Anthropic / OpenAI 风格的请求 +
+// 解析对应响应字段；platform 为空时按 Anthropic 默认走（兼容历史只配 Anthropic 分组的部署）。
+//
 // 返回 (AIReviewResult, provider_hint, err)。
-func (s *OpsService) callAIReviewLLM(ctx context.Context, baseURL, apiKey, model, userPrompt string) (AIReviewResult, string, error) {
-	payload := map[string]any{
-		"model":      model,
-		"max_tokens": 200, // verdict + category + reason，200 token 足够
-		"system":     aiReviewSystemTemplate,
-		"messages": []map[string]string{
-			{"role": "user", "content": userPrompt},
-		},
+func (s *OpsService) callAIReviewLLM(ctx context.Context, baseURL, apiKey, model, userPrompt, platform string) (AIReviewResult, string, error) {
+	var (
+		endpoint    string
+		payload     map[string]any
+		extraHeader map[string]string
+		respPath    string // gjson 路径，提取模型输出文本
+		provider    string
+	)
+
+	switch platform {
+	case PlatformOpenAI:
+		// OpenAI Codex / ChatGPT 分组：用 chat completions 协议。system 走 messages 数组，
+		// 不能像 Anthropic 那样作为顶层字段；auth 用 Bearer。
+		endpoint = "/v1/chat/completions"
+		payload = map[string]any{
+			"model":      model,
+			"max_tokens": 200,
+			"messages": []map[string]string{
+				{"role": "system", "content": aiReviewSystemTemplate},
+				{"role": "user", "content": userPrompt},
+			},
+		}
+		extraHeader = map[string]string{"Authorization": "Bearer " + apiKey}
+		respPath = "choices.0.message.content"
+		provider = "openai-compat"
+	default:
+		// 默认按 Anthropic 走：/v1/messages + x-api-key + anthropic-version。空 platform 也走这条
+		// （历史部署只配过 Anthropic 分组、没 Group 关联时不报错）。
+		endpoint = "/v1/messages"
+		payload = map[string]any{
+			"model":      model,
+			"max_tokens": 200,
+			"system":     aiReviewSystemTemplate,
+			"messages": []map[string]string{
+				{"role": "user", "content": userPrompt},
+			},
+		}
+		extraHeader = map[string]string{
+			"x-api-key":         apiKey,
+			"anthropic-version": "2023-06-01",
+		}
+		respPath = "content.0.text"
+		provider = "anthropic-compat"
 	}
+
 	body, err := json.Marshal(payload)
 	if err != nil {
-		return AIReviewResult{}, "anthropic-compat", fmt.Errorf("marshal payload: %w", err)
+		return AIReviewResult{}, provider, fmt.Errorf("marshal payload: %w", err)
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, baseURL+"/v1/messages", bytes.NewReader(body))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, baseURL+endpoint, bytes.NewReader(body))
 	if err != nil {
-		return AIReviewResult{}, "anthropic-compat", fmt.Errorf("build request: %w", err)
+		return AIReviewResult{}, provider, fmt.Errorf("build request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("x-api-key", apiKey)
-	req.Header.Set("anthropic-version", "2023-06-01")
+	for k, v := range extraHeader {
+		req.Header.Set(k, v)
+	}
 
 	client := &http.Client{Timeout: aiReviewHTTPTimeout}
 	resp, err := client.Do(req)
 	if err != nil {
-		return AIReviewResult{}, "anthropic-compat", fmt.Errorf("do request: %w", err)
+		return AIReviewResult{}, provider, fmt.Errorf("do request: %w", err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 	respBytes, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		preview := truncateString(string(respBytes), 200)
-		return AIReviewResult{}, "anthropic-compat", fmt.Errorf("status %d: %s", resp.StatusCode, preview)
+		return AIReviewResult{}, provider, fmt.Errorf("status %d: %s", resp.StatusCode, preview)
 	}
 
-	// 兼容 Anthropic / Claude 响应: content[0].text
-	text := strings.TrimSpace(gjson.GetBytes(respBytes, "content.0.text").String())
+	// 优先按选定 provider 的字段路径取文本；为空再兜底另一种（防止某些代理混合返回）
+	text := strings.TrimSpace(gjson.GetBytes(respBytes, respPath).String())
 	if text == "" {
-		// 兜底 OpenAI 风格
-		text = strings.TrimSpace(gjson.GetBytes(respBytes, "choices.0.message.content").String())
+		fallbackPath := "content.0.text"
+		if respPath == "content.0.text" {
+			fallbackPath = "choices.0.message.content"
+		}
+		text = strings.TrimSpace(gjson.GetBytes(respBytes, fallbackPath).String())
 	}
 	if text == "" {
-		return AIReviewResult{}, "anthropic-compat", fmt.Errorf("empty model output")
+		return AIReviewResult{}, provider, fmt.Errorf("empty model output")
 	}
 	result := parseAIReviewJSON(text)
 	if result.Verdict == "" {
@@ -248,9 +300,9 @@ func (s *OpsService) callAIReviewLLM(ctx context.Context, baseURL, apiKey, model
 			Verdict: "raw",
 			Reason:  "LLM 未按 JSON 格式返回",
 			Raw:     truncateString(text, 200),
-		}, "anthropic-compat", nil
+		}, provider, nil
 	}
-	return result, "anthropic-compat", nil
+	return result, provider, nil
 }
 
 // parseAIReviewJSON 容忍 markdown 围栏；提取第一个 { ... } 块解析。
@@ -359,7 +411,8 @@ func (s *OpsService) TestAIReview(ctx context.Context, prompt string) (*AIReview
 	if len(truncated) > aiReviewMaxPromptLen {
 		truncated = truncated[:aiReviewMaxPromptLen]
 	}
-	result, _, callErr := s.callAIReviewLLM(ctx, s.buildLocalGatewayURL(), apiKey.Key, cfg.model, truncated)
+	platform := apiKeyGroupPlatform(apiKey)
+	result, _, callErr := s.callAIReviewLLM(ctx, s.buildLocalGatewayURL(), apiKey.Key, cfg.model, truncated, platform)
 	if callErr != nil {
 		return nil, callErr
 	}
