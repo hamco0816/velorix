@@ -278,6 +278,34 @@ func ProvideRateLimitService(
 	return svc
 }
 
+// ProvideOpsService 包装 NewOpsService，wire 装配后回填 apiKeyRepo（AI 审核要用 ApiKey 调本地 gateway）。
+// 用包装而不是把 apiKeyRepo 加进 NewOpsService 签名，是为了不动十几个测试文件已有的 nil-soup 调用。
+func ProvideOpsService(
+	opsRepo OpsRepository,
+	settingRepo SettingRepository,
+	cfg *config.Config,
+	accountRepo AccountRepository,
+	userRepo UserRepository,
+	concurrencyService *ConcurrencyService,
+	gatewayService *GatewayService,
+	openAIGatewayService *OpenAIGatewayService,
+	geminiCompatService *GeminiMessagesCompatService,
+	antigravityGatewayService *AntigravityGatewayService,
+	systemLogSink *OpsSystemLogSink,
+	apiKeyRepo APIKeyRepository,
+) *OpsService {
+	svc := NewOpsService(
+		opsRepo, settingRepo, cfg,
+		accountRepo, userRepo,
+		concurrencyService, gatewayService, openAIGatewayService, geminiCompatService, antigravityGatewayService,
+		systemLogSink,
+	)
+	if svc != nil {
+		svc.SetAPIKeyRepo(apiKeyRepo)
+	}
+	return svc
+}
+
 // ProvideOpsMetricsCollector creates and starts OpsMetricsCollector.
 func ProvideOpsMetricsCollector(
 	opsRepo OpsRepository,
@@ -523,7 +551,7 @@ var ProviderSet = wire.NewSet(
 	NewDataManagementService,
 	ProvideBackupService,
 	ProvideOpsSystemLogSink,
-	NewOpsService,
+	ProvideOpsService,
 	ProvideOpsMetricsCollector,
 	ProvideSystemOverloadMonitor,
 	ProvideOpsAggregationService,
