@@ -39,6 +39,12 @@ type TierStats struct {
 	Window7dMax      float64 `json:"window_7d_max"`
 	Daily30dAvg      float64 `json:"daily_30d_avg"` // 30 天日均（按账号平均后取均值）
 	HasEnoughSamples bool    `json:"has_enough_samples"`
+
+	// 反推得到的"上游档位 cap"（USD）：基于账号 (当前窗口已耗费, 上游 utilization%) 反算 cap = cost / util。
+	// 取该档位下所有有效样本的中位数。0 表示该档位下没有可用 utilization 采样，前端会回退用 7d_p95 估计。
+	Cap5hUsd       float64 `json:"cap_5h_usd"`
+	Cap7dUsd       float64 `json:"cap_7d_usd"`
+	CapSampleCount int     `json:"cap_sample_count"` // 参与 cap 反推的账号数（util > 5% 才算有效）
 }
 
 // TrendPoint 单个时间点的趋势数据。
@@ -135,7 +141,19 @@ func (s *PricingAdvisorService) GetTierStats(ctx context.Context, params Pricing
 		Total30d float64
 		Platform string
 		Tier     string
+		Cap5h    float64 // 反推 cap：>0 才参与中位数
+		Cap7d    float64
 	}
+
+	// 拉每个账号的上游窗口反推所需数据（util + 当前窗口已消耗）。
+	// util 来自上游 /usage 被动采样（缓存在 accounts.extra），cost 直接从 usage_logs 的对应窗口求和。
+	caps5h, caps7d, capErr := s.collectAccountCaps(ctx, byAccount, params.Platform)
+	if capErr != nil {
+		// cap 反推失败不阻塞主流程：缺失就走老路（前端回退到 7d_p95 估计）
+		caps5h = make(map[int64]float64)
+		caps7d = make(map[int64]float64)
+	}
+
 	accStats := make([]accStat, 0, len(byAccount))
 	for accID, bs := range byAccount {
 		meta := accountMetaMap[accID]
@@ -151,6 +169,8 @@ func (s *PricingAdvisorService) GetTierStats(ctx context.Context, params Pricing
 			Total30d: total,
 			Platform: meta.Platform,
 			Tier:     meta.Tier,
+			Cap5h:    caps5h[accID],
+			Cap7d:    caps7d[accID],
 		})
 	}
 
@@ -165,11 +185,25 @@ func (s *PricingAdvisorService) GetTierStats(ctx context.Context, params Pricing
 	for k, list := range groups {
 		w5 := make([]float64, len(list))
 		w7 := make([]float64, len(list))
+		// cap 反推的样本：跳过 0 值（无有效 util 采样）
+		validCap5h := make([]float64, 0, len(list))
+		validCap7d := make([]float64, 0, len(list))
 		var total30 float64
 		for i, st := range list {
 			w5[i] = st.Peak5h
 			w7[i] = st.Peak7d
 			total30 += st.Total30d
+			if st.Cap5h > 0 {
+				validCap5h = append(validCap5h, st.Cap5h)
+			}
+			if st.Cap7d > 0 {
+				validCap7d = append(validCap7d, st.Cap7d)
+			}
+		}
+		// cap 用中位数：避免单个异常账号（util 接近 0、cost 也很小，反推值噪声大）拉偏均值
+		capSampleCount := len(validCap7d)
+		if len(validCap5h) > capSampleCount {
+			capSampleCount = len(validCap5h)
 		}
 		stats := TierStats{
 			Platform:         k.Platform,
@@ -185,6 +219,9 @@ func (s *PricingAdvisorService) GetTierStats(ctx context.Context, params Pricing
 			Window7dMax:      maxFloat(w7),
 			Daily30dAvg:      total30 / float64(len(list)) / float64(days),
 			HasEnoughSamples: len(list) >= 3,
+			Cap5hUsd:         percentile(validCap5h, 0.50),
+			Cap7dUsd:         percentile(validCap7d, 0.50),
+			CapSampleCount:   capSampleCount,
 		}
 		result = append(result, stats)
 	}
@@ -357,4 +394,72 @@ func maxFloat(xs []float64) float64 {
 		}
 	}
 	return m
+}
+
+// collectAccountCaps 反推每个账号的上游 cap（USD）：cap = 当前窗口已消耗 / utilization。
+//
+// utilization 来自 accounts.extra 里的被动采样（session_window_utilization、passive_usage_7d_utilization），
+// 当前窗口已消耗直接从 usage_logs 按时间求和。
+//
+// 算法要点：
+//   - 只对 util ≥ 0.05 的账号反推：util 太小（接近 0）反推值噪声极大，例如 util=0.01,cost=0.5
+//     得出 cap=$50，但其实可能是新窗口刚 reset 才用了 0.5 美元，cap 真值未知
+//   - 5h 窗口直接用 now-5h 到 now 的 cost；7d 窗口同理用 now-7d 到 now
+//   - 严格说应按 reset_at 反推窗口起点，但被动采样有滞后，固定回看反而更稳
+//
+// 返回 (cap5h_per_account, cap7d_per_account, error)。错误时上层会把整张 cap 表当空处理。
+func (s *PricingAdvisorService) collectAccountCaps(ctx context.Context, byAccount map[int64][]hourBucket, platformFilter string) (map[int64]float64, map[int64]float64, error) {
+	cap5h := make(map[int64]float64, len(byAccount))
+	cap7d := make(map[int64]float64, len(byAccount))
+	if len(byAccount) == 0 {
+		return cap5h, cap7d, nil
+	}
+
+	now := time.Now()
+	since5h := now.Add(-5 * time.Hour)
+	since7d := now.Add(-7 * 24 * time.Hour)
+
+	// 一次拉所有账号的 util + 5h/7d 窗口实际消耗。把窗口求和放进 SQL 比 Go 侧再循环一遍 buckets 更省。
+	rows, err := s.db.QueryContext(ctx, `
+		SELECT a.id,
+			   COALESCE((a.extra->>'session_window_utilization')::float, 0)     AS util_5h,
+			   COALESCE((a.extra->>'passive_usage_7d_utilization')::float, 0)   AS util_7d,
+			   COALESCE((SELECT SUM(total_cost) FROM usage_logs
+						 WHERE account_id = a.id AND created_at >= $1), 0)      AS cost_5h,
+			   COALESCE((SELECT SUM(total_cost) FROM usage_logs
+						 WHERE account_id = a.id AND created_at >= $2), 0)      AS cost_7d
+		FROM accounts a
+		WHERE a.deleted_at IS NULL
+		  AND ($3::text = '' OR a.platform = $3)
+	`, since5h, since7d, platformFilter)
+	if err != nil {
+		return cap5h, cap7d, fmt.Errorf("query account caps: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	const minValidUtil = 0.05 // util < 5% 不参与反推（噪声太大）
+	for rows.Next() {
+		var (
+			accID                 int64
+			util5h, util7d        float64
+			cost5h, cost7d        float64
+		)
+		if err := rows.Scan(&accID, &util5h, &util7d, &cost5h, &cost7d); err != nil {
+			return cap5h, cap7d, fmt.Errorf("scan account caps: %w", err)
+		}
+		// 只关心当前 30 天窗口里有 usage 的账号；其它账号不在 byAccount 里就忽略
+		if _, ok := byAccount[accID]; !ok {
+			continue
+		}
+		if util5h >= minValidUtil && cost5h > 0 {
+			cap5h[accID] = cost5h / util5h
+		}
+		if util7d >= minValidUtil && cost7d > 0 {
+			cap7d[accID] = cost7d / util7d
+		}
+	}
+	if err := rows.Err(); err != nil {
+		return cap5h, cap7d, fmt.Errorf("rows iter caps: %w", err)
+	}
+	return cap5h, cap7d, nil
 }

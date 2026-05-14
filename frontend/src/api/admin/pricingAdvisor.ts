@@ -24,6 +24,11 @@ export interface TierStats {
   window_7d_max: number
   daily_30d_avg: number
   has_enough_samples: boolean
+
+  // 反推得到的"上游档位 cap"（USD）：cap = 当前窗口已耗费 / utilization。0 表示无可用样本，前端会回退用 7d_p95。
+  cap_5h_usd: number
+  cap_7d_usd: number
+  cap_sample_count: number // 参与 cap 反推的账号数（util > 5% 才算有效）
 }
 
 export interface TrendPoint {
