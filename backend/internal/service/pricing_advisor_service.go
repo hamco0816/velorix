@@ -440,9 +440,9 @@ func (s *PricingAdvisorService) collectAccountCaps(ctx context.Context, byAccoun
 	const minValidUtil = 0.05 // util < 5% 不参与反推（噪声太大）
 	for rows.Next() {
 		var (
-			accID                 int64
-			util5h, util7d        float64
-			cost5h, cost7d        float64
+			accID          int64
+			util5h, util7d float64
+			cost5h, cost7d float64
 		)
 		if err := rows.Scan(&accID, &util5h, &util7d, &cost5h, &cost7d); err != nil {
 			return cap5h, cap7d, fmt.Errorf("scan account caps: %w", err)
