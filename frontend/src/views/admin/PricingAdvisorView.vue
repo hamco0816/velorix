@@ -42,18 +42,21 @@
         </button>
       </div>
 
-      <!-- 业务说明：让 admin 看懂这些数字含义 + 重要的语义提醒 -->
-      <div class="flex items-start gap-2.5 rounded-xl border border-sky-200/60 bg-sky-50/60 px-4 py-3 dark:border-sky-500/20 dark:bg-sky-500/5">
-        <Icon name="infoCircle" size="sm" class="mt-0.5 shrink-0 text-sky-600 dark:text-sky-300" />
-        <div class="text-xs leading-5 text-sky-900 dark:text-sky-100">
-          <p class="font-semibold">{{ t('admin.pricingAdvisor.helpTitle') }}</p>
-          <p class="mt-0.5">{{ t('admin.pricingAdvisor.helpBody') }}</p>
-          <p class="mt-1 flex items-start gap-1 text-[11px] opacity-80">
+      <!-- 业务说明：默认折叠，避免大段文字挤压主表格视觉空间 -->
+      <details class="group rounded-xl border border-sky-200/60 bg-sky-50/60 px-4 py-2.5 dark:border-sky-500/20 dark:bg-sky-500/5">
+        <summary class="flex cursor-pointer items-center gap-2.5 text-xs font-semibold text-sky-900 dark:text-sky-100">
+          <Icon name="infoCircle" size="sm" class="shrink-0 text-sky-600 dark:text-sky-300" />
+          <span>{{ t('admin.pricingAdvisor.helpTitle') }}</span>
+          <Icon name="chevronDown" size="xs" class="ml-auto text-sky-600 transition-transform group-open:rotate-180 dark:text-sky-300" />
+        </summary>
+        <div class="mt-2 space-y-1.5 pl-7 text-xs leading-5 text-sky-900/90 dark:text-sky-100/90">
+          <p>{{ t('admin.pricingAdvisor.helpBody') }}</p>
+          <p class="flex items-start gap-1 text-[11px] opacity-80">
             <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
             <span>{{ t('admin.pricingAdvisor.helpUsdNote') }}</span>
           </p>
         </div>
-      </div>
+      </details>
 
       <!-- 加载状态 -->
       <div v-if="loading && stats.length === 0" class="flex items-center justify-center py-16">
@@ -218,48 +221,47 @@
                 </div>
               </div>
 
-              <!-- 主结果：cap + 限额合并为一张卡，cap 在顶部一行展示、限额在下方 4 列大字 -->
+              <!-- 主结果：每人限额为主视觉，cap 来源信息收为底部小字脚注 -->
               <div v-if="calcResult" class="space-y-2">
-                <div class="rounded-xl border border-emerald-200/60 bg-emerald-50/40 p-3 dark:border-emerald-500/20 dark:bg-emerald-500/5">
-                  <!-- cap 顶部行：横向展示 5h / 7d 与来源标签 -->
-                  <div class="flex items-center justify-between gap-3 border-b border-emerald-200/40 pb-2 text-[12px] dark:border-emerald-500/15">
-                    <span class="cursor-help font-medium uppercase tracking-wider text-violet-700/80 dark:text-violet-300/80"
-                          :title="t('admin.pricingAdvisor.calculator.tierCapTitle')">
-                      {{ t('admin.pricingAdvisor.calculator.tierCapTitle') }}
-                    </span>
-                    <span class="flex items-center gap-3 tabular-nums">
-                      <span class="text-violet-900 dark:text-violet-100">
-                        5h <span class="font-semibold">${{ calcResult.cap5hUsd.toFixed(0) }}</span>
-                        <span class="ml-1 text-[10px] text-violet-600/70 dark:text-violet-300/60">{{ t('admin.pricingAdvisor.calculator.capSource_' + calcResult.cap5hSource) }}</span>
-                      </span>
-                      <span class="text-violet-300 dark:text-violet-500">·</span>
-                      <span class="text-violet-900 dark:text-violet-100">
-                        7d <span class="font-semibold">${{ calcResult.cap7dUsd.toFixed(0) }}</span>
-                        <span class="ml-1 text-[10px] text-violet-600/70 dark:text-violet-300/60">{{ t('admin.pricingAdvisor.calculator.capSource_' + calcResult.cap7dSource) }}</span>
-                      </span>
-                    </span>
-                  </div>
+                <div class="rounded-xl border border-emerald-200/60 bg-emerald-50/40 p-3.5 dark:border-emerald-500/20 dark:bg-emerald-500/5">
+                  <!-- 标题：直接说"每人限额"（之前写"档位 CAP"和下面大字对不上） -->
+                  <p class="mb-2 cursor-help text-[12px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300"
+                     :title="t('admin.pricingAdvisor.calculator.limitsTip')">
+                    {{ t('admin.pricingAdvisor.calculator.limitsTitle') }}
+                    <Icon name="infoCircle" size="xs" class="ml-0.5 inline-block opacity-60" />
+                  </p>
                   <!-- 限额结果：4 列大字 -->
-                  <div class="mt-2.5 grid grid-cols-4 gap-2 text-center">
+                  <div class="grid grid-cols-4 gap-2 text-center">
                     <div>
-                      <p class="text-[11px] font-medium uppercase tracking-wider text-emerald-700/80 dark:text-emerald-300/70">
+                      <p class="text-[11px] font-medium uppercase tracking-wider text-emerald-700/70 dark:text-emerald-300/70">
                         {{ t('admin.pricingAdvisor.calculator.suggested5h') }}
                         <span class="text-emerald-700/50 dark:text-emerald-300/50">{{ t('admin.pricingAdvisor.calculator.suggested5hRefMark') }}</span>
                       </p>
-                      <p class="mt-1 text-[18px] font-bold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.fiveHourLimitUsd.toFixed(2) }}</p>
+                      <p class="mt-1 text-[20px] font-bold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.fiveHourLimitUsd.toFixed(2) }}</p>
                     </div>
                     <div>
-                      <p class="text-[11px] font-medium uppercase tracking-wider text-emerald-700/80 dark:text-emerald-300/70">{{ t('admin.pricingAdvisor.calculator.suggestedDaily') }}</p>
-                      <p class="mt-1 text-[18px] font-bold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.dailyLimitUsd.toFixed(2) }}</p>
+                      <p class="text-[11px] font-medium uppercase tracking-wider text-emerald-700/70 dark:text-emerald-300/70">{{ t('admin.pricingAdvisor.calculator.suggestedDaily') }}</p>
+                      <p class="mt-1 text-[20px] font-bold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.dailyLimitUsd.toFixed(2) }}</p>
                     </div>
                     <div>
-                      <p class="text-[11px] font-medium uppercase tracking-wider text-emerald-700/80 dark:text-emerald-300/70">{{ t('admin.pricingAdvisor.calculator.suggestedWeekly') }}</p>
-                      <p class="mt-1 text-[18px] font-bold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.weeklyLimitUsd.toFixed(2) }}</p>
+                      <p class="text-[11px] font-medium uppercase tracking-wider text-emerald-700/70 dark:text-emerald-300/70">{{ t('admin.pricingAdvisor.calculator.suggestedWeekly') }}</p>
+                      <p class="mt-1 text-[20px] font-bold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.weeklyLimitUsd.toFixed(2) }}</p>
                     </div>
                     <div>
-                      <p class="text-[11px] font-medium uppercase tracking-wider text-emerald-700/80 dark:text-emerald-300/70">{{ t('admin.pricingAdvisor.calculator.suggestedMonthly') }}</p>
-                      <p class="mt-1 text-[18px] font-bold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.monthlyLimitUsd.toFixed(2) }}</p>
+                      <p class="text-[11px] font-medium uppercase tracking-wider text-emerald-700/70 dark:text-emerald-300/70">{{ t('admin.pricingAdvisor.calculator.suggestedMonthly') }}</p>
+                      <p class="mt-1 text-[20px] font-bold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.monthlyLimitUsd.toFixed(2) }}</p>
                     </div>
+                  </div>
+                  <!-- 底部 cap 来源脚注：辅助信息，小字 -->
+                  <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-emerald-200/40 pt-2 text-[11px] tabular-nums text-emerald-700/70 dark:border-emerald-500/15 dark:text-emerald-300/60">
+                    <span class="font-medium uppercase tracking-wider">档位 cap</span>
+                    <span>5h <span class="font-semibold text-emerald-900 dark:text-emerald-100">${{ calcResult.cap5hUsd.toFixed(0) }}</span>
+                      <span class="ml-0.5 opacity-70">· {{ t('admin.pricingAdvisor.calculator.capSource_' + calcResult.cap5hSource) }}</span>
+                    </span>
+                    <span class="opacity-40">/</span>
+                    <span>7d <span class="font-semibold text-emerald-900 dark:text-emerald-100">${{ calcResult.cap7dUsd.toFixed(0) }}</span>
+                      <span class="ml-0.5 opacity-70">· {{ t('admin.pricingAdvisor.calculator.capSource_' + calcResult.cap7dSource) }}</span>
+                    </span>
                   </div>
                 </div>
 
@@ -368,17 +370,19 @@
                     </p>
                   </div>
                 </div>
-                <p class="mt-2 text-[10px] italic text-gray-500 dark:text-dark-400">
-                  {{ t('admin.pricingAdvisor.calculator.pricingFormula', { cost: calcCost, markup: calcMarkup, n: calcResult.n }) }}
-                </p>
-                <button
-                  type="button"
-                  class="btn btn-primary mt-3 w-full"
-                  @click="applyToPlan"
-                >
-                  <Icon name="plus" size="sm" class="mr-1.5" />
-                  {{ t('admin.pricingAdvisor.calculator.applyToPlan') }}
-                </button>
+                <div class="mt-2 flex items-center justify-between gap-3">
+                  <p class="flex-1 text-[10px] italic text-gray-500 dark:text-dark-400">
+                    {{ t('admin.pricingAdvisor.calculator.pricingFormula', { cost: calcCost, markup: calcMarkup, n: calcResult.n }) }}
+                  </p>
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-sm shrink-0"
+                    @click="applyToPlan"
+                  >
+                    <Icon name="plus" size="xs" class="mr-1" />
+                    {{ t('admin.pricingAdvisor.calculator.applyToPlan') }}
+                  </button>
+                </div>
               </details>
             </div>
           </section>

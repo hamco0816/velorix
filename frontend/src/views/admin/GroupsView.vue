@@ -3278,10 +3278,11 @@ const createForm = reactive({
   // 分组级 RPM 限制（每用户每分钟最大请求数；0 = 不限制）
   rpm_limit: 0 as number,
   // 限时倍率（promo rate）：在 [promo_starts_at, promo_ends_at) 窗口内 billing 自动用 promo_rate_multiplier 替代
-  // 表单输入：datetime-local 字符串；空字符串表示清空字段
+  // 表单输入：datetime-local 字符串（空字符串表示未填）。
+  // 类型用 `string | null` 是因为提交前会经 datetimeLocalToIso() 转 null，避免后端 time.Parse 报错。
   promo_rate_multiplier: null as number | null,
-  promo_starts_at: '' as string,
-  promo_ends_at: '' as string,
+  promo_starts_at: '' as string | null,
+  promo_ends_at: '' as string | null,
   promo_label: '' as string,
 });
 
@@ -3570,10 +3571,11 @@ const editForm = reactive({
   // 分组级 RPM 限制（每用户每分钟最大请求数；0 = 不限制）
   rpm_limit: 0 as number,
   // 限时倍率（promo rate）：在 [promo_starts_at, promo_ends_at) 窗口内 billing 自动用 promo_rate_multiplier 替代
-  // 表单输入：datetime-local 字符串；空字符串表示清空字段
+  // 表单输入：datetime-local 字符串（空字符串表示未填）。
+  // 类型用 `string | null` 是因为提交前会经 datetimeLocalToIso() 转 null，避免后端 time.Parse 报错。
   promo_rate_multiplier: null as number | null,
-  promo_starts_at: '' as string,
-  promo_ends_at: '' as string,
+  promo_starts_at: '' as string | null,
+  promo_ends_at: '' as string | null,
   promo_label: '' as string,
 });
 
@@ -3904,6 +3906,10 @@ const handleCreateGroup = async () => {
     requestData.image_rate_multiplier = normalizeImageRateMultiplier(
       requestData.image_rate_multiplier,
     );
+    // promo 时间字段：datetime-local 的 "" 必须转 null，否则后端 time.Parse(RFC3339, "") 会 400。
+    // 有值时按本地时间解析回 UTC ISO，跟编辑流保持一致。
+    requestData.promo_starts_at = datetimeLocalToIso(createForm.promo_starts_at);
+    requestData.promo_ends_at = datetimeLocalToIso(createForm.promo_ends_at);
     await adminAPI.groups.create(requestData);
     appStore.showSuccess(t("admin.groups.groupCreated"));
     closeCreateModal();
