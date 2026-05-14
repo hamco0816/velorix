@@ -208,15 +208,12 @@
               <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">{{ t('admin.pricingAdvisor.calculator.title') }}</h2>
             </header>
             <div class="space-y-4">
+              <!-- 主输入：档位 + N + 安全系数。其他都是次要参数 -->
               <div>
                 <label class="input-label">{{ t('admin.pricingAdvisor.calculator.tier') }}</label>
                 <Select v-model="calcTierKey" :options="calcTierOptions" />
               </div>
               <div class="grid grid-cols-2 gap-3">
-                <div>
-                  <label class="input-label">{{ t('admin.pricingAdvisor.calculator.cost') }}</label>
-                  <input v-model.number="calcCost" type="number" min="0" step="1" class="input" placeholder="1400" />
-                </div>
                 <div>
                   <label class="input-label cursor-help" :title="t('admin.pricingAdvisor.calculator.usersPerAccountTip')">
                     {{ t('admin.pricingAdvisor.calculator.usersPerAccount') }}
@@ -224,30 +221,6 @@
                   </label>
                   <input v-model.number="calcUsersPerAccount" type="number" min="1" step="1" class="input" placeholder="5" />
                 </div>
-              </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div>
-                  <label class="input-label cursor-help" :title="t('admin.pricingAdvisor.calculator.markupTip')">
-                    {{ t('admin.pricingAdvisor.calculator.markup') }}
-                    <Icon name="infoCircle" size="xs" class="ml-0.5 inline-block text-gray-400" />
-                  </label>
-                  <div class="flex items-center gap-1.5">
-                    <input v-model.number="calcMarkup" type="number" min="0" max="500" step="5" class="input flex-1" placeholder="30" />
-                    <span class="text-sm text-gray-500 dark:text-dark-400">%</span>
-                  </div>
-                </div>
-                <div>
-                  <label class="input-label cursor-help" :title="t('admin.pricingAdvisor.calculator.occupancyTip')">
-                    {{ t('admin.pricingAdvisor.calculator.occupancy') }}
-                    <Icon name="infoCircle" size="xs" class="ml-0.5 inline-block text-gray-400" />
-                  </label>
-                  <div class="flex items-center gap-1.5">
-                    <input v-model.number="calcOccupancy" type="number" min="10" max="100" step="5" class="input flex-1" placeholder="80" />
-                    <span class="text-sm text-gray-500 dark:text-dark-400">%</span>
-                  </div>
-                </div>
-              </div>
-              <div class="grid grid-cols-2 gap-3">
                 <div>
                   <label class="input-label cursor-help" :title="t('admin.pricingAdvisor.calculator.safetyTip')">
                     {{ t('admin.pricingAdvisor.calculator.safety') }}
@@ -255,143 +228,69 @@
                   </label>
                   <input v-model.number="calcSafety" type="number" min="0.3" max="1.5" step="0.1" class="input" placeholder="0.8" />
                 </div>
-                <div>
-                  <label class="input-label cursor-help" :title="t('admin.pricingAdvisor.calculator.rateMultiplierTip')">
-                    {{ t('admin.pricingAdvisor.calculator.rateMultiplier') }}
-                    <Icon name="infoCircle" size="xs" class="ml-0.5 inline-block text-gray-400" />
-                  </label>
-                  <input v-model.number="calcRateMultiplier" type="number" min="0.1" max="10" step="0.1" class="input" placeholder="1" />
-                </div>
               </div>
 
-              <!-- 高级：手动 cap 覆盖。1 样本 + 无 utilization 场景下回退值会偏低，让 admin 直接输入真实 cap。 -->
-              <details class="rounded-lg border border-gray-200/60 bg-gray-50/40 px-3 py-2 dark:border-dark-700/60 dark:bg-dark-800/30">
-                <summary class="cursor-pointer text-xs font-medium text-gray-600 dark:text-dark-300">
-                  {{ t('admin.pricingAdvisor.calculator.capOverrideTitle') }}
-                </summary>
-                <p class="mt-2 text-[11px] leading-relaxed text-gray-500 dark:text-dark-400">
-                  {{ t('admin.pricingAdvisor.calculator.capOverrideHint') }}
-                </p>
-                <div class="mt-2 grid grid-cols-2 gap-3">
-                  <div>
-                    <label class="input-label">{{ t('admin.pricingAdvisor.calculator.capOverride5h') }}</label>
-                    <div class="flex items-center gap-1.5">
-                      <span class="text-sm text-gray-500 dark:text-dark-400">$</span>
-                      <input v-model.number="calcCapOverride5h" type="number" min="0" step="1" class="input flex-1" :placeholder="String(((calcResult?.cap5hUsd ?? 0)).toFixed(0))" />
+              <!-- 主结果：档位 cap + 每人限额 -->
+              <div v-if="calcResult" class="space-y-3">
+                <!-- 档位 cap：admin 一眼看出反推/兜底/手动各是多少 -->
+                <div class="rounded-xl border border-violet-200/60 bg-violet-50/60 p-3 dark:border-violet-500/20 dark:bg-violet-500/5">
+                  <p class="mb-1.5 text-center text-[11px] font-medium uppercase tracking-wider text-violet-700 dark:text-violet-300">
+                    {{ t('admin.pricingAdvisor.calculator.tierCapTitle') }}
+                  </p>
+                  <div class="grid grid-cols-2 gap-3 text-center">
+                    <div>
+                      <p class="text-[10px] text-violet-600 dark:text-violet-300">5h cap</p>
+                      <p class="mt-0.5 flex items-baseline justify-center gap-0.5">
+                        <span class="text-sm font-semibold text-violet-700 dark:text-violet-300">$</span>
+                        <span class="text-xl font-bold tabular-nums text-violet-900 dark:text-violet-100">{{ calcResult.cap5hUsd.toFixed(0) }}</span>
+                      </p>
+                      <p class="text-[10px] text-violet-600/80 dark:text-violet-300/70">{{ t('admin.pricingAdvisor.calculator.capSource_' + calcResult.cap5hSource) }}</p>
                     </div>
-                  </div>
-                  <div>
-                    <label class="input-label">{{ t('admin.pricingAdvisor.calculator.capOverride7d') }}</label>
-                    <div class="flex items-center gap-1.5">
-                      <span class="text-sm text-gray-500 dark:text-dark-400">$</span>
-                      <input v-model.number="calcCapOverride7d" type="number" min="0" step="1" class="input flex-1" :placeholder="String(((calcResult?.cap7dUsd ?? 0)).toFixed(0))" />
+                    <div>
+                      <p class="text-[10px] text-violet-600 dark:text-violet-300">7d cap</p>
+                      <p class="mt-0.5 flex items-baseline justify-center gap-0.5">
+                        <span class="text-sm font-semibold text-violet-700 dark:text-violet-300">$</span>
+                        <span class="text-xl font-bold tabular-nums text-violet-900 dark:text-violet-100">{{ calcResult.cap7dUsd.toFixed(0) }}</span>
+                      </p>
+                      <p class="text-[10px] text-violet-600/80 dark:text-violet-300/70">{{ t('admin.pricingAdvisor.calculator.capSource_' + calcResult.cap7dSource) }}</p>
                     </div>
                   </div>
                 </div>
-              </details>
 
-              <!-- 结果区：上层主结果（建议月费 + 期望月利润）；下层每用户 5h/日/周/月限额（反推自上游 cap） -->
-              <div v-if="calcResult" class="mt-4 space-y-3">
-                <!-- 主结果：建议月费 + 预计月利润，两个左右并排大字号居中 -->
-                <div class="grid grid-cols-2 gap-3">
-                  <div class="rounded-xl border border-emerald-200/60 bg-emerald-50/60 p-4 text-center dark:border-emerald-500/20 dark:bg-emerald-500/5">
-                    <p class="text-[11px] font-medium uppercase tracking-wider text-emerald-700 dark:text-emerald-300">{{ t('admin.pricingAdvisor.calculator.suggestedPrice') }}</p>
-                    <p class="mt-1 flex items-baseline justify-center gap-1">
-                      <span class="text-xl font-semibold text-emerald-700 dark:text-emerald-300">¥</span>
-                      <span class="text-3xl font-bold tabular-nums tracking-tight text-emerald-900 dark:text-emerald-100">{{ calcResult.priceCny.toFixed(0) }}</span>
-                      <span class="text-xs text-emerald-700 dark:text-emerald-300">/{{ t('admin.pricingAdvisor.calculator.perMonth') }}</span>
-                    </p>
-                  </div>
-                  <div class="rounded-xl border p-4 text-center"
-                    :class="calcResult.monthlyProfitExpectedCny >= 0
-                      ? 'border-amber-200/60 bg-amber-50/60 dark:border-amber-500/20 dark:bg-amber-500/5'
-                      : 'border-rose-200/60 bg-rose-50/60 dark:border-rose-500/20 dark:bg-rose-500/5'"
-                  >
-                    <p class="cursor-help text-[11px] font-medium uppercase tracking-wider"
-                      :class="calcResult.monthlyProfitExpectedCny >= 0
-                        ? 'text-amber-700 dark:text-amber-300'
-                        : 'text-rose-700 dark:text-rose-300'"
-                      :title="t('admin.pricingAdvisor.calculator.profitTip', { full: calcResult.monthlyProfitFullCny.toFixed(0) })"
-                    >
-                      {{ t('admin.pricingAdvisor.calculator.profit') }}
-                      <Icon name="infoCircle" size="xs" class="ml-0.5 inline-block opacity-70" />
-                    </p>
-                    <p class="mt-1 flex items-baseline justify-center gap-1"
-                      :class="calcResult.monthlyProfitExpectedCny >= 0
-                        ? 'text-amber-900 dark:text-amber-100'
-                        : 'text-rose-900 dark:text-rose-100'"
-                    >
-                      <span class="text-xl font-semibold"
-                        :class="calcResult.monthlyProfitExpectedCny >= 0
-                          ? 'text-amber-700 dark:text-amber-300'
-                          : 'text-rose-700 dark:text-rose-300'"
-                      >¥</span>
-                      <span class="text-3xl font-bold tabular-nums tracking-tight">{{ calcResult.monthlyProfitExpectedCny.toFixed(0) }}</span>
-                      <span class="text-xs"
-                        :class="calcResult.monthlyProfitExpectedCny >= 0
-                          ? 'text-amber-700 dark:text-amber-300'
-                          : 'text-rose-700 dark:text-rose-300'"
-                      >/{{ t('admin.pricingAdvisor.calculator.perMonth') }}</span>
-                    </p>
-                  </div>
-                </div>
-
-                <!-- 限额区：5h / 日 / 周 / 月，反推自上游 cap，按 N 个用户均分 + 安全系数 -->
-                <div class="rounded-xl border border-gray-200/70 bg-gray-50/60 p-3 dark:border-dark-700/60 dark:bg-dark-800/40">
-                  <p class="mb-2 cursor-help text-center text-[11px] font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400"
+                <!-- 每人限额：核心结果 -->
+                <div class="rounded-xl border border-emerald-200/60 bg-emerald-50/60 p-3 dark:border-emerald-500/20 dark:bg-emerald-500/5">
+                  <p class="mb-2 cursor-help text-center text-[11px] font-medium uppercase tracking-wider text-emerald-700 dark:text-emerald-300"
                     :title="t('admin.pricingAdvisor.calculator.limitsTip')">
                     {{ t('admin.pricingAdvisor.calculator.limitsTitle') }}
-                    <Icon name="infoCircle" size="xs" class="ml-0.5 inline-block text-gray-400" />
+                    <Icon name="infoCircle" size="xs" class="ml-0.5 inline-block opacity-70" />
                   </p>
                   <div class="grid grid-cols-4 gap-2 text-center">
                     <div>
-                      <p class="text-[10px] text-gray-500 dark:text-dark-400">
+                      <p class="text-[10px] text-emerald-700/80 dark:text-emerald-300/70">
                         {{ t('admin.pricingAdvisor.calculator.suggested5h') }}
-                        <span class="text-gray-400 dark:text-dark-500">{{ t('admin.pricingAdvisor.calculator.suggested5hRefMark') }}</span>
+                        <span class="text-emerald-700/50 dark:text-emerald-300/50">{{ t('admin.pricingAdvisor.calculator.suggested5hRefMark') }}</span>
                       </p>
-                      <p class="mt-0.5 text-sm font-semibold tabular-nums text-gray-900 dark:text-white">${{ calcResult.fiveHourLimitUsd.toFixed(2) }}</p>
+                      <p class="mt-0.5 text-base font-semibold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.fiveHourLimitUsd.toFixed(2) }}</p>
                     </div>
                     <div>
-                      <p class="text-[10px] text-gray-500 dark:text-dark-400">{{ t('admin.pricingAdvisor.calculator.suggestedDaily') }}</p>
-                      <p class="mt-0.5 text-sm font-semibold tabular-nums text-gray-900 dark:text-white">${{ calcResult.dailyLimitUsd.toFixed(2) }}</p>
+                      <p class="text-[10px] text-emerald-700/80 dark:text-emerald-300/70">{{ t('admin.pricingAdvisor.calculator.suggestedDaily') }}</p>
+                      <p class="mt-0.5 text-base font-semibold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.dailyLimitUsd.toFixed(2) }}</p>
                     </div>
                     <div>
-                      <p class="text-[10px] text-gray-500 dark:text-dark-400">{{ t('admin.pricingAdvisor.calculator.suggestedWeekly') }}</p>
-                      <p class="mt-0.5 text-sm font-semibold tabular-nums text-gray-900 dark:text-white">${{ calcResult.weeklyLimitUsd.toFixed(2) }}</p>
+                      <p class="text-[10px] text-emerald-700/80 dark:text-emerald-300/70">{{ t('admin.pricingAdvisor.calculator.suggestedWeekly') }}</p>
+                      <p class="mt-0.5 text-base font-semibold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.weeklyLimitUsd.toFixed(2) }}</p>
                     </div>
                     <div>
-                      <p class="text-[10px] text-gray-500 dark:text-dark-400">{{ t('admin.pricingAdvisor.calculator.suggestedMonthly') }}</p>
-                      <p class="mt-0.5 text-sm font-semibold tabular-nums text-gray-900 dark:text-white">${{ calcResult.monthlyLimitUsd.toFixed(2) }}</p>
+                      <p class="text-[10px] text-emerald-700/80 dark:text-emerald-300/70">{{ t('admin.pricingAdvisor.calculator.suggestedMonthly') }}</p>
+                      <p class="mt-0.5 text-base font-semibold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.monthlyLimitUsd.toFixed(2) }}</p>
                     </div>
                   </div>
-                  <!-- 数据来源说明：5h / 7d 各自标 source（手动覆盖 / utilization 反推 / 7d_P95 兜底） -->
-                  <p class="mt-2 text-center text-[10px] text-gray-500 dark:text-dark-400">
-                    {{ t('admin.pricingAdvisor.calculator.limitsSourceLine', {
-                      cap5h: calcResult.cap5hUsd.toFixed(2),
-                      cap5hSrc: t('admin.pricingAdvisor.calculator.capSource_' + calcResult.cap5hSource),
-                      cap7d: calcResult.cap7dUsd.toFixed(2),
-                      cap7dSrc: t('admin.pricingAdvisor.calculator.capSource_' + calcResult.cap7dSource),
-                      n: calcResult.n,
-                      safety: calcResult.safety,
-                      mul: calcResult.rateMul,
-                    }) }}
-                  </p>
-                  <!-- 4 条限额是独立约束，提醒 admin 实际生效是最严的那条；同时强调 5h 套餐不存档 -->
-                  <p class="mt-1 text-center text-[10px] italic text-gray-400 dark:text-dark-500">
+                  <p class="mt-2 text-center text-[10px] italic text-emerald-700/70 dark:text-emerald-300/60">
                     {{ t('admin.pricingAdvisor.calculator.limitsCapsIndependentNote') }}
                   </p>
                 </div>
 
-                <!-- 一键创建套餐按钮 -->
-                <button
-                  type="button"
-                  class="btn btn-primary w-full"
-                  @click="applyToPlan"
-                >
-                  <Icon name="plus" size="sm" class="mr-1.5" />
-                  {{ t('admin.pricingAdvisor.calculator.applyToPlan') }}
-                </button>
-
+                <!-- 警告 -->
                 <p v-if="calcResult.warning" class="flex items-start gap-1.5 rounded-md bg-amber-50 px-2.5 py-1.5 text-[11px] text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
                   <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
                   <span>{{ calcResult.warning }}</span>
@@ -400,6 +299,114 @@
               <p v-else class="rounded-xl bg-gray-50 px-4 py-3 text-xs text-gray-500 dark:bg-dark-800/40 dark:text-dark-400">
                 {{ t('admin.pricingAdvisor.calculator.selectFirst') }}
               </p>
+
+              <!-- 高级参数（折叠）：cap 手动覆盖 + 套餐倍率 -->
+              <details v-if="calcResult" class="rounded-lg border border-gray-200/60 bg-gray-50/40 px-3 py-2 dark:border-dark-700/60 dark:bg-dark-800/30">
+                <summary class="cursor-pointer text-xs font-medium text-gray-600 dark:text-dark-300">
+                  {{ t('admin.pricingAdvisor.calculator.advancedTitle') }}
+                </summary>
+                <p class="mt-2 text-[11px] leading-relaxed text-gray-500 dark:text-dark-400">
+                  {{ t('admin.pricingAdvisor.calculator.advancedHint') }}
+                </p>
+                <div class="mt-2 grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="input-label cursor-help" :title="t('admin.pricingAdvisor.calculator.capOverrideTip')">{{ t('admin.pricingAdvisor.calculator.capOverride5h') }}</label>
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-sm text-gray-500 dark:text-dark-400">$</span>
+                      <input v-model.number="calcCapOverride5h" type="number" min="0" step="1" class="input flex-1" :placeholder="String(calcResult.cap5hUsd.toFixed(0))" />
+                    </div>
+                  </div>
+                  <div>
+                    <label class="input-label cursor-help" :title="t('admin.pricingAdvisor.calculator.capOverrideTip')">{{ t('admin.pricingAdvisor.calculator.capOverride7d') }}</label>
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-sm text-gray-500 dark:text-dark-400">$</span>
+                      <input v-model.number="calcCapOverride7d" type="number" min="0" step="1" class="input flex-1" :placeholder="String(calcResult.cap7dUsd.toFixed(0))" />
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-3">
+                  <label class="input-label cursor-help" :title="t('admin.pricingAdvisor.calculator.rateMultiplierTip')">
+                    {{ t('admin.pricingAdvisor.calculator.rateMultiplier') }}
+                    <Icon name="infoCircle" size="xs" class="ml-0.5 inline-block text-gray-400" />
+                  </label>
+                  <input v-model.number="calcRateMultiplier" type="number" min="0.1" max="10" step="0.1" class="input w-32" placeholder="1" />
+                </div>
+              </details>
+
+              <!-- 定价（折叠 / 可选）：算建议月费和利润 -->
+              <details v-if="calcResult" class="rounded-lg border border-gray-200/60 bg-gray-50/40 px-3 py-2 dark:border-dark-700/60 dark:bg-dark-800/30">
+                <summary class="cursor-pointer text-xs font-medium text-gray-600 dark:text-dark-300">
+                  {{ t('admin.pricingAdvisor.calculator.pricingTitle') }}
+                </summary>
+                <p class="mt-2 text-[11px] leading-relaxed text-gray-500 dark:text-dark-400">
+                  {{ t('admin.pricingAdvisor.calculator.pricingHint') }}
+                </p>
+                <div class="mt-2 grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="input-label">{{ t('admin.pricingAdvisor.calculator.cost') }}</label>
+                    <input v-model.number="calcCost" type="number" min="0" step="1" class="input" placeholder="1400" />
+                  </div>
+                  <div>
+                    <label class="input-label cursor-help" :title="t('admin.pricingAdvisor.calculator.markupTip')">
+                      {{ t('admin.pricingAdvisor.calculator.markup') }}
+                      <Icon name="infoCircle" size="xs" class="ml-0.5 inline-block text-gray-400" />
+                    </label>
+                    <div class="flex items-center gap-1.5">
+                      <input v-model.number="calcMarkup" type="number" min="0" max="500" step="5" class="input flex-1" placeholder="30" />
+                      <span class="text-sm text-gray-500 dark:text-dark-400">%</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-3 grid grid-cols-2 gap-3">
+                  <div class="rounded-lg border border-emerald-200/60 bg-emerald-50/60 p-3 text-center dark:border-emerald-500/20 dark:bg-emerald-500/5">
+                    <p class="text-[10px] font-medium uppercase tracking-wider text-emerald-700 dark:text-emerald-300">{{ t('admin.pricingAdvisor.calculator.suggestedPrice') }}</p>
+                    <p class="mt-1 flex items-baseline justify-center gap-0.5">
+                      <span class="text-base font-semibold text-emerald-700 dark:text-emerald-300">¥</span>
+                      <span class="text-2xl font-bold tabular-nums text-emerald-900 dark:text-emerald-100">{{ calcResult.priceCny.toFixed(0) }}</span>
+                      <span class="text-[10px] text-emerald-700 dark:text-emerald-300">/{{ t('admin.pricingAdvisor.calculator.perMonth') }}</span>
+                    </p>
+                  </div>
+                  <div class="rounded-lg border p-3 text-center"
+                    :class="calcResult.monthlyProfitCny >= 0
+                      ? 'border-amber-200/60 bg-amber-50/60 dark:border-amber-500/20 dark:bg-amber-500/5'
+                      : 'border-rose-200/60 bg-rose-50/60 dark:border-rose-500/20 dark:bg-rose-500/5'"
+                  >
+                    <p class="text-[10px] font-medium uppercase tracking-wider"
+                      :class="calcResult.monthlyProfitCny >= 0
+                        ? 'text-amber-700 dark:text-amber-300'
+                        : 'text-rose-700 dark:text-rose-300'"
+                    >{{ t('admin.pricingAdvisor.calculator.profit') }}</p>
+                    <p class="mt-1 flex items-baseline justify-center gap-0.5"
+                      :class="calcResult.monthlyProfitCny >= 0
+                        ? 'text-amber-900 dark:text-amber-100'
+                        : 'text-rose-900 dark:text-rose-100'"
+                    >
+                      <span class="text-base font-semibold"
+                        :class="calcResult.monthlyProfitCny >= 0
+                          ? 'text-amber-700 dark:text-amber-300'
+                          : 'text-rose-700 dark:text-rose-300'"
+                      >¥</span>
+                      <span class="text-2xl font-bold tabular-nums">{{ calcResult.monthlyProfitCny.toFixed(0) }}</span>
+                      <span class="text-[10px]"
+                        :class="calcResult.monthlyProfitCny >= 0
+                          ? 'text-amber-700 dark:text-amber-300'
+                          : 'text-rose-700 dark:text-rose-300'"
+                      >/{{ t('admin.pricingAdvisor.calculator.perMonth') }}</span>
+                    </p>
+                  </div>
+                </div>
+                <p class="mt-2 text-[10px] italic text-gray-500 dark:text-dark-400">
+                  {{ t('admin.pricingAdvisor.calculator.pricingFormula', { cost: calcCost, markup: calcMarkup, n: calcResult.n }) }}
+                </p>
+                <button
+                  type="button"
+                  class="btn btn-primary mt-3 w-full"
+                  @click="applyToPlan"
+                >
+                  <Icon name="plus" size="sm" class="mr-1.5" />
+                  {{ t('admin.pricingAdvisor.calculator.applyToPlan') }}
+                </button>
+              </details>
             </div>
           </section>
 
@@ -532,17 +539,17 @@ function formatTier(tier: string): string {
   return tier.split('_').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
 }
 
-// ── ROI 计算器 ──
-// 计算逻辑：从档位反推上游 cap（cap = 当前窗口已耗费 / utilization%），按 N 个用户均分；
-// 没有 cap 样本时回退到 7d_P95 估计；admin 也可以手动覆盖 cap。详见 calcResult。
-const calcCost = ref<number>(1400)
+// ── 限额计算器 ──
+// 核心问题：1 个账号分给 N 个用户，每人日 / 周 / 月限额各应该多少。
+// 计算路径：从档位反推上游 cap → cap × safety × 套餐倍率 / N。cap 优先级：手动 > utilization 反推 > 7d_P95 兜底。
+// 定价是次要功能，独立计算：建议月费 = cost × (1+加价率) / N，月利润 = 月费 × N − cost。不再做 occupancy 加权（容易让 N 小时算出反直觉的负利润）。
 const calcUsersPerAccount = ref<number>(5) // 单账号承载用户数 N
-const calcMarkup = ref<number>(30) // 期望加价率 % (profit/cost)
 const calcSafety = ref<number>(0.8)
-const calcOccupancy = ref<number>(80) // 上座率 %（卖出去几成座位才算盈亏平衡）
 const calcRateMultiplier = ref<number>(1) // 套餐倍率：用户实际扣费 = 上游成本 × 倍率
 const calcCapOverride5h = ref<number | null>(null) // 手动覆盖 5h cap（USD），留空走自动反推/回退
 const calcCapOverride7d = ref<number | null>(null) // 手动覆盖 7d cap（USD）
+const calcCost = ref<number>(1400) // 账号成本（仅定价用）
+const calcMarkup = ref<number>(30) // 加价率 %（仅定价用）
 const calcTierKey = ref<string>('') // 跟 selectedKey 联动
 
 watch(selectedKey, (val) => {
@@ -575,11 +582,10 @@ const calcResult = computed(() => {
   const cost = Math.max(0, calcCost.value || 0)
   const markup = Math.max(0, Math.min(500, calcMarkup.value || 0))
   const n = Math.max(1, Math.floor(calcUsersPerAccount.value || 1))
-  const occupancy = Math.max(1, Math.min(100, calcOccupancy.value || 100)) / 100
   const rateMul = Math.max(0.1, Math.min(10, calcRateMultiplier.value || 1))
 
-  // 1) cap 选取，5h 与 7d 各自独立判断（不能因为 5h 没采到就把 7d 也降级）：
-  //    优先级：手动 override > utilization 反推（util ≥ 5%）> 7d_P95 兜底
+  // cap 选取，5h 与 7d 各自独立判断（不能因为 5h 没采到就把 7d 也降级）：
+  // 优先级：手动 override > utilization 反推（util ≥ 5%）> 7d_P95 兜底
   const has5hReversed = tier.cap_sample_count > 0 && tier.cap_5h_usd > 0
   const has7dReversed = tier.cap_sample_count > 0 && tier.cap_7d_usd > 0
   const override5h = calcCapOverride5h.value && calcCapOverride5h.value > 0 ? calcCapOverride5h.value : null
@@ -589,30 +595,23 @@ const calcResult = computed(() => {
   const cap5hSource: 'override' | 'reversed' | 'fallback' = override5h ? 'override' : has5hReversed ? 'reversed' : 'fallback'
   const cap7dSource: 'override' | 'reversed' | 'fallback' = override7d ? 'override' : has7dReversed ? 'reversed' : 'fallback'
 
-  // 2) 限额按 N 均分，再按套餐倍率换算成"用户侧 ActualCost"单位：
-  //    - 上游 cap 是原始美元成本；用户的 limit 字段实际扣的是 ActualCost = 上游成本 × rate_multiplier
-  //    - 所以 user_limit = cap × safety × rate_multiplier / N（倍率=1 时无影响）
+  // 限额按 N 均分，再按套餐倍率换算成"用户侧 ActualCost"单位：
+  // - 上游 cap 是原始美元成本；用户的 limit 字段实际扣的是 ActualCost = 上游成本 × rate_multiplier
+  // - 所以 user_limit = cap × safety × rate_multiplier / N（倍率=1 时无影响）
   const fiveHourLimitUsd = (cap5hUsd * safety * rateMul) / n
   const weeklyLimitUsd = (cap7dUsd * safety * rateMul) / n
   const dailyLimitUsd = weeklyLimitUsd / 7
   const monthlyLimitUsd = weeklyLimitUsd * 4
 
-  // 3) 统一 effectiveSeats（既给定价用，也给利润用），避免之前 price 用 n×occ、profit 用 floor(n×occ) 不一致。
-  //    用浮点而不是 floor：N=1、occ=80% 时 effective=0.8 → 1 个用户的实际定价摊到 0.8 个"期望付费用户"上。
-  const effectiveSeats = Math.max(0.1, n * occupancy)
-
-  // 4) 建议月费/人：基于"加价率"（profit/cost）。例 cost=¥1400, markup=30% → revenue 目标=¥1820，按 effectiveSeats 摊。
+  // 定价（独立可选区域，不再做 occupancy 加权）：
+  // - 建议月费/人 = cost × (1+加价率) / N
+  // - 月利润 = 月费 × N − cost（直观：N 个座位都按这个价格卖出，扣掉成本）
   const totalRevenueCny = cost * (1 + markup / 100)
-  const rawPriceCny = totalRevenueCny / effectiveSeats
+  const rawPriceCny = totalRevenueCny / n
   const priceCny = roundPriceCny(rawPriceCny)
+  const monthlyProfitCny = priceCny * n - cost
 
-  // 5) 利润分两种口径：
-  //    - 满座月利润 = price × N - cost（N 个座都卖出去的上限）
-  //    - 期望月利润 = price × effectiveSeats - cost（按上座率，effectiveSeats 是浮点数）
-  const monthlyProfitFullCny = priceCny * n - cost
-  const monthlyProfitExpectedCny = priceCny * effectiveSeats - cost
-
-  // 6) 风险提示
+  // 风险提示
   let warning = ''
   if (!tier.has_enough_samples) {
     warning = t('admin.pricingAdvisor.calculator.warnSamplesLow')
@@ -620,8 +619,6 @@ const calcResult = computed(() => {
     warning = t('admin.pricingAdvisor.calculator.warnNoCapSample')
   } else if (n > 50) {
     warning = t('admin.pricingAdvisor.calculator.warnNTooHigh')
-  } else if (monthlyProfitExpectedCny < 0) {
-    warning = t('admin.pricingAdvisor.calculator.warnUnprofitable')
   }
 
   return {
@@ -635,13 +632,10 @@ const calcResult = computed(() => {
     cap5hSource,
     cap7dSource,
     capSampleCount: tier.cap_sample_count,
-    monthlyProfitFullCny,
-    monthlyProfitExpectedCny,
-    effectiveSeats,
+    monthlyProfitCny,
     warning,
     n,
     safety,
-    occupancy,
     rateMul,
     usdToCny: USD_TO_CNY,
   }
