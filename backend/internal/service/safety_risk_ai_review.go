@@ -32,6 +32,11 @@ const (
 	aiReviewMaxResultLen = 512              // 入库 ai_review_result 字段最大长度（JSON）
 	aiReviewHTTPTimeout  = 30 * time.Second // LLM 调用超时
 
+	// InternalAIReviewHeader 标记一个请求是 AI 审核内部回环调用（callAIReviewLLM → 本地 gateway）。
+	// sensitive_filter 中间件看到这个 header 会直接放行，避免：审核请求被自己拦截 → 又生成事件 →
+	// 又触发审核 → 无限递归（线上观察到一次测试点击撑出 1.4M safety_risk_log 记录）。
+	InternalAIReviewHeader = "X-Internal-AI-Review"
+
 	// system prompt：让 LLM 当"误报判官"而不是"违规判官"。
 	// 关键约束：
 	//   1. 强调"你看到的是已被字符串规则命中的内容"——可能误报
@@ -265,6 +270,11 @@ func (s *OpsService) callAIReviewLLM(ctx context.Context, baseURL, apiKey, model
 		return AIReviewResult{}, provider, fmt.Errorf("build request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
+	// 内部标记：AI 审核调用本地 gateway 时，body 里含敏感词的 few-shot system prompt 和
+	// 待审核的 user message。如果不标记，sensitive_filter 会再次拦截并写事件，
+	// 而新事件又触发 AI 审核 → 形成递归（短时间内能撑出百万级 safety_risk_log）。
+	// 中间件看到这个 header 直接放行，破环。
+	req.Header.Set(InternalAIReviewHeader, "1")
 	for k, v := range extraHeader {
 		req.Header.Set(k, v)
 	}

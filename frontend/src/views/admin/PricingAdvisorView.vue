@@ -36,8 +36,9 @@
             {{ opt }} {{ t('admin.pricingAdvisor.daySuffix') }}
           </button>
         </div>
-        <button class="btn btn-secondary btn-sm ml-auto" :disabled="loading" :title="t('common.refresh')" @click="loadAll">
+        <button class="btn btn-secondary btn-sm ml-auto inline-flex items-center gap-1.5" :disabled="loading" @click="loadAll">
           <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
+          <span>{{ loading ? t('common.loading') : t('common.refresh') }}</span>
         </button>
       </div>
 
@@ -78,43 +79,20 @@
             <Icon name="chartBar" size="sm" class="text-emerald-500" />
             <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">{{ t('admin.pricingAdvisor.tableTitle') }}</h2>
           </header>
-          <!-- 桌面端：表格 -->
+          <!-- 桌面端：表格（扁平 8 列：平台/档位/样本/5h P95/7d P95/日限额/周限额/月限额）
+               P50 & Max 不再单独列，hover P95 数字可见详情 -->
           <div class="hidden overflow-x-auto md:block">
-            <table class="w-full min-w-[1080px] text-sm">
+            <table class="w-full min-w-[860px] text-[14px]">
               <thead class="bg-gray-50/60 dark:bg-dark-800/60">
                 <tr>
-                  <th class="px-4 py-3 text-left text-[11px] font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400">{{ t('admin.pricingAdvisor.col.platform') }}</th>
-                  <th class="px-4 py-3 text-center text-[11px] font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400">{{ t('admin.pricingAdvisor.col.tier') }}</th>
-                  <th class="cursor-help px-4 py-3 text-center text-[11px] font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400" :title="t('admin.pricingAdvisor.tip.samples')">{{ t('admin.pricingAdvisor.col.samples') }}</th>
-                  <th class="cursor-help border-l border-gray-200/60 px-4 py-3 text-center text-[11px] font-medium uppercase tracking-wider text-gray-500 dark:border-dark-700/60 dark:text-dark-400" :title="t('admin.pricingAdvisor.tip.5h')" colspan="3">{{ t('admin.pricingAdvisor.col.5h') }}</th>
-                  <th class="cursor-help border-l border-gray-200/60 px-4 py-3 text-center text-[11px] font-medium uppercase tracking-wider text-gray-500 dark:border-dark-700/60 dark:text-dark-400" :title="t('admin.pricingAdvisor.tip.7d')" colspan="3">{{ t('admin.pricingAdvisor.col.7d') }}</th>
-                  <th class="cursor-help border-l border-gray-200/60 px-4 py-3 text-center text-[11px] font-medium uppercase tracking-wider text-emerald-700 dark:border-dark-700/60 dark:text-emerald-300" :title="t('admin.pricingAdvisor.tip.limits')" colspan="3">{{ t('admin.pricingAdvisor.col.limits') }}</th>
-                </tr>
-                <tr class="border-t border-gray-100 bg-gray-50/30 dark:border-dark-700/40 dark:bg-dark-800/40">
-                  <th class="px-4 py-1.5"></th>
-                  <th class="px-4 py-1.5"></th>
-                  <th class="px-4 py-1.5"></th>
-                  <th class="cursor-help border-l border-gray-200/60 px-4 py-1.5 text-right text-[10px] font-medium text-gray-500 dark:border-dark-700/60 dark:text-dark-400" :title="t('admin.pricingAdvisor.tip.p50')">
-                    {{ t('admin.pricingAdvisor.subcol.p50') }}<span class="ml-0.5 text-gray-400">?</span>
-                  </th>
-                  <th class="cursor-help px-4 py-1.5 text-right text-[10px] font-medium text-gray-500 dark:text-dark-400" :title="t('admin.pricingAdvisor.tip.p95')">
-                    {{ t('admin.pricingAdvisor.subcol.p95') }}<span class="ml-0.5 text-gray-400">?</span>
-                  </th>
-                  <th class="cursor-help px-4 py-1.5 text-right text-[10px] font-medium text-gray-500 dark:text-dark-400" :title="t('admin.pricingAdvisor.tip.max')">
-                    {{ t('admin.pricingAdvisor.subcol.max') }}<span class="ml-0.5 text-gray-400">?</span>
-                  </th>
-                  <th class="cursor-help border-l border-gray-200/60 px-4 py-1.5 text-right text-[10px] font-medium text-gray-500 dark:border-dark-700/60 dark:text-dark-400" :title="t('admin.pricingAdvisor.tip.p50')">
-                    {{ t('admin.pricingAdvisor.subcol.p50') }}<span class="ml-0.5 text-gray-400">?</span>
-                  </th>
-                  <th class="cursor-help px-4 py-1.5 text-right text-[10px] font-medium text-gray-500 dark:text-dark-400" :title="t('admin.pricingAdvisor.tip.p95')">
-                    {{ t('admin.pricingAdvisor.subcol.p95') }}<span class="ml-0.5 text-gray-400">?</span>
-                  </th>
-                  <th class="cursor-help px-4 py-1.5 text-right text-[10px] font-medium text-gray-500 dark:text-dark-400" :title="t('admin.pricingAdvisor.tip.max')">
-                    {{ t('admin.pricingAdvisor.subcol.max') }}<span class="ml-0.5 text-gray-400">?</span>
-                  </th>
-                  <th class="border-l border-gray-200/60 px-4 py-1.5 text-right text-[10px] font-medium text-emerald-700 dark:border-dark-700/60 dark:text-emerald-300">{{ t('admin.pricingAdvisor.subcol.daily') }}</th>
-                  <th class="px-4 py-1.5 text-right text-[10px] font-medium text-emerald-700 dark:text-emerald-300">{{ t('admin.pricingAdvisor.subcol.weekly') }}</th>
-                  <th class="px-4 py-1.5 text-right text-[10px] font-medium text-emerald-700 dark:text-emerald-300">{{ t('admin.pricingAdvisor.subcol.monthly') }}</th>
+                  <th class="px-4 py-3 text-center text-[12px] font-semibold uppercase tracking-wider text-gray-600 dark:text-dark-300">{{ t('admin.pricingAdvisor.col.platform') }}</th>
+                  <th class="px-4 py-3 text-center text-[12px] font-semibold uppercase tracking-wider text-gray-600 dark:text-dark-300">{{ t('admin.pricingAdvisor.col.tier') }}</th>
+                  <th class="cursor-help px-4 py-3 text-center text-[12px] font-semibold uppercase tracking-wider text-gray-600 dark:text-dark-300" :title="t('admin.pricingAdvisor.tip.samples')">{{ t('admin.pricingAdvisor.col.samples') }}</th>
+                  <th class="cursor-help border-l border-gray-200/60 px-4 py-3 text-center text-[12px] font-semibold uppercase tracking-wider text-gray-600 dark:border-dark-700/60 dark:text-dark-300" :title="t('admin.pricingAdvisor.tip.5hP95')">{{ t('admin.pricingAdvisor.col.5hP95') }}</th>
+                  <th class="cursor-help px-4 py-3 text-center text-[12px] font-semibold uppercase tracking-wider text-gray-600 dark:text-dark-300" :title="t('admin.pricingAdvisor.tip.7dP95')">{{ t('admin.pricingAdvisor.col.7dP95') }}</th>
+                  <th class="cursor-help border-l border-gray-200/60 px-4 py-3 text-center text-[12px] font-semibold uppercase tracking-wider text-emerald-700 dark:border-dark-700/60 dark:text-emerald-300" :title="t('admin.pricingAdvisor.tip.limits')">{{ t('admin.pricingAdvisor.subcol.daily') }}</th>
+                  <th class="px-4 py-3 text-center text-[12px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">{{ t('admin.pricingAdvisor.subcol.weekly') }}</th>
+                  <th class="px-4 py-3 text-center text-[12px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">{{ t('admin.pricingAdvisor.subcol.monthly') }}</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100 dark:divide-dark-700/60">
@@ -125,16 +103,16 @@
                   :class="selectedKey === `${row.platform}|${row.tier}` ? 'bg-brand-50/60 dark:bg-brand-500/10' : ''"
                   @click="selectRow(row)"
                 >
-                  <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">
+                  <td class="px-4 py-3.5 text-center font-medium text-gray-900 dark:text-white">
                     <PlatformIcon :platform="row.platform as GroupPlatform" size="sm" class="mr-1.5 inline-block" />
-                    {{ row.platform }}
+                    <span>{{ row.platform }}</span>
                   </td>
-                  <td class="px-4 py-3 text-center">
-                    <span class="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700 dark:bg-dark-700 dark:text-dark-200">
+                  <td class="px-4 py-3.5 text-center">
+                    <span class="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-[12px] font-medium text-gray-700 dark:bg-dark-700 dark:text-dark-200">
                       {{ formatTier(row.tier) }}
                     </span>
                   </td>
-                  <td class="px-4 py-3 text-center tabular-nums">
+                  <td class="px-4 py-3.5 text-center tabular-nums">
                     <span :class="row.has_enough_samples ? 'text-gray-700 dark:text-dark-200' : 'text-amber-600 dark:text-amber-400'">
                       {{ row.sample_accounts }}
                     </span>
@@ -146,15 +124,17 @@
                       :title="t('admin.pricingAdvisor.samplesLow')"
                     />
                   </td>
-                  <td class="border-l border-gray-100 px-4 py-3 text-right tabular-nums text-gray-900 dark:border-dark-700/60 dark:text-white">${{ row.window_5h_p50.toFixed(2) }}</td>
-                  <td class="px-4 py-3 text-right tabular-nums text-gray-800 dark:text-dark-100">${{ row.window_5h_p95.toFixed(2) }}</td>
-                  <td class="px-4 py-3 text-right tabular-nums text-gray-700 dark:text-dark-200">${{ row.window_5h_max.toFixed(2) }}</td>
-                  <td class="border-l border-gray-100 px-4 py-3 text-right tabular-nums text-gray-900 dark:border-dark-700/60 dark:text-white">${{ row.window_7d_p50.toFixed(2) }}</td>
-                  <td class="px-4 py-3 text-right tabular-nums text-gray-800 dark:text-dark-100">${{ row.window_7d_p95.toFixed(2) }}</td>
-                  <td class="px-4 py-3 text-right tabular-nums text-gray-700 dark:text-dark-200">${{ row.window_7d_max.toFixed(2) }}</td>
-                  <td class="border-l border-gray-100 px-4 py-3 text-right tabular-nums text-emerald-700 dark:border-dark-700/60 dark:text-emerald-300">${{ rowLimits(row).daily.toFixed(2) }}</td>
-                  <td class="px-4 py-3 text-right tabular-nums text-emerald-700 dark:text-emerald-300">${{ rowLimits(row).weekly.toFixed(2) }}</td>
-                  <td class="px-4 py-3 text-right tabular-nums font-semibold text-emerald-700 dark:text-emerald-300">${{ rowLimits(row).monthly.toFixed(2) }}</td>
+                  <td class="cursor-help border-l border-gray-100 px-4 py-3.5 text-center tabular-nums text-[15px] text-gray-900 dark:border-dark-700/60 dark:text-white"
+                      :title="`P50 $${row.window_5h_p50.toFixed(2)}  •  Max $${row.window_5h_max.toFixed(2)}`">
+                    ${{ row.window_5h_p95.toFixed(2) }}
+                  </td>
+                  <td class="cursor-help px-4 py-3.5 text-center tabular-nums text-[15px] text-gray-900 dark:text-white"
+                      :title="`P50 $${row.window_7d_p50.toFixed(2)}  •  Max $${row.window_7d_max.toFixed(2)}`">
+                    ${{ row.window_7d_p95.toFixed(2) }}
+                  </td>
+                  <td class="border-l border-gray-100 px-4 py-3.5 text-center tabular-nums text-[15px] text-emerald-700 dark:border-dark-700/60 dark:text-emerald-300">${{ rowLimits(row).daily.toFixed(2) }}</td>
+                  <td class="px-4 py-3.5 text-center tabular-nums text-[15px] text-emerald-700 dark:text-emerald-300">${{ rowLimits(row).weekly.toFixed(2) }}</td>
+                  <td class="px-4 py-3.5 text-center tabular-nums text-[15px] font-semibold text-emerald-700 dark:text-emerald-300">${{ rowLimits(row).monthly.toFixed(2) }}</td>
                 </tr>
               </tbody>
             </table>
@@ -218,85 +198,72 @@
         <!-- ROI / 限额计算器 + 趋势图 -->
         <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
           <section class="surface-card p-5">
-            <header class="mb-4 flex items-center gap-3">
+            <header class="mb-3 flex items-center gap-3">
               <Icon name="calculator" size="sm" class="text-amber-500" />
               <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">{{ t('admin.pricingAdvisor.calculator.title') }}</h2>
             </header>
-            <div class="space-y-4">
-              <!-- 主输入：档位 + N + 安全系数。其他都是次要参数 -->
-              <div>
-                <label class="input-label">{{ t('admin.pricingAdvisor.calculator.tier') }}</label>
-                <Select v-model="calcTierKey" :options="calcTierOptions" />
-              </div>
-              <div>
-                <label class="input-label cursor-help" :title="t('admin.pricingAdvisor.calculator.usersPerAccountTip')">
-                  {{ t('admin.pricingAdvisor.calculator.usersPerAccount') }}
-                  <Icon name="infoCircle" size="xs" class="ml-0.5 inline-block text-gray-400" />
-                </label>
-                <input v-model.number="calcUsersPerAccount" type="number" min="1" step="1" class="input" placeholder="1" />
-              </div>
-
-              <!-- 主结果：档位 cap + 每人限额 -->
-              <div v-if="calcResult" class="space-y-3">
-                <!-- 档位 cap：admin 一眼看出反推/兜底/手动各是多少 -->
-                <div class="rounded-xl border border-violet-200/60 bg-violet-50/60 p-3 dark:border-violet-500/20 dark:bg-violet-500/5">
-                  <p class="mb-1.5 text-center text-[11px] font-medium uppercase tracking-wider text-violet-700 dark:text-violet-300">
-                    {{ t('admin.pricingAdvisor.calculator.tierCapTitle') }}
-                  </p>
-                  <div class="grid grid-cols-2 gap-3 text-center">
-                    <div>
-                      <p class="text-[10px] text-violet-600 dark:text-violet-300">5h cap</p>
-                      <p class="mt-0.5 flex items-baseline justify-center gap-0.5">
-                        <span class="text-sm font-semibold text-violet-700 dark:text-violet-300">$</span>
-                        <span class="text-xl font-bold tabular-nums text-violet-900 dark:text-violet-100">{{ calcResult.cap5hUsd.toFixed(0) }}</span>
-                      </p>
-                      <p class="text-[10px] text-violet-600/80 dark:text-violet-300/70">{{ t('admin.pricingAdvisor.calculator.capSource_' + calcResult.cap5hSource) }}</p>
-                    </div>
-                    <div>
-                      <p class="text-[10px] text-violet-600 dark:text-violet-300">7d cap</p>
-                      <p class="mt-0.5 flex items-baseline justify-center gap-0.5">
-                        <span class="text-sm font-semibold text-violet-700 dark:text-violet-300">$</span>
-                        <span class="text-xl font-bold tabular-nums text-violet-900 dark:text-violet-100">{{ calcResult.cap7dUsd.toFixed(0) }}</span>
-                      </p>
-                      <p class="text-[10px] text-violet-600/80 dark:text-violet-300/70">{{ t('admin.pricingAdvisor.calculator.capSource_' + calcResult.cap7dSource) }}</p>
-                    </div>
-                  </div>
+            <div class="space-y-3">
+              <!-- 主输入：档位 + N 横向并排，节省纵向空间 -->
+              <div class="grid grid-cols-[1fr_auto] gap-3">
+                <div>
+                  <label class="input-label">{{ t('admin.pricingAdvisor.calculator.tier') }}</label>
+                  <Select v-model="calcTierKey" :options="calcTierOptions" />
                 </div>
+                <div class="w-28">
+                  <label class="input-label cursor-help" :title="t('admin.pricingAdvisor.calculator.usersPerAccountTip')">
+                    {{ t('admin.pricingAdvisor.calculator.usersPerAccount') }}
+                    <Icon name="infoCircle" size="xs" class="ml-0.5 inline-block text-gray-400" />
+                  </label>
+                  <input v-model.number="calcUsersPerAccount" type="number" min="1" step="1" class="input" placeholder="1" />
+                </div>
+              </div>
 
-                <!-- 每人限额：核心结果 -->
-                <div class="rounded-xl border border-emerald-200/60 bg-emerald-50/60 p-3 dark:border-emerald-500/20 dark:bg-emerald-500/5">
-                  <p class="mb-2 cursor-help text-center text-[11px] font-medium uppercase tracking-wider text-emerald-700 dark:text-emerald-300"
-                    :title="t('admin.pricingAdvisor.calculator.limitsTip')">
-                    {{ t('admin.pricingAdvisor.calculator.limitsTitle') }}
-                    <Icon name="infoCircle" size="xs" class="ml-0.5 inline-block opacity-70" />
-                  </p>
-                  <div class="grid grid-cols-4 gap-2 text-center">
+              <!-- 主结果：cap + 限额合并为一张卡，cap 在顶部一行展示、限额在下方 4 列大字 -->
+              <div v-if="calcResult" class="space-y-2">
+                <div class="rounded-xl border border-emerald-200/60 bg-emerald-50/40 p-3 dark:border-emerald-500/20 dark:bg-emerald-500/5">
+                  <!-- cap 顶部行：横向展示 5h / 7d 与来源标签 -->
+                  <div class="flex items-center justify-between gap-3 border-b border-emerald-200/40 pb-2 text-[12px] dark:border-emerald-500/15">
+                    <span class="cursor-help font-medium uppercase tracking-wider text-violet-700/80 dark:text-violet-300/80"
+                          :title="t('admin.pricingAdvisor.calculator.tierCapTitle')">
+                      {{ t('admin.pricingAdvisor.calculator.tierCapTitle') }}
+                    </span>
+                    <span class="flex items-center gap-3 tabular-nums">
+                      <span class="text-violet-900 dark:text-violet-100">
+                        5h <span class="font-semibold">${{ calcResult.cap5hUsd.toFixed(0) }}</span>
+                        <span class="ml-1 text-[10px] text-violet-600/70 dark:text-violet-300/60">{{ t('admin.pricingAdvisor.calculator.capSource_' + calcResult.cap5hSource) }}</span>
+                      </span>
+                      <span class="text-violet-300 dark:text-violet-500">·</span>
+                      <span class="text-violet-900 dark:text-violet-100">
+                        7d <span class="font-semibold">${{ calcResult.cap7dUsd.toFixed(0) }}</span>
+                        <span class="ml-1 text-[10px] text-violet-600/70 dark:text-violet-300/60">{{ t('admin.pricingAdvisor.calculator.capSource_' + calcResult.cap7dSource) }}</span>
+                      </span>
+                    </span>
+                  </div>
+                  <!-- 限额结果：4 列大字 -->
+                  <div class="mt-2.5 grid grid-cols-4 gap-2 text-center">
                     <div>
-                      <p class="text-[10px] text-emerald-700/80 dark:text-emerald-300/70">
+                      <p class="text-[11px] font-medium uppercase tracking-wider text-emerald-700/80 dark:text-emerald-300/70">
                         {{ t('admin.pricingAdvisor.calculator.suggested5h') }}
                         <span class="text-emerald-700/50 dark:text-emerald-300/50">{{ t('admin.pricingAdvisor.calculator.suggested5hRefMark') }}</span>
                       </p>
-                      <p class="mt-0.5 text-base font-semibold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.fiveHourLimitUsd.toFixed(2) }}</p>
+                      <p class="mt-1 text-[18px] font-bold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.fiveHourLimitUsd.toFixed(2) }}</p>
                     </div>
                     <div>
-                      <p class="text-[10px] text-emerald-700/80 dark:text-emerald-300/70">{{ t('admin.pricingAdvisor.calculator.suggestedDaily') }}</p>
-                      <p class="mt-0.5 text-base font-semibold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.dailyLimitUsd.toFixed(2) }}</p>
+                      <p class="text-[11px] font-medium uppercase tracking-wider text-emerald-700/80 dark:text-emerald-300/70">{{ t('admin.pricingAdvisor.calculator.suggestedDaily') }}</p>
+                      <p class="mt-1 text-[18px] font-bold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.dailyLimitUsd.toFixed(2) }}</p>
                     </div>
                     <div>
-                      <p class="text-[10px] text-emerald-700/80 dark:text-emerald-300/70">{{ t('admin.pricingAdvisor.calculator.suggestedWeekly') }}</p>
-                      <p class="mt-0.5 text-base font-semibold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.weeklyLimitUsd.toFixed(2) }}</p>
+                      <p class="text-[11px] font-medium uppercase tracking-wider text-emerald-700/80 dark:text-emerald-300/70">{{ t('admin.pricingAdvisor.calculator.suggestedWeekly') }}</p>
+                      <p class="mt-1 text-[18px] font-bold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.weeklyLimitUsd.toFixed(2) }}</p>
                     </div>
                     <div>
-                      <p class="text-[10px] text-emerald-700/80 dark:text-emerald-300/70">{{ t('admin.pricingAdvisor.calculator.suggestedMonthly') }}</p>
-                      <p class="mt-0.5 text-base font-semibold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.monthlyLimitUsd.toFixed(2) }}</p>
+                      <p class="text-[11px] font-medium uppercase tracking-wider text-emerald-700/80 dark:text-emerald-300/70">{{ t('admin.pricingAdvisor.calculator.suggestedMonthly') }}</p>
+                      <p class="mt-1 text-[18px] font-bold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.monthlyLimitUsd.toFixed(2) }}</p>
                     </div>
                   </div>
-                  <p class="mt-2 text-center text-[10px] italic text-emerald-700/70 dark:text-emerald-300/60">
-                    {{ t('admin.pricingAdvisor.calculator.limitsCapsIndependentNote') }}
-                  </p>
                 </div>
 
-                <!-- 警告 -->
+                <!-- 警告（compact） -->
                 <p v-if="calcResult.warning" class="flex items-start gap-1.5 rounded-md bg-amber-50 px-2.5 py-1.5 text-[11px] text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
                   <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
                   <span>{{ calcResult.warning }}</span>

@@ -2605,6 +2605,8 @@ export default {
         samples: 'Samples',
         '5h': '5h window',
         '7d': '7d window',
+        '5hP95': '5h P95',
+        '7dP95': '7d P95',
         limits: 'Single-account limits',
       },
       subcol: {
@@ -2619,6 +2621,8 @@ export default {
         samples: 'Number of accounts in this tier with usage data. Stats are meaningful at ≥ 3 samples; smaller samples flag P95 as unreliable.',
         '5h': 'Rolling 5-hour window peak cost: for each account, scan any continuous 5h in the past N days for the highest cumulative cost. Reflects "how high a user can spike in 5h".',
         '7d': 'Rolling 7-day window peak cost: same as above, with a 7×24h window.',
+        '5hP95': '95th percentile of per-account 5-hour rolling peak cost over the last N days (USD). Hover the value to see P50 / Max.',
+        '7dP95': '95th percentile of per-account 7-day rolling peak cost over the last N days (USD). Hover the value to see P50 / Max.',
         limits: 'Single-account tier ceiling (N=1): weekly = cap_7d; daily = cap_7d ÷ 7; monthly = cap_7d × 30 ÷ 7. Cap is reverse-derived from utilization; falls back to 7d_P95 when missing (usually low). Divide by N in the calculator below for shared accounts.',
         p50: '50th percentile (median): middle value across accounts in this tier. Use as typical level.',
         p95: '95th percentile: 95% of accounts fall below this value. Aggressive quota reference.',

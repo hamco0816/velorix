@@ -30,6 +30,15 @@ func GatewaySensitiveFilter(settingService *service.SettingService, opsService *
 			return
 		}
 
+		// AI 审核内部回环调用：safety_risk_ai_review.callAIReviewLLM 会把待审核的 prompt
+		// 当 user content 发回本地 /v1/chat/completions，body 里必然含敏感词。如果不识别
+		// 这个 header，filter 会再写一条事件 → 又触发审核 → 递归（线上一次测试点击撑出
+		// 1.4M 记录）。看到内部标记直接放行，链路就断了。
+		if c.GetHeader(service.InternalAIReviewHeader) != "" {
+			c.Next()
+			return
+		}
+
 		// 白名单用户跳过敏感词检测：admin 在风控页面对合法用户加白名单后，
 		// 该用户的所有后续请求直接放行，不再走 sensitive_filter（防止反复误拦）。
 		if apiKey, ok := GetAPIKeyFromContext(c); ok && apiKey != nil {

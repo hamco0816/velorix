@@ -1396,6 +1396,15 @@ onMounted(() => {
   white-space: nowrap;
 }
 
+/* 让 Tailwind 的 text-right / text-center 能覆盖 .table-th 的默认左对齐
+   （scoped style 比 utility 类晚加载，否则 <th class="table-th text-right"> 会失效） */
+.table-th.text-right {
+  text-align: right;
+}
+.table-th.text-center {
+  text-align: center;
+}
+
 .dark .table-th {
   color: rgb(229 231 235);
 }
