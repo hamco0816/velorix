@@ -1277,6 +1277,15 @@ export default {
     statusFinal: 'Finishing up',
     statusDone: 'Done',
     elapsed: '{sec}s elapsed',
+    // Left group rail
+    groupRailTitle: 'Group',
+    groupRailHint: 'Each group may have different models and pricing',
+    groupEmpty: 'No available groups',
+    groupLoading: 'Loading…',
+    groupModelCount: '{n} models',
+    groupRateLabel: 'Rate',
+    groupExclusive: 'Exclusive',
+    groupNoPriceConfig: 'Priced by rate multiplier',
   },
   redeem: {
     title: 'Redeem Code',

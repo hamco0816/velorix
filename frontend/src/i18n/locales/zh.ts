@@ -1289,6 +1289,15 @@ export default {
     statusFinal: '渲染收尾',
     statusDone: '完成',
     elapsed: '已用 {sec} 秒',
+    // 左侧分组栏
+    groupRailTitle: '分组',
+    groupRailHint: '不同分组的可用模型与计费可能不同',
+    groupEmpty: '暂无可用分组',
+    groupLoading: '加载中…',
+    groupModelCount: '{n} 个模型',
+    groupRateLabel: '倍率',
+    groupExclusive: '专属',
+    groupNoPriceConfig: '价格按倍率折算',
   },
   redeem: {
     title: '兑换码',

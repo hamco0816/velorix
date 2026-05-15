@@ -150,16 +150,20 @@ func (s *ChannelService) fillGlobalPricingFallback(models []SupportedModel) {
 }
 
 // synthesizePricingFromLiteLLM 把 LiteLLM 的定价数据转成 ChannelModelPricing 形态，
-// 仅用于展示。BillingMode 固定为 token；图片场景的 OutputCostPerImageToken 也归到
-// ImageOutputPrice 字段（与渠道侧"图片输出按 token 计价"语义一致）。
+// 仅用于展示。BillingMode 根据 LiteLLM 的 mode 字段推断：image_generation → image，
+// 其余按 token；图片场景的 OutputCostPerImageToken 归到 ImageOutputPrice 字段。
 //
 // LiteLLM 中字段 0 视为未配置，不带入展示。
 func synthesizePricingFromLiteLLM(lp *LiteLLMModelPricing) *ChannelModelPricing {
 	if lp == nil {
 		return nil
 	}
+	mode := BillingModeToken
+	if lp.Mode == "image_generation" {
+		mode = BillingModeImage
+	}
 	return &ChannelModelPricing{
-		BillingMode:      BillingModeToken,
+		BillingMode:      mode,
 		InputPrice:       nonZeroPtr(lp.InputCostPerToken),
 		OutputPrice:      nonZeroPtr(lp.OutputCostPerToken),
 		CacheWritePrice:  nonZeroPtr(lp.CacheCreationInputTokenCost),
