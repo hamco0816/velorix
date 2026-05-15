@@ -1279,14 +1279,10 @@ export default {
     elapsed: '{sec}s elapsed',
     // Left group rail
     groupRailTitle: 'Group',
-    groupRailHint: 'Each group may have different models and pricing',
     groupEmpty: 'No available groups',
-    groupEmptyHint: 'Make sure an admin has bound a channel with image models (GPT / DALL·E / Imagen) to a group and not disabled "allow image generation".',
-    groupLoading: 'Loading…',
-    groupModelCount: '{n} models',
+    groupEmptyHint: 'Make sure an admin has enabled "allow image generation" for the group and granted the group to your account.',
     groupRateLabel: 'Rate',
     groupExclusive: 'Exclusive',
-    groupNoPriceConfig: 'Priced by rate multiplier',
   },
   redeem: {
     title: 'Redeem Code',

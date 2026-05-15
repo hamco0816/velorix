@@ -1,42 +1,45 @@
 <template>
   <AppLayout wide>
-    <div class="grid gap-3 lg:grid-cols-[200px_minmax(0,1fr)]">
-      <!-- 左 rail：分组选择（仅 lg+ 显示，无外框，直接列表更轻量）-->
+    <div class="grid gap-4 lg:grid-cols-[224px_minmax(0,1fr)]">
+      <!-- 左 rail：分组选择（仅 lg+ 显示，与右侧 surface-card 同一设计语言）-->
       <aside class="hidden lg:block">
-        <div class="sticky top-4">
-          <div class="mb-2 flex items-baseline justify-between px-1">
-            <h3 class="text-[11px] font-semibold uppercase tracking-wider text-gray-500 dark:text-dark-400">
+        <div class="surface-card sticky top-4 overflow-hidden">
+          <header class="flex items-center justify-between border-b border-gray-100 px-3.5 py-2.5 dark:border-dark-700/60">
+            <h3 class="text-[12px] font-semibold text-gray-700 dark:text-dark-200">
               {{ t('imageGen.groupRailTitle') }}
             </h3>
-            <span v-if="imageCapableGroups.length > 0" class="text-[11px] tabular-nums text-gray-400 dark:text-dark-500">
+            <span v-if="imageCapableGroups.length > 0" class="rounded-full bg-gray-100 px-1.5 py-px text-[11px] tabular-nums text-gray-500 dark:bg-dark-800 dark:text-dark-400">
               {{ imageCapableGroups.length }}
             </span>
-          </div>
-          <!-- 空态：明确告诉用户该去哪里检查 -->
+          </header>
+
+          <!-- 空态 -->
           <div
             v-if="imageCapableGroups.length === 0"
-            class="rounded-lg border border-dashed border-gray-300 bg-white/40 px-3 py-4 text-[12px] leading-relaxed text-gray-500 dark:border-dark-700 dark:bg-dark-900/30 dark:text-dark-400"
+            class="px-3.5 py-5 text-[12px] leading-relaxed text-gray-500 dark:text-dark-400"
           >
             <p class="font-medium text-gray-600 dark:text-dark-300">{{ t('imageGen.groupEmpty') }}</p>
-            <p class="mt-1.5 text-[11px]">{{ t('imageGen.groupEmptyHint') }}</p>
+            <p class="mt-1.5 text-[11px] text-gray-400 dark:text-dark-500">{{ t('imageGen.groupEmptyHint') }}</p>
           </div>
-          <div v-else class="space-y-1">
+
+          <!-- 分组列表 -->
+          <div v-else class="p-1.5">
             <button
               v-for="entry in imageCapableGroups"
               :key="entry.group.id"
               type="button"
               :class="[
-                'block w-full rounded-md px-2.5 py-2 text-left transition',
+                'block w-full rounded-lg px-2.5 py-2 text-left transition',
                 entry.group.id === form.groupId
-                  ? 'bg-blue-50 ring-1 ring-blue-500/30 dark:bg-blue-500/10 dark:ring-blue-400/40'
-                  : 'hover:bg-gray-100/70 dark:hover:bg-dark-800/40',
+                  ? 'bg-blue-50 dark:bg-blue-500/10'
+                  : 'hover:bg-gray-50 dark:hover:bg-dark-800/40',
               ]"
               @click="form.groupId = entry.group.id"
             >
-              <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-1.5">
                 <span
                   :class="[
-                    'truncate text-[13px]',
+                    'min-w-0 flex-1 truncate text-[13px]',
                     entry.group.id === form.groupId
                       ? 'font-semibold text-blue-700 dark:text-blue-300'
                       : 'font-medium text-gray-800 dark:text-dark-200',
@@ -46,17 +49,15 @@
                 </span>
                 <span
                   v-if="entry.group.is_exclusive"
-                  class="shrink-0 rounded-sm bg-amber-100 px-1 py-px text-[10px] font-medium text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
+                  class="shrink-0 rounded bg-amber-100 px-1 py-px text-[10px] font-medium text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
                 >
                   {{ t('imageGen.groupExclusive') }}
                 </span>
               </div>
-              <!-- 二级信息：模型数 + 倍率/价格档（一行汇总，避免高度膨胀）-->
-              <p class="mt-0.5 truncate text-[11px] text-gray-500 dark:text-dark-500">
-                <span>{{ t('imageGen.groupModelCount', { n: entry.models.length }) }}</span>
-                <span class="mx-1.5 text-gray-300 dark:text-dark-600">·</span>
-                <span v-if="hasImagePrice(entry.group)" class="tabular-nums">{{ priceSummary(entry.group) }}</span>
-                <span v-else class="tabular-nums">×{{ effectiveImageRate(entry.group) }}</span>
+              <!-- 二级信息：价格/倍率 -->
+              <p class="mt-1 truncate text-[11px] tabular-nums text-gray-500 dark:text-dark-500">
+                <template v-if="hasImagePrice(entry.group)">{{ priceSummary(entry.group) }}</template>
+                <template v-else>{{ t('imageGen.groupRateLabel') }} ×{{ effectiveImageRate(entry.group) }}</template>
               </p>
             </button>
           </div>
@@ -295,6 +296,14 @@ const MODEL_CAPS: Record<string, ModelCaps> = {
   },
 }
 
+// 平台官方图片模型目录。透传渠道的 supported_models 天生为空（模型配在账号上、
+// 渠道不限制即支持上游全部模型），此时这个目录就是"用户能调哪些图片模型"的事实来源，
+// 不是猜测。维护时跟着 MODEL_CAPS 一起更新即可。
+const IMAGE_MODEL_CATALOG: Record<string, string[]> = {
+  openai: ['gpt-image-1.5', 'gpt-image-2', 'gpt-image-1', 'gpt-image-1-mini', 'dall-e-3'],
+  gemini: ['gemini-2.5-flash-image-preview'],
+}
+
 // 比例 × 分辨率 → 上游 size 字符串
 // 不在表里的组合返回 'auto'，让上游自动判定
 const SIZE_MAP: Record<ResolutionKey, Partial<Record<AspectKey, string>>> = {
@@ -500,29 +509,32 @@ function isImageModel(m: UserSupportedModel): boolean {
 async function loadGroupsAndModels() {
   try {
     const channels = await userChannelsAPI.getAvailable()
-    // 聚合：按 group.id 去重。两个条件都要满足才算可用分组：
-    //  1) group.allow_image_generation === true（管理员显式开关）
-    //  2) 渠道 supported_models 里确实有图片模型
-    // 没有图片模型就是没有，不做平台默认兜底。
+    // 判定唯一信号：group.allow_image_generation === true（管理员显式声明本分组提供生图）。
+    // 不再依赖 supported_models 筛分组——透传渠道它天生为空（模型配在账号层）。
+    // 模型清单来源：渠道若显式列出了图片模型就用它（精确，适用于配了模型限制的渠道）；
+    // 否则用该分组平台的官方图片模型目录（透传场景，目录即事实）。
     const groupMap = new Map<number, { group: UserAvailableGroup; models: Set<string> }>()
     for (const ch of channels) {
       for (const sec of ch.platforms) {
-        const imageModels = sec.supported_models.filter(isImageModel).map((m) => m.name)
-        if (imageModels.length === 0) continue
+        const explicitImageModels = sec.supported_models.filter(isImageModel).map((m) => m.name)
         for (const g of sec.groups) {
           if (g.allow_image_generation !== true) continue
           if (!groupMap.has(g.id)) {
             groupMap.set(g.id, { group: g, models: new Set() })
           }
           const bucket = groupMap.get(g.id)!.models
-          for (const m of imageModels) bucket.add(m)
+          const models =
+            explicitImageModels.length > 0
+              ? explicitImageModels
+              : IMAGE_MODEL_CATALOG[g.platform] ?? []
+          for (const m of models) bucket.add(m)
         }
       }
     }
-    imageCapableGroups.value = Array.from(groupMap.values()).map((x) => ({
-      group: x.group,
-      models: Array.from(x.models),
-    }))
+    // models 为空的分组丢弃（平台未知且渠道也没列出——genuinely 无可用图片模型）
+    imageCapableGroups.value = Array.from(groupMap.values())
+      .map((x) => ({ group: x.group, models: Array.from(x.models) }))
+      .filter((x) => x.models.length > 0)
     // 默认选第一个 group 和它的第一个 model
     if (imageCapableGroups.value.length > 0) {
       form.value.groupId = imageCapableGroups.value[0].group.id
