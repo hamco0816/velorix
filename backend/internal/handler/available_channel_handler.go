@@ -67,6 +67,14 @@ type userAvailableGroup struct {
 	PromoStartsAt       *time.Time `json:"promo_starts_at,omitempty"`
 	PromoEndsAt         *time.Time `json:"promo_ends_at,omitempty"`
 	PromoLabel          string     `json:"promo_label,omitempty"`
+	// 图片计费配置：前端在「计费标准」页对图片模型用单独倍率/默认价展示，
+	// 避免把"按图片计费"的模型按普通 token 倍率计算误导用户。
+	AllowImageGeneration bool     `json:"allow_image_generation"`
+	ImageRateIndependent bool     `json:"image_rate_independent"`
+	ImageRateMultiplier  float64  `json:"image_rate_multiplier"`
+	ImagePrice1K         *float64 `json:"image_price_1k,omitempty"`
+	ImagePrice2K         *float64 `json:"image_price_2k,omitempty"`
+	ImagePrice4K         *float64 `json:"image_price_4k,omitempty"`
 }
 
 // userSupportedModelPricing 用户可见的定价字段白名单。
@@ -221,16 +229,22 @@ func filterUserVisibleGroups(
 			continue
 		}
 		visible = append(visible, userAvailableGroup{
-			ID:                  g.ID,
-			Name:                g.Name,
-			Platform:            g.Platform,
-			SubscriptionType:    g.SubscriptionType,
-			RateMultiplier:      g.RateMultiplier,
-			IsExclusive:         g.IsExclusive,
-			PromoRateMultiplier: g.PromoRateMultiplier,
-			PromoStartsAt:       g.PromoStartsAt,
-			PromoEndsAt:         g.PromoEndsAt,
-			PromoLabel:          g.PromoLabel,
+			ID:                   g.ID,
+			Name:                 g.Name,
+			Platform:             g.Platform,
+			SubscriptionType:     g.SubscriptionType,
+			RateMultiplier:       g.RateMultiplier,
+			IsExclusive:          g.IsExclusive,
+			PromoRateMultiplier:  g.PromoRateMultiplier,
+			PromoStartsAt:        g.PromoStartsAt,
+			PromoEndsAt:          g.PromoEndsAt,
+			PromoLabel:           g.PromoLabel,
+			AllowImageGeneration: g.AllowImageGeneration,
+			ImageRateIndependent: g.ImageRateIndependent,
+			ImageRateMultiplier:  g.ImageRateMultiplier,
+			ImagePrice1K:         g.ImagePrice1K,
+			ImagePrice2K:         g.ImagePrice2K,
+			ImagePrice4K:         g.ImagePrice4K,
 		})
 	}
 	return visible

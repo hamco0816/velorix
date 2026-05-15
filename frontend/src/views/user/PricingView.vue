@@ -365,23 +365,44 @@
                   </div>
                 </template>
 
-                <!-- Image 计费 -->
+                <!-- Image 计费：用 image_rate_multiplier 而不是 rate_multiplier；如果分组有固定 per-image 价（1K/2K/4K），优先用那些 -->
                 <template v-else-if="model.billingMode === 'image'">
-                  <div class="flex items-center justify-between">
-                    <span class="text-gray-500 dark:text-dark-400">
-                      {{ t('pricing.imageOutput') }}
-                      <span v-if="model.imageOutputPriceUnit === 'per_image'" class="ml-1 text-xs text-gray-400">{{ t('pricing.imageOutputUnitPerImage') }}</span>
-                      <span v-else-if="model.imageOutputPriceUnit === 'per_image_token'" class="ml-1 text-xs text-gray-400">{{ t('pricing.imageOutputUnitPerToken') }}</span>
-                    </span>
-                    <span class="text-base font-semibold tabular-nums text-gray-900 dark:text-white">
-                      <template v-if="model.imageOutputPriceUnit === 'per_image_token'">
-                        {{ formatPrice(applyRate(model.imageOutputPrice != null ? model.imageOutputPrice * 1_000_000 : null)) }}
-                      </template>
-                      <template v-else>
-                        {{ formatPrice(applyRate(model.imageOutputPrice)) }}
-                      </template>
-                    </span>
-                  </div>
+                  <!-- 分支 A：分组配了固定每图价 → 展示三档（1K/2K/4K） -->
+                  <template v-if="hasGroupImagePrices">
+                    <div v-if="selectedGroupImagePrices.k1 != null" class="flex items-center justify-between">
+                      <span class="text-gray-500 dark:text-dark-400">{{ t('pricing.imagePer1K') }}</span>
+                      <span class="text-base font-semibold tabular-nums text-gray-900 dark:text-white">{{ formatPrice(applyImageRate(selectedGroupImagePrices.k1)) }}</span>
+                    </div>
+                    <div v-if="selectedGroupImagePrices.k2 != null" class="flex items-center justify-between">
+                      <span class="text-gray-500 dark:text-dark-400">{{ t('pricing.imagePer2K') }}</span>
+                      <span class="text-base font-semibold tabular-nums text-gray-900 dark:text-white">{{ formatPrice(applyImageRate(selectedGroupImagePrices.k2)) }}</span>
+                    </div>
+                    <div v-if="selectedGroupImagePrices.k4 != null" class="flex items-center justify-between">
+                      <span class="text-gray-500 dark:text-dark-400">{{ t('pricing.imagePer4K') }}</span>
+                      <span class="text-base font-semibold tabular-nums text-gray-900 dark:text-white">{{ formatPrice(applyImageRate(selectedGroupImagePrices.k4)) }}</span>
+                    </div>
+                  </template>
+                  <!-- 分支 B：用 LiteLLM 默认价（per-image 或 per-image-token）× image_rate_multiplier -->
+                  <template v-else>
+                    <div class="flex items-center justify-between">
+                      <span class="text-gray-500 dark:text-dark-400">
+                        {{ t('pricing.imageOutput') }}
+                        <span v-if="model.imageOutputPriceUnit === 'per_image'" class="ml-1 text-xs text-gray-400">{{ t('pricing.imageOutputUnitPerImage') }}</span>
+                        <span v-else-if="model.imageOutputPriceUnit === 'per_image_token'" class="ml-1 text-xs text-gray-400">{{ t('pricing.imageOutputUnitPerToken') }}</span>
+                      </span>
+                      <span class="text-base font-semibold tabular-nums text-gray-900 dark:text-white">
+                        <template v-if="model.imageOutputPriceUnit === 'per_image_token'">
+                          {{ formatPrice(applyImageRate(model.imageOutputPrice != null ? model.imageOutputPrice * 1_000_000 : null)) }}
+                        </template>
+                        <template v-else>
+                          {{ formatPrice(applyImageRate(model.imageOutputPrice)) }}
+                        </template>
+                      </span>
+                    </div>
+                    <p v-if="selectedGroupImageIndependent" class="text-[10px] italic text-gray-400 dark:text-dark-500">
+                      {{ t('pricing.imageRateNote', { rate: selectedGroupImageRateLabel }) }}
+                    </p>
+                  </template>
                 </template>
 
                 <!-- Token 计费（默认） -->
@@ -828,6 +849,34 @@ function applyRate(price: number | null | undefined): number | null {
   if (price == null) return null
   return price * activeRate.value
 }
+
+// ============ 图片模型专用 ============
+// 分组开了"图片倍率独立"时，image 模型应当走 image_rate_multiplier 而不是 rate_multiplier。
+// 没开 / 没选分组 → 跟 activeRate 一致。
+const selectedGroupImageIndependent = computed(() => selectedGroup.value?.image_rate_independent === true)
+const activeImageRate = computed(() => {
+  const g = selectedGroup.value
+  if (!g) return 1
+  if (g.image_rate_independent && typeof g.image_rate_multiplier === 'number') {
+    return g.image_rate_multiplier
+  }
+  return effectiveRate(g)
+})
+const selectedGroupImageRateLabel = computed(() => `×${Number(activeImageRate.value.toPrecision(10))}`)
+function applyImageRate(price: number | null | undefined): number | null {
+  if (price == null) return null
+  return price * activeImageRate.value
+}
+// 分组配置的"每图固定价"（1K/2K/4K），有任一就走分支 A 渲染
+const selectedGroupImagePrices = computed(() => ({
+  k1: selectedGroup.value?.image_price_1k ?? null,
+  k2: selectedGroup.value?.image_price_2k ?? null,
+  k4: selectedGroup.value?.image_price_4k ?? null,
+}))
+const hasGroupImagePrices = computed(() => {
+  const p = selectedGroupImagePrices.value
+  return p.k1 != null || p.k2 != null || p.k4 != null
+})
 
 // 用"原倍率"换算价格，用于划线对比；仅当 promoActive 时才展示
 function applyBaseRate(price: number | null | undefined): number | null {

@@ -3,7 +3,7 @@
        避免整张卡片被绿/橙色边框包围造成视觉冲击 -->
   <div
     :class="[
-      'plan-card group relative flex min-h-[250px] flex-col overflow-hidden rounded-lg border-2 bg-white transition-colors dark:bg-dark-900',
+      'plan-card group relative flex min-h-[300px] flex-col overflow-hidden rounded-lg border-2 bg-white transition-colors dark:bg-dark-900',
       soldOut
         ? 'border-gray-200 opacity-65 grayscale dark:border-dark-700'
         : isPopular

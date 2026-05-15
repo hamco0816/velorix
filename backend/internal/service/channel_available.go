@@ -28,6 +28,14 @@ type AvailableGroupRef struct {
 	PromoStartsAt       *time.Time
 	PromoEndsAt         *time.Time
 	PromoLabel          string
+	// 图片计费透传：让前端「计费标准」页对 image 模型用独立倍率 / 默认价正确展示，
+	// 不再把图片输出按普通 token 走 RateMultiplier 误导用户。
+	AllowImageGeneration bool
+	ImageRateIndependent bool
+	ImageRateMultiplier  float64
+	ImagePrice1K         *float64
+	ImagePrice2K         *float64
+	ImagePrice4K         *float64
 }
 
 // AvailableChannel 可用渠道视图：用于「可用渠道」页面展示渠道基础信息 +
@@ -68,16 +76,22 @@ func (s *ChannelService) ListAvailable(ctx context.Context) ([]AvailableChannel,
 	for i := range groups {
 		g := groups[i]
 		groupByID[g.ID] = AvailableGroupRef{
-			ID:                  g.ID,
-			Name:                g.Name,
-			Platform:            g.Platform,
-			SubscriptionType:    g.SubscriptionType,
-			RateMultiplier:      g.RateMultiplier,
-			IsExclusive:         g.IsExclusive,
-			PromoRateMultiplier: g.PromoRateMultiplier,
-			PromoStartsAt:       g.PromoStartsAt,
-			PromoEndsAt:         g.PromoEndsAt,
-			PromoLabel:          g.PromoLabel,
+			ID:                   g.ID,
+			Name:                 g.Name,
+			Platform:             g.Platform,
+			SubscriptionType:     g.SubscriptionType,
+			RateMultiplier:       g.RateMultiplier,
+			IsExclusive:          g.IsExclusive,
+			PromoRateMultiplier:  g.PromoRateMultiplier,
+			PromoStartsAt:        g.PromoStartsAt,
+			PromoEndsAt:          g.PromoEndsAt,
+			PromoLabel:           g.PromoLabel,
+			AllowImageGeneration: g.AllowImageGeneration,
+			ImageRateIndependent: g.ImageRateIndependent,
+			ImageRateMultiplier:  g.ImageRateMultiplier,
+			ImagePrice1K:         g.ImagePrice1K,
+			ImagePrice2K:         g.ImagePrice2K,
+			ImagePrice4K:         g.ImagePrice4K,
 		}
 	}
 

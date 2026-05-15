@@ -21,6 +21,15 @@ export interface UserAvailableGroup {
   promo_starts_at?: string | null
   promo_ends_at?: string | null
   promo_label?: string
+  /** 图片计费配置：image 模型在该分组走独立倍率/默认价，跟 token 倍率分开。
+   *  「计费标准」页对图片模型用 image_rate_multiplier 或 image_price_*K 展示，
+   *  避免把"按图片计费"按 rate_multiplier 误折算。 */
+  allow_image_generation?: boolean
+  image_rate_independent?: boolean
+  image_rate_multiplier?: number
+  image_price_1k?: number | null
+  image_price_2k?: number | null
+  image_price_4k?: number | null
 }
 
 export interface UserPricingInterval {

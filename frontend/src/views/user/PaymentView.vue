@@ -771,12 +771,14 @@ const balanceRechargeMultiplier = computed(() => {
 })
 const creditedAmount = computed(() => Math.round((validAmount.value * balanceRechargeMultiplier.value) * 100) / 100)
 
-// Adaptive grid: center single card, 2-col for 2 plans, 3-col for 3+
+// 自适应网格：1 张居中、2 张并排、3 张 3 列、4 张及以上 4 列。
+// 大屏 4 列充分利用横向空间，但卡片本身保留 min-height 让档位间视觉等高。
 const planGridClass = computed(() => {
   const n = filteredPlans.value.length
   if (n === 1) return 'grid grid-cols-1 gap-5'
-  if (n <= 2) return 'grid grid-cols-1 gap-5 sm:grid-cols-2'
-  return 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'
+  if (n === 2) return 'grid grid-cols-1 gap-5 sm:grid-cols-2'
+  if (n === 3) return 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'
+  return 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
 })
 
 // 卡类型筛选 tab：实际存在的类型 + 「全部」
