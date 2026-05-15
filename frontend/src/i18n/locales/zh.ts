@@ -2283,6 +2283,7 @@ export default {
       usageTotal: '累计',
       accountsAvailable: '可用:',
       accountsRateLimited: '限流:',
+      accountsRateLimitedHint: '当前被上游限流（rate limit / overload）的账号数，恢复后会自动重新可调度',
       accountsTotal: '总量:',
       accountsUnit: '个账号',
       subscriptionsUnit: '个订阅',

@@ -210,29 +210,35 @@
           </template>
 
           <template #cell-account_count="{ row }">
-            <!-- 点击数字跳转到账号管理并按当前分组过滤，省去手动搜索 -->
+            <!-- 紧凑设计：大字号"可用/总" + 限流琥珀 chip（仅 > 0 显示）
+                 点击仍然跳转到账号管理过滤当前分组 -->
             <button
               type="button"
-              class="inline-grid min-w-[8.5rem] cursor-pointer grid-cols-[auto_1fr] items-baseline gap-x-2 gap-y-0.5 rounded-md p-1 text-left text-xs transition-colors hover:bg-gray-50 dark:hover:bg-dark-800"
+              class="inline-flex items-center gap-2 rounded-md px-1.5 py-1 text-left transition-colors hover:bg-gray-50 dark:hover:bg-dark-800"
               :title="t('admin.groups.viewAccountsInGroup')"
               @click.stop="goToAccounts(row)"
             >
-              <span class="text-gray-500 dark:text-gray-400">{{ t("admin.groups.accountsAvailable") }}</span>
-              <span class="text-right font-mono tabular-nums font-semibold text-emerald-600 dark:text-emerald-400">
-                {{ (row.active_account_count || 0) - (row.rate_limited_account_count || 0) }}
-                <span class="ml-0.5 text-[10px] font-normal text-gray-400">{{ t("admin.groups.accountsUnit") }}</span>
-              </span>
-              <template v-if="row.rate_limited_account_count">
-                <span class="text-gray-500 dark:text-gray-400">{{ t("admin.groups.accountsRateLimited") }}</span>
-                <span class="text-right font-mono tabular-nums font-semibold text-amber-600 dark:text-amber-400">
-                  {{ row.rate_limited_account_count }}
-                  <span class="ml-0.5 text-[10px] font-normal text-gray-400">{{ t("admin.groups.accountsUnit") }}</span>
+              <span class="flex items-baseline gap-0.5 font-mono tabular-nums leading-none">
+                <span
+                  :class="[
+                    'text-[15px] font-bold',
+                    ((row.active_account_count || 0) - (row.rate_limited_account_count || 0)) > 0
+                      ? 'text-emerald-600 dark:text-emerald-400'
+                      : 'text-gray-400 dark:text-dark-500',
+                  ]"
+                >
+                  {{ (row.active_account_count || 0) - (row.rate_limited_account_count || 0) }}
                 </span>
-              </template>
-              <span class="text-gray-500 dark:text-gray-400">{{ t("admin.groups.accountsTotal") }}</span>
-              <span class="text-right font-mono tabular-nums font-medium text-gray-700 dark:text-gray-300">
-                {{ row.account_count || 0 }}
-                <span class="ml-0.5 text-[10px] font-normal text-gray-400">{{ t("admin.groups.accountsUnit") }}</span>
+                <span class="text-[11px] text-gray-400 dark:text-dark-500">/</span>
+                <span class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ row.account_count || 0 }}</span>
+              </span>
+              <span
+                v-if="row.rate_limited_account_count"
+                class="inline-flex items-center gap-0.5 rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 ring-1 ring-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:ring-amber-900/50"
+                :title="t('admin.groups.accountsRateLimitedHint')"
+              >
+                <Icon name="exclamationTriangle" size="xs" :stroke-width="2.5" />
+                {{ row.rate_limited_account_count }}
               </span>
             </button>
           </template>

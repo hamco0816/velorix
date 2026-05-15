@@ -2225,6 +2225,7 @@ export default {
       usageTotal: 'Total',
       accountsAvailable: 'Avail:',
       accountsRateLimited: 'Limited:',
+      accountsRateLimitedHint: 'Accounts currently rate-limited / overloaded by upstream; auto-recovered once the window resets',
       accountsTotal: 'Total:',
       accountsUnit: '',
       subscriptionsUnit: 'subs',
