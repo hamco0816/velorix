@@ -1293,6 +1293,7 @@ export default {
     groupRailTitle: '分组',
     groupRailHint: '不同分组的可用模型与计费可能不同',
     groupEmpty: '暂无可用分组',
+    groupEmptyHint: '请确认管理员已在分组下绑定带 GPT/DALL·E/Imagen 等图片模型的渠道，且未关闭「允许生图」。',
     groupLoading: '加载中…',
     groupModelCount: '{n} 个模型',
     groupRateLabel: '倍率',

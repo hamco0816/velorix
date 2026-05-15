@@ -1,35 +1,47 @@
 <template>
   <AppLayout>
-    <div class="grid gap-4 lg:grid-cols-[260px_minmax(0,1fr)]">
-      <!-- 左 rail：分组选择（仅 lg+ 显示）-->
+    <div class="grid gap-3 lg:grid-cols-[200px_minmax(0,1fr)]">
+      <!-- 左 rail：分组选择（仅 lg+ 显示，无外框，直接列表更轻量）-->
       <aside class="hidden lg:block">
-        <div class="surface-card sticky top-4 p-3">
-          <header class="flex items-center justify-between px-1 pb-2">
-            <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-dark-400">
+        <div class="sticky top-4">
+          <div class="mb-2 flex items-baseline justify-between px-1">
+            <h3 class="text-[11px] font-semibold uppercase tracking-wider text-gray-500 dark:text-dark-400">
               {{ t('imageGen.groupRailTitle') }}
             </h3>
-            <span v-if="imageCapableGroups.length > 0" class="text-[11px] text-gray-400 dark:text-dark-500">
+            <span v-if="imageCapableGroups.length > 0" class="text-[11px] tabular-nums text-gray-400 dark:text-dark-500">
               {{ imageCapableGroups.length }}
             </span>
-          </header>
-          <p v-if="imageCapableGroups.length === 0" class="px-1 py-3 text-[12px] text-gray-400 dark:text-dark-500">
-            {{ t('imageGen.groupEmpty') }}
-          </p>
-          <div v-else class="space-y-1.5">
+          </div>
+          <!-- 空态：明确告诉用户该去哪里检查 -->
+          <div
+            v-if="imageCapableGroups.length === 0"
+            class="rounded-lg border border-dashed border-gray-300 bg-white/40 px-3 py-4 text-[12px] leading-relaxed text-gray-500 dark:border-dark-700 dark:bg-dark-900/30 dark:text-dark-400"
+          >
+            <p class="font-medium text-gray-600 dark:text-dark-300">{{ t('imageGen.groupEmpty') }}</p>
+            <p class="mt-1.5 text-[11px]">{{ t('imageGen.groupEmptyHint') }}</p>
+          </div>
+          <div v-else class="space-y-1">
             <button
               v-for="entry in imageCapableGroups"
               :key="entry.group.id"
               type="button"
               :class="[
-                'block w-full rounded-lg border px-3 py-2.5 text-left transition',
+                'block w-full rounded-md px-2.5 py-2 text-left transition',
                 entry.group.id === form.groupId
-                  ? 'border-blue-500 bg-blue-50/50 ring-1 ring-blue-500/20 dark:border-blue-400 dark:bg-blue-500/10'
-                  : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50/70 dark:border-dark-700/60 dark:bg-dark-900/30 dark:hover:bg-dark-800/40',
+                  ? 'bg-blue-50 ring-1 ring-blue-500/30 dark:bg-blue-500/10 dark:ring-blue-400/40'
+                  : 'hover:bg-gray-100/70 dark:hover:bg-dark-800/40',
               ]"
               @click="form.groupId = entry.group.id"
             >
               <div class="flex items-center justify-between gap-2">
-                <span class="truncate text-sm font-medium text-gray-900 dark:text-dark-100">
+                <span
+                  :class="[
+                    'truncate text-[13px]',
+                    entry.group.id === form.groupId
+                      ? 'font-semibold text-blue-700 dark:text-blue-300'
+                      : 'font-medium text-gray-800 dark:text-dark-200',
+                  ]"
+                >
                   {{ entry.group.name }}
                 </span>
                 <span
@@ -39,38 +51,15 @@
                   {{ t('imageGen.groupExclusive') }}
                 </span>
               </div>
-              <p class="mt-1 text-[11px] text-gray-500 dark:text-dark-400">
-                {{ t('imageGen.groupModelCount', { n: entry.models.length }) }}
+              <!-- 二级信息：模型数 + 倍率/价格档（一行汇总，避免高度膨胀）-->
+              <p class="mt-0.5 truncate text-[11px] text-gray-500 dark:text-dark-500">
+                <span>{{ t('imageGen.groupModelCount', { n: entry.models.length }) }}</span>
+                <span class="mx-1.5 text-gray-300 dark:text-dark-600">·</span>
+                <span v-if="hasImagePrice(entry.group)" class="tabular-nums">{{ priceSummary(entry.group) }}</span>
+                <span v-else class="tabular-nums">×{{ effectiveImageRate(entry.group) }}</span>
               </p>
-              <!-- 价格档：admin 配了 image_price_*K 才显示 -->
-              <div v-if="hasImagePrice(entry.group)" class="mt-2 flex flex-wrap gap-1">
-                <span
-                  v-if="entry.group.image_price_1k && entry.group.image_price_1k > 0"
-                  class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] tabular-nums text-gray-600 dark:bg-dark-800/60 dark:text-dark-300"
-                >1K ¥{{ entry.group.image_price_1k.toFixed(2) }}</span>
-                <span
-                  v-if="entry.group.image_price_2k && entry.group.image_price_2k > 0"
-                  class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] tabular-nums text-gray-600 dark:bg-dark-800/60 dark:text-dark-300"
-                >2K ¥{{ entry.group.image_price_2k.toFixed(2) }}</span>
-                <span
-                  v-if="entry.group.image_price_4k && entry.group.image_price_4k > 0"
-                  class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] tabular-nums text-gray-600 dark:bg-dark-800/60 dark:text-dark-300"
-                >4K ¥{{ entry.group.image_price_4k.toFixed(2) }}</span>
-              </div>
-              <!-- 没配单图定价：显示倍率 -->
-              <div v-else class="mt-2">
-                <span class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] tabular-nums text-gray-600 dark:bg-dark-800/60 dark:text-dark-300">
-                  ×{{ effectiveImageRate(entry.group) }}
-                </span>
-              </div>
             </button>
           </div>
-          <p
-            v-if="imageCapableGroups.length > 1"
-            class="mt-3 px-1 text-[11px] leading-relaxed text-gray-400 dark:text-dark-500"
-          >
-            {{ t('imageGen.groupRailHint') }}
-          </p>
         </div>
       </aside>
 
@@ -378,6 +367,15 @@ function effectiveImageRate(g: UserAvailableGroup): string {
       : g.rate_multiplier
   return rate.toFixed(2)
 }
+// 价格摘要：rail 单行展示，取最便宜的一档（用户最低门槛）
+function priceSummary(g: UserAvailableGroup): string {
+  const prices = [g.image_price_1k, g.image_price_2k, g.image_price_4k].filter(
+    (p): p is number => typeof p === 'number' && p > 0,
+  )
+  if (prices.length === 0) return ''
+  const min = Math.min(...prices)
+  return `¥${min.toFixed(2)}/张起`
+}
 
 // ── 计算属性：可选项 ──
 const availableGroups = computed(() => imageCapableGroups.value.map((x) => x.group))
@@ -484,21 +482,29 @@ async function loadKey() {
   }
 }
 
+// 判断模型是否属于图片生成类。多路兜底，避免后端 billing_mode 未正确标记时漏过。
+function isImageModel(m: UserSupportedModel): boolean {
+  // 1) 后端明确标记为图片计费
+  if (m.pricing?.billing_mode === 'image') return true
+  // 2) 后端配了图片单价（说明 admin/LiteLLM 把它当图片模型）
+  if (m.pricing?.image_output_price != null && m.pricing.image_output_price > 0) return true
+  // 3) 前端能力表里有的已知图片模型
+  if (m.name in MODEL_CAPS) return true
+  // 4) 名称模式兜底（避免 admin 起了个变体名，比如 gpt-image-1.5-beta）
+  const n = m.name.toLowerCase()
+  if (n.startsWith('gpt-image') || n.startsWith('dall-e') || n.startsWith('dalle')) return true
+  if (n.includes('flash-image') || n.includes('imagen')) return true
+  return false
+}
+
 async function loadGroupsAndModels() {
   try {
     const channels = await userChannelsAPI.getAvailable()
-    // 聚合：按 group.id 去重；从每个 platform section 提取 image_generation 模式的 model 名
+    // 聚合：按 group.id 去重；从每个 platform section 提取图片生成类的 model 名
     const groupMap = new Map<number, { group: UserAvailableGroup; models: Set<string> }>()
     for (const ch of channels) {
       for (const sec of ch.platforms) {
-        // 命中条件：后端 billing_mode=image，或模型名在前端已知图片模型表内（兜底，
-        // 避免后端 LiteLLM 回落定价时把 mode 标记成 token 导致下拉空）
-        const imageModels = sec.supported_models
-          .filter(
-            (m: UserSupportedModel) =>
-              m.pricing?.billing_mode === 'image' || m.name in MODEL_CAPS,
-          )
-          .map((m: UserSupportedModel) => m.name)
+        const imageModels = sec.supported_models.filter(isImageModel).map((m) => m.name)
         if (imageModels.length === 0) continue
         for (const g of sec.groups) {
           // group 显式关掉「允许生图」才剔除；未设置/未返回该字段时默认放行
