@@ -1,5 +1,5 @@
 <template>
-  <AppLayout>
+  <AppLayout wide>
     <div class="grid gap-3 lg:grid-cols-[200px_minmax(0,1fr)]">
       <!-- 左 rail：分组选择（仅 lg+ 显示，无外框，直接列表更轻量）-->
       <aside class="hidden lg:block">
@@ -500,19 +500,22 @@ function isImageModel(m: UserSupportedModel): boolean {
 async function loadGroupsAndModels() {
   try {
     const channels = await userChannelsAPI.getAvailable()
-    // 聚合：按 group.id 去重；从每个 platform section 提取图片生成类的 model 名
+    // 聚合：按 group.id 去重。两个条件都要满足才算可用分组：
+    //  1) group.allow_image_generation === true（管理员显式开关）
+    //  2) 渠道 supported_models 里确实有图片模型
+    // 没有图片模型就是没有，不做平台默认兜底。
     const groupMap = new Map<number, { group: UserAvailableGroup; models: Set<string> }>()
     for (const ch of channels) {
       for (const sec of ch.platforms) {
         const imageModels = sec.supported_models.filter(isImageModel).map((m) => m.name)
         if (imageModels.length === 0) continue
         for (const g of sec.groups) {
-          // group 显式关掉「允许生图」才剔除；未设置/未返回该字段时默认放行
-          if (g.allow_image_generation === false) continue
+          if (g.allow_image_generation !== true) continue
           if (!groupMap.has(g.id)) {
             groupMap.set(g.id, { group: g, models: new Set() })
           }
-          for (const m of imageModels) groupMap.get(g.id)!.models.add(m)
+          const bucket = groupMap.get(g.id)!.models
+          for (const m of imageModels) bucket.add(m)
         }
       }
     }
