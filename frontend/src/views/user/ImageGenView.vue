@@ -157,10 +157,24 @@
         </div>
 
         <!-- 错误 / 无 key 提示 -->
-        <p v-if="apiKeyError" class="mt-3 flex items-start gap-1.5 rounded-md bg-rose-50/60 px-3 py-2 text-[12px] text-rose-700 dark:bg-rose-500/10 dark:text-rose-300">
-          <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
-          <span>{{ apiKeyError }}</span>
-        </p>
+        <div v-if="keyError || referenceError" class="mt-3 rounded-md bg-rose-50/60 px-3 py-2.5 text-[12px] text-rose-700 dark:bg-rose-500/10 dark:text-rose-300">
+          <p class="flex items-start gap-1.5">
+            <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
+            <span>{{ keyError || referenceError }}</span>
+          </p>
+          <!-- 无密钥时页内一键创建，省去跳「API 密钥」页 -->
+          <button
+            v-if="canCreateKeyInline"
+            type="button"
+            class="mt-2 inline-flex items-center gap-1.5 rounded-md bg-rose-600 px-3 py-1.5 text-[12px] font-medium text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-rose-600 dark:hover:bg-rose-500"
+            :disabled="creatingKey"
+            @click="createKeyInline"
+          >
+            <span v-if="creatingKey" class="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+            <Icon v-else name="plus" size="xs" />
+            {{ creatingKey ? t('imageGen.creatingKey') : t('imageGen.createKeyHere') }}
+          </button>
+        </div>
       </section>
 
       <!-- 4. 结果区 -->
@@ -340,8 +354,14 @@ const form = ref({
   resolution: '1K' as ResolutionKey,
   n: 1,
 })
+// 参考图校验错误（不阻塞普通生成）
+const referenceError = ref('')
+// apiKeyError 仅用于硬错误：拉取失败 / 创建密钥失败
 const apiKeyError = ref('')
-const activeKey = ref<ApiKey | null>(null)
+// 用户全部 active 密钥；实际用哪个由选中分组决定（见 activeKey computed）
+const activeKeys = ref<ApiKey[]>([])
+// 页内创建密钥的进行中状态
+const creatingKey = ref(false)
 // group → models 映射（从 /channels/available 聚合得到的图片可用 group）
 const imageCapableGroups = ref<Array<{ group: UserAvailableGroup; models: string[] }>>([])
 const referenceFile = ref<File | null>(null)
@@ -444,12 +464,58 @@ const countOptions = computed<SelectOption[]>(() => [
   { value: 4, label: `4 ${t('imageGen.countLabel')}` },
 ])
 
+// 实际生效的密钥：images 网关按密钥绑定分组的 platform 硬校验，
+// 必须用一个 group_id === 选中分组 的密钥，不能盲取第一个。
+const activeKey = computed<ApiKey | null>(() => {
+  if (form.value.groupId == null) return null
+  return activeKeys.value.find((k) => k.group_id === form.value.groupId) ?? null
+})
+
+// 选中分组没有绑定密钥时的指引（区别于"一个密钥都没有"的 apiKeyError）
+const keyError = computed(() => {
+  if (apiKeyError.value) return apiKeyError.value
+  if (form.value.groupId == null || imageCapableGroups.value.length === 0) return ''
+  if (!activeKey.value) {
+    const g = currentGroupEntry.value?.group
+    return t('imageGen.noKeyForGroup', { group: g?.name ?? '' })
+  }
+  return ''
+})
+
+// 可在页内一键创建密钥：已选分组、该分组无可用密钥、且非硬错误（拉取/创建失败）
+const canCreateKeyInline = computed(
+  () =>
+    form.value.groupId != null &&
+    imageCapableGroups.value.length > 0 &&
+    !activeKey.value &&
+    !apiKeyError.value,
+)
+
+// 页内创建一个绑定当前分组的真实密钥（等价于「API 密钥」页的创建，省去跳页）
+async function createKeyInline() {
+  const gid = form.value.groupId
+  if (gid == null || creatingKey.value) return
+  creatingKey.value = true
+  apiKeyError.value = ''
+  try {
+    const groupName = currentGroupEntry.value?.group.name ?? ''
+    const name = `生图工坊 - ${groupName}`.slice(0, 64)
+    const created = await keysAPI.create(name, gid)
+    // 新建密钥绑定了当前分组，加入列表后 activeKey 立即解析、keyError 自动消除
+    activeKeys.value = [created, ...activeKeys.value]
+  } catch (err) {
+    apiKeyError.value = extractApiErrorMessage(err, t('common.error'))
+  } finally {
+    creatingKey.value = false
+  }
+}
+
 const hasResults = computed(() => results.value.length > 0)
 const canSubmit = computed(() =>
   !submitting.value &&
   !!form.value.prompt.trim() &&
   !!activeKey.value &&
-  !apiKeyError.value &&
+  !keyError.value &&
   !!form.value.model
 )
 
@@ -476,20 +542,6 @@ watch(() => form.value.model, (m) => {
   }
 })
 
-// ── 初始化：拉 API key + 可用 group/model ──
-async function loadKey() {
-  try {
-    const res = await keysAPI.list(1, 10, { status: 'active' })
-    const keys = res?.items ?? []
-    if (keys.length === 0) {
-      apiKeyError.value = t('imageGen.noKeyError')
-      return
-    }
-    activeKey.value = keys[0]
-  } catch (err) {
-    apiKeyError.value = extractApiErrorMessage(err, t('common.error'))
-  }
-}
 
 // 判断模型是否属于图片生成类。多路兜底，避免后端 billing_mode 未正确标记时漏过。
 function isImageModel(m: UserSupportedModel): boolean {
@@ -541,7 +593,22 @@ async function loadGroupsAndModels() {
       form.value.model = imageCapableGroups.value[0].models[0] ?? ''
     }
   } catch {
-    // 拉失败也不阻塞，用户可以手动选——但实际上 model dropdown 会是空
+    // 拉失败不阻塞，分组 rail 会显示空态
+  }
+}
+
+// 拉全部 active 密钥（拉满 100 个足够覆盖个人用户）；按分组匹配在 activeKey computed 里
+async function loadKey() {
+  try {
+    const res = await keysAPI.list(1, 100, { status: 'active' })
+    const keys = res?.items ?? []
+    if (keys.length === 0) {
+      apiKeyError.value = t('imageGen.noKeyError')
+      return
+    }
+    activeKeys.value = keys
+  } catch (err) {
+    apiKeyError.value = extractApiErrorMessage(err, t('common.error'))
   }
 }
 
@@ -566,10 +633,11 @@ function onFileSelected(e: Event) {
   if (!file) return
   // 大小限制 4 MB，避免上传失败
   if (file.size > 4 * 1024 * 1024) {
-    apiKeyError.value = t('imageGen.referenceTooLarge')
+    referenceError.value = t('imageGen.referenceTooLarge')
     target.value = ''
     return
   }
+  referenceError.value = ''
   referenceFile.value = file
   referenceImageName.value = file.name
   const reader = new FileReader()
@@ -584,6 +652,7 @@ function clearReference() {
   referenceFile.value = null
   referenceImagePreview.value = null
   referenceImageName.value = ''
+  referenceError.value = ''
 }
 
 // ── 状态文字逻辑 ──
@@ -610,10 +679,8 @@ function bumpStatusByEvent(eventType: string, partialIndex?: number, totalPartia
 // ── 生成 ──
 async function generate() {
   if (!canSubmit.value) return
-  if (!activeKey.value) {
-    apiKeyError.value = t('imageGen.noKeyError')
-    return
-  }
+  // canSubmit 已保证 activeKey 存在；这里仅作 TS 空值收窄
+  if (!activeKey.value) return
   submitting.value = true
   lastError.value = ''
   results.value = []
