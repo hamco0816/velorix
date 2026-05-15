@@ -6814,6 +6814,9 @@ export default {
     heroDescription: '为账户充值或选购订阅套餐，多种支付渠道，到账即时生效。',
     amountLabel: '充值金额',
     paymentAmount: '支付金额',
+    purchaseNotice: {
+      renewalHint: '续费仅延长有效期，当前周期内已用的额度不会被重置',
+    },
     creditedBalance: '到账余额',
     quickAmounts: '快捷金额',
     customAmount: '自定义金额',

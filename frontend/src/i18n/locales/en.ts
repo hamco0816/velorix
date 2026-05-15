@@ -6624,6 +6624,9 @@ export default {
     heroDescription: 'Top up your balance or buy a subscription. Multiple payment methods, instant credit.',
     amountLabel: 'Amount',
     paymentAmount: 'Payment Amount',
+    purchaseNotice: {
+      renewalHint: 'Renewal only extends expiry — current-period usage is NOT reset',
+    },
     creditedBalance: 'Credited Balance',
     quickAmounts: 'Quick Amounts',
     customAmount: 'Custom Amount',
