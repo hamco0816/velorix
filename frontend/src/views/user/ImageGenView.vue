@@ -84,16 +84,28 @@
           @keydown="onPromptKeydown"
         />
 
-        <!-- 2. 参考图缩略图（已上传时显示）-->
-        <div v-if="referenceImagePreview" class="mt-2 flex items-center gap-3 rounded-lg bg-gray-50 px-3 py-2 dark:bg-dark-800/40">
-          <img :src="referenceImagePreview" alt="reference" class="h-12 w-12 rounded-md object-cover ring-1 ring-gray-200 dark:ring-dark-700" />
-          <div class="min-w-0 flex-1">
-            <p class="truncate text-[13px] font-medium text-gray-800 dark:text-dark-100">{{ referenceImageName }}</p>
-            <p class="text-[11px] text-gray-400 dark:text-dark-500">{{ t('imageGen.referencePrivacyHint') }}</p>
+        <!-- 2. 参考图缩略图（可多张，已上传时显示）-->
+        <div v-if="referencePreviews.length" class="mt-2 rounded-lg bg-gray-50 px-3 py-2.5 dark:bg-dark-800/40">
+          <div class="flex flex-wrap gap-2">
+            <div
+              v-for="(ref, idx) in referencePreviews"
+              :key="ref.url"
+              class="group/ref relative h-14 w-14 overflow-hidden rounded-md ring-1 ring-gray-200 dark:ring-dark-700"
+            >
+              <img :src="ref.url" :alt="ref.name" class="h-full w-full object-cover" />
+              <button
+                type="button"
+                class="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 transition-opacity group-hover/ref:opacity-100"
+                :title="t('imageGen.referenceRemove')"
+                @click="removeReference(idx)"
+              >
+                <Icon name="x" size="sm" class="text-white" />
+              </button>
+            </div>
           </div>
-          <button type="button" class="rounded-md p-1 text-gray-400 hover:bg-gray-200/60 hover:text-gray-700 dark:hover:bg-dark-700" @click="clearReference">
-            <Icon name="x" size="sm" />
-          </button>
+          <p class="mt-1.5 text-[11px] text-gray-400 dark:text-dark-500">
+            {{ t('imageGen.referencePrivacyHint') }}
+          </p>
         </div>
 
         <!-- 3. 工具栏：参考图按钮 / group / model / 比例 / 分辨率 / 张数 / 提交 -->
@@ -113,6 +125,7 @@
             ref="fileInputRef"
             type="file"
             accept="image/png,image/jpeg,image/webp"
+            multiple
             class="hidden"
             @change="onFileSelected"
           />
@@ -185,26 +198,45 @@
         </header>
 
         <div class="p-5">
-          <!-- 生成中：点阵背景 + 中间预览 + 状态文字 -->
+          <!-- 生成中：深色画布 + 居中预览 + 明确"非最终图"标识 + 扫描动效 -->
           <div v-if="submitting" class="generating-canvas">
             <div class="dot-grid"></div>
-            <div class="relative z-10 flex flex-col items-center gap-3">
-              <!-- 中间预览图（partial_image 进来后显示，否则空状态）-->
-              <div class="aspect-square w-full max-w-md overflow-hidden rounded-xl bg-white/60 ring-1 ring-gray-200/70 backdrop-blur-sm dark:bg-dark-900/60 dark:ring-dark-700/60">
-                <img v-if="currentPreview" :src="currentPreview" alt="generating" class="block h-full w-full object-cover transition-opacity duration-300" />
+            <div class="relative z-10 flex w-full max-w-lg flex-col items-center gap-4">
+              <div class="relative aspect-square w-full overflow-hidden rounded-2xl ring-1 ring-white/10">
+                <template v-if="currentPreview">
+                  <!-- 中间帧：降饱和+轻微暗化，读起来明显"还没完成" -->
+                  <img
+                    :src="currentPreview"
+                    alt="rendering preview"
+                    class="block h-full w-full object-cover opacity-90 saturate-[0.85]"
+                  />
+                  <!-- 扫描光带 -->
+                  <div class="scan-beam"></div>
+                  <!-- 左上角"非最终图"角标 -->
+                  <div class="absolute left-2.5 top-2.5 flex items-center gap-1.5 rounded-md bg-amber-500/90 px-2 py-1 text-[11px] font-semibold text-white shadow-sm backdrop-blur">
+                    <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-white"></span>
+                    {{ t('imageGen.previewBadge') }}
+                  </div>
+                </template>
                 <div v-else class="flex h-full w-full items-center justify-center">
-                  <Icon name="sparkles" size="xl" class="text-gray-300 dark:text-dark-600 animate-pulse" />
+                  <span class="brush-pulse"><Icon name="sparkles" size="xl" class="text-slate-500" /></span>
+                  <div class="scan-beam"></div>
                 </div>
               </div>
 
-              <!-- 状态文字 + 进度数字 -->
-              <div class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-dark-200">
-                <span class="h-2 w-2 animate-pulse rounded-full bg-amber-500"></span>
-                <span>{{ statusText }}</span>
+              <!-- 状态行：进度文字 + 已用时 -->
+              <div class="flex flex-col items-center gap-1.5 text-center">
+                <div class="flex items-center gap-2 text-sm font-medium text-slate-200">
+                  <span class="h-2 w-2 animate-pulse rounded-full bg-amber-400"></span>
+                  <span>{{ statusText }}</span>
+                  <span v-if="elapsedSeconds > 0" class="text-[11px] tabular-nums text-slate-400">
+                    · {{ t('imageGen.elapsed', { sec: elapsedSeconds }) }}
+                  </span>
+                </div>
+                <p class="max-w-xs text-[11px] leading-relaxed text-slate-400">
+                  {{ t('imageGen.previewHint') }}
+                </p>
               </div>
-              <p v-if="elapsedSeconds > 0" class="text-[11px] tabular-nums text-gray-400 dark:text-dark-500">
-                {{ t('imageGen.elapsed', { sec: elapsedSeconds }) }}
-              </p>
             </div>
           </div>
 
@@ -218,12 +250,17 @@
             <button class="btn btn-secondary btn-sm ml-6 mt-3" @click="generate">{{ t('imageGen.errorRetry') }}</button>
           </div>
 
-          <!-- 结果网格 -->
-          <div v-else-if="hasResults" class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <!-- 结果：单图居中限宽，多图网格；带揭示动画 -->
+          <div
+            v-else-if="hasResults"
+            :class="results.length === 1
+              ? 'mx-auto max-w-xl'
+              : 'grid gap-3 sm:grid-cols-2 xl:grid-cols-3'"
+          >
             <div
               v-for="(img, idx) in results"
               :key="idx"
-              class="group/img relative overflow-hidden rounded-xl bg-gray-50 ring-1 ring-gray-200/70 dark:bg-dark-800/40 dark:ring-dark-700/60"
+              class="reveal-img group/img relative overflow-hidden rounded-xl bg-gray-50 ring-1 ring-gray-200/70 dark:bg-dark-800/40 dark:ring-dark-700/60"
             >
               <img :src="img.src" :alt="`generated ${idx + 1}`" class="block w-full" />
               <div class="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 bg-gradient-to-t from-black/60 to-transparent p-3 opacity-0 transition-opacity group-hover/img:opacity-100">
@@ -318,26 +355,29 @@ const IMAGE_MODEL_CATALOG: Record<string, string[]> = {
   gemini: ['gemini-2.5-flash-image-preview'],
 }
 
-// 比例 × 分辨率 → 上游 size 字符串
-// 不在表里的组合返回 'auto'，让上游自动判定
+// 比例 × 分辨率 → 上游 size 字符串。
+// 关键：这些串必须与后端 normalizeOpenAIImageSizeTier 的判定一致，否则
+// 用户选 1K 实际被按 2K 计费。后端只认这些精确串：
+//   1K = 1024x1024（仅 1:1）
+//   2K = 1536x1024 / 1024x1536 / 1792x1024 / 1024x1792 / 2048x2048 / 2048x1152 / 1152x2048
+//   4K = 3840x2160 / 2160x3840（其余按像素阈值归 2K/4K）
+// 所以每档只提供能被后端正确归类到该档的比例；始终下发具体 size，绝不发 auto
+// （后端把空/auto 默认当 2K，会导致 1K 计费错档）。
 const SIZE_MAP: Record<ResolutionKey, Partial<Record<AspectKey, string>>> = {
   '1K': {
-    '1:1': '1024x1024', '4:3': '1024x768', '3:4': '768x1024',
-    '3:2': '1536x1024', '2:3': '1024x1536',
-    '16:9': '1792x1024', '9:16': '1024x1792',
-    '21:9': '1792x768', '9:21': '768x1792',
-    'auto': 'auto',
+    '1:1': '1024x1024',
+    'auto': '1024x1024',
   },
   '2K': {
-    '1:1': '2048x2048', '3:2': '3072x2048', '2:3': '2048x3072',
-    '16:9': '3584x2048', '9:16': '2048x3584',
-    '21:9': '3584x1536', '9:21': '1536x3584',
-    'auto': 'auto',
+    '1:1': '2048x2048',
+    '3:2': '1536x1024', '2:3': '1024x1536',
+    '16:9': '2048x1152', '9:16': '1152x2048',
+    'auto': '2048x2048',
   },
   '4K': {
-    '1:1': '4096x4096', '3:2': '6144x4096', '2:3': '4096x6144',
-    '16:9': '7168x4096', '9:16': '4096x7168',
-    'auto': 'auto',
+    '1:1': '4096x4096',
+    '16:9': '3840x2160', '9:16': '2160x3840',
+    'auto': '4096x4096',
   },
 }
 
@@ -364,9 +404,10 @@ const activeKeys = ref<ApiKey[]>([])
 const creatingKey = ref(false)
 // group → models 映射（从 /channels/available 聚合得到的图片可用 group）
 const imageCapableGroups = ref<Array<{ group: UserAvailableGroup; models: string[] }>>([])
-const referenceFile = ref<File | null>(null)
-const referenceImagePreview = ref<string | null>(null)
-const referenceImageName = ref<string>('')
+// 参考图：支持多张（以图生图最多 MAX_REFERENCE_IMAGES 张）
+const MAX_REFERENCE_IMAGES = 4
+const referenceFiles = ref<File[]>([])
+const referencePreviews = ref<Array<{ name: string; url: string }>>([])
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
 const results = ref<ResultImage[]>([])
@@ -430,11 +471,13 @@ const modelOptions = computed<SelectOption[]>(() => {
 
 const aspectOptions = computed<SelectOption[]>(() => {
   const caps = currentModelCaps.value
+  // 可选比例 = 模型支持 ∩ 当前分辨率档下后端能正确计费的比例（SIZE_MAP 的 key）
+  const sizeKeys = SIZE_MAP[form.value.resolution] ?? {}
   const all: AspectKey[] = ['auto', '1:1', '4:3', '3:4', '3:2', '2:3', '16:9', '9:16', '21:9', '9:21']
   return all.map((a) => ({
     value: a,
     label: a === 'auto' ? t('imageGen.aspectAuto') : a,
-    disabled: caps ? !caps.aspects.includes(a) : false,
+    disabled: (caps ? !caps.aspects.includes(a) : false) || !(a in sizeKeys),
   }))
 })
 
@@ -542,6 +585,14 @@ watch(() => form.value.model, (m) => {
   }
 })
 
+// ── 选分辨率时，当前比例若该档不支持（会导致计费错档）则重置为 auto ──
+watch(() => form.value.resolution, (r) => {
+  const sizeKeys = SIZE_MAP[r] ?? {}
+  if (!(form.value.aspect in sizeKeys)) {
+    form.value.aspect = 'auto'
+  }
+})
+
 
 // 判断模型是否属于图片生成类。多路兜底，避免后端 billing_mode 未正确标记时漏过。
 function isImageModel(m: UserSupportedModel): boolean {
@@ -629,31 +680,41 @@ function triggerFilePicker() {
 
 function onFileSelected(e: Event) {
   const target = e.target as HTMLInputElement
-  const file = target.files?.[0]
-  if (!file) return
-  // 大小限制 4 MB，避免上传失败
-  if (file.size > 4 * 1024 * 1024) {
+  const files = Array.from(target.files ?? [])
+  target.value = '' // 允许重复选同一文件
+  if (files.length === 0) return
+  referenceError.value = ''
+  // 单张大小限制 4 MB
+  if (files.some((f) => f.size > 4 * 1024 * 1024)) {
     referenceError.value = t('imageGen.referenceTooLarge')
-    target.value = ''
     return
   }
-  referenceError.value = ''
-  referenceFile.value = file
-  referenceImageName.value = file.name
-  const reader = new FileReader()
-  reader.onload = () => {
-    referenceImagePreview.value = String(reader.result ?? '')
+  // 总数限制
+  const remaining = MAX_REFERENCE_IMAGES - referenceFiles.value.length
+  if (remaining <= 0) {
+    referenceError.value = t('imageGen.referenceTooMany', { n: MAX_REFERENCE_IMAGES })
+    return
   }
-  reader.readAsDataURL(file)
-  target.value = '' // 允许重复选同一文件
+  const accepted = files.slice(0, remaining)
+  if (files.length > remaining) {
+    referenceError.value = t('imageGen.referenceTooMany', { n: MAX_REFERENCE_IMAGES })
+  }
+  for (const file of accepted) {
+    referenceFiles.value.push(file)
+    const reader = new FileReader()
+    reader.onload = () => {
+      referencePreviews.value.push({ name: file.name, url: String(reader.result ?? '') })
+    }
+    reader.readAsDataURL(file)
+  }
 }
 
-function clearReference() {
-  referenceFile.value = null
-  referenceImagePreview.value = null
-  referenceImageName.value = ''
-  referenceError.value = ''
+function removeReference(idx: number) {
+  referenceFiles.value.splice(idx, 1)
+  referencePreviews.value.splice(idx, 1)
+  if (referenceFiles.value.length === 0) referenceError.value = ''
 }
+
 
 // ── 状态文字逻辑 ──
 // 真实事件优先，事件之间 5 秒兜底切换
@@ -701,8 +762,13 @@ async function generate() {
   try {
     const caps = currentModelCaps.value
     const useStream = caps?.streaming ?? false
-    const useEdit = !!referenceFile.value && (caps?.edit ?? false)
-    const sizeStr = SIZE_MAP[form.value.resolution]?.[form.value.aspect] ?? 'auto'
+    const useEdit = referenceFiles.value.length > 0 && (caps?.edit ?? false)
+    // 始终解析出具体 size：当前比例若该档无映射，回落到该档方形（auto 项必有），
+    // 确保下发的 size 一定能被后端正确归类到所选分辨率档，计费不错档
+    const sizeStr =
+      SIZE_MAP[form.value.resolution]?.[form.value.aspect] ??
+      SIZE_MAP[form.value.resolution]?.['auto'] ??
+      '1024x1024'
     const partialImages = useStream ? 2 : 0
 
     let response: Response
@@ -710,12 +776,13 @@ async function generate() {
       // 以图生图：multipart/form-data 走 /v1/images/edits
       // 显式 response_format=b64_json 避免拿到的 URL 1 小时后过期（OpenAI 默认行为）
       const fd = new FormData()
-      fd.append('image', referenceFile.value!)
+      // 多张参考图：OpenAI images/edits 用 image[] 数组字段
+      for (const f of referenceFiles.value) fd.append('image[]', f)
       fd.append('prompt', form.value.prompt.trim())
       fd.append('model', form.value.model)
       fd.append('n', String(form.value.n))
       fd.append('response_format', 'b64_json')
-      if (sizeStr !== 'auto') fd.append('size', sizeStr)
+      fd.append('size', sizeStr)
       if (useStream) {
         fd.append('stream', 'true')
         fd.append('partial_images', String(partialImages))
@@ -732,7 +799,7 @@ async function generate() {
         n: form.value.n,
         response_format: 'b64_json',
       }
-      if (sizeStr !== 'auto') payload.size = sizeStr
+      payload.size = sizeStr
       if (useStream) {
         payload.stream = true
         payload.partial_images = partialImages
@@ -930,38 +997,77 @@ function onPromptKeydown(e: KeyboardEvent) {
 }
 
 /* 生成中的画布：点阵背景 + 中央预览 */
+/* 生成画布：统一深色基调（明确"工作中"语境，比浅灰更聚焦）*/
 .generating-canvas {
   position: relative;
   display: flex;
-  min-height: 18rem;
+  min-height: 22rem;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   border-radius: 0.75rem;
-  padding: 2rem 1rem;
-  background: rgba(249, 250, 251, 0.6);
-}
-:root.dark .generating-canvas {
-  background: rgba(15, 23, 42, 0.4);
+  padding: 2.5rem 1rem;
+  background: linear-gradient(160deg, #0f172a 0%, #1e293b 60%, #0f172a 100%);
 }
 
-/* 点阵背景：径向渐变 + 平铺 + 缓慢呼吸（不抢戏的微动画）*/
+/* 点阵背景：深色画布上的细网格，缓慢呼吸 */
 .dot-grid {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle, rgba(15, 23, 42, 0.08) 1px, transparent 1px);
-  background-size: 18px 18px;
+  background-image: radial-gradient(circle, rgba(148, 163, 184, 0.12) 1px, transparent 1px);
+  background-size: 20px 20px;
   animation: dot-pulse 4s ease-in-out infinite;
 }
-:root.dark .dot-grid {
-  background-image: radial-gradient(circle, rgba(226, 232, 240, 0.08) 1px, transparent 1px);
-}
 @keyframes dot-pulse {
-  0%, 100% { opacity: 0.55; }
-  50% { opacity: 1; }
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.9; }
 }
+
+/* 扫描光带：自上而下匀速扫过预览区，传达"正在绘制" */
+.scan-beam {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(251, 191, 36, 0.06) 42%,
+    rgba(251, 191, 36, 0.22) 50%,
+    rgba(251, 191, 36, 0.06) 58%,
+    transparent 100%
+  );
+  background-size: 100% 220%;
+  animation: scan-sweep 2.2s ease-in-out infinite;
+}
+@keyframes scan-sweep {
+  0% { background-position: 0 -110%; }
+  100% { background-position: 0 110%; }
+}
+
+/* 无预览时的笔刷脉冲 */
+.brush-pulse {
+  display: inline-flex;
+  animation: brush-breathe 1.8s ease-in-out infinite;
+}
+@keyframes brush-breathe {
+  0%, 100% { transform: scale(0.92); opacity: 0.55; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+/* 终图揭示：完成瞬间淡入并轻微放大归位 */
+.reveal-img {
+  animation: reveal-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes reveal-in {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .dot-grid { animation: none; }
+  .dot-grid,
+  .scan-beam,
+  .brush-pulse,
+  .reveal-img { animation: none; }
 }
 </style>
