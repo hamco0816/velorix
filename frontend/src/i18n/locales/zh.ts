@@ -460,6 +460,14 @@ export default {
 
   // Navigation
   nav: {
+    // 侧栏组标题（按语义切分扁平菜单：工作台 / 订阅 / 参考 / 其它）
+    // 注意：避免与下方 groups: '分组管理'（admin 菜单项）冲突，所以用 sectionTitles
+    sectionTitles: {
+      main: '工作台',
+      subscription: '订阅',
+      reference: '参考',
+      account: '其它',
+    },
     dashboard: '仪表盘',
     announcements: '公告',
     apiKeys: 'API 密钥',

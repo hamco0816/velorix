@@ -455,6 +455,12 @@ export default {
 
   // Navigation
   nav: {
+    sectionTitles: {
+      main: 'Workspace',
+      subscription: 'Subscription',
+      reference: 'Reference',
+      account: 'Account',
+    },
     dashboard: 'Dashboard',
     announcements: 'Announcements',
     apiKeys: 'API Keys',

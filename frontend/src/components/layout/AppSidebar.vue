@@ -108,44 +108,62 @@
             </span>
           </div>
 
-          <router-link
-            v-for="item in personalNavItems"
-            :key="item.path"
-            :to="item.path"
-            class="sidebar-link mb-1"
-            :class="{ 'sidebar-link-active': isActive(item.path), 'sidebar-link-collapsed': sidebarCollapsed }"
-            :title="sidebarCollapsed ? item.label : undefined"
-            :data-tour="item.path === '/keys' ? 'sidebar-my-keys' : undefined"
-            @click="handleMenuItemClick(item.path)"
-          >
-            <span v-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
-            <span v-else :class="item.iconColor" class="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center">
-              <component :is="item.icon" class="h-5 w-5" />
-            </span>
-            <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
-          </router-link>
+          <!-- admin 的"我的账户"分组：按 NavGroup 渲染，相邻组之间分隔线 + 组标题 -->
+          <template v-for="(grp, idx) in personalNavGroups" :key="grp.key">
+            <div v-if="idx > 0" class="sidebar-group-divider" :class="{ 'sidebar-group-divider-collapsed': sidebarCollapsed }"></div>
+            <p v-if="!sidebarCollapsed" class="sidebar-group-title">{{ grp.label }}</p>
+            <router-link
+              v-for="item in grp.items"
+              :key="item.path"
+              :to="item.path"
+              class="sidebar-link mb-1"
+              :class="{
+                'sidebar-link-active': isActive(item.path),
+                'sidebar-link-collapsed': sidebarCollapsed,
+                'sidebar-link-emphasize': item.emphasize && !isActive(item.path),
+              }"
+              :title="sidebarCollapsed ? item.label : undefined"
+              :data-tour="item.path === '/keys' ? 'sidebar-my-keys' : undefined"
+              @click="handleMenuItemClick(item.path)"
+            >
+              <span v-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
+              <span v-else :class="item.iconColor" class="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center">
+                <component :is="item.icon" class="h-5 w-5" />
+              </span>
+              <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
+            </router-link>
+          </template>
         </div>
       </template>
 
       <!-- Regular User View -->
       <template v-else-if="!appStore.backendModeEnabled">
         <div class="sidebar-section">
-          <router-link
-            v-for="item in userNavItems"
-            :key="item.path"
-            :to="item.path"
-            class="sidebar-link mb-1"
-            :class="{ 'sidebar-link-active': isActive(item.path), 'sidebar-link-collapsed': sidebarCollapsed }"
-            :title="sidebarCollapsed ? item.label : undefined"
-            :data-tour="item.path === '/keys' ? 'sidebar-my-keys' : undefined"
-            @click="handleMenuItemClick(item.path)"
-          >
-            <span v-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
-            <span v-else :class="item.iconColor" class="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center">
-              <component :is="item.icon" class="h-5 w-5" />
-            </span>
-            <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
-          </router-link>
+          <!-- 按 NavGroup 渲染：组间分隔线 + 组标题，密度感大幅下降 -->
+          <template v-for="(grp, idx) in userNavGroups" :key="grp.key">
+            <div v-if="idx > 0" class="sidebar-group-divider" :class="{ 'sidebar-group-divider-collapsed': sidebarCollapsed }"></div>
+            <p v-if="!sidebarCollapsed" class="sidebar-group-title">{{ grp.label }}</p>
+            <router-link
+              v-for="item in grp.items"
+              :key="item.path"
+              :to="item.path"
+              class="sidebar-link mb-1"
+              :class="{
+                'sidebar-link-active': isActive(item.path),
+                'sidebar-link-collapsed': sidebarCollapsed,
+                'sidebar-link-emphasize': item.emphasize && !isActive(item.path),
+              }"
+              :title="sidebarCollapsed ? item.label : undefined"
+              :data-tour="item.path === '/keys' ? 'sidebar-my-keys' : undefined"
+              @click="handleMenuItemClick(item.path)"
+            >
+              <span v-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
+              <span v-else :class="item.iconColor" class="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center">
+                <component :is="item.icon" class="h-5 w-5" />
+              </span>
+              <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
+            </router-link>
+          </template>
         </div>
       </template>
     </nav>
@@ -222,6 +240,14 @@ interface NavItem {
    * 开关切换时菜单自动更新。
    */
   featureFlag?: () => boolean | undefined
+  /**
+   * 分组键：把扁平菜单按语义切成几块。模板里相邻同 group 的项渲染在一起，
+   * group 切换时插入分隔线和组标题。当前用户侧 4 组：main / subscription / reference / account。
+   * 未指定 group 的项归入 'main'，向后兼容。
+   */
+  group?: 'main' | 'subscription' | 'reference' | 'account'
+  /** 强调样式：true 时菜单项加底色 + ring 高亮，用于"API 密钥"这种核心入口 */
+  emphasize?: boolean
 }
 
 // applyFeatureFlags 递归过滤掉 featureFlag() === false 的节点（含子节点）。
@@ -723,30 +749,37 @@ const flagAdminPayment = () => adminSettingsStore.paymentEnabled
 function buildSelfNavItems(withDashboard: boolean): NavItem[] {
   const items: NavItem[] = []
   if (withDashboard) {
-    items.push({ path: '/dashboard', label: t('nav.dashboard'), icon: DashboardIcon, iconColor: 'text-sky-500 dark:text-sky-400' })
+    items.push({ path: '/dashboard', label: t('nav.dashboard'), icon: DashboardIcon, iconColor: 'text-sky-500 dark:text-sky-400', group: 'main' })
   }
   items.push(
-    // —— 核心入口：API 密钥（最高频）→ 支付链路（充值/兑换/订单） ——
-    { path: '/keys', label: t('nav.apiKeys'), icon: KeyIcon, iconColor: 'text-sky-500 dark:text-sky-400' },
-    { path: '/purchase', label: t('nav.buySubscription'), icon: RechargeSubscriptionIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true, featureFlag: flagPayment },
-    { path: '/redeem', label: t('nav.redeem'), icon: GiftIcon, iconColor: 'text-rose-500 dark:text-rose-400', hideInSimpleMode: true },
-    { path: '/orders', label: t('nav.myOrders'), icon: OrderListIcon, iconColor: 'text-amber-500 dark:text-amber-400', hideInSimpleMode: true, featureFlag: flagPayment },
-    // —— 订阅 / 独享号 / 用量 ——
-    { path: '/subscriptions', label: t('nav.mySubscriptions'), icon: CreditCardIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true },
-    { path: '/seats', label: t('nav.mySeats'), icon: BadgeIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true, featureFlag: flagPayment },
-    { path: '/usage', label: t('nav.usage'), icon: ChartIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true },
-    // —— 参考信息：定价 / 状态 / 文档 ——
-    { path: '/pricing', label: t('nav.pricing'), icon: ChannelIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true, featureFlag: flagAvailableChannels },
-    { path: '/monitor', label: t('nav.channelStatus'), icon: SignalIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', featureFlag: flagChannelMonitor },
-    { path: '/docs', label: t('nav.docs'), icon: BookIcon, iconColor: 'text-indigo-500 dark:text-indigo-400', hideInSimpleMode: true },
-    // —— 账户相关：邀请 / 个人资料 ——
-    { path: '/affiliate', label: t('nav.affiliate'), icon: UsersIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true, featureFlag: flagAffiliate },
-    { path: '/profile', label: t('nav.profile'), icon: UserIcon, iconColor: 'text-sky-500 dark:text-sky-400' },
+    // —— 工作台：高频核心入口 ——
+    // API 密钥是这个产品的"主菜"，emphasize:true 让它在视觉上比同组其它项更突出
+    { path: '/keys', label: t('nav.apiKeys'), icon: KeyIcon, iconColor: 'text-sky-500 dark:text-sky-400', group: 'main', emphasize: true },
+    { path: '/usage', label: t('nav.usage'), icon: ChartIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true, group: 'main' },
+
+    // —— 订阅：买 + 已购查询 ——
+    { path: '/purchase', label: t('nav.buySubscription'), icon: RechargeSubscriptionIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true, featureFlag: flagPayment, group: 'subscription' },
+    { path: '/redeem', label: t('nav.redeem'), icon: GiftIcon, iconColor: 'text-rose-500 dark:text-rose-400', hideInSimpleMode: true, group: 'subscription' },
+    { path: '/orders', label: t('nav.myOrders'), icon: OrderListIcon, iconColor: 'text-amber-500 dark:text-amber-400', hideInSimpleMode: true, featureFlag: flagPayment, group: 'subscription' },
+    { path: '/subscriptions', label: t('nav.mySubscriptions'), icon: CreditCardIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true, group: 'subscription' },
+    { path: '/seats', label: t('nav.mySeats'), icon: BadgeIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true, featureFlag: flagPayment, group: 'subscription' },
+
+    // —— 参考：用前 / 用中查询的信息 ——
+    { path: '/pricing', label: t('nav.pricing'), icon: ChannelIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true, featureFlag: flagAvailableChannels, group: 'reference' },
+    { path: '/monitor', label: t('nav.channelStatus'), icon: SignalIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', featureFlag: flagChannelMonitor, group: 'reference' },
+    { path: '/docs', label: t('nav.docs'), icon: BookIcon, iconColor: 'text-indigo-500 dark:text-indigo-400', hideInSimpleMode: true, group: 'reference' },
+
+    // —— 账户：低频 ——
+    { path: '/affiliate', label: t('nav.affiliate'), icon: UsersIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true, featureFlag: flagAffiliate, group: 'account' },
+    { path: '/profile', label: t('nav.profile'), icon: UserIcon, iconColor: 'text-sky-500 dark:text-sky-400', group: 'account' },
+
+    // 自定义菜单：默认归到 account 末尾，跟现有 nav 风格保持一致
     ...customMenuItemsForUser.value.map((item): NavItem => ({
       path: `/custom/${item.id}`,
       label: item.label,
       icon: null,
       iconSvg: item.icon_svg,
+      group: 'account',
     })),
   )
   return items
@@ -765,6 +798,35 @@ const userNavItems = computed((): NavItem[] => finalizeNav(buildSelfNavItems(tru
 // Admins access 可用渠道 from this section just like regular users — there is no
 // separate admin entry, since the page is purely a user-facing view.
 const personalNavItems = computed((): NavItem[] => finalizeNav(buildSelfNavItems(false)))
+
+// 分组渲染：把扁平 NavItem[] 按 group 收成 [{ group, label, items }]
+// 保持原序，相邻同 group 合并；group 切换处模板里插分隔线 + 组标题
+interface NavGroup {
+  key: NonNullable<NavItem['group']>
+  label: string
+  items: NavItem[]
+}
+function groupNavItems(items: NavItem[]): NavGroup[] {
+  const groups: NavGroup[] = []
+  const labelMap: Record<NonNullable<NavItem['group']>, string> = {
+    main: t('nav.sectionTitles.main'),
+    subscription: t('nav.sectionTitles.subscription'),
+    reference: t('nav.sectionTitles.reference'),
+    account: t('nav.sectionTitles.account'),
+  }
+  for (const item of items) {
+    const key = item.group ?? 'main'
+    const last = groups[groups.length - 1]
+    if (last && last.key === key) {
+      last.items.push(item)
+    } else {
+      groups.push({ key, label: labelMap[key], items: [item] })
+    }
+  }
+  return groups
+}
+const userNavGroups = computed<NavGroup[]>(() => groupNavItems(userNavItems.value))
+const personalNavGroups = computed<NavGroup[]>(() => groupNavItems(personalNavItems.value))
 
 // Custom menu items filtered by visibility
 const customMenuItemsForUser = computed(() => {
@@ -1022,6 +1084,45 @@ onMounted(() => {
   gap: 0;
   padding-left: 0.875rem;
   padding-right: 0.875rem;
+}
+
+/* 分组标题：小号灰字 + uppercase，跟主流 SaaS 侧栏风格一致 */
+.sidebar-group-title {
+  margin: 0.75rem 0.5rem 0.375rem;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgb(148 163 184); /* slate-400 */
+}
+:root.dark .sidebar-group-title {
+  color: rgb(100 116 139); /* slate-500 */
+}
+
+/* 组间分隔线：折叠态用短中线，展开态用全宽 */
+.sidebar-group-divider {
+  margin: 0.5rem 0.5rem;
+  height: 1px;
+  background: rgba(226, 232, 240, 0.7); /* slate-200/70 */
+}
+:root.dark .sidebar-group-divider {
+  background: rgba(51, 65, 85, 0.6); /* slate-700/60 */
+}
+.sidebar-group-divider-collapsed {
+  margin: 0.375rem 0.75rem;
+}
+
+/* 强调样式：核心入口（API 密钥）非激活时也带浅底色 + 主色 ring，比同组其它项跳出来一点 */
+.sidebar-link-emphasize:not(.sidebar-link-active) {
+  background: rgba(56, 189, 248, 0.08); /* sky-400/8 */
+  box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.18);
+}
+.sidebar-link-emphasize:not(.sidebar-link-active):hover {
+  background: rgba(56, 189, 248, 0.12);
+}
+:root.dark .sidebar-link-emphasize:not(.sidebar-link-active) {
+  background: rgba(56, 189, 248, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.25);
 }
 
 .sidebar-section-title {
