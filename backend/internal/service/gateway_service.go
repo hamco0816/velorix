@@ -8553,7 +8553,8 @@ func (s *GatewayService) recordUsageCore(ctx context.Context, input *recordUsage
 	if apiKey.GroupID != nil && apiKey.Group != nil {
 		now := time.Now()
 		effectiveDefault := apiKey.Group.EffectiveRateMultiplier(now)
-		if !apiKey.Group.PromoActiveAt(now) {
+		promoActive := apiKey.Group.PromoActiveAt(now)
+		if !promoActive {
 			if input.Subscription != nil && input.Subscription.RateMultiplier != nil && *input.Subscription.RateMultiplier > 0 {
 				effectiveDefault = *input.Subscription.RateMultiplier
 			}
@@ -8565,7 +8566,11 @@ func (s *GatewayService) recordUsageCore(ctx context.Context, input *recordUsage
 				}
 			}
 		}
-		multiplier = s.getUserGroupRateMultiplier(ctx, user.ID, *apiKey.GroupID, effectiveDefault)
+		if promoActive {
+			multiplier = effectiveDefault
+		} else {
+			multiplier = s.getUserGroupRateMultiplier(ctx, user.ID, *apiKey.GroupID, effectiveDefault)
+		}
 	}
 	imageMultiplier := resolveImageRateMultiplier(apiKey, multiplier)
 

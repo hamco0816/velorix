@@ -238,6 +238,50 @@ func TestGatewayServiceRecordUsage_PromoRateOverridesSubscriptionSnapshot(t *tes
 	require.InDelta(t, usageRepo.lastLog.ActualCost, subRepo.lastCostUSD, 1e-12)
 }
 
+func TestGatewayServiceRecordUsage_PromoRateOverridesUserSpecificRate(t *testing.T) {
+	groupID := int64(89)
+	baseRate := 0.6
+	promoRate := 0.2
+	startsAt := time.Now().Add(-time.Minute)
+	endsAt := time.Now().Add(time.Hour)
+	usageRepo := &openAIRecordUsageLogRepoStub{inserted: true}
+	userRepo := &openAIRecordUsageUserRepoStub{}
+	svc := newGatewayRecordUsageServiceForTest(usageRepo, userRepo, &openAIRecordUsageSubRepoStub{})
+	svc.userGroupRateResolver = newUserGroupRateResolver(&openAIUserGroupRateRepoStub{rate: &baseRate}, nil, time.Minute, nil, "service.gateway.test")
+
+	err := svc.RecordUsage(context.Background(), &RecordUsageInput{
+		Result: &ForwardResult{
+			RequestID: "gateway_promo_over_user_rate",
+			Usage: ClaudeUsage{
+				InputTokens:  10,
+				OutputTokens: 5,
+			},
+			Model:    "claude-sonnet-4",
+			Duration: time.Second,
+		},
+		APIKey: &APIKey{
+			ID:      501,
+			GroupID: &groupID,
+			Group: &Group{
+				ID:                  groupID,
+				RateMultiplier:      baseRate,
+				PromoRateMultiplier: &promoRate,
+				PromoStartsAt:       &startsAt,
+				PromoEndsAt:         &endsAt,
+			},
+		},
+		User:    &User{ID: 601},
+		Account: &Account{ID: 701},
+	})
+
+	require.NoError(t, err)
+	require.NotNil(t, usageRepo.lastLog)
+	require.Equal(t, promoRate, usageRepo.lastLog.RateMultiplier)
+	require.True(t, usageRepo.lastLog.TotalCost > 0)
+	require.InDelta(t, usageRepo.lastLog.TotalCost*promoRate, usageRepo.lastLog.ActualCost, 1e-12)
+	require.InDelta(t, usageRepo.lastLog.ActualCost, userRepo.lastAmount, 1e-12)
+}
+
 func TestGatewayServiceRecordUsage_UsageLogWriteErrorDoesNotSkipBilling(t *testing.T) {
 	usageRepo := &openAIRecordUsageLogRepoStub{inserted: false, err: MarkUsageLogCreateNotPersisted(context.Canceled)}
 	userRepo := &openAIRecordUsageUserRepoStub{}

@@ -5286,7 +5286,8 @@ func (s *OpenAIGatewayService) RecordUsage(ctx context.Context, input *OpenAIRec
 		}
 		now := time.Now()
 		effectiveDefault := apiKey.Group.EffectiveRateMultiplier(now)
-		if !apiKey.Group.PromoActiveAt(now) {
+		promoActive := apiKey.Group.PromoActiveAt(now)
+		if !promoActive {
 			if input.Subscription != nil && input.Subscription.RateMultiplier != nil && *input.Subscription.RateMultiplier > 0 {
 				effectiveDefault = *input.Subscription.RateMultiplier
 			}
@@ -5298,7 +5299,11 @@ func (s *OpenAIGatewayService) RecordUsage(ctx context.Context, input *OpenAIRec
 				}
 			}
 		}
-		multiplier = resolver.Resolve(ctx, user.ID, *apiKey.GroupID, effectiveDefault)
+		if promoActive {
+			multiplier = effectiveDefault
+		} else {
+			multiplier = resolver.Resolve(ctx, user.ID, *apiKey.GroupID, effectiveDefault)
+		}
 	}
 	imageMultiplier := resolveImageRateMultiplier(apiKey, multiplier)
 
