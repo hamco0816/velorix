@@ -59,13 +59,43 @@ func TestUserGroupRateResolverResolve_InvalidCacheEntryLoadsRepoAndCaches(t *tes
 
 	cached, ok := cache.Get("101:202")
 	require.True(t, ok)
-	require.Equal(t, rate, cached)
+	entry, ok := cached.(userGroupRateCacheEntry)
+	require.True(t, ok)
+	require.NotNil(t, entry.UserRate)
+	require.Equal(t, rate, *entry.UserRate)
 
 	hit, miss, load, _, fallback := GatewayUserGroupRateCacheStats()
 	require.Equal(t, int64(0), hit)
 	require.Equal(t, int64(1), miss)
 	require.Equal(t, int64(1), load)
 	require.Equal(t, int64(0), fallback)
+}
+
+func TestUserGroupRateResolverResolve_NoUserRateUsesCurrentGroupDefaultFromCache(t *testing.T) {
+	repo := &userGroupRateResolverRepoStub{}
+	resolver := newUserGroupRateResolver(repo, nil, time.Minute, nil, "service.test")
+
+	got := resolver.Resolve(context.Background(), 101, 202, 1.2)
+	require.Equal(t, 1.2, got)
+	require.Equal(t, 1, repo.calls)
+
+	got = resolver.Resolve(context.Background(), 101, 202, 0.45)
+	require.Equal(t, 0.45, got)
+	require.Equal(t, 1, repo.calls)
+}
+
+func TestUserGroupRateResolverResolve_UserRateOverridesChangingGroupDefault(t *testing.T) {
+	rate := 1.7
+	repo := &userGroupRateResolverRepoStub{rate: &rate}
+	resolver := newUserGroupRateResolver(repo, nil, time.Minute, nil, "service.test")
+
+	got := resolver.Resolve(context.Background(), 101, 202, 1.2)
+	require.Equal(t, rate, got)
+	require.Equal(t, 1, repo.calls)
+
+	got = resolver.Resolve(context.Background(), 101, 202, 0.45)
+	require.Equal(t, rate, got)
+	require.Equal(t, 1, repo.calls)
 }
 
 func TestGatewayServiceGetUserGroupRateMultiplier_FallbacksAndUsesExistingResolver(t *testing.T) {

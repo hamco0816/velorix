@@ -18,6 +18,25 @@ type userGroupRateResolver struct {
 	logComponent string
 }
 
+type userGroupRateCacheEntry struct {
+	UserRate *float64
+}
+
+func (e userGroupRateCacheEntry) resolve(groupDefaultMultiplier float64) float64 {
+	if e.UserRate != nil {
+		return *e.UserRate
+	}
+	return groupDefaultMultiplier
+}
+
+func userGroupRateCacheEntryFromRepoValue(userRate *float64) userGroupRateCacheEntry {
+	if userRate == nil {
+		return userGroupRateCacheEntry{}
+	}
+	rate := *userRate
+	return userGroupRateCacheEntry{UserRate: &rate}
+}
+
 func newUserGroupRateResolver(repo UserGroupRateRepository, cache *gocache.Cache, cacheTTL time.Duration, sf *singleflight.Group, logComponent string) *userGroupRateResolver {
 	if cacheTTL <= 0 {
 		cacheTTL = defaultUserGroupRateCacheTTL
@@ -49,9 +68,9 @@ func (r *userGroupRateResolver) Resolve(ctx context.Context, userID, groupID int
 	key := fmt.Sprintf("%d:%d", userID, groupID)
 	if r.cache != nil {
 		if cached, ok := r.cache.Get(key); ok {
-			if multiplier, castOK := cached.(float64); castOK {
+			if entry, castOK := cached.(userGroupRateCacheEntry); castOK {
 				userGroupRateCacheHitTotal.Add(1)
-				return multiplier
+				return entry.resolve(groupDefaultMultiplier)
 			}
 		}
 	}
@@ -63,9 +82,9 @@ func (r *userGroupRateResolver) Resolve(ctx context.Context, userID, groupID int
 	value, err, shared := r.sf.Do(key, func() (any, error) {
 		if r.cache != nil {
 			if cached, ok := r.cache.Get(key); ok {
-				if multiplier, castOK := cached.(float64); castOK {
+				if entry, castOK := cached.(userGroupRateCacheEntry); castOK {
 					userGroupRateCacheHitTotal.Add(1)
-					return multiplier, nil
+					return entry, nil
 				}
 			}
 		}
@@ -76,14 +95,11 @@ func (r *userGroupRateResolver) Resolve(ctx context.Context, userID, groupID int
 			return nil, repoErr
 		}
 
-		multiplier := groupDefaultMultiplier
-		if userRate != nil {
-			multiplier = *userRate
-		}
+		entry := userGroupRateCacheEntryFromRepoValue(userRate)
 		if r.cache != nil {
-			r.cache.Set(key, multiplier, r.cacheTTL)
+			r.cache.Set(key, entry, r.cacheTTL)
 		}
-		return multiplier, nil
+		return entry, nil
 	})
 	if shared {
 		userGroupRateCacheSFSharedTotal.Add(1)
@@ -94,10 +110,10 @@ func (r *userGroupRateResolver) Resolve(ctx context.Context, userID, groupID int
 		return groupDefaultMultiplier
 	}
 
-	multiplier, ok := value.(float64)
+	entry, ok := value.(userGroupRateCacheEntry)
 	if !ok {
 		userGroupRateCacheFallbackTotal.Add(1)
 		return groupDefaultMultiplier
 	}
-	return multiplier
+	return entry.resolve(groupDefaultMultiplier)
 }

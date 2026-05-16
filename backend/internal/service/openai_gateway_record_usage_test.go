@@ -395,6 +395,52 @@ func TestOpenAIGatewayServiceRecordUsage_FallsBackToGroupDefaultRateWhenResolver
 	require.Equal(t, groupRate, usageRepo.lastLog.RateMultiplier)
 }
 
+func TestOpenAIGatewayServiceRecordUsage_UsesActiveGroupPromoRate(t *testing.T) {
+	groupID := int64(14)
+	groupRate := 1.4
+	promoRate := 0.45
+	startsAt := time.Now().Add(-time.Minute)
+	endsAt := time.Now().Add(time.Hour)
+	usage := OpenAIUsage{InputTokens: 12, OutputTokens: 5, CacheReadInputTokens: 2}
+
+	usageRepo := &openAIRecordUsageLogRepoStub{inserted: true}
+	userRepo := &openAIRecordUsageUserRepoStub{}
+	subRepo := &openAIRecordUsageSubRepoStub{}
+	rateRepo := &openAIUserGroupRateRepoStub{}
+	svc := newOpenAIRecordUsageServiceForTest(usageRepo, userRepo, subRepo, rateRepo)
+
+	err := svc.RecordUsage(context.Background(), &OpenAIRecordUsageInput{
+		Result: &OpenAIForwardResult{
+			RequestID: "resp_group_promo_rate",
+			Usage:     usage,
+			Model:     "gpt-5.1",
+			Duration:  time.Second,
+		},
+		APIKey: &APIKey{
+			ID:      1004,
+			GroupID: i64p(groupID),
+			Group: &Group{
+				ID:                  groupID,
+				RateMultiplier:      groupRate,
+				PromoRateMultiplier: &promoRate,
+				PromoStartsAt:       &startsAt,
+				PromoEndsAt:         &endsAt,
+			},
+		},
+		User:    &User{ID: 2004},
+		Account: &Account{ID: 3004},
+	})
+
+	require.NoError(t, err)
+	require.Equal(t, 1, rateRepo.calls)
+	require.NotNil(t, usageRepo.lastLog)
+	require.Equal(t, promoRate, usageRepo.lastLog.RateMultiplier)
+
+	expected := expectedOpenAICost(t, svc, "gpt-5.1", usage, promoRate)
+	require.InDelta(t, expected.ActualCost, usageRepo.lastLog.ActualCost, 1e-12)
+	require.InDelta(t, expected.ActualCost, userRepo.lastAmount, 1e-12)
+}
+
 func TestOpenAIGatewayServiceRecordUsage_DuplicateUsageLogSkipsBilling(t *testing.T) {
 	usageRepo := &openAIRecordUsageLogRepoStub{inserted: false}
 	billingRepo := &openAIRecordUsageBillingRepoStub{result: &UsageBillingApplyResult{Applied: false}}
