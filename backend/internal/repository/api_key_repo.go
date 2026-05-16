@@ -163,6 +163,12 @@ func (r *apiKeyRepository) GetByKeyForAuth(ctx context.Context, key string) (*se
 				group.FieldStatus,
 				group.FieldSubscriptionType,
 				group.FieldRateMultiplier,
+				// 限时倍率 4 字段：鉴权热路径必须查出，否则 snapshot 里 promo 永远是 nil，
+				// 计费时 PromoActiveAt 恒为 false，限时倍率不生效。
+				group.FieldPromoRateMultiplier,
+				group.FieldPromoStartsAt,
+				group.FieldPromoEndsAt,
+				group.FieldPromoLabel,
 				group.FieldDailyLimitUsd,
 				group.FieldWeeklyLimitUsd,
 				group.FieldMonthlyLimitUsd,
