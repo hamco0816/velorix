@@ -54,24 +54,30 @@ type APIKeyAuthUserSnapshot struct {
 
 // APIKeyAuthGroupSnapshot 分组快照
 type APIKeyAuthGroupSnapshot struct {
-	ID                              int64    `json:"id"`
-	Name                            string   `json:"name"`
-	Platform                        string   `json:"platform"`
-	Status                          string   `json:"status"`
-	SubscriptionType                string   `json:"subscription_type"`
-	RateMultiplier                  float64  `json:"rate_multiplier"`
-	DailyLimitUSD                   *float64 `json:"daily_limit_usd,omitempty"`
-	WeeklyLimitUSD                  *float64 `json:"weekly_limit_usd,omitempty"`
-	MonthlyLimitUSD                 *float64 `json:"monthly_limit_usd,omitempty"`
-	AllowImageGeneration            bool     `json:"allow_image_generation"`
-	ImageRateIndependent            bool     `json:"image_rate_independent"`
-	ImageRateMultiplier             float64  `json:"image_rate_multiplier"`
-	ImagePrice1K                    *float64 `json:"image_price_1k,omitempty"`
-	ImagePrice2K                    *float64 `json:"image_price_2k,omitempty"`
-	ImagePrice4K                    *float64 `json:"image_price_4k,omitempty"`
-	ClaudeCodeOnly                  bool     `json:"claude_code_only"`
-	FallbackGroupID                 *int64   `json:"fallback_group_id,omitempty"`
-	FallbackGroupIDOnInvalidRequest *int64   `json:"fallback_group_id_on_invalid_request,omitempty"`
+	ID               int64   `json:"id"`
+	Name             string  `json:"name"`
+	Platform         string  `json:"platform"`
+	Status           string  `json:"status"`
+	SubscriptionType string  `json:"subscription_type"`
+	RateMultiplier   float64 `json:"rate_multiplier"`
+	// 限时倍率：缓存必须带这几个字段，否则计费时 EffectiveRateMultiplier 在
+	// 缓存重建的 Group 上算不出 promo（promo 字段为 nil → 永远走基础倍率）。
+	PromoRateMultiplier             *float64   `json:"promo_rate_multiplier,omitempty"`
+	PromoStartsAt                   *time.Time `json:"promo_starts_at,omitempty"`
+	PromoEndsAt                     *time.Time `json:"promo_ends_at,omitempty"`
+	PromoLabel                      string     `json:"promo_label,omitempty"`
+	DailyLimitUSD                   *float64   `json:"daily_limit_usd,omitempty"`
+	WeeklyLimitUSD                  *float64   `json:"weekly_limit_usd,omitempty"`
+	MonthlyLimitUSD                 *float64   `json:"monthly_limit_usd,omitempty"`
+	AllowImageGeneration            bool       `json:"allow_image_generation"`
+	ImageRateIndependent            bool       `json:"image_rate_independent"`
+	ImageRateMultiplier             float64    `json:"image_rate_multiplier"`
+	ImagePrice1K                    *float64   `json:"image_price_1k,omitempty"`
+	ImagePrice2K                    *float64   `json:"image_price_2k,omitempty"`
+	ImagePrice4K                    *float64   `json:"image_price_4k,omitempty"`
+	ClaudeCodeOnly                  bool       `json:"claude_code_only"`
+	FallbackGroupID                 *int64     `json:"fallback_group_id,omitempty"`
+	FallbackGroupIDOnInvalidRequest *int64     `json:"fallback_group_id_on_invalid_request,omitempty"`
 
 	// Model routing is used by gateway account selection, so it must be part of auth cache snapshot.
 	// Only anthropic groups use these fields; others may leave them empty.
