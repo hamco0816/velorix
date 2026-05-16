@@ -98,7 +98,7 @@
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
               <span
                 v-if="item.badge && !sidebarCollapsed"
-                class="ml-auto shrink-0 rounded-sm bg-amber-100 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
+                class="ml-auto shrink-0 rounded px-1 text-[9px] font-medium uppercase leading-[15px] tracking-wider text-amber-600/90 ring-1 ring-inset ring-amber-300/60 dark:text-amber-300/80 dark:ring-amber-400/30"
               >{{ item.badge }}</span>
             </router-link>
           </template>
@@ -137,7 +137,7 @@
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
               <span
                 v-if="item.badge && !sidebarCollapsed"
-                class="ml-auto shrink-0 rounded-sm bg-amber-100 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
+                class="ml-auto shrink-0 rounded px-1 text-[9px] font-medium uppercase leading-[15px] tracking-wider text-amber-600/90 ring-1 ring-inset ring-amber-300/60 dark:text-amber-300/80 dark:ring-amber-400/30"
               >{{ item.badge }}</span>
             </router-link>
           </template>
@@ -172,7 +172,7 @@
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
               <span
                 v-if="item.badge && !sidebarCollapsed"
-                class="ml-auto shrink-0 rounded-sm bg-amber-100 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
+                class="ml-auto shrink-0 rounded px-1 text-[9px] font-medium uppercase leading-[15px] tracking-wider text-amber-600/90 ring-1 ring-inset ring-amber-300/60 dark:text-amber-300/80 dark:ring-amber-400/30"
               >{{ item.badge }}</span>
             </router-link>
           </template>

@@ -5284,7 +5284,9 @@ func (s *OpenAIGatewayService) RecordUsage(ctx context.Context, input *OpenAIRec
 		if resolver == nil {
 			resolver = newUserGroupRateResolver(nil, nil, resolveUserGroupRateCacheTTL(s.cfg), nil, "service.openai_gateway")
 		}
-		effectiveDefault := apiKey.Group.RateMultiplier
+		// 限时倍率窗口内自动用 PromoRateMultiplier 替代 RateMultiplier，
+		// 与通用网关 GatewayService 计费逻辑保持一致（此前 OpenAI 路径漏了 promo）。
+		effectiveDefault := apiKey.Group.EffectiveRateMultiplier(time.Now())
 		if input.Subscription != nil && input.Subscription.RateMultiplier != nil && *input.Subscription.RateMultiplier > 0 {
 			effectiveDefault = *input.Subscription.RateMultiplier
 		}
