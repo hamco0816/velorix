@@ -51,7 +51,8 @@ func TestOpenAIGatewayServiceParseOpenAIImagesRequest_JSON(t *testing.T) {
 	require.Equal(t, "draw a cat", parsed.Prompt)
 	require.True(t, parsed.Stream)
 	require.Equal(t, "1024x1024", parsed.Size)
-	require.Equal(t, "1K", parsed.SizeTier)
+	// 计费档位现由 quality 决定（quality=high → 4K 档），不再看像素尺寸
+	require.Equal(t, "4K", parsed.SizeTier)
 	require.Equal(t, OpenAIImagesCapabilityNative, parsed.RequiredCapability)
 	require.False(t, parsed.Multipart)
 }
@@ -90,9 +91,8 @@ func TestOpenAIGatewayServiceParseOpenAIImagesRequest_MultipartEdit(t *testing.T
 	require.Equal(t, OpenAIImagesCapabilityNative, parsed.RequiredCapability)
 }
 
-func TestOpenAIGatewayServiceParseOpenAIImagesRequest_NormalizesOfficialAndCustomSizes(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-
+// 像素 size → tier 的归一化函数仍被 Responses 工具计费路径使用，保留直接单测。
+func TestNormalizeOpenAIImageSizeTier(t *testing.T) {
 	tests := []struct {
 		size     string
 		wantTier string
@@ -110,11 +110,53 @@ func TestOpenAIGatewayServiceParseOpenAIImagesRequest_NormalizesOfficialAndCusto
 		{size: "2560x1600", wantTier: "4K"},
 		{size: "auto", wantTier: "2K"},
 	}
+	for _, tt := range tests {
+		t.Run(tt.size, func(t *testing.T) {
+			require.Equal(t, tt.wantTier, normalizeOpenAIImageSizeTier(tt.size))
+		})
+	}
+}
+
+// 计费档位由 quality 决定：low→1K、high→4K、medium/auto/空/其它→2K。
+func TestNormalizeOpenAIImageQualityTier(t *testing.T) {
+	tests := []struct {
+		quality  string
+		wantTier string
+	}{
+		{quality: "low", wantTier: "1K"},
+		{quality: "Low", wantTier: "1K"},
+		{quality: "medium", wantTier: "2K"},
+		{quality: "high", wantTier: "4K"},
+		{quality: "HIGH", wantTier: "4K"},
+		{quality: "auto", wantTier: "2K"},
+		{quality: "", wantTier: "2K"},
+		{quality: "weird", wantTier: "2K"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.quality, func(t *testing.T) {
+			require.Equal(t, tt.wantTier, normalizeOpenAIImageQualityTier(tt.quality))
+		})
+	}
+}
+
+// ParseOpenAIImagesRequest 端到端：SizeTier 应取自 quality 而非像素 size。
+func TestOpenAIGatewayServiceParseOpenAIImagesRequest_QualityDeterminesTier(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+
+	tests := []struct {
+		quality  string
+		wantTier string
+	}{
+		{quality: "low", wantTier: "1K"},
+		{quality: "medium", wantTier: "2K"},
+		{quality: "high", wantTier: "4K"},
+		{quality: "", wantTier: "2K"},
+	}
 
 	svc := &OpenAIGatewayService{}
 	for _, tt := range tests {
-		t.Run(tt.size, func(t *testing.T) {
-			body := []byte(`{"model":"gpt-image-2","prompt":"draw a cat","size":"` + tt.size + `"}`)
+		t.Run(tt.quality, func(t *testing.T) {
+			body := []byte(`{"model":"gpt-image-2","prompt":"draw a cat","size":"1024x1024","quality":"` + tt.quality + `"}`)
 
 			req := httptest.NewRequest(http.MethodPost, "/v1/images/generations", bytes.NewReader(body))
 			req.Header.Set("Content-Type", "application/json")
@@ -125,7 +167,7 @@ func TestOpenAIGatewayServiceParseOpenAIImagesRequest_NormalizesOfficialAndCusto
 			parsed, err := svc.ParseOpenAIImagesRequest(c, body)
 			require.NoError(t, err)
 			require.NotNil(t, parsed)
-			require.Equal(t, tt.size, parsed.Size)
+			require.Equal(t, "1024x1024", parsed.Size)
 			require.Equal(t, tt.wantTier, parsed.SizeTier)
 		})
 	}
@@ -134,13 +176,14 @@ func TestOpenAIGatewayServiceParseOpenAIImagesRequest_NormalizesOfficialAndCusto
 func TestOpenAIGatewayServiceParseOpenAIImagesRequest_UnknownSizesDoNotBlockPassthrough(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
+	// 任意未知/异常 size 都不应报错阻断；档位由 quality 决定，未传 quality → 2K
 	tests := []struct {
 		size     string
 		wantTier string
 	}{
 		{size: "2048x1153", wantTier: "2K"},
-		{size: "4096x1024", wantTier: "4K"},
-		{size: "3840x1024", wantTier: "4K"},
+		{size: "4096x1024", wantTier: "2K"},
+		{size: "3840x1024", wantTier: "2K"},
 		{size: "512x512", wantTier: "2K"},
 		{size: "invalid", wantTier: "2K"},
 		{size: "999999999999999999999999999x2", wantTier: "2K"},

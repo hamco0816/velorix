@@ -155,9 +155,26 @@ func (s *OpenAIGatewayService) ParseOpenAIImagesRequest(c *gin.Context, body []b
 	if err := validateOpenAIImagesModel(req.Model); err != nil {
 		return nil, err
 	}
-	req.SizeTier = normalizeOpenAIImageSizeTier(req.Size)
+	// 计费档位由 quality 决定（gpt-image 真实成本驱动是 quality，不是像素尺寸；
+	// 官方尺寸只有 1024x1024/1536x1024/1024x1536 三种，成本差异主要来自 low/medium/high）。
+	// 复用分组的 image_price_1k/2k/4k 三个价字段：low→1K、medium/auto/缺省→2K、high→4K。
+	req.SizeTier = normalizeOpenAIImageQualityTier(req.Quality)
 	req.RequiredCapability = classifyOpenAIImagesCapability(req)
 	return req, nil
+}
+
+// normalizeOpenAIImageQualityTier 把 quality 归一化到三档计费 tier。
+// 复用既有 1K/2K/4K 三档价字段，语义改为 低/标准/高清（OpenAI 真实三档质量）。
+// medium 是 OpenAI 默认质量，空值/auto 一并归 2K，保持原默认计费行为不变。
+func normalizeOpenAIImageQualityTier(quality string) string {
+	switch strings.ToLower(strings.TrimSpace(quality)) {
+	case "low":
+		return "1K"
+	case "high":
+		return "4K"
+	default: // medium / auto / "" / 其它
+		return "2K"
+	}
 }
 
 func parseOpenAIImagesJSONRequest(body []byte, req *OpenAIImagesRequest) error {

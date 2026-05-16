@@ -145,9 +145,9 @@
             <Select v-model="form.aspect" :options="aspectOptions" :disabled="submitting" />
           </div>
 
-          <!-- 分辨率 -->
-          <div class="min-w-[8rem]">
-            <Select v-model="form.resolution" :options="resolutionOptions" :disabled="submitting" />
+          <!-- 质量三档：仅模型支持时显示（dall-e-3/gemini 无此参数）-->
+          <div v-if="qualitySupported" class="min-w-[9rem]">
+            <Select v-model="form.quality" :options="qualityOptions" :disabled="submitting" />
           </div>
 
           <!-- 张数 -->
@@ -198,46 +198,41 @@
         </header>
 
         <div class="p-5">
-          <!-- 生成中：深色画布 + 居中预览 + 明确"非最终图"标识 + 扫描动效 -->
-          <div v-if="submitting" class="generating-canvas">
-            <div class="dot-grid"></div>
-            <div class="relative z-10 flex w-full max-w-lg flex-col items-center gap-4">
-              <div class="relative aspect-square w-full overflow-hidden rounded-2xl ring-1 ring-white/10">
-                <template v-if="currentPreview">
-                  <!-- 中间帧：降饱和+轻微暗化，读起来明显"还没完成" -->
-                  <img
-                    :src="currentPreview"
-                    alt="rendering preview"
-                    class="block h-full w-full object-cover opacity-90 saturate-[0.85]"
-                  />
-                  <!-- 扫描光带 -->
-                  <div class="scan-beam"></div>
-                  <!-- 左上角"非最终图"角标 -->
-                  <div class="absolute left-2.5 top-2.5 flex items-center gap-1.5 rounded-md bg-amber-500/90 px-2 py-1 text-[11px] font-semibold text-white shadow-sm backdrop-blur">
-                    <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-white"></span>
-                    {{ t('imageGen.previewBadge') }}
+          <!-- 生成中：ChatGPT 风浅色卡片 —— 单图带流式预览；多图 N 个动画占位格 -->
+          <div v-if="submitting">
+            <div :class="form.n === 1 ? 'mx-auto w-full max-w-md' : 'grid gap-3 sm:grid-cols-2'">
+              <template v-if="form.n === 1">
+                <div class="gen-card">
+                  <p class="gen-label">
+                    {{ statusText }}
+                    <span v-if="elapsedSeconds > 0" class="gen-label-sub">· {{ t('imageGen.elapsed', { sec: elapsedSeconds }) }}</span>
+                  </p>
+                  <div class="gen-stage">
+                    <img
+                      v-if="currentPreview"
+                      :src="currentPreview"
+                      alt="rendering preview"
+                      class="gen-preview"
+                    />
+                    <div v-else class="gen-dots" aria-hidden="true"></div>
                   </div>
-                </template>
-                <div v-else class="flex h-full w-full items-center justify-center">
-                  <span class="brush-pulse"><Icon name="sparkles" size="xl" class="text-slate-500" /></span>
-                  <div class="scan-beam"></div>
                 </div>
-              </div>
-
-              <!-- 状态行：进度文字 + 已用时 -->
-              <div class="flex flex-col items-center gap-1.5 text-center">
-                <div class="flex items-center gap-2 text-sm font-medium text-slate-200">
-                  <span class="h-2 w-2 animate-pulse rounded-full bg-amber-400"></span>
-                  <span>{{ statusText }}</span>
-                  <span v-if="elapsedSeconds > 0" class="text-[11px] tabular-nums text-slate-400">
-                    · {{ t('imageGen.elapsed', { sec: elapsedSeconds }) }}
-                  </span>
+              </template>
+              <template v-else>
+                <div v-for="i in form.n" :key="i" class="gen-card">
+                  <p class="gen-label">
+                    {{ statusText }}
+                    <span class="gen-label-sub">{{ i }}/{{ form.n }}</span>
+                  </p>
+                  <div class="gen-stage">
+                    <div class="gen-dots" aria-hidden="true"></div>
+                  </div>
                 </div>
-                <p class="max-w-xs text-[11px] leading-relaxed text-slate-400">
-                  {{ t('imageGen.previewHint') }}
-                </p>
-              </div>
+              </template>
             </div>
+            <p class="mx-auto mt-2 max-w-md px-1 text-[11px] leading-relaxed text-gray-400 dark:text-dark-500">
+              {{ t('imageGen.previewHint') }}
+            </p>
           </div>
 
           <!-- 错误态 -->
@@ -316,69 +311,62 @@ const { t } = useI18n()
 // ── 模型能力映射表（硬编码，新模型加进来才能展现）──
 // 后端真支持哪些尺寸由上游决定，前端这个表只是 UX 守门——避免用户选不被支持的组合
 // 让后端报错。维护时跟着 OpenAI/Gemini 文档更新即可。
-type AspectKey = '1:1' | '4:3' | '3:4' | '3:2' | '2:3' | '16:9' | '9:16' | '21:9' | '9:21' | 'auto'
-type ResolutionKey = '1K' | '2K' | '4K'
+// 比例与官网对齐（自动 / 1:1 / 3:4 / 9:16 / 4:3 / 16:9）。
+// gpt-image 真实只有 3 种尺寸 + auto，官网这些比例都映射到这三种。
+type AspectKey = 'auto' | '1:1' | '3:4' | '9:16' | '4:3' | '16:9'
+// 质量三档（OpenAI 真实成本驱动）。后端按 quality 计费，复用分组 3 个价字段。
+type QualityKey = 'low' | 'medium' | 'high'
+
+const ALL_ASPECTS: AspectKey[] = ['auto', '1:1', '3:4', '9:16', '4:3', '16:9']
 
 interface ModelCaps {
   aspects: AspectKey[]
-  resolutions: ResolutionKey[]
   /** 是否支持流式 partial_image。dall-e-3 暂不支持 */
   streaming: boolean
-  /** 是否支持质量参数 */
+  /** 是否支持 quality 三档选择（dall-e-3/gemini 不支持 low/medium/high）*/
   quality: boolean
   /** 是否支持以图生图（/v1/images/edits）*/
   edit: boolean
 }
 
 const MODEL_CAPS: Record<string, ModelCaps> = {
-  'gpt-image-1': { aspects: ['1:1', '2:3', '3:2', 'auto'], resolutions: ['1K'], streaming: true, quality: true, edit: true },
-  'gpt-image-1-mini': { aspects: ['1:1', '2:3', '3:2', 'auto'], resolutions: ['1K'], streaming: true, quality: true, edit: true },
-  'gpt-image-1.5': { aspects: ['1:1', '2:3', '3:2', 'auto'], resolutions: ['1K'], streaming: true, quality: true, edit: true },
-  'gpt-image-2': {
-    aspects: ['1:1', '4:3', '3:4', '3:2', '2:3', '16:9', '9:16', '21:9', '9:21', 'auto'],
-    resolutions: ['1K', '2K', '4K'],
-    streaming: true, quality: true, edit: true,
-  },
-  'dall-e-3': { aspects: ['1:1', '16:9', '9:16'], resolutions: ['1K'], streaming: false, quality: true, edit: false },
+  'gpt-image-1': { aspects: ALL_ASPECTS, streaming: true, quality: true, edit: true },
+  'gpt-image-1-mini': { aspects: ALL_ASPECTS, streaming: true, quality: true, edit: true },
+  'gpt-image-1.5': { aspects: ALL_ASPECTS, streaming: true, quality: true, edit: true },
+  'gpt-image-2': { aspects: ALL_ASPECTS, streaming: true, quality: true, edit: true },
+  'dall-e-3': { aspects: ['auto', '1:1', '16:9', '9:16'], streaming: false, quality: false, edit: false },
   'gemini-2.5-flash-image-preview': {
-    aspects: ['1:1', '4:3', '3:4', '16:9', '9:16', 'auto'],
-    resolutions: ['1K'],
+    aspects: ['auto', '1:1', '3:4', '9:16', '4:3', '16:9'],
     streaming: false, quality: false, edit: true,
   },
 }
 
 // 平台官方图片模型目录。透传渠道的 supported_models 天生为空（模型配在账号上、
-// 渠道不限制即支持上游全部模型），此时这个目录就是"用户能调哪些图片模型"的事实来源，
-// 不是猜测。维护时跟着 MODEL_CAPS 一起更新即可。
+// 渠道不限制即支持上游全部模型），此时这个目录就是"用户能调哪些图片模型"的事实来源。
 const IMAGE_MODEL_CATALOG: Record<string, string[]> = {
   openai: ['gpt-image-1.5', 'gpt-image-2', 'gpt-image-1', 'gpt-image-1-mini', 'dall-e-3'],
   gemini: ['gemini-2.5-flash-image-preview'],
 }
 
-// 比例 × 分辨率 → 上游 size 字符串。
-// 关键：这些串必须与后端 normalizeOpenAIImageSizeTier 的判定一致，否则
-// 用户选 1K 实际被按 2K 计费。后端只认这些精确串：
-//   1K = 1024x1024（仅 1:1）
-//   2K = 1536x1024 / 1024x1536 / 1792x1024 / 1024x1792 / 2048x2048 / 2048x1152 / 1152x2048
-//   4K = 3840x2160 / 2160x3840（其余按像素阈值归 2K/4K）
-// 所以每档只提供能被后端正确归类到该档的比例；始终下发具体 size，绝不发 auto
-// （后端把空/auto 默认当 2K，会导致 1K 计费错档）。
-const SIZE_MAP: Record<ResolutionKey, Partial<Record<AspectKey, string>>> = {
-  '1K': {
-    '1:1': '1024x1024',
-    'auto': '1024x1024',
-  },
-  '2K': {
-    '1:1': '2048x2048',
-    '3:2': '1536x1024', '2:3': '1024x1536',
-    '16:9': '2048x1152', '9:16': '1152x2048',
-    'auto': '2048x2048',
-  },
-  '4K': {
-    '1:1': '4096x4096',
-    '16:9': '3840x2160', '9:16': '2160x3840',
-    'auto': '4096x4096',
-  },
+// 比例 → 真实 size 串。gpt-image 官方只接受 1024x1024 / 1024x1536 / 1536x1024 / auto，
+// 官网那些比例都内部映射到这三种；dall-e-3 用它自己的三种尺寸。
+function resolveImageSize(model: string, aspect: AspectKey): string {
+  if (model === 'dall-e-3') {
+    switch (aspect) {
+      case '16:9': return '1792x1024'
+      case '9:16': return '1024x1792'
+      default: return '1024x1024' // dall-e-3 无 auto，方图兜底
+    }
+  }
+  switch (aspect) {
+    case 'auto': return 'auto'
+    case '1:1': return '1024x1024'
+    case '3:4':
+    case '9:16': return '1024x1536' // 竖图
+    case '4:3':
+    case '16:9': return '1536x1024' // 横图
+    default: return 'auto'
+  }
 }
 
 // ── 状态 ──
@@ -391,7 +379,7 @@ const form = ref({
   groupId: null as number | null,
   model: '',
   aspect: 'auto' as AspectKey,
-  resolution: '1K' as ResolutionKey,
+  quality: 'medium' as QualityKey,
   n: 1,
 })
 // 参考图校验错误（不阻塞普通生成）
@@ -471,32 +459,35 @@ const modelOptions = computed<SelectOption[]>(() => {
 
 const aspectOptions = computed<SelectOption[]>(() => {
   const caps = currentModelCaps.value
-  // 可选比例 = 模型支持 ∩ 当前分辨率档下后端能正确计费的比例（SIZE_MAP 的 key）
-  const sizeKeys = SIZE_MAP[form.value.resolution] ?? {}
-  const all: AspectKey[] = ['auto', '1:1', '4:3', '3:4', '3:2', '2:3', '16:9', '9:16', '21:9', '9:21']
-  return all.map((a) => ({
+  return ALL_ASPECTS.map((a) => ({
     value: a,
     label: a === 'auto' ? t('imageGen.aspectAuto') : a,
-    disabled: (caps ? !caps.aspects.includes(a) : false) || !(a in sizeKeys),
+    disabled: caps ? !caps.aspects.includes(a) : false,
   }))
 })
 
-const resolutionOptions = computed<SelectOption[]>(() => {
-  const caps = currentModelCaps.value
-  // 价格按 group 的 image_price_*K 字段算（如果配了）；没配就只显示档位
+// quality 是否可选（dall-e-3/gemini 不支持 low/medium/high）
+const qualitySupported = computed(() => currentModelCaps.value?.quality ?? false)
+
+// 质量三档单价：复用分组 image_price_1k/2k/4k → 低/标准/高清
+function qualityPrice(g: UserAvailableGroup | undefined, q: QualityKey): number | null {
+  if (!g) return null
+  const p = q === 'low' ? g.image_price_1k : q === 'high' ? g.image_price_4k : g.image_price_2k
+  return typeof p === 'number' && p > 0 ? p : null
+}
+
+const qualityOptions = computed<SelectOption[]>(() => {
   const g = currentGroupEntry.value?.group
-  const price1k = g?.image_price_1k ?? null
-  const price2k = g?.image_price_2k ?? null
-  const price4k = g?.image_price_4k ?? null
-  const fmtPrice = (p: number | null | undefined): string => {
-    if (p == null || p <= 0) return ''
-    return ` · ¥${p.toFixed(2)}/张`
+  const fmt = (p: number | null): string => (p == null ? '' : ` · ¥${p.toFixed(2)}/张`)
+  const labels: Record<QualityKey, string> = {
+    low: t('imageGen.qualityLow'),
+    medium: t('imageGen.qualityMedium'),
+    high: t('imageGen.qualityHigh'),
   }
-  return [
-    { value: '1K', label: '1K' + fmtPrice(price1k), disabled: caps ? !caps.resolutions.includes('1K') : false },
-    { value: '2K', label: '2K' + fmtPrice(price2k), disabled: caps ? !caps.resolutions.includes('2K') : false },
-    { value: '4K', label: '4K' + fmtPrice(price4k), disabled: caps ? !caps.resolutions.includes('4K') : false },
-  ]
+  return (['low', 'medium', 'high'] as QualityKey[]).map((q) => ({
+    value: q,
+    label: labels[q] + fmt(qualityPrice(g, q)),
+  }))
 })
 
 // 张数：数字后带单位（避免单独 "1" 这种没上下文的标签困惑用户）
@@ -579,17 +570,6 @@ watch(() => form.value.model, (m) => {
   if (!caps) return
   if (!caps.aspects.includes(form.value.aspect)) {
     form.value.aspect = caps.aspects[0]
-  }
-  if (!caps.resolutions.includes(form.value.resolution)) {
-    form.value.resolution = caps.resolutions[0]
-  }
-})
-
-// ── 选分辨率时，当前比例若该档不支持（会导致计费错档）则重置为 auto ──
-watch(() => form.value.resolution, (r) => {
-  const sizeKeys = SIZE_MAP[r] ?? {}
-  if (!(form.value.aspect in sizeKeys)) {
-    form.value.aspect = 'auto'
   }
 })
 
@@ -761,14 +741,14 @@ async function generate() {
 
   try {
     const caps = currentModelCaps.value
-    const useStream = caps?.streaming ?? false
+    // 渐进预览只对单图有意义；n>1 走非流式，一次性拿回全部 n 张
+    // （流式分支只能收一张，会丢图）
+    const useStream = (caps?.streaming ?? false) && form.value.n === 1
     const useEdit = referenceFiles.value.length > 0 && (caps?.edit ?? false)
-    // 始终解析出具体 size：当前比例若该档无映射，回落到该档方形（auto 项必有），
-    // 确保下发的 size 一定能被后端正确归类到所选分辨率档，计费不错档
-    const sizeStr =
-      SIZE_MAP[form.value.resolution]?.[form.value.aspect] ??
-      SIZE_MAP[form.value.resolution]?.['auto'] ??
-      '1024x1024'
+    // 比例 → 真实 size 串（gpt-image 官方只接受三种 + auto）
+    const sizeStr = resolveImageSize(form.value.model, form.value.aspect)
+    // quality 仅在模型支持时下发；后端按 quality 计费（low/medium/high）
+    const qualityStr = qualitySupported.value ? form.value.quality : ''
     const partialImages = useStream ? 2 : 0
 
     let response: Response
@@ -783,6 +763,7 @@ async function generate() {
       fd.append('n', String(form.value.n))
       fd.append('response_format', 'b64_json')
       fd.append('size', sizeStr)
+      if (qualityStr) fd.append('quality', qualityStr)
       if (useStream) {
         fd.append('stream', 'true')
         fd.append('partial_images', String(partialImages))
@@ -800,6 +781,7 @@ async function generate() {
         response_format: 'b64_json',
       }
       payload.size = sizeStr
+      if (qualityStr) payload.quality = qualityStr
       if (useStream) {
         payload.stream = true
         payload.partial_images = partialImages
@@ -997,77 +979,85 @@ function onPromptKeydown(e: KeyboardEvent) {
 }
 
 /* 生成中的画布：点阵背景 + 中央预览 */
-/* 生成画布：统一深色基调（明确"工作中"语境，比浅灰更聚焦）*/
-.generating-canvas {
+/* ChatGPT 风：浅色卡片，左上角状态文字 + 内部点阵舞台 */
+.gen-card {
+  border-radius: 1rem;
+  background: #f4f4f5;
+  padding: 1rem;
+}
+:root.dark .gen-card {
+  background: rgba(30, 41, 59, 0.5);
+}
+.gen-label {
+  margin-bottom: 0.75rem;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+}
+:root.dark .gen-label {
+  color: #94a3b8;
+}
+.gen-label-sub {
+  margin-left: 0.25rem;
+  font-variant-numeric: tabular-nums;
+  color: #9ca3af;
+}
+.gen-stage {
   position: relative;
-  display: flex;
-  min-height: 22rem;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  aspect-ratio: 1 / 1;
+  width: 100%;
   overflow: hidden;
-  border-radius: 0.75rem;
-  padding: 2.5rem 1rem;
-  background: linear-gradient(160deg, #0f172a 0%, #1e293b 60%, #0f172a 100%);
+  border-radius: 0.5rem;
+}
+.gen-preview {
+  display: block;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
 }
 
-/* 点阵背景：深色画布上的细网格，缓慢呼吸 */
-.dot-grid {
+/* 运动点阵：点阵 + 一束对角线"亮带"缓慢扫过，点随之放大变深，
+   读起来像 ChatGPT 那种很多孔在动，但克制不刺眼 */
+.gen-dots {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle, rgba(148, 163, 184, 0.12) 1px, transparent 1px);
-  background-size: 20px 20px;
-  animation: dot-pulse 4s ease-in-out infinite;
+  background-image: radial-gradient(circle, rgba(120, 120, 130, 0.5) 1.4px, transparent 1.6px);
+  background-size: 22px 22px;
+  -webkit-mask-image: linear-gradient(115deg,
+    rgba(0, 0, 0, 0.18) 0%,
+    rgba(0, 0, 0, 0.18) 35%,
+    rgba(0, 0, 0, 0.9) 50%,
+    rgba(0, 0, 0, 0.18) 65%,
+    rgba(0, 0, 0, 0.18) 100%);
+  mask-image: linear-gradient(115deg,
+    rgba(0, 0, 0, 0.18) 0%,
+    rgba(0, 0, 0, 0.18) 35%,
+    rgba(0, 0, 0, 0.9) 50%,
+    rgba(0, 0, 0, 0.18) 65%,
+    rgba(0, 0, 0, 0.18) 100%);
+  -webkit-mask-size: 260% 260%;
+  mask-size: 260% 260%;
+  animation: gen-dots-sweep 2.6s linear infinite;
 }
-@keyframes dot-pulse {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 0.9; }
+:root.dark .gen-dots {
+  background-image: radial-gradient(circle, rgba(148, 163, 184, 0.5) 1.4px, transparent 1.6px);
 }
-
-/* 扫描光带：自上而下匀速扫过预览区，传达"正在绘制" */
-.scan-beam {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(251, 191, 36, 0.06) 42%,
-    rgba(251, 191, 36, 0.22) 50%,
-    rgba(251, 191, 36, 0.06) 58%,
-    transparent 100%
-  );
-  background-size: 100% 220%;
-  animation: scan-sweep 2.2s ease-in-out infinite;
-}
-@keyframes scan-sweep {
-  0% { background-position: 0 -110%; }
-  100% { background-position: 0 110%; }
-}
-
-/* 无预览时的笔刷脉冲 */
-.brush-pulse {
-  display: inline-flex;
-  animation: brush-breathe 1.8s ease-in-out infinite;
-}
-@keyframes brush-breathe {
-  0%, 100% { transform: scale(0.92); opacity: 0.55; }
-  50% { transform: scale(1.08); opacity: 1; }
+@keyframes gen-dots-sweep {
+  0% { -webkit-mask-position: 130% 130%; mask-position: 130% 130%; }
+  100% { -webkit-mask-position: -30% -30%; mask-position: -30% -30%; }
 }
 
 /* 终图揭示：完成瞬间淡入并轻微放大归位 */
 .reveal-img {
-  animation: reveal-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: reveal-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 @keyframes reveal-in {
-  from { opacity: 0; transform: scale(0.97); }
+  from { opacity: 0; transform: scale(0.98); }
   to { opacity: 1; transform: scale(1); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dot-grid,
-  .scan-beam,
-  .brush-pulse,
+  .gen-dots,
   .reveal-img { animation: none; }
 }
 </style>
