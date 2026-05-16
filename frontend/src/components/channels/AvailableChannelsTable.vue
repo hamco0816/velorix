@@ -93,6 +93,9 @@
                   :subscription-type="(g.subscription_type || 'standard') as SubscriptionType"
                   :rate-multiplier="g.rate_multiplier"
                   :user-rate-multiplier="userGroupRates[g.id] ?? null"
+                  :promo-rate-multiplier="g.promo_rate_multiplier ?? null"
+                  :promo-starts-at="g.promo_starts_at ?? null"
+                  :promo-ends-at="g.promo_ends_at ?? null"
                   always-show-rate
                 />
               </div>
@@ -115,6 +118,9 @@
                   :subscription-type="(g.subscription_type || 'standard') as SubscriptionType"
                   :rate-multiplier="g.rate_multiplier"
                   :user-rate-multiplier="userGroupRates[g.id] ?? null"
+                  :promo-rate-multiplier="g.promo_rate_multiplier ?? null"
+                  :promo-starts-at="g.promo_starts_at ?? null"
+                  :promo-ends-at="g.promo_ends_at ?? null"
                   always-show-rate
                 />
               </div>

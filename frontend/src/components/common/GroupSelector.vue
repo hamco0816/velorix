@@ -42,6 +42,9 @@
           :platform="group.platform"
           :subscription-type="group.subscription_type"
           :rate-multiplier="group.rate_multiplier"
+          :promo-rate-multiplier="group.promo_rate_multiplier ?? null"
+          :promo-starts-at="group.promo_starts_at ?? null"
+          :promo-ends-at="group.promo_ends_at ?? null"
           class="min-w-0 flex-1"
         />
         <span class="shrink-0 text-xs text-gray-400">{{ group.account_count || 0 }}</span>

@@ -30,6 +30,12 @@
           <span class="mr-1 line-through opacity-50">{{ rateMultiplier }}x</span>
           <span class="font-bold">{{ userRateMultiplier }}x</span>
         </template>
+        <template v-else-if="showPromo">
+          <!-- 限时倍率：原倍率删除线 + 折后倍率 + 倒计时 -->
+          <span class="mr-1 line-through opacity-50">{{ rateMultiplier }}x</span>
+          <span class="font-bold">{{ promoRateMultiplier }}x</span>
+          <span v-if="promoCountdown" class="ml-1.5 tabular-nums opacity-90">{{ promoCountdown }}</span>
+        </template>
         <template v-else>
           {{ rateMultiplier }}x 倍率
         </template>
@@ -52,6 +58,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import GroupBadge from './GroupBadge.vue'
+import { usePromoRate } from '@/composables/usePromoRate'
 import type { SubscriptionType, GroupPlatform } from '@/types'
 
 interface Props {
@@ -60,6 +67,10 @@ interface Props {
   subscriptionType?: SubscriptionType
   rateMultiplier?: number
   userRateMultiplier?: number | null
+  // 限时倍率（promo rate）：窗口内显示折后价 + 倒计时，不传则行为不变
+  promoRateMultiplier?: number | null
+  promoStartsAt?: string | null
+  promoEndsAt?: string | null
   description?: string | null
   selected?: boolean
   showCheckmark?: boolean
@@ -69,8 +80,17 @@ const props = withDefaults(defineProps<Props>(), {
   subscriptionType: 'standard',
   selected: false,
   showCheckmark: true,
-  userRateMultiplier: null
+  userRateMultiplier: null,
+  promoRateMultiplier: null,
+  promoStartsAt: null,
+  promoEndsAt: null
 })
+
+const { promoActive, promoCountdown } = usePromoRate(() => ({
+  promoRateMultiplier: props.promoRateMultiplier,
+  promoStartsAt: props.promoStartsAt,
+  promoEndsAt: props.promoEndsAt
+}))
 
 // Whether user has a custom rate different from default
 const hasCustomRate = computed(() => {
@@ -82,8 +102,19 @@ const hasCustomRate = computed(() => {
   )
 })
 
+// 是否展示限时倍率：专属倍率优先级更高
+const showPromo = computed(() => {
+  if (!promoActive.value) return false
+  if (hasCustomRate.value) return false
+  return props.rateMultiplier !== undefined
+})
+
 // Rate pill color matches platform badge color
 const ratePillClass = computed(() => {
+  // 限时活动：用 rose 强调色突出折扣（与价格页一致）
+  if (showPromo.value) {
+    return 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'
+  }
   switch (props.platform) {
     case 'anthropic':
       return 'bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400'

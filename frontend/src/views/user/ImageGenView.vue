@@ -145,14 +145,14 @@
             <Select v-model="form.aspect" :options="aspectOptions" :disabled="submitting" />
           </div>
 
-          <!-- 质量三档：仅模型支持时显示（dall-e-3/gemini 无此参数）-->
-          <div v-if="qualitySupported" class="min-w-[9rem]">
-            <Select v-model="form.quality" :options="qualityOptions" :disabled="submitting" />
+          <!-- 分辨率档：仅 gpt-image-2 显示（带每张价）-->
+          <div v-if="resolutionSupported" class="min-w-[9rem]">
+            <Select v-model="form.resolution" :options="resolutionOptions" :disabled="submitting" />
           </div>
 
-          <!-- 张数 -->
-          <div class="min-w-[5rem]">
-            <Select v-model="form.n" :options="countOptions" :disabled="submitting" />
+          <!-- 质量三档：仅模型支持时显示（dall-e-3/gemini 无此参数）-->
+          <div v-if="qualitySupported" class="min-w-[8rem]">
+            <Select v-model="form.quality" :options="qualityOptions" :disabled="submitting" />
           </div>
 
           <!-- 圆形提交按钮 -->
@@ -198,39 +198,24 @@
         </header>
 
         <div class="p-5">
-          <!-- 生成中：ChatGPT 风浅色卡片 —— 单图带流式预览；多图 N 个动画占位格 -->
-          <div v-if="submitting">
-            <div :class="form.n === 1 ? 'mx-auto w-full max-w-md' : 'grid gap-3 sm:grid-cols-2'">
-              <template v-if="form.n === 1">
-                <div class="gen-card">
-                  <p class="gen-label">
-                    {{ statusText }}
-                    <span v-if="elapsedSeconds > 0" class="gen-label-sub">· {{ t('imageGen.elapsed', { sec: elapsedSeconds }) }}</span>
-                  </p>
-                  <div class="gen-stage">
-                    <img
-                      v-if="currentPreview"
-                      :src="currentPreview"
-                      alt="rendering preview"
-                      class="gen-preview"
-                    />
-                    <div v-else class="gen-dots" aria-hidden="true"></div>
-                  </div>
-                </div>
-              </template>
-              <template v-else>
-                <div v-for="i in form.n" :key="i" class="gen-card">
-                  <p class="gen-label">
-                    {{ statusText }}
-                    <span class="gen-label-sub">{{ i }}/{{ form.n }}</span>
-                  </p>
-                  <div class="gen-stage">
-                    <div class="gen-dots" aria-hidden="true"></div>
-                  </div>
-                </div>
-              </template>
+          <!-- 生成中：ChatGPT 风浅色卡片 —— 状态文字 + 流式渐进预览 -->
+          <div v-if="submitting" class="mx-auto w-full max-w-md">
+            <div class="gen-card">
+              <p class="gen-label">
+                {{ statusText }}
+                <span v-if="elapsedSeconds > 0" class="gen-label-sub">· {{ t('imageGen.elapsed', { sec: elapsedSeconds }) }}</span>
+              </p>
+              <div class="gen-stage">
+                <img
+                  v-if="currentPreview"
+                  :src="currentPreview"
+                  alt="rendering preview"
+                  class="gen-preview"
+                />
+                <div v-else class="gen-dots" aria-hidden="true"></div>
+              </div>
             </div>
-            <p class="mx-auto mt-2 max-w-md px-1 text-[11px] leading-relaxed text-gray-400 dark:text-dark-500">
+            <p class="mt-2 px-1 text-[11px] leading-relaxed text-gray-400 dark:text-dark-500">
               {{ t('imageGen.previewHint') }}
             </p>
           </div>
@@ -314,13 +299,17 @@ const { t } = useI18n()
 // 比例与官网对齐（自动 / 1:1 / 3:4 / 9:16 / 4:3 / 16:9）。
 // gpt-image 真实只有 3 种尺寸 + auto，官网这些比例都映射到这三种。
 type AspectKey = 'auto' | '1:1' | '3:4' | '9:16' | '4:3' | '16:9'
-// 质量三档（OpenAI 真实成本驱动）。后端按 quality 计费，复用分组 3 个价字段。
+// 质量三档（OpenAI 真实参数 low/medium/high，gpt-image-2/1.x 支持）。
 type QualityKey = 'low' | 'medium' | 'high'
+// 分辨率档（总像素等级）。仅 gpt-image-2 原生支持任意尺寸，可分 1K/2K/4K。
+type ResolutionKey = '1K' | '2K' | '4K'
 
 const ALL_ASPECTS: AspectKey[] = ['auto', '1:1', '3:4', '9:16', '4:3', '16:9']
 
 interface ModelCaps {
   aspects: AspectKey[]
+  /** 支持的分辨率档；空数组 = 无分辨率概念（gpt-image-1/1.5 只有固定 3 尺寸）*/
+  resolutions: ResolutionKey[]
   /** 是否支持流式 partial_image。dall-e-3 暂不支持 */
   streaming: boolean
   /** 是否支持 quality 三档选择（dall-e-3/gemini 不支持 low/medium/high）*/
@@ -329,14 +318,21 @@ interface ModelCaps {
   edit: boolean
 }
 
+const ALL_RESOLUTIONS: ResolutionKey[] = ['1K', '2K', '4K']
+
 const MODEL_CAPS: Record<string, ModelCaps> = {
-  'gpt-image-1': { aspects: ALL_ASPECTS, streaming: true, quality: true, edit: true },
-  'gpt-image-1-mini': { aspects: ALL_ASPECTS, streaming: true, quality: true, edit: true },
-  'gpt-image-1.5': { aspects: ALL_ASPECTS, streaming: true, quality: true, edit: true },
-  'gpt-image-2': { aspects: ALL_ASPECTS, streaming: true, quality: true, edit: true },
-  'dall-e-3': { aspects: ['auto', '1:1', '16:9', '9:16'], streaming: false, quality: false, edit: false },
+  // gpt-image-1 / 1.5 / mini：官方只接受 1024x1024 / 1024x1536 / 1536x1024 + auto，
+  // 没有 2K/4K 概念 → resolutions 为空，不显示分辨率选择器。
+  'gpt-image-1': { aspects: ALL_ASPECTS, resolutions: [], streaming: true, quality: true, edit: true },
+  'gpt-image-1-mini': { aspects: ALL_ASPECTS, resolutions: [], streaming: true, quality: true, edit: true },
+  'gpt-image-1.5': { aspects: ALL_ASPECTS, resolutions: [], streaming: true, quality: true, edit: true },
+  // gpt-image-2：官方接受任意尺寸（边≤3840、16 倍数、长短比≤3:1、像素 65万~829万），
+  // 真实支持 1K/2K/4K 三档 + quality 三档。
+  'gpt-image-2': { aspects: ALL_ASPECTS, resolutions: ALL_RESOLUTIONS, streaming: true, quality: true, edit: true },
+  'dall-e-3': { aspects: ['auto', '1:1', '16:9', '9:16'], resolutions: [], streaming: false, quality: false, edit: false },
   'gemini-2.5-flash-image-preview': {
     aspects: ['auto', '1:1', '3:4', '9:16', '4:3', '16:9'],
+    resolutions: [],
     streaming: false, quality: false, edit: true,
   },
 }
@@ -348,23 +344,57 @@ const IMAGE_MODEL_CATALOG: Record<string, string[]> = {
   gemini: ['gemini-2.5-flash-image-preview'],
 }
 
-// 比例 → 真实 size 串。gpt-image 官方只接受 1024x1024 / 1024x1536 / 1536x1024 / auto，
-// 官网那些比例都内部映射到这三种；dall-e-3 用它自己的三种尺寸。
-function resolveImageSize(model: string, aspect: AspectKey): string {
+// 比例 → 宽高比（w/h）。auto 按方图处理，使分辨率档仍然生效。
+const ASPECT_RATIO: Record<AspectKey, number> = {
+  auto: 1,
+  '1:1': 1,
+  '3:4': 3 / 4,
+  '9:16': 9 / 16,
+  '4:3': 4 / 3,
+  '16:9': 16 / 9,
+}
+// 分辨率档目标总像素：1K≈105 万、2K≈400 万、4K≈800 万。
+const RESOLUTION_TARGET_PX: Record<ResolutionKey, number> = {
+  '1K': 1_050_000,
+  '2K': 4_000_000,
+  '4K': 8_000_000,
+}
+
+function roundTo16(v: number): number {
+  return Math.max(16, Math.round(v / 16) * 16)
+}
+
+// 解析最终 size 串。
+// gpt-image-2：按"比例 × 分辨率档目标像素"算合规 WxH（16 倍数、边≤3840）。
+// gpt-image-1/1.5/mini：官方仅 3 种尺寸 + auto。
+// dall-e-3：用它自己的三种尺寸。
+function resolveImageSize(model: string, aspect: AspectKey, resolution: ResolutionKey): string {
   if (model === 'dall-e-3') {
     switch (aspect) {
       case '16:9': return '1792x1024'
       case '9:16': return '1024x1792'
-      default: return '1024x1024' // dall-e-3 无 auto，方图兜底
+      default: return '1024x1024'
     }
   }
+  const caps = MODEL_CAPS[model]
+  if (caps && caps.resolutions.length > 0) {
+    // gpt-image-2：按目标像素 + 比例算尺寸
+    const ratio = ASPECT_RATIO[aspect] ?? 1
+    const target = RESOLUTION_TARGET_PX[resolution] ?? RESOLUTION_TARGET_PX['2K']
+    let h = Math.sqrt(target / ratio)
+    let w = h * ratio
+    w = Math.min(3840, roundTo16(w))
+    h = Math.min(3840, roundTo16(h))
+    return `${w}x${h}`
+  }
+  // gpt-image-1/1.5/mini 等：固定 3 尺寸
   switch (aspect) {
     case 'auto': return 'auto'
     case '1:1': return '1024x1024'
     case '3:4':
-    case '9:16': return '1024x1536' // 竖图
+    case '9:16': return '1024x1536'
     case '4:3':
-    case '16:9': return '1536x1024' // 横图
+    case '16:9': return '1536x1024'
     default: return 'auto'
   }
 }
@@ -379,8 +409,8 @@ const form = ref({
   groupId: null as number | null,
   model: '',
   aspect: 'auto' as AspectKey,
+  resolution: '2K' as ResolutionKey,
   quality: 'medium' as QualityKey,
-  n: 1,
 })
 // 参考图校验错误（不阻塞普通生成）
 const referenceError = ref('')
@@ -466,19 +496,30 @@ const aspectOptions = computed<SelectOption[]>(() => {
   }))
 })
 
-// quality 是否可选（dall-e-3/gemini 不支持 low/medium/high）
-const qualitySupported = computed(() => currentModelCaps.value?.quality ?? false)
+// 分辨率是否可选（仅 gpt-image-2 原生支持任意尺寸分 1K/2K/4K）
+const resolutionSupported = computed(() => (currentModelCaps.value?.resolutions.length ?? 0) > 0)
 
-// 质量三档单价：复用分组 image_price_1k/2k/4k → 低/标准/高清
-function qualityPrice(g: UserAvailableGroup | undefined, q: QualityKey): number | null {
+// 分辨率档单价：系统"按张 × 分辨率档"计费，对应分组 image_price_1k/2k/4k
+function resolutionPrice(g: UserAvailableGroup | undefined, r: ResolutionKey): number | null {
   if (!g) return null
-  const p = q === 'low' ? g.image_price_1k : q === 'high' ? g.image_price_4k : g.image_price_2k
+  const p = r === '1K' ? g.image_price_1k : r === '4K' ? g.image_price_4k : g.image_price_2k
   return typeof p === 'number' && p > 0 ? p : null
 }
 
-const qualityOptions = computed<SelectOption[]>(() => {
+const resolutionOptions = computed<SelectOption[]>(() => {
   const g = currentGroupEntry.value?.group
   const fmt = (p: number | null): string => (p == null ? '' : ` · ¥${p.toFixed(2)}/张`)
+  return ALL_RESOLUTIONS.map((r) => ({
+    value: r,
+    label: r + fmt(resolutionPrice(g, r)),
+  }))
+})
+
+// quality 是否可选（dall-e-3/gemini 不支持 low/medium/high）
+// 注意：quality 不单独计价（系统按分辨率档收费），仅作出图精细度开关
+const qualitySupported = computed(() => currentModelCaps.value?.quality ?? false)
+
+const qualityOptions = computed<SelectOption[]>(() => {
   const labels: Record<QualityKey, string> = {
     low: t('imageGen.qualityLow'),
     medium: t('imageGen.qualityMedium'),
@@ -486,17 +527,9 @@ const qualityOptions = computed<SelectOption[]>(() => {
   }
   return (['low', 'medium', 'high'] as QualityKey[]).map((q) => ({
     value: q,
-    label: labels[q] + fmt(qualityPrice(g, q)),
+    label: labels[q],
   }))
 })
-
-// 张数：数字后带单位（避免单独 "1" 这种没上下文的标签困惑用户）
-const countOptions = computed<SelectOption[]>(() => [
-  { value: 1, label: `1 ${t('imageGen.countLabel')}` },
-  { value: 2, label: `2 ${t('imageGen.countLabel')}` },
-  { value: 3, label: `3 ${t('imageGen.countLabel')}` },
-  { value: 4, label: `4 ${t('imageGen.countLabel')}` },
-])
 
 // 实际生效的密钥：images 网关按密钥绑定分组的 platform 硬校验，
 // 必须用一个 group_id === 选中分组 的密钥，不能盲取第一个。
@@ -570,6 +603,9 @@ watch(() => form.value.model, (m) => {
   if (!caps) return
   if (!caps.aspects.includes(form.value.aspect)) {
     form.value.aspect = caps.aspects[0]
+  }
+  if (caps.resolutions.length > 0 && !caps.resolutions.includes(form.value.resolution)) {
+    form.value.resolution = caps.resolutions.includes('2K') ? '2K' : caps.resolutions[0]
   }
 })
 
@@ -709,7 +745,7 @@ function bumpStatusByEvent(eventType: string, partialIndex?: number, totalPartia
     setStatusByIndex(1)
   } else if (eventType === 'partial_image') {
     const idx = (partialIndex ?? 0) + 1
-    statusText.value = t('imageGen.statusRefineWithCount', { idx, total: totalPartials ?? form.value.n })
+    statusText.value = t('imageGen.statusRefineWithCount', { idx, total: totalPartials ?? 2 })
     statusIndex = 2
   } else if (eventType === 'completed') {
     statusText.value = t('imageGen.statusDone')
@@ -741,13 +777,12 @@ async function generate() {
 
   try {
     const caps = currentModelCaps.value
-    // 渐进预览只对单图有意义；n>1 走非流式，一次性拿回全部 n 张
-    // （流式分支只能收一张，会丢图）
-    const useStream = (caps?.streaming ?? false) && form.value.n === 1
+    // 固定单图（OAuth 出不了多图，后端会强制 n=1）；单图才用流式渐进预览
+    const useStream = caps?.streaming ?? false
     const useEdit = referenceFiles.value.length > 0 && (caps?.edit ?? false)
-    // 比例 → 真实 size 串（gpt-image 官方只接受三种 + auto）
-    const sizeStr = resolveImageSize(form.value.model, form.value.aspect)
-    // quality 仅在模型支持时下发；后端按 quality 计费（low/medium/high）
+    // 比例 × 分辨率档 → 真实 size 串
+    const sizeStr = resolveImageSize(form.value.model, form.value.aspect, form.value.resolution)
+    // quality 仅在模型支持时下发（low/medium/high）
     const qualityStr = qualitySupported.value ? form.value.quality : ''
     const partialImages = useStream ? 2 : 0
 
@@ -760,7 +795,7 @@ async function generate() {
       for (const f of referenceFiles.value) fd.append('image[]', f)
       fd.append('prompt', form.value.prompt.trim())
       fd.append('model', form.value.model)
-      fd.append('n', String(form.value.n))
+      fd.append('n', '1')
       fd.append('response_format', 'b64_json')
       fd.append('size', sizeStr)
       if (qualityStr) fd.append('quality', qualityStr)
@@ -777,7 +812,7 @@ async function generate() {
       const payload: Record<string, unknown> = {
         prompt: form.value.prompt.trim(),
         model: form.value.model,
-        n: form.value.n,
+        n: 1,
         response_format: 'b64_json',
       }
       payload.size = sizeStr

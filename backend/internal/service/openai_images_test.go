@@ -51,8 +51,8 @@ func TestOpenAIGatewayServiceParseOpenAIImagesRequest_JSON(t *testing.T) {
 	require.Equal(t, "draw a cat", parsed.Prompt)
 	require.True(t, parsed.Stream)
 	require.Equal(t, "1024x1024", parsed.Size)
-	// 计费档位现由 quality 决定（quality=high → 4K 档），不再看像素尺寸
-	require.Equal(t, "4K", parsed.SizeTier)
+	// 档位按总像素归档：1024x1024 = 1.05M → 1K
+	require.Equal(t, "1K", parsed.SizeTier)
 	require.Equal(t, OpenAIImagesCapabilityNative, parsed.RequiredCapability)
 	require.False(t, parsed.Multipart)
 }
@@ -86,29 +86,32 @@ func TestOpenAIGatewayServiceParseOpenAIImagesRequest_MultipartEdit(t *testing.T
 	require.Equal(t, "gpt-image-2", parsed.Model)
 	require.Equal(t, "replace background", parsed.Prompt)
 	require.Equal(t, "1536x1024", parsed.Size)
-	require.Equal(t, "2K", parsed.SizeTier)
+	// 1536x1024 = 1.57M ≤ 180万 → 1K
+	require.Equal(t, "1K", parsed.SizeTier)
 	require.Len(t, parsed.Uploads, 1)
 	require.Equal(t, OpenAIImagesCapabilityNative, parsed.RequiredCapability)
 }
 
-// 像素 size → tier 的归一化函数仍被 Responses 工具计费路径使用，保留直接单测。
+// 档位按总像素一致归档：≤180万→1K、≤600万→2K、>600万→4K，无法解析→2K。
 func TestNormalizeOpenAIImageSizeTier(t *testing.T) {
 	tests := []struct {
 		size     string
 		wantTier string
 	}{
-		{size: "1024x1024", wantTier: "1K"},
-		{size: "1536x1024", wantTier: "2K"},
-		{size: "1024x1536", wantTier: "2K"},
-		{size: "2048x2048", wantTier: "2K"},
-		{size: "2048x1152", wantTier: "2K"},
-		{size: "3840x2160", wantTier: "4K"},
-		{size: "2160x3840", wantTier: "4K"},
-		{size: "1024X768", wantTier: "2K"},
-		{size: "1280x768", wantTier: "2K"},
-		{size: "2560x1440", wantTier: "2K"},
-		{size: "2560x1600", wantTier: "4K"},
-		{size: "auto", wantTier: "2K"},
+		{size: "1024x1024", wantTier: "1K"}, // 1.05M
+		{size: "1376x768", wantTier: "1K"},  // 1.06M 16:9 1K 档
+		{size: "1536x1024", wantTier: "1K"}, // 1.57M
+		{size: "2048x2048", wantTier: "2K"}, // 4.19M
+		{size: "2048x1152", wantTier: "2K"}, // 2.36M
+		{size: "2688x1504", wantTier: "2K"}, // 4.04M 16:9 2K 档
+		{size: "3840x2160", wantTier: "4K"}, // 8.29M
+		{size: "2160x3840", wantTier: "4K"}, // 8.29M
+		{size: "2832x2832", wantTier: "4K"}, // 8.02M 方图 4K 档
+		{size: "1280x768", wantTier: "1K"},  // 0.98M
+		{size: "2560x1440", wantTier: "2K"}, // 3.69M
+		{size: "auto", wantTier: "2K"},      // 无法解析回落
+		{size: "", wantTier: "2K"},          // 空回落
+		{size: "invalid", wantTier: "2K"},   // 非法回落
 	}
 	for _, tt := range tests {
 		t.Run(tt.size, func(t *testing.T) {
@@ -117,46 +120,24 @@ func TestNormalizeOpenAIImageSizeTier(t *testing.T) {
 	}
 }
 
-// 计费档位由 quality 决定：low→1K、high→4K、medium/auto/空/其它→2K。
-func TestNormalizeOpenAIImageQualityTier(t *testing.T) {
-	tests := []struct {
-		quality  string
-		wantTier string
-	}{
-		{quality: "low", wantTier: "1K"},
-		{quality: "Low", wantTier: "1K"},
-		{quality: "medium", wantTier: "2K"},
-		{quality: "high", wantTier: "4K"},
-		{quality: "HIGH", wantTier: "4K"},
-		{quality: "auto", wantTier: "2K"},
-		{quality: "", wantTier: "2K"},
-		{quality: "weird", wantTier: "2K"},
-	}
-	for _, tt := range tests {
-		t.Run(tt.quality, func(t *testing.T) {
-			require.Equal(t, tt.wantTier, normalizeOpenAIImageQualityTier(tt.quality))
-		})
-	}
-}
-
-// ParseOpenAIImagesRequest 端到端：SizeTier 应取自 quality 而非像素 size。
-func TestOpenAIGatewayServiceParseOpenAIImagesRequest_QualityDeterminesTier(t *testing.T) {
+// ParseOpenAIImagesRequest 端到端：SizeTier 取自像素 size 并按总像素归档。
+func TestOpenAIGatewayServiceParseOpenAIImagesRequest_SizeDeterminesTier(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	tests := []struct {
-		quality  string
+		size     string
 		wantTier string
 	}{
-		{quality: "low", wantTier: "1K"},
-		{quality: "medium", wantTier: "2K"},
-		{quality: "high", wantTier: "4K"},
-		{quality: "", wantTier: "2K"},
+		{size: "1024x1024", wantTier: "1K"},
+		{size: "2048x2048", wantTier: "2K"},
+		{size: "3840x2160", wantTier: "4K"},
+		{size: "auto", wantTier: "2K"},
 	}
 
 	svc := &OpenAIGatewayService{}
 	for _, tt := range tests {
-		t.Run(tt.quality, func(t *testing.T) {
-			body := []byte(`{"model":"gpt-image-2","prompt":"draw a cat","size":"1024x1024","quality":"` + tt.quality + `"}`)
+		t.Run(tt.size, func(t *testing.T) {
+			body := []byte(`{"model":"gpt-image-2","prompt":"draw a cat","size":"` + tt.size + `"}`)
 
 			req := httptest.NewRequest(http.MethodPost, "/v1/images/generations", bytes.NewReader(body))
 			req.Header.Set("Content-Type", "application/json")
@@ -167,7 +148,7 @@ func TestOpenAIGatewayServiceParseOpenAIImagesRequest_QualityDeterminesTier(t *t
 			parsed, err := svc.ParseOpenAIImagesRequest(c, body)
 			require.NoError(t, err)
 			require.NotNil(t, parsed)
-			require.Equal(t, "1024x1024", parsed.Size)
+			require.Equal(t, tt.size, parsed.Size)
 			require.Equal(t, tt.wantTier, parsed.SizeTier)
 		})
 	}
@@ -176,17 +157,17 @@ func TestOpenAIGatewayServiceParseOpenAIImagesRequest_QualityDeterminesTier(t *t
 func TestOpenAIGatewayServiceParseOpenAIImagesRequest_UnknownSizesDoNotBlockPassthrough(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	// 任意未知/异常 size 都不应报错阻断；档位由 quality 决定，未传 quality → 2K
+	// 任意未知/异常 size 都不应报错阻断；档位按总像素归，无法解析回落 2K
 	tests := []struct {
 		size     string
 		wantTier string
 	}{
-		{size: "2048x1153", wantTier: "2K"},
-		{size: "4096x1024", wantTier: "2K"},
-		{size: "3840x1024", wantTier: "2K"},
-		{size: "512x512", wantTier: "2K"},
-		{size: "invalid", wantTier: "2K"},
-		{size: "999999999999999999999999999x2", wantTier: "2K"},
+		{size: "2048x1153", wantTier: "2K"},                     // 2.36M
+		{size: "4096x1024", wantTier: "2K"},                     // 4.19M
+		{size: "3840x1024", wantTier: "2K"},                     // 3.93M
+		{size: "512x512", wantTier: "1K"},                       // 0.26M
+		{size: "invalid", wantTier: "2K"},                       // 解析失败回落
+		{size: "999999999999999999999999999x2", wantTier: "2K"}, // 溢出回落
 	}
 
 	svc := &OpenAIGatewayService{}

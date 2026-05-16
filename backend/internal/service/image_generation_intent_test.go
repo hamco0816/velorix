@@ -81,7 +81,8 @@ func TestResolveOpenAIResponsesImageBillingConfigToolModelWins(t *testing.T) {
 	)
 	require.NoError(t, err)
 	require.Equal(t, "gpt-image-2", imageModel)
-	require.Equal(t, "2K", imageSize)
+	// 档位按总像素：1536x1024 = 1.57M ≤ 180万 → 1K
+	require.Equal(t, "1K", imageSize)
 }
 
 func TestResolveOpenAIResponsesImageBillingConfigSupportsOfficialAndCustomSizes(t *testing.T) {
@@ -101,9 +102,9 @@ func TestResolveOpenAIResponsesImageBillingConfigSupportsOfficialAndCustomSizes(
 			wantTier: "4K",
 		},
 		{
-			name:     "custom valid 2k",
+			name:     "custom small size 1k",
 			body:     []byte(`{"model":"gpt-5.5","tools":[{"type":"image_generation","model":"gpt-image-2","size":"1280x768"}]}`),
-			wantTier: "2K",
+			wantTier: "1K", // 0.98M ≤ 180万
 		},
 		{
 			name:     "default image tool model supports flexible size",

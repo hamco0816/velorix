@@ -170,6 +170,9 @@
             :name="getGroup(value)!.name"
             :platform="getGroup(value)!.platform"
             :rate-multiplier="getGroup(value)!.rate_multiplier"
+            :promo-rate-multiplier="getGroup(value)!.promo_rate_multiplier ?? null"
+            :promo-starts-at="getGroup(value)!.promo_starts_at ?? null"
+            :promo-ends-at="getGroup(value)!.promo_ends_at ?? null"
           />
           <span v-else class="text-sm text-gray-400">-</span>
         </template>

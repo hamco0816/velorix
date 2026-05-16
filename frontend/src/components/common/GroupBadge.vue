@@ -16,6 +16,12 @@
         <span class="line-through opacity-50 mr-0.5">{{ rateMultiplier }}x</span>
         <span class="font-bold">{{ userRateMultiplier }}x</span>
       </template>
+      <template v-else-if="showPromo">
+        <!-- 限时倍率：原倍率删除线 + 折后倍率 + 倒计时 -->
+        <span class="line-through opacity-50 mr-0.5">{{ rateMultiplier }}x</span>
+        <span class="font-bold">{{ promoRateMultiplier }}x</span>
+        <span v-if="promoCountdown" class="ml-1 tabular-nums opacity-90">{{ promoCountdown }}</span>
+      </template>
       <template v-else>
         {{ labelText }}
       </template>
@@ -27,6 +33,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { SubscriptionType, GroupPlatform } from '@/types'
+import { usePromoRate } from '@/composables/usePromoRate'
 import PlatformIcon from './PlatformIcon.vue'
 
 interface Props {
@@ -35,6 +42,10 @@ interface Props {
   subscriptionType?: SubscriptionType
   rateMultiplier?: number
   userRateMultiplier?: number | null // 用户专属倍率
+  // 限时倍率（promo rate）：窗口内显示折后价 + 倒计时，不传则行为不变
+  promoRateMultiplier?: number | null
+  promoStartsAt?: string | null
+  promoEndsAt?: string | null
   showRate?: boolean
   daysRemaining?: number | null // 剩余天数（订阅类型时使用）
   /**
@@ -50,12 +61,30 @@ const props = withDefaults(defineProps<Props>(), {
   showRate: true,
   daysRemaining: null,
   userRateMultiplier: null,
+  promoRateMultiplier: null,
+  promoStartsAt: null,
+  promoEndsAt: null,
   alwaysShowRate: false
 })
 
 const { t } = useI18n()
 
 const isSubscription = computed(() => props.subscriptionType === 'subscription')
+
+const { promoActive, promoCountdown } = usePromoRate(() => ({
+  promoRateMultiplier: props.promoRateMultiplier,
+  promoStartsAt: props.promoStartsAt,
+  promoEndsAt: props.promoEndsAt
+}))
+
+// 是否展示限时倍率：专属倍率优先级更高；订阅类型仅在强制显示倍率时参与
+const showPromo = computed(() => {
+  if (!props.showRate) return false
+  if (!promoActive.value) return false
+  if (hasCustomRate.value) return false
+  if (isSubscription.value && !props.alwaysShowRate) return false
+  return props.rateMultiplier !== undefined
+})
 
 // 是否有专属倍率（且与默认倍率不同）
 const hasCustomRate = computed(() => {
@@ -96,6 +125,11 @@ const labelText = computed(() => {
 // Label style based on type and days remaining
 const labelClass = computed(() => {
   const base = 'px-1.5 py-0.5 rounded text-[10px] font-semibold'
+
+  // 限时活动：用 rose 强调色突出折扣（与价格页一致）
+  if (showPromo.value) {
+    return `${base} bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300`
+  }
 
   if (!isSubscription.value) {
     // Standard: subtle background (不再为专属倍率使用不同的背景色)

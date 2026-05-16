@@ -155,26 +155,12 @@ func (s *OpenAIGatewayService) ParseOpenAIImagesRequest(c *gin.Context, body []b
 	if err := validateOpenAIImagesModel(req.Model); err != nil {
 		return nil, err
 	}
-	// 计费档位由 quality 决定（gpt-image 真实成本驱动是 quality，不是像素尺寸；
-	// 官方尺寸只有 1024x1024/1536x1024/1024x1536 三种，成本差异主要来自 low/medium/high）。
-	// 复用分组的 image_price_1k/2k/4k 三个价字段：low→1K、medium/auto/缺省→2K、high→4K。
-	req.SizeTier = normalizeOpenAIImageQualityTier(req.Quality)
+	// 计费档位按输出图片总像素分三档（系统是"按张 × 分辨率档"收费）。
+	// gpt-image-2 接受任意尺寸，前端按"比例 × 分辨率档"算出具体 WxH，
+	// 这里按总像素一致归档，保证"前端显示档 = 实际计费档"。
+	req.SizeTier = normalizeOpenAIImageSizeTier(req.Size)
 	req.RequiredCapability = classifyOpenAIImagesCapability(req)
 	return req, nil
-}
-
-// normalizeOpenAIImageQualityTier 把 quality 归一化到三档计费 tier。
-// 复用既有 1K/2K/4K 三档价字段，语义改为 低/标准/高清（OpenAI 真实三档质量）。
-// medium 是 OpenAI 默认质量，空值/auto 一并归 2K，保持原默认计费行为不变。
-func normalizeOpenAIImageQualityTier(quality string) string {
-	switch strings.ToLower(strings.TrimSpace(quality)) {
-	case "low":
-		return "1K"
-	case "high":
-		return "4K"
-	default: // medium / auto / "" / 其它
-		return "2K"
-	}
 }
 
 func parseOpenAIImagesJSONRequest(body []byte, req *OpenAIImagesRequest) error {
@@ -485,29 +471,37 @@ func isOpenAINativeImageOption(name string) bool {
 	}
 }
 
+// normalizeOpenAIImageSizeTier 按输出图片总像素一致归三档（系统"按张 × 分辨率档"计费）。
+// 阈值取在标准档之间：1K≈100万、2K≈400万、4K≈800万像素。
+//
+//	≤180万 → 1K   ；  ≤600万 → 2K  ；  >600万 → 4K
+//
+// 无法解析（空 / auto / 非法）回落 2K，保持原默认计费行为。
 func normalizeOpenAIImageSizeTier(size string) string {
-	trimmed := strings.TrimSpace(size)
-	normalized := strings.ToLower(trimmed)
-	switch normalized {
-	case "", "auto":
-		return "2K"
-	case "1024x1024":
-		return "1K"
-	case "1536x1024", "1024x1536", "1792x1024", "1024x1792", "2048x2048", "2048x1152", "1152x2048":
-		return "2K"
-	case "3840x2160", "2160x3840":
-		return "4K"
-	}
-	width, height, ok := parseOpenAIImageSizeDimensions(trimmed)
+	width, height, ok := parseOpenAIImageSizeDimensions(size)
 	if !ok {
 		return "2K"
 	}
-	return classifyUnknownOpenAIImageSizeTier(width, height)
+	return classifyOpenAIImageSizeTierByPixels(width, height)
 }
 
 const (
-	openAIImage2KMaxPixels = 2560 * 1440
+	openAIImage1KMaxPixels = 1_800_000
+	openAIImage2KMaxPixels = 6_000_000
 )
+
+// classifyOpenAIImageSizeTierByPixels 按总像素分档。
+func classifyOpenAIImageSizeTierByPixels(width int, height int) string {
+	px := width * height
+	switch {
+	case px <= openAIImage1KMaxPixels:
+		return "1K"
+	case px <= openAIImage2KMaxPixels:
+		return "2K"
+	default:
+		return "4K"
+	}
+}
 
 func parseOpenAIImageSizeDimensions(size string) (int, int, bool) {
 	trimmed := strings.TrimSpace(size)
@@ -527,13 +521,6 @@ func parseOpenAIImageSizeDimensions(size string) (int, int, bool) {
 		return 0, 0, false
 	}
 	return width, height, true
-}
-
-func classifyUnknownOpenAIImageSizeTier(width int, height int) string {
-	if height > 0 && width > openAIImage2KMaxPixels/height {
-		return "4K"
-	}
-	return "2K"
 }
 
 func (s *OpenAIGatewayService) ForwardImages(

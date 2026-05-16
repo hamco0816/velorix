@@ -54,6 +54,9 @@
                   :subscription-type="k.group.subscription_type"
                   :rate-multiplier="k.group.rate_multiplier"
                   :user-rate-multiplier="userGroupRates[k.group.id]"
+                  :promo-rate-multiplier="k.group.promo_rate_multiplier ?? null"
+                  :promo-starts-at="k.group.promo_starts_at ?? null"
+                  :promo-ends-at="k.group.promo_ends_at ?? null"
                 />
                 <span v-else class="text-xs text-gray-400">—</span>
               </td>

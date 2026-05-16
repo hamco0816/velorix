@@ -96,6 +96,10 @@
                 <component :is="item.icon" class="h-5 w-5" />
               </span>
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
+              <span
+                v-if="item.badge && !sidebarCollapsed"
+                class="ml-auto shrink-0 rounded-sm bg-amber-100 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
+              >{{ item.badge }}</span>
             </router-link>
           </template>
         </div>
@@ -131,6 +135,10 @@
                 <component :is="item.icon" class="h-5 w-5" />
               </span>
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
+              <span
+                v-if="item.badge && !sidebarCollapsed"
+                class="ml-auto shrink-0 rounded-sm bg-amber-100 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
+              >{{ item.badge }}</span>
             </router-link>
           </template>
         </div>
@@ -162,6 +170,10 @@
                 <component :is="item.icon" class="h-5 w-5" />
               </span>
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
+              <span
+                v-if="item.badge && !sidebarCollapsed"
+                class="ml-auto shrink-0 rounded-sm bg-amber-100 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
+              >{{ item.badge }}</span>
             </router-link>
           </template>
         </div>
@@ -248,6 +260,8 @@ interface NavItem {
   group?: 'main' | 'subscription' | 'reference' | 'account'
   /** 强调样式：true 时菜单项加底色 + ring 高亮，用于"API 密钥"这种核心入口 */
   emphasize?: boolean
+  /** 可选角标文字（如 "Beta"），显示在 label 右侧；折叠态不显示 */
+  badge?: string
 }
 
 // applyFeatureFlags 递归过滤掉 featureFlag() === false 的节点（含子节点）。
@@ -770,7 +784,7 @@ function buildSelfNavItems(withDashboard: boolean): NavItem[] {
     // —— 工作台：高频核心入口 ——
     // API 密钥靠组内顺序（紧跟仪表盘）和分组就能突出，不再额外加底色——会被误以为是激活态
     { path: '/keys', label: t('nav.apiKeys'), icon: KeyIcon, iconColor: 'text-sky-500 dark:text-sky-400', group: 'main' },
-    { path: '/image-gen', label: t('nav.imageGen'), icon: ImageGenIcon, iconColor: 'text-amber-500 dark:text-amber-400', hideInSimpleMode: true, group: 'main' },
+    { path: '/image-gen', label: t('nav.imageGen'), icon: ImageGenIcon, iconColor: 'text-amber-500 dark:text-amber-400', hideInSimpleMode: true, group: 'main', badge: 'Beta' },
     { path: '/usage', label: t('nav.usage'), icon: ChartIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true, group: 'main' },
 
     // —— 订阅：买 + 已购查询 ——

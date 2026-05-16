@@ -113,6 +113,9 @@
                   :subscription-type="row.group.subscription_type"
                   :rate-multiplier="row.group.rate_multiplier"
                   :user-rate-multiplier="userGroupRates[row.group.id]"
+                  :promo-rate-multiplier="row.group.promo_rate_multiplier ?? null"
+                  :promo-starts-at="row.group.promo_starts_at ?? null"
+                  :promo-ends-at="row.group.promo_ends_at ?? null"
                 />
                 <span v-else class="text-sm text-gray-400 dark:text-dark-500">{{
                   t('keys.noGroup')
@@ -438,6 +441,9 @@
                 :subscription-type="(option as unknown as GroupOption).subscriptionType"
                 :rate-multiplier="(option as unknown as GroupOption).rate"
                 :user-rate-multiplier="(option as unknown as GroupOption).userRate"
+                :promo-rate-multiplier="(option as unknown as GroupOption).promoRate"
+                :promo-starts-at="(option as unknown as GroupOption).promoStartsAt"
+                :promo-ends-at="(option as unknown as GroupOption).promoEndsAt"
               />
               <span v-else class="text-gray-400">{{ t('keys.selectGroup') }}</span>
             </template>
@@ -448,6 +454,9 @@
                 :subscription-type="(option as unknown as GroupOption).subscriptionType"
                 :rate-multiplier="(option as unknown as GroupOption).rate"
                 :user-rate-multiplier="(option as unknown as GroupOption).userRate"
+                :promo-rate-multiplier="(option as unknown as GroupOption).promoRate"
+                :promo-starts-at="(option as unknown as GroupOption).promoStartsAt"
+                :promo-ends-at="(option as unknown as GroupOption).promoEndsAt"
                 :description="(option as unknown as GroupOption).description"
                 :selected="selected"
               />
@@ -1043,6 +1052,9 @@
               :subscription-type="option.subscriptionType"
               :rate-multiplier="option.rate"
               :user-rate-multiplier="option.userRate"
+              :promo-rate-multiplier="option.promoRate"
+              :promo-starts-at="option.promoStartsAt"
+              :promo-ends-at="option.promoEndsAt"
               :description="option.description"
               :selected="
                 selectedKeyForGroup?.group_id === option.value ||
@@ -1105,6 +1117,10 @@ interface GroupOption {
   userRate: number | null
   subscriptionType: SubscriptionType
   platform: GroupPlatform
+  // 限时倍率（promo rate）：窗口内展示折后价 + 倒计时
+  promoRate: number | null
+  promoStartsAt: string | null
+  promoEndsAt: string | null
 }
 
 const appStore = useAppStore()
@@ -1262,7 +1278,10 @@ const groupOptions = computed(() =>
     rate: group.rate_multiplier,
     userRate: userGroupRates.value[group.id] ?? null,
     subscriptionType: group.subscription_type,
-    platform: group.platform
+    platform: group.platform,
+    promoRate: group.promo_rate_multiplier ?? null,
+    promoStartsAt: group.promo_starts_at ?? null,
+    promoEndsAt: group.promo_ends_at ?? null
   }))
 )
 
