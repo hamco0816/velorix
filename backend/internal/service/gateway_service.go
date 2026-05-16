@@ -8551,18 +8551,18 @@ func (s *GatewayService) recordUsageCore(ctx context.Context, input *recordUsage
 		multiplier = s.cfg.Default.RateMultiplier
 	}
 	if apiKey.GroupID != nil && apiKey.Group != nil {
-		// 限时倍率窗口内自动用 PromoRateMultiplier 替代 RateMultiplier；
-		// 窗口外用原 RateMultiplier。逻辑封装在 Group.EffectiveRateMultiplier，
-		// 用户端展示原价 + promo 字段，前端做划线 / 倒计时。
-		effectiveDefault := apiKey.Group.EffectiveRateMultiplier(time.Now())
-		if input.Subscription != nil && input.Subscription.RateMultiplier != nil && *input.Subscription.RateMultiplier > 0 {
-			effectiveDefault = *input.Subscription.RateMultiplier
-		}
-		// 独享 seat 命中时，用 seat 上的快照倍率（独享档位差异化）
-		if account != nil && account.AssignedSeatID != nil && s.exclusiveSeatSvc != nil {
-			if seat, err := s.exclusiveSeatSvc.GetSeat(ctx, *account.AssignedSeatID); err == nil && seat != nil &&
-				seat.RateMultiplier != nil && *seat.RateMultiplier > 0 {
-				effectiveDefault = *seat.RateMultiplier
+		now := time.Now()
+		effectiveDefault := apiKey.Group.EffectiveRateMultiplier(now)
+		if !apiKey.Group.PromoActiveAt(now) {
+			if input.Subscription != nil && input.Subscription.RateMultiplier != nil && *input.Subscription.RateMultiplier > 0 {
+				effectiveDefault = *input.Subscription.RateMultiplier
+			}
+			// 独享 seat 命中时，用 seat 上的快照倍率（独享档位差异化）
+			if account != nil && account.AssignedSeatID != nil && s.exclusiveSeatSvc != nil {
+				if seat, err := s.exclusiveSeatSvc.GetSeat(ctx, *account.AssignedSeatID); err == nil && seat != nil &&
+					seat.RateMultiplier != nil && *seat.RateMultiplier > 0 {
+					effectiveDefault = *seat.RateMultiplier
+				}
 			}
 		}
 		multiplier = s.getUserGroupRateMultiplier(ctx, user.ID, *apiKey.GroupID, effectiveDefault)

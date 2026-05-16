@@ -5284,17 +5284,18 @@ func (s *OpenAIGatewayService) RecordUsage(ctx context.Context, input *OpenAIRec
 		if resolver == nil {
 			resolver = newUserGroupRateResolver(nil, nil, resolveUserGroupRateCacheTTL(s.cfg), nil, "service.openai_gateway")
 		}
-		// 限时倍率窗口内自动用 PromoRateMultiplier 替代 RateMultiplier，
-		// 与通用网关 GatewayService 计费逻辑保持一致（此前 OpenAI 路径漏了 promo）。
-		effectiveDefault := apiKey.Group.EffectiveRateMultiplier(time.Now())
-		if input.Subscription != nil && input.Subscription.RateMultiplier != nil && *input.Subscription.RateMultiplier > 0 {
-			effectiveDefault = *input.Subscription.RateMultiplier
-		}
-		// 独享 seat 命中时优先用 seat 上的快照倍率（独享档位差异化）
-		if account != nil && account.AssignedSeatID != nil && s.exclusiveSeatSvc != nil {
-			if seat, err := s.exclusiveSeatSvc.GetSeat(ctx, *account.AssignedSeatID); err == nil && seat != nil &&
-				seat.RateMultiplier != nil && *seat.RateMultiplier > 0 {
-				effectiveDefault = *seat.RateMultiplier
+		now := time.Now()
+		effectiveDefault := apiKey.Group.EffectiveRateMultiplier(now)
+		if !apiKey.Group.PromoActiveAt(now) {
+			if input.Subscription != nil && input.Subscription.RateMultiplier != nil && *input.Subscription.RateMultiplier > 0 {
+				effectiveDefault = *input.Subscription.RateMultiplier
+			}
+			// 独享 seat 命中时优先用 seat 上的快照倍率（独享档位差异化）
+			if account != nil && account.AssignedSeatID != nil && s.exclusiveSeatSvc != nil {
+				if seat, err := s.exclusiveSeatSvc.GetSeat(ctx, *account.AssignedSeatID); err == nil && seat != nil &&
+					seat.RateMultiplier != nil && *seat.RateMultiplier > 0 {
+					effectiveDefault = *seat.RateMultiplier
+				}
 			}
 		}
 		multiplier = resolver.Resolve(ctx, user.ID, *apiKey.GroupID, effectiveDefault)
