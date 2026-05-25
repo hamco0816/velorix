@@ -41,7 +41,7 @@
     </div>
 
     <div class="flex flex-1 flex-col p-5">
-      <div class="mb-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div class="plan-head mb-4 flex flex-col gap-4">
         <div class="min-w-0 flex-1 space-y-3">
           <div class="flex items-center gap-2">
             <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 ring-1 ring-gray-200 dark:bg-dark-800 dark:ring-dark-600">
@@ -92,14 +92,14 @@
           </p>
         </div>
 
-        <div class="flex shrink-0 items-center justify-between gap-4 rounded-xl bg-slate-50 px-4 py-3 text-right ring-1 ring-gray-100 dark:bg-dark-800/70 dark:ring-dark-700 sm:min-w-[176px] sm:flex-col sm:items-stretch sm:justify-center sm:gap-2">
-          <span class="text-xs font-medium text-gray-400 dark:text-dark-500 sm:hidden">{{ t('payment.admin.price') }}</span>
-          <div class="flex flex-col items-end sm:items-stretch">
-            <div class="flex items-end justify-end gap-1.5 whitespace-nowrap sm:justify-center">
+        <div class="plan-price flex shrink-0 items-center justify-between gap-4 rounded-xl bg-slate-50 px-4 py-3 text-right ring-1 ring-gray-100 dark:bg-dark-800/70 dark:ring-dark-700">
+          <span class="plan-price-label text-xs font-medium text-gray-400 dark:text-dark-500">{{ t('payment.admin.price') }}</span>
+          <div class="plan-price-body flex flex-col items-end">
+            <div class="plan-price-amount flex items-end justify-end gap-1.5 whitespace-nowrap">
               <span :class="['mb-1 text-xl font-black leading-none', textClass]">¥</span>
               <span :class="['text-4xl font-black leading-none tracking-tight', textClass]">{{ plan.price }}</span>
             </div>
-            <div class="mt-2 flex flex-wrap items-center justify-end gap-2 sm:justify-center">
+            <div class="plan-price-discount mt-2 flex flex-wrap items-center justify-end gap-2">
               <span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-600 ring-1 ring-slate-200 dark:bg-dark-900 dark:text-dark-200 dark:ring-dark-600">
                 <Icon name="calendar" size="xs" :stroke-width="2" />
                 {{ validitySuffix }}
@@ -114,7 +114,7 @@
       </div>
 
       <div class="mb-4 space-y-3 rounded-xl border border-gray-100 bg-slate-50/70 p-3 dark:border-dark-700 dark:bg-dark-800/45">
-        <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div class="plan-limits grid grid-cols-2 gap-2">
         <div class="rounded-lg bg-white px-3 py-2.5 dark:bg-dark-900/70">
           <span class="block text-[11px] font-medium text-gray-400 dark:text-dark-500">{{ t('payment.planCard.rate') }}</span>
           <span :class="['mt-1 block text-base font-bold', textClass]">{{ rateDisplay }}</span>
@@ -204,7 +204,7 @@ import {
   platformDiscountClass,
   platformLabel,
 } from '@/utils/platformColors'
-import { derivePlanCardType, cardTypeBadgeClass } from '@/utils/planCardType'
+import { derivePlanCardType, cardTypeBadgeClass, normalizeToDays } from '@/utils/planCardType'
 import { getEffectiveLimitVisibility } from '@/utils/planLimits'
 
 const props = defineProps<{ plan: SubscriptionPlan; activeSubscriptions?: UserSubscription[] }>()
@@ -327,21 +327,56 @@ const modelScopeItems = computed(() => {
   }))
 })
 
+// 有效期标签：用与卡类型徽章相同的归一化口径换算成总天数（周→7、月→30），
+// 避免存储单位单复数不一致（days/weeks/months）导致周卡、月卡误显示为"1天"
 const validitySuffix = computed(() => {
-  const u = props.plan.validity_unit || 'day'
-  if (u === 'month') return t('payment.perMonth')
-  if (u === 'year') return t('payment.perYear')
-  return `${props.plan.validity_days}${t('payment.days')}`
+  const totalDays = normalizeToDays(props.plan.validity_days, props.plan.validity_unit)
+  return `${totalDays}${t('payment.days')}`
 })
 </script>
 
 <style scoped>
 /* 卡片浮起：与兑换码 redeem-panel / 文档 docs-panel 一致的远距离淡阴影 */
 .plan-card {
+  /* 容器查询上下文：头部按卡片自身宽度决定横排/竖排，而非整个视口宽度，
+     避免多列布局下窄卡片把标题/徽章挤成一字一列竖排 */
+  container-type: inline-size;
+  container-name: plan-card;
   box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
 }
 .plan-card:hover {
   box-shadow: 0 22px 48px -28px rgb(15 23 42 / 0.6);
+}
+
+/* 卡片宽 ≥ 28rem 时头部恢复"标题左 / 价格右"横排；窄卡保持竖排：标题占整行、价格作为横条在下方 */
+@container plan-card (min-width: 28rem) {
+  .plan-head {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .plan-price {
+    min-width: 11rem;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .plan-price-label {
+    display: none;
+  }
+  .plan-price-body {
+    align-items: stretch;
+  }
+  .plan-price-amount {
+    justify-content: center;
+  }
+  .plan-price-discount {
+    justify-content: center;
+  }
+  .plan-limits {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 :global(:root.dark) .plan-card,
 :global(:root.dark) .plan-card:hover {
