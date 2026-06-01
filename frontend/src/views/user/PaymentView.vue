@@ -49,6 +49,27 @@
               </template>
             </EmptyState>
             <template v-else>
+              <div v-if="showSubscriptionUpsell" class="rounded-2xl border border-emerald-200/70 bg-emerald-50/80 p-4 shadow-[0_1px_2px_rgba(16,185,129,0.08)] dark:border-emerald-500/25 dark:bg-emerald-500/10">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div class="flex min-w-0 items-start gap-3">
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-emerald-600 ring-1 ring-inset ring-emerald-200/80 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30">
+                      <Icon name="sparkles" size="md" :stroke-width="2" />
+                    </div>
+                    <div class="min-w-0">
+                      <p class="text-sm font-semibold text-emerald-900 dark:text-emerald-100">{{ t('payment.subscriptionGuide.title') }}</p>
+                      <p class="mt-1 text-xs leading-relaxed text-emerald-800/80 dark:text-emerald-200/80">{{ subscriptionGuideSubtitle }}</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    class="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 dark:bg-emerald-500 dark:text-emerald-950 dark:hover:bg-emerald-400"
+                    @click="switchToSubscriptionTab"
+                  >
+                    {{ t('payment.subscriptionGuide.action') }}
+                    <Icon name="arrowRight" size="sm" :stroke-width="2.4" />
+                  </button>
+                </div>
+              </div>
             <!-- 充值主卡：白底简洁 + 右侧 amber 结算栏（视觉聚焦） -->
             <section class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-18px_rgba(15,23,42,0.18)] dark:border-dark-700/60 dark:bg-dark-800/40">
               <!-- md 起就用左右两栏（之前 lg 才触发，平板上单列拉伸过宽）-->
@@ -781,6 +802,39 @@ const filteredPlans = computed(() => {
     (p) => derivePlanCardType(p.validity_days, p.validity_unit) === activeCardType.value,
   )
 })
+
+const subscriptionGuidePlans = computed(() =>
+  checkout.value.plans.filter((plan) => plan.for_sale !== false)
+)
+
+const showSubscriptionUpsell = computed(() =>
+  activeTab.value === 'recharge'
+    && !checkout.value.balance_disabled
+    && subscriptionGuidePlans.value.length > 0
+)
+
+const subscriptionGuideSubtitle = computed(() => {
+  const plans = subscriptionGuidePlans.value
+  const prices = plans
+    .map((plan) => Number(plan.price))
+    .filter((price) => Number.isFinite(price) && price > 0)
+
+  if (prices.length > 0) {
+    return t('payment.subscriptionGuide.subtitleWithPrice', {
+      count: plans.length,
+      price: Math.min(...prices).toFixed(2),
+    })
+  }
+
+  return t('payment.subscriptionGuide.subtitle', { count: plans.length })
+})
+
+function switchToSubscriptionTab() {
+  activeTab.value = 'subscription'
+  selectedPlan.value = null
+  errorMessage.value = ''
+  errorHintMessage.value = ''
+}
 
 // Check if an amount fits a method's [min, max]. 0 = no limit.
 function amountFitsMethod(amt: number, methodType: string): boolean {

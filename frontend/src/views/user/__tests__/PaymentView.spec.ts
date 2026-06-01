@@ -317,6 +317,36 @@ describe('PaymentView WeChat JSAPI flow', () => {
     expect(window.localStorage.getItem(PAYMENT_RECOVERY_STORAGE_KEY)).toBeNull()
   })
 
+  it('shows subscription guide on recharge tab and switches to plan list', async () => {
+    routeState.query = {}
+    getCheckoutInfo.mockResolvedValue(checkoutInfoWithPlansFixture())
+
+    const wrapper = shallowMount(PaymentView, {
+      global: {
+        stubs: {
+          AppLayout: { template: '<div><slot /></div>' },
+          Teleport: true,
+          Transition: false,
+        },
+      },
+    })
+    await flushPromises()
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('payment.subscriptionGuide.title')
+
+    const guideButton = wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('payment.subscriptionGuide.action'))
+
+    expect(guideButton).toBeDefined()
+    await guideButton?.trigger('click')
+    await flushPromises()
+
+    expect(wrapper.text()).not.toContain('payment.subscriptionGuide.title')
+    expect(wrapper.html()).toContain('subscription-plan-card-stub')
+  })
+
   it('keeps subscription resume context for token-only WeChat callbacks', async () => {
     routeState.query = {
       wechat_resume: '1',

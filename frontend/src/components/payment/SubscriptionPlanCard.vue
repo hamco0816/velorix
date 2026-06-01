@@ -11,23 +11,6 @@
           : 'border-gray-200 hover:border-gray-300 dark:border-dark-700 dark:hover:border-dark-500',
     ]"
   >
-    <!-- 主推角标：右上角斜带，渐变 + 内层白线高光 + 暖色光晕，比平铺 badge 更显眼。
-         purely SVG（sparkles 图标），无 emoji，符合系统设计规范。 -->
-    <div
-      v-if="hasBadge && !soldOut"
-      class="popular-ribbon pointer-events-none absolute right-0 top-0 z-10 overflow-hidden"
-    >
-      <div class="relative h-[96px] w-[96px]">
-        <!-- 外圈：渐变带 + 双层阴影（深色投影 + 暖色光晕） -->
-        <div class="absolute -right-[28px] top-[20px] flex w-[136px] rotate-45 flex-col items-center justify-center bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 py-[5px] text-white shadow-[0_2px_10px_rgba(245,158,11,0.55),0_1px_3px_rgba(0,0,0,0.25)] ring-1 ring-inset ring-white/35">
-          <span class="flex items-center gap-[3px] text-[11px] font-extrabold uppercase tracking-[0.12em] drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)]">
-            <Icon name="sparkles" size="xs" :stroke-width="2.75" />
-            {{ badgeText }}
-          </span>
-        </div>
-      </div>
-    </div>
-
     <!-- 售罄角标：右上角红色斜带；与主推角标互斥（售罄优先） -->
     <div
       v-if="soldOut"
@@ -55,6 +38,11 @@
             <div class="min-w-0">
               <h3 class="truncate text-lg font-bold text-gray-900 dark:text-white">{{ plan.name }}</h3>
               <div class="mt-1 flex flex-wrap items-center gap-1.5">
+                <span v-if="hasBadge && !soldOut"
+                  class="inline-flex max-w-full items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-bold text-amber-800 ring-1 ring-amber-200 shadow-sm shadow-amber-100/60 dark:bg-amber-500/15 dark:text-amber-200 dark:ring-amber-400/30 dark:shadow-none">
+                  <Icon name="sparkles" size="xs" :stroke-width="2.5" />
+                  <span class="truncate">{{ badgeText }}</span>
+                </span>
                 <span :class="['inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium', badgeLightClass]">
                   {{ pLabel }}
                 </span>
@@ -385,35 +373,4 @@ const validitySuffix = computed(() => {
   box-shadow: none;
 }
 
-/* 主推徽章：缓慢"扫光"动效，强化高级感（5s 一次，淡淡的不抢戏）。
-   用 ::after 叠一条 45° 白色半透明斜光带，从徽章左侧扫到右侧。
-   prefers-reduced-motion 用户禁用动画。 */
-.popular-ribbon > div > div {
-  position: absolute; /* 保留 inline 的定位继承 */
-  overflow: hidden;
-}
-.popular-ribbon > div > div::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    100deg,
-    transparent 30%,
-    rgba(255, 255, 255, 0.45) 50%,
-    transparent 70%
-  );
-  transform: translateX(-100%);
-  animation: popular-shine 5s ease-in-out infinite;
-  pointer-events: none;
-}
-@keyframes popular-shine {
-  0%, 60% { transform: translateX(-100%); }
-  80% { transform: translateX(100%); }
-  100% { transform: translateX(100%); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .popular-ribbon > div > div::after {
-    animation: none;
-  }
-}
 </style>

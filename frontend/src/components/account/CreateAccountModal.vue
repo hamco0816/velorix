@@ -68,14 +68,50 @@
       </div>
 
       <!-- 订阅档位：可选；用于定价助手按档位聚合用量统计 -->
-      <div>
-        <label class="input-label">{{ t('admin.accounts.subscriptionTier') }}</label>
+      <div class="rounded-xl border border-gray-200/70 bg-gray-50/70 p-3 dark:border-dark-700/60 dark:bg-dark-800/35">
+        <div class="mb-2 flex items-center justify-between gap-3">
+          <label class="input-label mb-0">{{ t('admin.accounts.subscriptionTier') }}</label>
+          <span class="shrink-0 rounded-full bg-white px-2 py-0.5 text-[11px] font-medium text-gray-500 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800 dark:text-dark-300 dark:ring-dark-700/70">
+            {{ t('admin.accounts.subscriptionTierBadge') }}
+          </span>
+        </div>
         <Select
           v-model="form.subscription_tier"
           :options="subscriptionTierOptions"
           :placeholder="t('admin.accounts.subscriptionTierPlaceholder')"
-        />
-        <p class="input-hint">{{ t('admin.accounts.subscriptionTierHint') }}</p>
+          :searchable="false"
+        >
+          <template #selected="{ option }">
+            <div class="min-w-0">
+              <div class="truncate text-sm font-semibold text-gray-900 dark:text-gray-50">
+                {{ option?.label || t('admin.accounts.subscriptionTierPlaceholder') }}
+              </div>
+              <div v-if="option?.description" class="mt-0.5 truncate text-[11px] leading-tight text-gray-500 dark:text-dark-300">
+                {{ option.description }}
+              </div>
+            </div>
+          </template>
+          <template #option="{ option, selected }">
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2">
+                <span class="truncate font-medium" :class="selected ? 'text-primary-700 dark:text-primary-300' : 'text-gray-800 dark:text-gray-100'">
+                  {{ option.label }}
+                </span>
+                <span v-if="option.value === ''" class="shrink-0 rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-dark-700 dark:text-dark-300">
+                  {{ t('admin.accounts.subscriptionTierOptional') }}
+                </span>
+              </div>
+              <p v-if="option.description" class="mt-0.5 truncate text-xs text-gray-500 dark:text-dark-400">
+                {{ option.description }}
+              </p>
+            </div>
+            <Icon v-if="selected" name="check" size="sm" class="shrink-0 text-primary-500" :stroke-width="2" />
+          </template>
+        </Select>
+        <p class="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-gray-600 dark:text-dark-300">
+          <Icon name="infoCircle" size="xs" class="mt-0.5 shrink-0 text-gray-400 dark:text-dark-400" />
+          <span>{{ t('admin.accounts.subscriptionTierHint') }}</span>
+        </p>
       </div>
 
       <!-- Platform Selection - Segmented Control Style -->
@@ -3485,35 +3521,41 @@ const form = reactive({
   expires_at: null as number | null
 })
 
+const createSubscriptionTierOption = (value: string, label: string, descriptionKey: string) => ({
+  value,
+  label,
+  description: t(`admin.accounts.subscriptionTierDescriptions.${descriptionKey}`)
+})
+
 // 订阅档位下拉：按 platform 动态切换可选档位（保留空选项 = 未分类）
 const subscriptionTierOptions = computed(() => {
-  const base = [{ value: '', label: t('admin.accounts.tierUnclassified') }]
+  const base = [createSubscriptionTierOption('', t('admin.accounts.tierUnclassified'), 'unclassified')]
   if (form.platform === 'openai') {
     return [
       ...base,
-      { value: 'free', label: 'Free' },
-      { value: 'plus', label: 'Plus' },
-      { value: 'pro_5x', label: 'Pro 5x' },
-      { value: 'pro_20x', label: 'Pro 20x' },
-      { value: 'team', label: 'Team' },
+      createSubscriptionTierOption('free', 'Free', 'free'),
+      createSubscriptionTierOption('plus', 'Plus', 'paid'),
+      createSubscriptionTierOption('pro_5x', 'Pro 5x', 'high'),
+      createSubscriptionTierOption('pro_20x', 'Pro 20x', 'high'),
+      createSubscriptionTierOption('team', 'Team', 'team'),
     ]
   }
   if (form.platform === 'anthropic') {
     return [
       ...base,
-      { value: 'free', label: 'Free' },
-      { value: 'pro', label: 'Pro' },
-      { value: 'max_5x', label: 'Max 5x' },
-      { value: 'max_20x', label: 'Max 20x' },
-      { value: 'team', label: 'Team' },
+      createSubscriptionTierOption('free', 'Free', 'free'),
+      createSubscriptionTierOption('pro', 'Pro', 'paid'),
+      createSubscriptionTierOption('max_5x', 'Max 5x', 'high'),
+      createSubscriptionTierOption('max_20x', 'Max 20x', 'high'),
+      createSubscriptionTierOption('team', 'Team', 'team'),
     ]
   }
   if (form.platform === 'gemini') {
     return [
       ...base,
-      { value: 'free', label: 'Free' },
-      { value: 'pro', label: 'Pro' },
-      { value: 'ultra', label: 'Ultra' },
+      createSubscriptionTierOption('free', 'Free', 'free'),
+      createSubscriptionTierOption('pro', 'Pro', 'paid'),
+      createSubscriptionTierOption('ultra', 'Ultra', 'high'),
     ]
   }
   return base
@@ -4627,6 +4669,7 @@ const handleOpenAIExchange = async (authCode: string) => {
         notes: form.notes,
         platform: 'openai',
         type: 'oauth',
+        subscription_tier: form.subscription_tier || undefined,
         credentials,
         extra,
         proxy_id: form.proxy_id,
@@ -4724,6 +4767,7 @@ const handleOpenAIBatchRT = async (refreshTokenInput: string, clientId?: string)
             notes: form.notes,
             platform: 'openai',
             type: 'oauth',
+            subscription_tier: form.subscription_tier || undefined,
             credentials,
             extra,
             proxy_id: form.proxy_id,
@@ -5163,6 +5207,7 @@ const handleCookieAuth = async (sessionKey: string) => {
           notes: form.notes,
           platform: form.platform,
           type: addMethod.value, // Use addMethod as type: 'oauth' or 'setup-token'
+          subscription_tier: form.subscription_tier || undefined,
           credentials,
           extra,
           proxy_id: form.proxy_id,
