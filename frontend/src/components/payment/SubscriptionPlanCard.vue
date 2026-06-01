@@ -6,7 +6,7 @@
       'plan-card group relative flex min-h-[300px] flex-col overflow-hidden rounded-lg border-2 bg-white transition-colors dark:bg-dark-900',
       soldOut
         ? 'border-gray-200 opacity-65 grayscale dark:border-dark-700'
-        : isPopular
+        : hasBadge
           ? 'border-amber-400/80 shadow-amber-100 hover:border-amber-500 dark:border-amber-500/60 dark:hover:border-amber-400/80'
           : 'border-gray-200 hover:border-gray-300 dark:border-dark-700 dark:hover:border-dark-500',
     ]"
@@ -14,7 +14,7 @@
     <!-- 主推角标：右上角斜带，渐变 + 内层白线高光 + 暖色光晕，比平铺 badge 更显眼。
          purely SVG（sparkles 图标），无 emoji，符合系统设计规范。 -->
     <div
-      v-if="isPopular && !soldOut"
+      v-if="hasBadge && !soldOut"
       class="popular-ribbon pointer-events-none absolute right-0 top-0 z-10 overflow-hidden"
     >
       <div class="relative h-[96px] w-[96px]">
@@ -22,7 +22,7 @@
         <div class="absolute -right-[28px] top-[20px] flex w-[136px] rotate-45 flex-col items-center justify-center bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 py-[5px] text-white shadow-[0_2px_10px_rgba(245,158,11,0.55),0_1px_3px_rgba(0,0,0,0.25)] ring-1 ring-inset ring-white/35">
           <span class="flex items-center gap-[3px] text-[11px] font-extrabold uppercase tracking-[0.12em] drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)]">
             <Icon name="sparkles" size="xs" :stroke-width="2.75" />
-            {{ t('payment.planCard.popularBadge') }}
+            {{ badgeText }}
           </span>
         </div>
       </div>
@@ -294,8 +294,8 @@ const rateDisplay = computed(() => {
   return `×${Number(rate.toPrecision(10))}`
 })
 
-// 主推标记：admin 在 plan 上勾选 is_popular 后，卡片显示琥珀角标 + 描边强化
-const isPopular = computed(() => props.plan.is_popular === true)
+const badgeText = computed(() => (props.plan.badge_text || '').trim() || (props.plan.is_popular ? t('payment.planCard.popularBadge') : ''))
+const hasBadge = computed(() => badgeText.value !== '')
 
 // 限额可视性：废限额自动隐藏（被更紧的限额覆盖时不展示，避免用户困惑）
 const limitVisibility = computed(() =>

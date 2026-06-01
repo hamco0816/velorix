@@ -126,7 +126,9 @@ export interface SubscriptionPlan {
   features: string[]
   for_sale: boolean
   sort_order: number
-  /** 主推标记（migration 143）：admin 标记的"⭐主推"档位，订阅卡会显示徽章吸引用户视觉 */
+  /** Short custom plan badge shown on the user plan card. Empty means no badge. */
+  badge_text?: string
+  /** Legacy popular marker retained for API compatibility. New UI uses badge_text. */
   is_popular?: boolean
   /** 'shared' = 共享池套餐；'exclusive' = 独享池套餐（购买后独占一个账号） */
   kind?: 'shared' | 'exclusive'

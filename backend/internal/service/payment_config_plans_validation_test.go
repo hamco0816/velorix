@@ -191,3 +191,21 @@ func TestValidatePlanPatch_AllNil(t *testing.T) {
 	err := validatePlanPatch(UpdatePlanRequest{})
 	require.NoError(t, err)
 }
+
+func TestNormalizePlanBadgeText_TrimsAndAllowsChineseLimit(t *testing.T) {
+	got, err := normalizePlanBadgeText("  热门推荐套餐标签  ")
+	require.NoError(t, err)
+	require.Equal(t, "热门推荐套餐标签", got)
+}
+
+func TestNormalizePlanBadgeText_RejectsTooLong(t *testing.T) {
+	_, err := normalizePlanBadgeText("热门推荐套餐标签超长测试一二三")
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "PLAN_BADGE_TEXT_TOO_LONG")
+}
+
+func TestPlanBadgeTextForCreate_KeepsLegacyPopularBadgeEmpty(t *testing.T) {
+	got, err := planBadgeTextForCreate(CreatePlanRequest{IsPopular: true})
+	require.NoError(t, err)
+	require.Equal(t, "", got)
+}

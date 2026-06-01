@@ -33599,6 +33599,7 @@ type SubscriptionPlanMutation struct {
 	sort_order           *int
 	addsort_order        *int
 	is_popular           *bool
+	badge_text           *string
 	kind                 *string
 	daily_limit_usd      *float64
 	adddaily_limit_usd   *float64
@@ -34260,6 +34261,42 @@ func (m *SubscriptionPlanMutation) ResetIsPopular() {
 	m.is_popular = nil
 }
 
+// SetBadgeText sets the "badge_text" field.
+func (m *SubscriptionPlanMutation) SetBadgeText(s string) {
+	m.badge_text = &s
+}
+
+// BadgeText returns the value of the "badge_text" field in the mutation.
+func (m *SubscriptionPlanMutation) BadgeText() (r string, exists bool) {
+	v := m.badge_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBadgeText returns the old "badge_text" field's value of the SubscriptionPlan entity.
+// If the SubscriptionPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscriptionPlanMutation) OldBadgeText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBadgeText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBadgeText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBadgeText: %w", err)
+	}
+	return oldValue.BadgeText, nil
+}
+
+// ResetBadgeText resets all changes to the "badge_text" field.
+func (m *SubscriptionPlanMutation) ResetBadgeText() {
+	m.badge_text = nil
+}
+
 // SetKind sets the "kind" field.
 func (m *SubscriptionPlanMutation) SetKind(s string) {
 	m.kind = &s
@@ -34682,7 +34719,7 @@ func (m *SubscriptionPlanMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscriptionPlanMutation) Fields() []string {
-	fields := make([]string, 0, 19)
+	fields := make([]string, 0, 20)
 	if m.group_id != nil {
 		fields = append(fields, subscriptionplan.FieldGroupID)
 	}
@@ -34718,6 +34755,9 @@ func (m *SubscriptionPlanMutation) Fields() []string {
 	}
 	if m.is_popular != nil {
 		fields = append(fields, subscriptionplan.FieldIsPopular)
+	}
+	if m.badge_text != nil {
+		fields = append(fields, subscriptionplan.FieldBadgeText)
 	}
 	if m.kind != nil {
 		fields = append(fields, subscriptionplan.FieldKind)
@@ -34772,6 +34812,8 @@ func (m *SubscriptionPlanMutation) Field(name string) (ent.Value, bool) {
 		return m.SortOrder()
 	case subscriptionplan.FieldIsPopular:
 		return m.IsPopular()
+	case subscriptionplan.FieldBadgeText:
+		return m.BadgeText()
 	case subscriptionplan.FieldKind:
 		return m.Kind()
 	case subscriptionplan.FieldDailyLimitUsd:
@@ -34819,6 +34861,8 @@ func (m *SubscriptionPlanMutation) OldField(ctx context.Context, name string) (e
 		return m.OldSortOrder(ctx)
 	case subscriptionplan.FieldIsPopular:
 		return m.OldIsPopular(ctx)
+	case subscriptionplan.FieldBadgeText:
+		return m.OldBadgeText(ctx)
 	case subscriptionplan.FieldKind:
 		return m.OldKind(ctx)
 	case subscriptionplan.FieldDailyLimitUsd:
@@ -34925,6 +34969,13 @@ func (m *SubscriptionPlanMutation) SetField(name string, value ent.Value) error 
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIsPopular(v)
+		return nil
+	case subscriptionplan.FieldBadgeText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBadgeText(v)
 		return nil
 	case subscriptionplan.FieldKind:
 		v, ok := value.(string)
@@ -35203,6 +35254,9 @@ func (m *SubscriptionPlanMutation) ResetField(name string) error {
 		return nil
 	case subscriptionplan.FieldIsPopular:
 		m.ResetIsPopular()
+		return nil
+	case subscriptionplan.FieldBadgeText:
+		m.ResetBadgeText()
 		return nil
 	case subscriptionplan.FieldKind:
 		m.ResetKind()

@@ -1293,6 +1293,7 @@ var (
 		{Name: "for_sale", Type: field.TypeBool, Default: true},
 		{Name: "sort_order", Type: field.TypeInt, Default: 0},
 		{Name: "is_popular", Type: field.TypeBool, Default: false},
+		{Name: "badge_text", Type: field.TypeString, Size: 48, Default: ""},
 		{Name: "kind", Type: field.TypeString, Size: 20, Default: "shared"},
 		{Name: "daily_limit_usd", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"postgres": "decimal(20,8)"}},
 		{Name: "weekly_limit_usd", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"postgres": "decimal(20,8)"}},

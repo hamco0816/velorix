@@ -35,12 +35,26 @@
 
       <div><label class="input-label">{{ t('payment.admin.planDescription') }} <span class="text-red-500">*</span></label><textarea v-model="planForm.description" rows="2" class="input" required></textarea></div>
       <div class="grid grid-cols-2 gap-4">
-        <div><label class="input-label">{{ t('payment.admin.price') }} <span class="text-red-500">*</span></label><input v-model.number="planForm.price" type="number" step="0.01" min="0.01" class="input" required /></div>
+        <div><label class="input-label">{{ t('payment.admin.price') }} <span class="text-red-500">*</span></label><input v-model.number="planForm.price" type="number" step="0.01" min="0.01" class="input" required @input="handleCostPriceInput" /></div>
         <div><label class="input-label">{{ t('payment.admin.originalPrice') }}</label><input v-model.number="planForm.original_price" type="number" step="0.01" min="0" class="input" /></div>
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div><label class="input-label">{{ t('payment.admin.validityDays') }} <span class="text-red-500">*</span></label><input v-model.number="planForm.validity_days" type="number" min="1" class="input" required /></div>
         <div><label class="input-label">{{ t('payment.admin.validityUnit') }} <span class="text-red-500">*</span></label><Select v-model="planForm.validity_unit" :options="validityUnitOptions" /></div>
+      </div>
+      <div>
+        <label class="input-label">{{ t('payment.admin.planBadgeText') }}</label>
+        <input v-model.trim="planForm.badge_text" type="text" maxlength="12" class="input" :placeholder="t('payment.admin.planBadgePlaceholder')" />
+        <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+          <span>{{ t('payment.admin.planBadgeHint') }}</span>
+          <span
+            v-if="planForm.badge_text"
+            class="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm"
+          >
+            <Icon name="sparkles" size="xs" :stroke-width="2.5" />
+            {{ planForm.badge_text }}
+          </span>
+        </div>
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div><label class="input-label">{{ t('payment.admin.sortOrder') }}</label><input v-model.number="planForm.sort_order" type="number" min="0" class="input" /></div>
@@ -73,7 +87,7 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="input-label">{{ t('payment.admin.planDailyLimitUSD') }}</label>
-            <input v-model.number="planForm.daily_limit_usd" type="number" step="0.01" min="0" class="input" :placeholder="t('payment.admin.limitInheritGroup')" />
+            <input v-model.number="planForm.daily_limit_usd" type="number" step="0.01" min="0" class="input" :placeholder="t('payment.admin.limitInheritGroup')" @input="handlePeriodLimitInput" />
             <p class="mt-1 text-[11px] leading-relaxed text-gray-400 dark:text-dark-500">
               {{ t('payment.admin.limitHint') }}
             </p>
@@ -82,7 +96,7 @@
             <label class="input-label">{{ t('payment.admin.planWeeklyLimitUSD') }}</label>
             <input v-model.number="planForm.weekly_limit_usd" type="number" step="0.01" min="0" class="input"
                    :class="limitWarnings.weekly ? 'border-amber-400 focus:border-amber-500 focus:ring-amber-300/40 dark:border-amber-500/60' : ''"
-                   :placeholder="t('payment.admin.limitInheritGroup')" />
+                   :placeholder="t('payment.admin.limitInheritGroup')" @input="handlePeriodLimitInput" />
             <p v-if="limitWarnings.weekly" class="mt-1 flex items-start gap-1 text-[11px] leading-relaxed text-amber-600 dark:text-amber-400">
               <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
               <span>{{ t('payment.admin.warnWeeklyRedundant', { max: Math.floor(limitWarnings.weekly.effectiveMax) }) }}</span>
@@ -92,7 +106,7 @@
             <label class="input-label">{{ t('payment.admin.planMonthlyLimitUSD') }}</label>
             <input v-model.number="planForm.monthly_limit_usd" type="number" step="0.01" min="0" class="input"
                    :class="limitWarnings.monthly ? 'border-amber-400 focus:border-amber-500 focus:ring-amber-300/40 dark:border-amber-500/60' : ''"
-                   :placeholder="t('payment.admin.limitInheritGroup')" />
+                   :placeholder="t('payment.admin.limitInheritGroup')" @input="handlePeriodLimitInput" />
             <p v-if="limitWarnings.monthly" class="mt-1 flex items-start gap-1 text-[11px] leading-relaxed text-amber-600 dark:text-amber-400">
               <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
               <span>{{ t('payment.admin.warnMonthlyRedundant_' + limitWarnings.monthly.cappedBy, { max: Math.floor(limitWarnings.monthly.effectiveMax) }) }}</span>
@@ -101,6 +115,61 @@
           <div>
             <label class="input-label">{{ t('payment.admin.planRateMultiplier') }}</label>
             <input v-model.number="planForm.rate_multiplier" type="number" step="0.01" min="0" class="input" :placeholder="t('payment.admin.limitInheritGroup')" />
+          </div>
+        </div>
+        <div class="col-span-2 mt-4 rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-xs dark:border-dark-700 dark:bg-dark-900/60">
+          <div class="mb-2 flex items-center justify-between gap-3">
+            <span class="font-semibold text-gray-800 dark:text-gray-100">{{ t('payment.admin.costMultiplierPreview') }}</span>
+            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500 dark:bg-dark-700 dark:text-dark-300">
+              {{ t('payment.admin.adminOnly') }}
+            </span>
+          </div>
+          <div v-if="costEstimate.effectiveCostMultiplier !== null" class="grid grid-cols-3 gap-2">
+            <div>
+              <span class="block text-gray-400">{{ t('payment.admin.quotaPriceRate') }}</span>
+              <span class="mt-0.5 block font-semibold text-gray-800 dark:text-gray-100">{{ formatCostMultiplier(costEstimate.priceQuotaMultiplier) }}</span>
+            </div>
+            <div>
+              <span class="block text-gray-400">{{ t('payment.admin.billingRate') }}</span>
+              <span class="mt-0.5 block font-semibold text-gray-800 dark:text-gray-100">{{ formatCostMultiplier(costEstimate.rateMultiplier) }}</span>
+            </div>
+            <div>
+              <span class="block text-gray-400">{{ t('payment.admin.effectiveCostRate') }}</span>
+              <span class="mt-0.5 block font-semibold text-emerald-700 dark:text-emerald-300">{{ formatCostMultiplier(costEstimate.effectiveCostMultiplier) }}</span>
+            </div>
+          </div>
+          <p v-else class="text-gray-500 dark:text-dark-400">{{ t('payment.admin.costMultiplierUnavailable') }}</p>
+          <p v-if="costEstimate.periodLimitUSD !== null" class="mt-2 text-[11px] text-gray-400 dark:text-dark-500">
+            {{ t('payment.admin.periodQuotaUsed', { quota: Number(costEstimate.periodLimitUSD.toFixed(4)) }) }}
+          </p>
+          <div class="mt-3 grid gap-2 border-t border-slate-100 pt-3 dark:border-dark-700 sm:grid-cols-2">
+            <div>
+              <label class="input-label">{{ t('payment.admin.targetCostMultiplier') }}</label>
+              <input
+                v-model.number="targetCostMultiplier"
+                type="number"
+                step="0.0001"
+                min="0"
+                class="input"
+                :placeholder="t('payment.admin.targetCostMultiplierPlaceholder')"
+                @input="handleCostTargetInput"
+              />
+            </div>
+            <div>
+              <label class="input-label">{{ t('payment.admin.periodQuotaInput') }}</label>
+              <input
+                v-model.number="periodQuotaInput"
+                type="number"
+                step="0.01"
+                min="0"
+                class="input"
+                :placeholder="t('payment.admin.periodQuotaInputPlaceholder')"
+                @input="handleCostQuotaInput"
+              />
+            </div>
+            <p class="sm:col-span-2 text-[11px] leading-relaxed text-gray-400 dark:text-dark-500">
+              {{ calculatorStatusText }}
+            </p>
           </div>
         </div>
       </div>
@@ -136,25 +205,6 @@
         </span>
       </div>
 
-      <!-- 主推 toggle：勾选后用户端订阅卡显示 ⭐ 徽章 + 琥珀描边，引导用户优先选这档 -->
-      <div class="mt-3 flex items-center gap-3 rounded-lg border border-amber-200/60 bg-amber-50/40 px-3 py-2 dark:border-amber-500/20 dark:bg-amber-500/5">
-        <Icon name="sparkles" size="sm" class="text-amber-500" />
-        <label class="text-sm text-gray-700 dark:text-gray-300">{{ t('payment.admin.isPopular') }}</label>
-        <button
-          type="button"
-          :class="[
-            'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2',
-            planForm.is_popular ? 'bg-amber-500' : 'bg-gray-300 dark:bg-dark-600'
-          ]"
-          @click="planForm.is_popular = !planForm.is_popular"
-        >
-          <span :class="[
-            'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-            planForm.is_popular ? 'translate-x-5' : 'translate-x-0'
-          ]" />
-        </button>
-        <span class="ml-auto text-[11px] text-gray-500 dark:text-dark-400">{{ t('payment.admin.isPopularHint') }}</span>
-      </div>
     </form>
     <template #footer>
       <div class="flex justify-end gap-3">
@@ -166,7 +216,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch } from 'vue'
+import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
 import { adminPaymentAPI } from '@/api/admin/payment'
@@ -179,6 +229,8 @@ import Icon from '@/components/icons/Icon.vue'
 import GroupBadge from '@/components/common/GroupBadge.vue'
 import { platformTextClass } from '@/utils/platformColors'
 import { validatePlanLimits } from '@/utils/planLimits'
+import { normalizeToDays } from '@/utils/planCardType'
+import { calculatePlanCostEstimate, formatCostMultiplier } from '@/utils/planCost'
 
 const props = defineProps<{
   show: boolean
@@ -207,6 +259,11 @@ const { t } = useI18n()
 const appStore = useAppStore()
 
 const saving = ref(false)
+type CostCalcSource = 'price' | 'quota'
+const targetCostMultiplier = ref<number | null>(null)
+const periodQuotaInput = ref<number | null>(null)
+const costCalcSource = ref<CostCalcSource>('price')
+let syncingCostCalculator = false
 const planForm = reactive({
   name: '',
   group_id: null as number | null,
@@ -218,6 +275,7 @@ const planForm = reactive({
   sort_order: 0,
   for_sale: true,
   is_popular: false,
+  badge_text: '',
   kind: 'shared' as 'shared' | 'exclusive',
   // 套餐级覆盖字段：null/0 表示沿用 group 默认值
   daily_limit_usd: null as number | null,
@@ -263,6 +321,122 @@ const selectedGroupInfo = computed(() => {
   return props.groups.find(g => g.id === planForm.group_id) || null
 })
 
+function displayBadgeText(plan: SubscriptionPlan | null): string {
+  if (!plan) return ''
+  return (plan.badge_text || '').trim() || (plan.is_popular ? t('payment.admin.popularBadgeShort') : '')
+}
+
+function positiveNumber(value: number | null | undefined): number | null {
+  return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : null
+}
+
+function roundCurrency(value: number): number {
+  return Number(value.toFixed(2))
+}
+
+function roundMultiplierValue(value: number): number {
+  return Number(value.toFixed(4))
+}
+
+function activePeriodLimitTarget(): { field: 'daily_limit_usd' | 'weekly_limit_usd' | 'monthly_limit_usd'; label: string; factor: number } | null {
+  const totalDays = normalizeToDays(planForm.validity_days, planForm.validity_unit)
+  if (totalDays <= 0) return null
+  if (totalDays % 30 === 0) {
+    return { field: 'monthly_limit_usd', label: t('payment.admin.planMonthlyLimitUSD'), factor: totalDays / 30 }
+  }
+  if (totalDays % 7 === 0) {
+    return { field: 'weekly_limit_usd', label: t('payment.admin.planWeeklyLimitUSD'), factor: totalDays / 7 }
+  }
+  return { field: 'daily_limit_usd', label: t('payment.admin.planDailyLimitUSD'), factor: totalDays }
+}
+
+function setPeriodQuota(periodQuota: number | null) {
+  const target = activePeriodLimitTarget()
+  if (!target || periodQuota === null) return
+  planForm[target.field] = roundCurrency(periodQuota / target.factor)
+  periodQuotaInput.value = roundCurrency(periodQuota)
+}
+
+function syncPeriodQuotaFromEstimate() {
+  const quota = positiveNumber(costEstimate.value.periodLimitUSD)
+  periodQuotaInput.value = quota === null ? null : roundCurrency(quota)
+}
+
+function syncTargetFromEstimate() {
+  const multiplier = positiveNumber(costEstimate.value.effectiveCostMultiplier)
+  targetCostMultiplier.value = multiplier === null ? null : roundMultiplierValue(multiplier)
+}
+
+function recalculateQuotaFromPrice() {
+  const price = positiveNumber(planForm.price)
+  const target = positiveNumber(targetCostMultiplier.value)
+  const billingRate = positiveNumber(costEstimate.value.rateMultiplier) ?? 1
+  if (price === null || target === null || billingRate <= 0) return
+  setPeriodQuota((price * billingRate) / target)
+}
+
+function recalculatePriceFromQuota() {
+  const quota = positiveNumber(periodQuotaInput.value)
+  const target = positiveNumber(targetCostMultiplier.value)
+  const billingRate = positiveNumber(costEstimate.value.rateMultiplier) ?? 1
+  if (quota === null || target === null || billingRate <= 0) return
+  planForm.price = roundCurrency((target * quota) / billingRate)
+}
+
+function handleCostPriceInput() {
+  costCalcSource.value = 'price'
+  recalculateQuotaFromPrice()
+}
+
+function handleCostTargetInput() {
+  if (costCalcSource.value === 'quota') {
+    recalculatePriceFromQuota()
+    return
+  }
+  recalculateQuotaFromPrice()
+}
+
+function handleCostQuotaInput() {
+  costCalcSource.value = 'quota'
+  const quota = positiveNumber(periodQuotaInput.value)
+  setPeriodQuota(quota)
+  recalculatePriceFromQuota()
+}
+
+async function handlePeriodLimitInput() {
+  costCalcSource.value = 'quota'
+  await nextTick()
+  syncPeriodQuotaFromEstimate()
+  recalculatePriceFromQuota()
+}
+
+const calculatorStatusText = computed(() => {
+  const target = activePeriodLimitTarget()
+  if (!target) return t('payment.admin.costCalculatorUnavailable')
+  if (targetCostMultiplier.value && periodQuotaInput.value) {
+    return t('payment.admin.costCalculatorTarget', {
+      field: target.label,
+      value: roundCurrency(periodQuotaInput.value / target.factor),
+    })
+  }
+  return t('payment.admin.costCalculatorHint')
+})
+
+const costEstimate = computed(() =>
+  calculatePlanCostEstimate(
+    {
+      price: planForm.price,
+      validity_days: planForm.validity_days,
+      validity_unit: planForm.validity_unit,
+      rate_multiplier: planForm.rate_multiplier,
+      daily_limit_usd: planForm.daily_limit_usd,
+      weekly_limit_usd: planForm.weekly_limit_usd,
+      monthly_limit_usd: planForm.monthly_limit_usd,
+    },
+    selectedGroupInfo.value,
+  )
+)
+
 // Reset form when dialog opens
 watch(() => props.show, (visible) => {
   if (!visible) return
@@ -278,6 +452,7 @@ watch(() => props.show, (visible) => {
       sort_order: props.plan.sort_order || 0,
       for_sale: props.plan.for_sale,
       is_popular: props.plan.is_popular === true,
+      badge_text: displayBadgeText(props.plan),
       kind: props.plan.kind || 'shared',
       daily_limit_usd: (props.plan as any).daily_limit_usd ?? null,
       weekly_limit_usd: (props.plan as any).weekly_limit_usd ?? null,
@@ -299,6 +474,7 @@ watch(() => props.show, (visible) => {
       sort_order: 0,
       for_sale: true,
       is_popular: false,
+      badge_text: '',
       kind: 'shared',
       daily_limit_usd: p.daily_limit_usd ?? null,
       weekly_limit_usd: p.weekly_limit_usd ?? null,
@@ -307,7 +483,30 @@ watch(() => props.show, (visible) => {
     })
     planFeaturesText.value = ''
   }
+  syncPeriodQuotaFromEstimate()
+  syncTargetFromEstimate()
 })
+
+watch(
+  () => costEstimate.value.periodLimitUSD,
+  () => {
+    if (!syncingCostCalculator) syncPeriodQuotaFromEstimate()
+  },
+)
+
+watch(
+  () => [planForm.validity_days, planForm.validity_unit, planForm.rate_multiplier, selectedGroupInfo.value?.rate_multiplier],
+  () => {
+    if (!targetCostMultiplier.value) return
+    syncingCostCalculator = true
+    try {
+      if (costCalcSource.value === 'quota') recalculatePriceFromQuota()
+      else recalculateQuotaFromPrice()
+    } finally {
+      syncingCostCalculator = false
+    }
+  },
+)
 
 /** Build request payload with snake_case keys matching backend JSON tags */
 function buildPlanPayload() {
@@ -329,7 +528,8 @@ function buildPlanPayload() {
     validity_unit: planForm.validity_unit,
     sort_order: planForm.sort_order,
     for_sale: planForm.for_sale,
-    is_popular: planForm.is_popular,
+    is_popular: planForm.badge_text.trim() !== '',
+    badge_text: planForm.badge_text.trim(),
     features,
     kind: planForm.kind,
     daily_limit_usd: optionalLimit(planForm.daily_limit_usd),

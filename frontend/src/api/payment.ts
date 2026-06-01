@@ -29,6 +29,8 @@ export interface PublicPlan {
   features: string
   product_name: string
   sort_order: number
+  is_popular?: boolean
+  badge_text?: string
 }
 
 export const paymentAPI = {

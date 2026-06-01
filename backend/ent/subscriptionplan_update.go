@@ -237,6 +237,20 @@ func (_u *SubscriptionPlanUpdate) SetNillableIsPopular(v *bool) *SubscriptionPla
 	return _u
 }
 
+// SetBadgeText sets the "badge_text" field.
+func (_u *SubscriptionPlanUpdate) SetBadgeText(v string) *SubscriptionPlanUpdate {
+	_u.mutation.SetBadgeText(v)
+	return _u
+}
+
+// SetNillableBadgeText sets the "badge_text" field if the given value is not nil.
+func (_u *SubscriptionPlanUpdate) SetNillableBadgeText(v *string) *SubscriptionPlanUpdate {
+	if v != nil {
+		_u.SetBadgeText(*v)
+	}
+	return _u
+}
+
 // SetKind sets the "kind" field.
 func (_u *SubscriptionPlanUpdate) SetKind(v string) *SubscriptionPlanUpdate {
 	_u.mutation.SetKind(v)
@@ -423,6 +437,11 @@ func (_u *SubscriptionPlanUpdate) check() error {
 			return &ValidationError{Name: "product_name", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.product_name": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.BadgeText(); ok {
+		if err := subscriptionplan.BadgeTextValidator(v); err != nil {
+			return &ValidationError{Name: "badge_text", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.badge_text": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Kind(); ok {
 		if err := subscriptionplan.KindValidator(v); err != nil {
 			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.kind": %w`, err)}
@@ -496,6 +515,9 @@ func (_u *SubscriptionPlanUpdate) sqlSave(ctx context.Context) (_node int, err e
 	}
 	if value, ok := _u.mutation.IsPopular(); ok {
 		_spec.SetField(subscriptionplan.FieldIsPopular, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.BadgeText(); ok {
+		_spec.SetField(subscriptionplan.FieldBadgeText, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Kind(); ok {
 		_spec.SetField(subscriptionplan.FieldKind, field.TypeString, value)
@@ -768,6 +790,20 @@ func (_u *SubscriptionPlanUpdateOne) SetNillableIsPopular(v *bool) *Subscription
 	return _u
 }
 
+// SetBadgeText sets the "badge_text" field.
+func (_u *SubscriptionPlanUpdateOne) SetBadgeText(v string) *SubscriptionPlanUpdateOne {
+	_u.mutation.SetBadgeText(v)
+	return _u
+}
+
+// SetNillableBadgeText sets the "badge_text" field if the given value is not nil.
+func (_u *SubscriptionPlanUpdateOne) SetNillableBadgeText(v *string) *SubscriptionPlanUpdateOne {
+	if v != nil {
+		_u.SetBadgeText(*v)
+	}
+	return _u
+}
+
 // SetKind sets the "kind" field.
 func (_u *SubscriptionPlanUpdateOne) SetKind(v string) *SubscriptionPlanUpdateOne {
 	_u.mutation.SetKind(v)
@@ -967,6 +1003,11 @@ func (_u *SubscriptionPlanUpdateOne) check() error {
 			return &ValidationError{Name: "product_name", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.product_name": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.BadgeText(); ok {
+		if err := subscriptionplan.BadgeTextValidator(v); err != nil {
+			return &ValidationError{Name: "badge_text", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.badge_text": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Kind(); ok {
 		if err := subscriptionplan.KindValidator(v); err != nil {
 			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.kind": %w`, err)}
@@ -1057,6 +1098,9 @@ func (_u *SubscriptionPlanUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 	}
 	if value, ok := _u.mutation.IsPopular(); ok {
 		_spec.SetField(subscriptionplan.FieldIsPopular, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.BadgeText(); ok {
+		_spec.SetField(subscriptionplan.FieldBadgeText, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Kind(); ok {
 		_spec.SetField(subscriptionplan.FieldKind, field.TypeString, value)

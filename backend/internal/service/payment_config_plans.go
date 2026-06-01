@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	dbent "github.com/Wei-Shaw/sub2api/ent"
 	"github.com/Wei-Shaw/sub2api/ent/exclusivesubscription"
@@ -17,6 +18,10 @@ import (
 // 续费宽限期：与 PaymentService.precheckPlanLockWithRenewal 中允许 expired 续费的窗口保持一致。
 // 修改时请同步更新两处。
 const seatRenewalGraceWindow = 7 * 24 * time.Hour
+
+const (
+	maxPlanBadgeTextRunes = 12
+)
 
 // countProtectedSeatsByPlan 统计该 plan 当前被"用户业务还在持有"的 seat 数：
 //   - active：明确还在用
@@ -96,7 +101,31 @@ func validatePlanPatch(req UpdatePlanRequest) error {
 	if req.OriginalPrice != nil && *req.OriginalPrice < 0 {
 		return infraerrors.BadRequest("PLAN_ORIGINAL_PRICE_INVALID", "original price must be >= 0")
 	}
+	if req.BadgeText != nil {
+		if _, err := normalizePlanBadgeText(*req.BadgeText); err != nil {
+			return err
+		}
+	}
 	return nil
+}
+
+func normalizePlanBadgeText(raw string) (string, error) {
+	v := strings.TrimSpace(raw)
+	if v == "" {
+		return "", nil
+	}
+	if utf8.RuneCountInString(v) > maxPlanBadgeTextRunes {
+		return "", infraerrors.BadRequest("PLAN_BADGE_TEXT_TOO_LONG", fmt.Sprintf("badge_text can contain at most %d characters", maxPlanBadgeTextRunes))
+	}
+	return v, nil
+}
+
+func planBadgeTextForCreate(req CreatePlanRequest) (string, error) {
+	badgeText, err := normalizePlanBadgeText(req.BadgeText)
+	if err != nil {
+		return "", err
+	}
+	return badgeText, nil
 }
 
 // --- Plan CRUD ---
@@ -170,11 +199,15 @@ func (s *PaymentConfigService) CreatePlan(ctx context.Context, req CreatePlanReq
 	if err != nil {
 		return nil, err
 	}
+	badgeText, err := planBadgeTextForCreate(req)
+	if err != nil {
+		return nil, err
+	}
 	b := s.entClient.SubscriptionPlan.Create().
 		SetGroupID(req.GroupID).SetName(req.Name).SetDescription(req.Description).
 		SetPrice(req.Price).SetValidityDays(req.ValidityDays).SetValidityUnit(req.ValidityUnit).
 		SetFeatures(req.Features).SetProductName(req.ProductName).
-		SetForSale(req.ForSale).SetSortOrder(req.SortOrder).SetIsPopular(req.IsPopular).SetKind(kind)
+		SetForSale(req.ForSale).SetSortOrder(req.SortOrder).SetIsPopular(req.IsPopular || badgeText != "").SetBadgeText(badgeText).SetKind(kind)
 	if req.OriginalPrice != nil {
 		b.SetOriginalPrice(*req.OriginalPrice)
 	}
@@ -265,6 +298,19 @@ func (s *PaymentConfigService) UpdatePlan(ctx context.Context, id int64, req Upd
 	}
 	if req.IsPopular != nil {
 		u.SetIsPopular(*req.IsPopular)
+	}
+	if req.BadgeText != nil {
+		badgeText, err := normalizePlanBadgeText(*req.BadgeText)
+		if err != nil {
+			return nil, err
+		}
+		u.SetBadgeText(badgeText)
+		if req.IsPopular == nil {
+			u.SetIsPopular(badgeText != "")
+		}
+	}
+	if req.BadgeText == nil && req.IsPopular != nil && !*req.IsPopular {
+		u.SetBadgeText("")
 	}
 	if req.Kind != nil {
 		kind, err := normalizePlanKind(*req.Kind)

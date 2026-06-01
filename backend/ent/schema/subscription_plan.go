@@ -63,6 +63,9 @@ func (SubscriptionPlan) Fields() []ent.Field {
 		// 不影响排序，sort_order 仍然是显示顺序的唯一来源。
 		field.Bool("is_popular").
 			Default(false),
+		field.String("badge_text").
+			MaxLen(48).
+			Default(""),
 		// 套餐类型：shared = 共享池订阅（用户共享 group 内账号）
 		// exclusive = 独享池订阅（购买后从 group 池子里独占分配一个账号）
 		field.String("kind").

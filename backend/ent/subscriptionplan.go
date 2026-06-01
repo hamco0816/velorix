@@ -41,6 +41,8 @@ type SubscriptionPlan struct {
 	SortOrder int `json:"sort_order,omitempty"`
 	// IsPopular holds the value of the "is_popular" field.
 	IsPopular bool `json:"is_popular,omitempty"`
+	// BadgeText holds the value of the "badge_text" field.
+	BadgeText string `json:"badge_text,omitempty"`
 	// Kind holds the value of the "kind" field.
 	Kind string `json:"kind,omitempty"`
 	// DailyLimitUsd holds the value of the "daily_limit_usd" field.
@@ -69,7 +71,7 @@ func (*SubscriptionPlan) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullFloat64)
 		case subscriptionplan.FieldID, subscriptionplan.FieldGroupID, subscriptionplan.FieldValidityDays, subscriptionplan.FieldSortOrder:
 			values[i] = new(sql.NullInt64)
-		case subscriptionplan.FieldName, subscriptionplan.FieldDescription, subscriptionplan.FieldValidityUnit, subscriptionplan.FieldFeatures, subscriptionplan.FieldProductName, subscriptionplan.FieldKind:
+		case subscriptionplan.FieldName, subscriptionplan.FieldDescription, subscriptionplan.FieldValidityUnit, subscriptionplan.FieldFeatures, subscriptionplan.FieldProductName, subscriptionplan.FieldBadgeText, subscriptionplan.FieldKind:
 			values[i] = new(sql.NullString)
 		case subscriptionplan.FieldCreatedAt, subscriptionplan.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -166,6 +168,12 @@ func (_m *SubscriptionPlan) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field is_popular", values[i])
 			} else if value.Valid {
 				_m.IsPopular = value.Bool
+			}
+		case subscriptionplan.FieldBadgeText:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field badge_text", values[i])
+			} else if value.Valid {
+				_m.BadgeText = value.String
 			}
 		case subscriptionplan.FieldKind:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -286,6 +294,9 @@ func (_m *SubscriptionPlan) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("is_popular=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IsPopular))
+	builder.WriteString(", ")
+	builder.WriteString("badge_text=")
+	builder.WriteString(_m.BadgeText)
 	builder.WriteString(", ")
 	builder.WriteString("kind=")
 	builder.WriteString(_m.Kind)

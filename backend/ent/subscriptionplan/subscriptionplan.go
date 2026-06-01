@@ -37,6 +37,8 @@ const (
 	FieldSortOrder = "sort_order"
 	// FieldIsPopular holds the string denoting the is_popular field in the database.
 	FieldIsPopular = "is_popular"
+	// FieldBadgeText holds the string denoting the badge_text field in the database.
+	FieldBadgeText = "badge_text"
 	// FieldKind holds the string denoting the kind field in the database.
 	FieldKind = "kind"
 	// FieldDailyLimitUsd holds the string denoting the daily_limit_usd field in the database.
@@ -70,6 +72,7 @@ var Columns = []string{
 	FieldForSale,
 	FieldSortOrder,
 	FieldIsPopular,
+	FieldBadgeText,
 	FieldKind,
 	FieldDailyLimitUsd,
 	FieldWeeklyLimitUsd,
@@ -112,6 +115,10 @@ var (
 	DefaultSortOrder int
 	// DefaultIsPopular holds the default value on creation for the "is_popular" field.
 	DefaultIsPopular bool
+	// DefaultBadgeText holds the default value on creation for the "badge_text" field.
+	DefaultBadgeText string
+	// BadgeTextValidator is a validator for the "badge_text" field. It is called by the builders before save.
+	BadgeTextValidator func(string) error
 	// DefaultKind holds the default value on creation for the "kind" field.
 	DefaultKind string
 	// KindValidator is a validator for the "kind" field. It is called by the builders before save.
@@ -190,6 +197,11 @@ func BySortOrder(opts ...sql.OrderTermOption) OrderOption {
 // ByIsPopular orders the results by the is_popular field.
 func ByIsPopular(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsPopular, opts...).ToFunc()
+}
+
+// ByBadgeText orders the results by the badge_text field.
+func ByBadgeText(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBadgeText, opts...).ToFunc()
 }
 
 // ByKind orders the results by the kind field.

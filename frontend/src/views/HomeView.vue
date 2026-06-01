@@ -378,7 +378,7 @@
                 v-if="plan.recommended"
                 class="absolute -top-2.5 right-6 inline-flex items-center rounded-full bg-brand-500 px-2.5 py-0.5 text-[11px] font-semibold text-white"
               >
-                {{ t('home.pricing.recommended') }}
+                {{ plan.badgeText }}
               </span>
 
               <h3 class="text-[15px] font-semibold tracking-tight" :class="plan.recommended ? 'text-white' : 'text-gray-900 dark:text-white'">
@@ -624,6 +624,7 @@ interface DisplayPlan {
   features: string[]
   productName: string
   recommended: boolean
+  badgeText: string
 }
 
 const plans = ref<DisplayPlan[]>([])
@@ -663,19 +664,21 @@ async function loadPlans() {
     const list = await paymentAPI.getPlansPublic()
     if (Array.isArray(list) && list.length > 0) {
       const sorted = [...list].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
-      // 中间那张默认推荐，引导用户视觉聚焦
-      const midIdx = Math.floor(sorted.length / 2)
-      plans.value = sorted.map((p: PublicPlan, i: number): DisplayPlan => ({
-        id: p.id,
-        name: p.name,
-        description: p.description || '',
-        price: p.price,
-        originalPrice: p.original_price,
-        validityLabel: formatValidity(p.validity_days, p.validity_unit),
-        features: parsePlanFeatures(p.features),
-        productName: p.product_name,
-        recommended: i === midIdx
-      }))
+      plans.value = sorted.map((p: PublicPlan): DisplayPlan => {
+        const badgeText = (p.badge_text || '').trim() || (p.is_popular ? t('home.pricing.recommended') : '')
+        return {
+          id: p.id,
+          name: p.name,
+          description: p.description || '',
+          price: p.price,
+          originalPrice: p.original_price,
+          validityLabel: formatValidity(p.validity_days, p.validity_unit),
+          features: parsePlanFeatures(p.features),
+          productName: p.product_name,
+          recommended: badgeText !== '',
+          badgeText,
+        }
+      })
     } else {
       plans.value = []
     }

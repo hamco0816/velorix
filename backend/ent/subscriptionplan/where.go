@@ -114,6 +114,11 @@ func IsPopular(v bool) predicate.SubscriptionPlan {
 	return predicate.SubscriptionPlan(sql.FieldEQ(FieldIsPopular, v))
 }
 
+// BadgeText applies equality check predicate on the "badge_text" field. It's identical to BadgeTextEQ.
+func BadgeText(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldEQ(FieldBadgeText, v))
+}
+
 // Kind applies equality check predicate on the "kind" field. It's identical to KindEQ.
 func Kind(v string) predicate.SubscriptionPlan {
 	return predicate.SubscriptionPlan(sql.FieldEQ(FieldKind, v))
@@ -702,6 +707,71 @@ func IsPopularEQ(v bool) predicate.SubscriptionPlan {
 // IsPopularNEQ applies the NEQ predicate on the "is_popular" field.
 func IsPopularNEQ(v bool) predicate.SubscriptionPlan {
 	return predicate.SubscriptionPlan(sql.FieldNEQ(FieldIsPopular, v))
+}
+
+// BadgeTextEQ applies the EQ predicate on the "badge_text" field.
+func BadgeTextEQ(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldEQ(FieldBadgeText, v))
+}
+
+// BadgeTextNEQ applies the NEQ predicate on the "badge_text" field.
+func BadgeTextNEQ(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldNEQ(FieldBadgeText, v))
+}
+
+// BadgeTextIn applies the In predicate on the "badge_text" field.
+func BadgeTextIn(vs ...string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldIn(FieldBadgeText, vs...))
+}
+
+// BadgeTextNotIn applies the NotIn predicate on the "badge_text" field.
+func BadgeTextNotIn(vs ...string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldNotIn(FieldBadgeText, vs...))
+}
+
+// BadgeTextGT applies the GT predicate on the "badge_text" field.
+func BadgeTextGT(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldGT(FieldBadgeText, v))
+}
+
+// BadgeTextGTE applies the GTE predicate on the "badge_text" field.
+func BadgeTextGTE(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldGTE(FieldBadgeText, v))
+}
+
+// BadgeTextLT applies the LT predicate on the "badge_text" field.
+func BadgeTextLT(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldLT(FieldBadgeText, v))
+}
+
+// BadgeTextLTE applies the LTE predicate on the "badge_text" field.
+func BadgeTextLTE(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldLTE(FieldBadgeText, v))
+}
+
+// BadgeTextContains applies the Contains predicate on the "badge_text" field.
+func BadgeTextContains(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldContains(FieldBadgeText, v))
+}
+
+// BadgeTextHasPrefix applies the HasPrefix predicate on the "badge_text" field.
+func BadgeTextHasPrefix(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldHasPrefix(FieldBadgeText, v))
+}
+
+// BadgeTextHasSuffix applies the HasSuffix predicate on the "badge_text" field.
+func BadgeTextHasSuffix(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldHasSuffix(FieldBadgeText, v))
+}
+
+// BadgeTextEqualFold applies the EqualFold predicate on the "badge_text" field.
+func BadgeTextEqualFold(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldEqualFold(FieldBadgeText, v))
+}
+
+// BadgeTextContainsFold applies the ContainsFold predicate on the "badge_text" field.
+func BadgeTextContainsFold(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldContainsFold(FieldBadgeText, v))
 }
 
 // KindEQ applies the EQ predicate on the "kind" field.

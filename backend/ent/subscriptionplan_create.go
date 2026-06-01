@@ -166,6 +166,20 @@ func (_c *SubscriptionPlanCreate) SetNillableIsPopular(v *bool) *SubscriptionPla
 	return _c
 }
 
+// SetBadgeText sets the "badge_text" field.
+func (_c *SubscriptionPlanCreate) SetBadgeText(v string) *SubscriptionPlanCreate {
+	_c.mutation.SetBadgeText(v)
+	return _c
+}
+
+// SetNillableBadgeText sets the "badge_text" field if the given value is not nil.
+func (_c *SubscriptionPlanCreate) SetNillableBadgeText(v *string) *SubscriptionPlanCreate {
+	if v != nil {
+		_c.SetBadgeText(*v)
+	}
+	return _c
+}
+
 // SetKind sets the "kind" field.
 func (_c *SubscriptionPlanCreate) SetKind(v string) *SubscriptionPlanCreate {
 	_c.mutation.SetKind(v)
@@ -331,6 +345,10 @@ func (_c *SubscriptionPlanCreate) defaults() {
 		v := subscriptionplan.DefaultIsPopular
 		_c.mutation.SetIsPopular(v)
 	}
+	if _, ok := _c.mutation.BadgeText(); !ok {
+		v := subscriptionplan.DefaultBadgeText
+		_c.mutation.SetBadgeText(v)
+	}
 	if _, ok := _c.mutation.Kind(); !ok {
 		v := subscriptionplan.DefaultKind
 		_c.mutation.SetKind(v)
@@ -394,6 +412,14 @@ func (_c *SubscriptionPlanCreate) check() error {
 	}
 	if _, ok := _c.mutation.IsPopular(); !ok {
 		return &ValidationError{Name: "is_popular", err: errors.New(`ent: missing required field "SubscriptionPlan.is_popular"`)}
+	}
+	if _, ok := _c.mutation.BadgeText(); !ok {
+		return &ValidationError{Name: "badge_text", err: errors.New(`ent: missing required field "SubscriptionPlan.badge_text"`)}
+	}
+	if v, ok := _c.mutation.BadgeText(); ok {
+		if err := subscriptionplan.BadgeTextValidator(v); err != nil {
+			return &ValidationError{Name: "badge_text", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.badge_text": %w`, err)}
+		}
 	}
 	if _, ok := _c.mutation.Kind(); !ok {
 		return &ValidationError{Name: "kind", err: errors.New(`ent: missing required field "SubscriptionPlan.kind"`)}
@@ -483,6 +509,10 @@ func (_c *SubscriptionPlanCreate) createSpec() (*SubscriptionPlan, *sqlgraph.Cre
 	if value, ok := _c.mutation.IsPopular(); ok {
 		_spec.SetField(subscriptionplan.FieldIsPopular, field.TypeBool, value)
 		_node.IsPopular = value
+	}
+	if value, ok := _c.mutation.BadgeText(); ok {
+		_spec.SetField(subscriptionplan.FieldBadgeText, field.TypeString, value)
+		_node.BadgeText = value
 	}
 	if value, ok := _c.mutation.Kind(); ok {
 		_spec.SetField(subscriptionplan.FieldKind, field.TypeString, value)
@@ -741,6 +771,18 @@ func (u *SubscriptionPlanUpsert) SetIsPopular(v bool) *SubscriptionPlanUpsert {
 // UpdateIsPopular sets the "is_popular" field to the value that was provided on create.
 func (u *SubscriptionPlanUpsert) UpdateIsPopular() *SubscriptionPlanUpsert {
 	u.SetExcluded(subscriptionplan.FieldIsPopular)
+	return u
+}
+
+// SetBadgeText sets the "badge_text" field.
+func (u *SubscriptionPlanUpsert) SetBadgeText(v string) *SubscriptionPlanUpsert {
+	u.Set(subscriptionplan.FieldBadgeText, v)
+	return u
+}
+
+// UpdateBadgeText sets the "badge_text" field to the value that was provided on create.
+func (u *SubscriptionPlanUpsert) UpdateBadgeText() *SubscriptionPlanUpsert {
+	u.SetExcluded(subscriptionplan.FieldBadgeText)
 	return u
 }
 
@@ -1116,6 +1158,20 @@ func (u *SubscriptionPlanUpsertOne) SetIsPopular(v bool) *SubscriptionPlanUpsert
 func (u *SubscriptionPlanUpsertOne) UpdateIsPopular() *SubscriptionPlanUpsertOne {
 	return u.Update(func(s *SubscriptionPlanUpsert) {
 		s.UpdateIsPopular()
+	})
+}
+
+// SetBadgeText sets the "badge_text" field.
+func (u *SubscriptionPlanUpsertOne) SetBadgeText(v string) *SubscriptionPlanUpsertOne {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.SetBadgeText(v)
+	})
+}
+
+// UpdateBadgeText sets the "badge_text" field to the value that was provided on create.
+func (u *SubscriptionPlanUpsertOne) UpdateBadgeText() *SubscriptionPlanUpsertOne {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.UpdateBadgeText()
 	})
 }
 
@@ -1677,6 +1733,20 @@ func (u *SubscriptionPlanUpsertBulk) SetIsPopular(v bool) *SubscriptionPlanUpser
 func (u *SubscriptionPlanUpsertBulk) UpdateIsPopular() *SubscriptionPlanUpsertBulk {
 	return u.Update(func(s *SubscriptionPlanUpsert) {
 		s.UpdateIsPopular()
+	})
+}
+
+// SetBadgeText sets the "badge_text" field.
+func (u *SubscriptionPlanUpsertBulk) SetBadgeText(v string) *SubscriptionPlanUpsertBulk {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.SetBadgeText(v)
+	})
+}
+
+// UpdateBadgeText sets the "badge_text" field to the value that was provided on create.
+func (u *SubscriptionPlanUpsertBulk) UpdateBadgeText() *SubscriptionPlanUpsertBulk {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.UpdateBadgeText()
 	})
 }
 

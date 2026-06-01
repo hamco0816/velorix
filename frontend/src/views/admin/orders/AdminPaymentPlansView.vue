@@ -96,12 +96,12 @@
               <!-- 主推标识：admin 一眼分清哪些档是主推（同 group 多档时尤其有用）。
                    渐变填充 + sparkles 图标，跟用户端徽章保持视觉一致。 -->
               <span
-                v-if="row.is_popular"
+                v-if="planBadgeText(row)"
                 class="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm"
-                :title="t('payment.admin.isPopularHint')"
+                :title="t('payment.admin.planBadgeHint')"
               >
                 <Icon name="sparkles" size="xs" :stroke-width="2.5" />
-                {{ t('payment.admin.popularBadgeShort') }}
+                {{ planBadgeText(row) }}
               </span>
               <span
                 v-if="row.kind === 'exclusive'"
@@ -182,6 +182,17 @@
             <span v-if="row.original_price" class="ml-1 text-xs text-gray-400 line-through">¥{{ row.original_price.toFixed(2) }}</span>
           </div>
         </template>
+        <template #cell-cost_multiplier="{ row }">
+          <div class="text-sm" :title="costMultiplierTitle(row)">
+            <span v-if="planCostEstimate(row).effectiveCostMultiplier !== null" class="font-semibold text-emerald-700 dark:text-emerald-300">
+              {{ formatCostMultiplier(planCostEstimate(row).effectiveCostMultiplier) }}
+            </span>
+            <span v-else class="text-gray-400">-</span>
+            <div v-if="planCostEstimate(row).effectiveCostMultiplier !== null" class="mt-0.5 text-[11px] text-gray-400">
+              {{ formatCostMultiplier(planCostEstimate(row).priceQuotaMultiplier) }} × {{ formatCostMultiplier(planCostEstimate(row).rateMultiplier) }}
+            </div>
+          </div>
+        </template>
         <template #cell-validity_days="{ value, row }">
           <span class="text-sm">{{ value }} {{ t('payment.admin.' + (row.validity_unit || 'days')) }}</span>
         </template>
@@ -252,6 +263,7 @@ import GroupBadge from '@/components/common/GroupBadge.vue'
 import PlanEditDialog from './PlanEditDialog.vue'
 import { platformTextClass } from '@/utils/platformColors'
 import { derivePlanCardType, cardTypeBadgeClass } from '@/utils/planCardType'
+import { calculatePlanCostEstimate, formatCostMultiplier } from '@/utils/planCost'
 
 const { t } = useI18n()
 const appStore = useAppStore()
@@ -332,6 +344,26 @@ function hasPlanLimitOverride(plan: SubscriptionPlan): boolean {
   // checkoutPlan 已经标好了 has_plan_limit_override；管理员 API 没有该字段时回退到原始字段判断
   if (typeof plan.has_plan_limit_override === 'boolean') return plan.has_plan_limit_override
   return Boolean(plan.daily_limit_usd || plan.weekly_limit_usd || plan.monthly_limit_usd || plan.rate_multiplier)
+}
+
+function planBadgeText(plan: SubscriptionPlan): string {
+  return (plan.badge_text || '').trim() || (plan.is_popular ? t('payment.admin.popularBadgeShort') : '')
+}
+
+function planCostEstimate(plan: SubscriptionPlan) {
+  return calculatePlanCostEstimate(plan, getGroup(plan.group_id))
+}
+
+function costMultiplierTitle(plan: SubscriptionPlan): string {
+  const estimate = planCostEstimate(plan)
+  if (estimate.effectiveCostMultiplier === null) return t('payment.admin.costMultiplierUnavailable')
+  const quota = estimate.periodLimitUSD === null ? '-' : Number(estimate.periodLimitUSD.toFixed(4))
+  return t('payment.admin.costMultiplierTitle', {
+    quota,
+    quotaRate: formatCostMultiplier(estimate.priceQuotaMultiplier),
+    billingRate: formatCostMultiplier(estimate.rateMultiplier),
+    effectiveRate: formatCostMultiplier(estimate.effectiveCostMultiplier),
+  })
 }
 
 
@@ -419,6 +451,7 @@ const filteredPlans = computed<SubscriptionPlan[]>(() => {
   if (!q) return plans.value
   return plans.value.filter((p) => {
     if (p.name.toLowerCase().includes(q)) return true
+    if (planBadgeText(p).toLowerCase().includes(q)) return true
     if (p.description && p.description.toLowerCase().includes(q)) return true
     if (p.features && p.features.some((f) => f.toLowerCase().includes(q))) return true
     const g = getGroup(p.group_id)
@@ -434,6 +467,7 @@ const planColumns = computed((): Column[] => [
   { key: 'name', label: t('payment.admin.planName'), sortable: true },
   { key: 'group_id', label: t('payment.admin.group') },
   { key: 'price', label: t('payment.admin.price'), numeric: true, sortable: true },
+  { key: 'cost_multiplier', label: t('payment.admin.costMultiplier'), numeric: true },
   { key: 'validity_days', label: t('payment.admin.validityDays'), numeric: true, sortable: true },
   { key: 'for_sale', label: t('payment.admin.forSale'), align: 'center', sortable: true },
   { key: 'sort_order', label: t('payment.admin.sortOrder'), numeric: true, sortable: true },
