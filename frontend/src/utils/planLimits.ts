@@ -12,6 +12,8 @@
  * 管理员侧：admin 配错时下方红字提醒，但不阻断提交（允许故意配置）。
  */
 
+import { normalizeToDays } from './planCardType'
+
 const MONTH_DAYS = 30
 const WEEK_DAYS = 7
 // 月折算到周：30 / 7 ≈ 4.2857
@@ -22,6 +24,8 @@ export interface LimitsInput {
   daily_limit_usd?: number | null
   weekly_limit_usd?: number | null
   monthly_limit_usd?: number | null
+  validity_days?: number | null
+  validity_unit?: string | null
 }
 
 export interface LimitVisibility {
@@ -50,16 +54,21 @@ export function getEffectiveLimitVisibility(limits: LimitsInput): LimitVisibilit
   const daily = limits.daily_limit_usd
   const weekly = limits.weekly_limit_usd
   const monthly = limits.monthly_limit_usd
+  const durationDays = normalizeToDays(limits.validity_days, limits.validity_unit)
+  const hasDuration = durationDays > 0
+  const allowDaily = !hasDuration || durationDays >= 1
+  const allowWeekly = !hasDuration || durationDays >= WEEK_DAYS
+  const allowMonthly = !hasDuration || durationDays >= MONTH_DAYS
 
-  const showDaily = daily != null
+  const showDaily = allowDaily && daily != null
 
-  let showWeekly = weekly != null
+  let showWeekly = allowWeekly && weekly != null
   if (showWeekly && weekly! > 0 && daily != null && daily > 0) {
     // weekly 是有限值，且 daily 也是有限值 → 比较 weekly vs daily × 7
     if (weekly! >= daily * WEEK_DAYS) showWeekly = false
   }
 
-  let showMonthly = monthly != null
+  let showMonthly = allowMonthly && monthly != null
   if (showMonthly && monthly! > 0) {
     // 收集所有"更紧的限额折算到月"的上限，取最小
     const bounds: number[] = []

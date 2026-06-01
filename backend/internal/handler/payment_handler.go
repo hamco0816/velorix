@@ -237,6 +237,7 @@ func (h *PaymentHandler) GetCheckoutInfo(c *gin.Context) {
 			Name:                 p.Name, Description: p.Description, Price: p.Price, OriginalPrice: p.OriginalPrice,
 			ValidityDays: p.ValidityDays, ValidityUnit: p.ValidityUnit, Features: parseFeatures(p.Features),
 			ProductName:    p.ProductName,
+			IsPopular:      p.IsPopular,
 			Kind:           p.Kind,
 			StockAvailable: stockPtr,
 		})
@@ -291,6 +292,7 @@ type checkoutPlan struct {
 	ValidityUnit         string   `json:"validity_unit"`
 	Features             []string `json:"features"`
 	ProductName          string   `json:"product_name"`
+	IsPopular            bool     `json:"is_popular"`
 	// 套餐类型 + 独享池库存（供 SubscriptionPlanCard 渲染独享徽章 / 售罄状态）
 	// shared 套餐 StockAvailable 为 nil（前端不展示库存提示）
 	Kind           string `json:"kind"`

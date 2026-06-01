@@ -1019,6 +1019,8 @@ const selectedPlanLimitVisibility = computed(() => {
     daily_limit_usd: selectedPlan.value.daily_limit_usd,
     weekly_limit_usd: selectedPlan.value.weekly_limit_usd,
     monthly_limit_usd: selectedPlan.value.monthly_limit_usd,
+    validity_days: selectedPlan.value.validity_days,
+    validity_unit: selectedPlan.value.validity_unit,
   })
 })
 

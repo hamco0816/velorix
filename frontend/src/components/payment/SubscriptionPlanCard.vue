@@ -303,6 +303,8 @@ const limitVisibility = computed(() =>
     daily_limit_usd: props.plan.daily_limit_usd,
     weekly_limit_usd: props.plan.weekly_limit_usd,
     monthly_limit_usd: props.plan.monthly_limit_usd,
+    validity_days: props.plan.validity_days,
+    validity_unit: props.plan.validity_unit,
   })
 )
 
