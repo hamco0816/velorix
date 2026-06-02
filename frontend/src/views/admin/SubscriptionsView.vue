@@ -214,22 +214,22 @@
           <template #cell-usage="{ row }">
             <div class="min-w-[280px] space-y-2">
               <!-- Daily Usage -->
-              <div v-if="row.group?.daily_limit_usd" class="usage-row">
+              <div v-if="getDailyLimit(row)" class="usage-row">
                 <div class="flex items-center gap-2">
                   <span class="usage-label">{{ t('admin.subscriptions.daily') }}</span>
                   <div class="h-1.5 flex-1 rounded-full bg-gray-200 dark:bg-dark-600">
                     <div
                       class="h-1.5 rounded-full transition-all"
-                      :class="getProgressClass(row.daily_usage_usd, row.group?.daily_limit_usd)"
+                      :class="getProgressClass(row.daily_usage_usd, getDailyLimit(row))"
                       :style="{
-                        width: getProgressWidth(row.daily_usage_usd, row.group?.daily_limit_usd)
+                        width: getProgressWidth(row.daily_usage_usd, getDailyLimit(row))
                       }"
                     ></div>
                   </div>
                   <span class="usage-amount">
                     ${{ row.daily_usage_usd?.toFixed(2) || '0.00' }}
                     <span class="text-gray-400">/</span>
-                    ${{ row.group?.daily_limit_usd?.toFixed(2) }}
+                    ${{ getDailyLimit(row)?.toFixed(2) }}
                   </span>
                 </div>
                 <div class="reset-info" v-if="row.daily_window_start">
@@ -251,22 +251,22 @@
               </div>
 
               <!-- Weekly Usage -->
-              <div v-if="row.group?.weekly_limit_usd" class="usage-row">
+              <div v-if="getWeeklyLimit(row)" class="usage-row">
                 <div class="flex items-center gap-2">
                   <span class="usage-label">{{ t('admin.subscriptions.weekly') }}</span>
                   <div class="h-1.5 flex-1 rounded-full bg-gray-200 dark:bg-dark-600">
                     <div
                       class="h-1.5 rounded-full transition-all"
-                      :class="getProgressClass(row.weekly_usage_usd, row.group?.weekly_limit_usd)"
+                      :class="getProgressClass(row.weekly_usage_usd, getWeeklyLimit(row))"
                       :style="{
-                        width: getProgressWidth(row.weekly_usage_usd, row.group?.weekly_limit_usd)
+                        width: getProgressWidth(row.weekly_usage_usd, getWeeklyLimit(row))
                       }"
                     ></div>
                   </div>
                   <span class="usage-amount">
                     ${{ row.weekly_usage_usd?.toFixed(2) || '0.00' }}
                     <span class="text-gray-400">/</span>
-                    ${{ row.group?.weekly_limit_usd?.toFixed(2) }}
+                    ${{ getWeeklyLimit(row)?.toFixed(2) }}
                   </span>
                 </div>
                 <div class="reset-info" v-if="row.weekly_window_start">
@@ -288,22 +288,22 @@
               </div>
 
               <!-- Monthly Usage -->
-              <div v-if="row.group?.monthly_limit_usd" class="usage-row">
+              <div v-if="getMonthlyLimit(row)" class="usage-row">
                 <div class="flex items-center gap-2">
                   <span class="usage-label">{{ t('admin.subscriptions.monthly') }}</span>
                   <div class="h-1.5 flex-1 rounded-full bg-gray-200 dark:bg-dark-600">
                     <div
                       class="h-1.5 rounded-full transition-all"
-                      :class="getProgressClass(row.monthly_usage_usd, row.group?.monthly_limit_usd)"
+                      :class="getProgressClass(row.monthly_usage_usd, getMonthlyLimit(row))"
                       :style="{
-                        width: getProgressWidth(row.monthly_usage_usd, row.group?.monthly_limit_usd)
+                        width: getProgressWidth(row.monthly_usage_usd, getMonthlyLimit(row))
                       }"
                     ></div>
                   </div>
                   <span class="usage-amount">
                     ${{ row.monthly_usage_usd?.toFixed(2) || '0.00' }}
                     <span class="text-gray-400">/</span>
-                    ${{ row.group?.monthly_limit_usd?.toFixed(2) }}
+                    ${{ getMonthlyLimit(row)?.toFixed(2) }}
                   </span>
                 </div>
                 <div class="reset-info" v-if="row.monthly_window_start">
@@ -326,11 +326,7 @@
 
               <!-- No Limits - Unlimited badge -->
               <div
-                v-if="
-                  !row.group?.daily_limit_usd &&
-                  !row.group?.weekly_limit_usd &&
-                  !row.group?.monthly_limit_usd
-                "
+                v-if="!hasUsageLimit(row)"
                 class="flex items-center gap-2 rounded-lg bg-gradient-to-r from-emerald-50 to-teal-50 px-3 py-2 dark:from-emerald-900/20 dark:to-teal-900/20"
               >
                 <span class="text-lg text-emerald-600 dark:text-emerald-400">∞</span>
@@ -1312,6 +1308,42 @@ const getDaysRemaining = (expiresAt: string): number | null => {
 const isExpiringSoon = (expiresAt: string): boolean => {
   const days = getDaysRemaining(expiresAt)
   return days !== null && days <= 7
+}
+
+const validLimit = (limit: number | null | undefined): number | null => {
+  return typeof limit === 'number' && limit > 0 ? limit : null
+}
+
+const getEffectiveLimit = (
+  subscriptionLimit: number | null | undefined,
+  groupLimit: number | null | undefined
+): number | null => {
+  return validLimit(subscriptionLimit) ?? validLimit(groupLimit)
+}
+
+const getDailyLimit = (subscription: UserSubscription): number | null => {
+  return getEffectiveLimit(
+    subscription.daily_limit_usd,
+    subscription.group?.daily_limit_usd
+  )
+}
+
+const getWeeklyLimit = (subscription: UserSubscription): number | null => {
+  return getEffectiveLimit(
+    subscription.weekly_limit_usd,
+    subscription.group?.weekly_limit_usd
+  )
+}
+
+const getMonthlyLimit = (subscription: UserSubscription): number | null => {
+  return getEffectiveLimit(
+    subscription.monthly_limit_usd,
+    subscription.group?.monthly_limit_usd
+  )
+}
+
+const hasUsageLimit = (subscription: UserSubscription): boolean => {
+  return Boolean(getDailyLimit(subscription) || getWeeklyLimit(subscription) || getMonthlyLimit(subscription))
 }
 
 const getProgressWidth = (used: number | null | undefined, limit: number | null): string => {

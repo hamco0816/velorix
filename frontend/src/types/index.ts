@@ -1462,6 +1462,9 @@ export interface UserSubscription {
   daily_usage_usd: number
   weekly_usage_usd: number
   monthly_usage_usd: number
+  daily_limit_usd: number | null
+  weekly_limit_usd: number | null
+  monthly_limit_usd: number | null
   daily_window_start: string | null
   weekly_window_start: string | null
   monthly_window_start: string | null

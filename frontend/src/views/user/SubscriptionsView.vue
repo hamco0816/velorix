@@ -136,15 +136,13 @@
             </div>
 
             <!-- Daily Usage -->
-            <div v-if="subscription.group?.daily_limit_usd" class="space-y-2">
+            <div v-if="getDailyLimit(subscription)" class="space-y-2">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('userSubscriptions.daily') }}
                 </span>
                 <span class="text-sm text-gray-500 dark:text-dark-400">
-                  ${{ (subscription.daily_usage_usd || 0).toFixed(2) }} / ${{
-                    subscription.group.daily_limit_usd.toFixed(2)
-                  }}
+                  {{ formatUsage(subscription.daily_usage_usd, getDailyLimit(subscription)) }}
                 </span>
               </div>
               <div class="relative h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-dark-600">
@@ -153,39 +151,39 @@
                   :class="
                     getProgressBarClass(
                       subscription.daily_usage_usd,
-                      subscription.group.daily_limit_usd
+                      getDailyLimit(subscription)
                     )
                   "
                   :style="{
                     width: getProgressWidth(
                       subscription.daily_usage_usd,
-                      subscription.group.daily_limit_usd
+                      getDailyLimit(subscription)
                     )
                   }"
                 ></div>
               </div>
-              <p
-                v-if="subscription.daily_window_start"
-                class="text-xs text-gray-500 dark:text-dark-400"
-              >
-                {{
-                  t('userSubscriptions.resetIn', {
-                    time: formatResetTime(subscription.daily_window_start, 24)
-                  })
-                }}
+              <p class="text-xs text-gray-500 dark:text-dark-400">
+                {{ t('common.remainingQuota') }}:
+                {{ formatUSD(getRemaining(subscription.daily_usage_usd, getDailyLimit(subscription))) }}
+                <span v-if="subscription.daily_window_start">
+                  |
+                  {{
+                    t('userSubscriptions.resetIn', {
+                      time: formatResetTime(subscription.daily_window_start, 24)
+                    })
+                  }}
+                </span>
               </p>
             </div>
 
             <!-- Weekly Usage -->
-            <div v-if="subscription.group?.weekly_limit_usd" class="space-y-2">
+            <div v-if="getWeeklyLimit(subscription)" class="space-y-2">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('userSubscriptions.weekly') }}
                 </span>
                 <span class="text-sm text-gray-500 dark:text-dark-400">
-                  ${{ (subscription.weekly_usage_usd || 0).toFixed(2) }} / ${{
-                    subscription.group.weekly_limit_usd.toFixed(2)
-                  }}
+                  {{ formatUsage(subscription.weekly_usage_usd, getWeeklyLimit(subscription)) }}
                 </span>
               </div>
               <div class="relative h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-dark-600">
@@ -194,39 +192,39 @@
                   :class="
                     getProgressBarClass(
                       subscription.weekly_usage_usd,
-                      subscription.group.weekly_limit_usd
+                      getWeeklyLimit(subscription)
                     )
                   "
                   :style="{
                     width: getProgressWidth(
                       subscription.weekly_usage_usd,
-                      subscription.group.weekly_limit_usd
+                      getWeeklyLimit(subscription)
                     )
                   }"
                 ></div>
               </div>
-              <p
-                v-if="subscription.weekly_window_start"
-                class="text-xs text-gray-500 dark:text-dark-400"
-              >
-                {{
-                  t('userSubscriptions.resetIn', {
-                    time: formatResetTime(subscription.weekly_window_start, 168)
-                  })
-                }}
+              <p class="text-xs text-gray-500 dark:text-dark-400">
+                {{ t('common.remainingQuota') }}:
+                {{ formatUSD(getRemaining(subscription.weekly_usage_usd, getWeeklyLimit(subscription))) }}
+                <span v-if="subscription.weekly_window_start">
+                  |
+                  {{
+                    t('userSubscriptions.resetIn', {
+                      time: formatResetTime(subscription.weekly_window_start, 168)
+                    })
+                  }}
+                </span>
               </p>
             </div>
 
             <!-- Monthly Usage -->
-            <div v-if="subscription.group?.monthly_limit_usd" class="space-y-2">
+            <div v-if="getMonthlyLimit(subscription)" class="space-y-2">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('userSubscriptions.monthly') }}
                 </span>
                 <span class="text-sm text-gray-500 dark:text-dark-400">
-                  ${{ (subscription.monthly_usage_usd || 0).toFixed(2) }} / ${{
-                    subscription.group.monthly_limit_usd.toFixed(2)
-                  }}
+                  {{ formatUsage(subscription.monthly_usage_usd, getMonthlyLimit(subscription)) }}
                 </span>
               </div>
               <div class="relative h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-dark-600">
@@ -235,36 +233,34 @@
                   :class="
                     getProgressBarClass(
                       subscription.monthly_usage_usd,
-                      subscription.group.monthly_limit_usd
+                      getMonthlyLimit(subscription)
                     )
                   "
                   :style="{
                     width: getProgressWidth(
                       subscription.monthly_usage_usd,
-                      subscription.group.monthly_limit_usd
+                      getMonthlyLimit(subscription)
                     )
                   }"
                 ></div>
               </div>
-              <p
-                v-if="subscription.monthly_window_start"
-                class="text-xs text-gray-500 dark:text-dark-400"
-              >
-                {{
-                  t('userSubscriptions.resetIn', {
-                    time: formatResetTime(subscription.monthly_window_start, 720)
-                  })
-                }}
+              <p class="text-xs text-gray-500 dark:text-dark-400">
+                {{ t('common.remainingQuota') }}:
+                {{ formatUSD(getRemaining(subscription.monthly_usage_usd, getMonthlyLimit(subscription))) }}
+                <span v-if="subscription.monthly_window_start">
+                  |
+                  {{
+                    t('userSubscriptions.resetIn', {
+                      time: formatResetTime(subscription.monthly_window_start, 720)
+                    })
+                  }}
+                </span>
               </p>
             </div>
 
             <!-- No limits configured - Unlimited badge -->
             <div
-              v-if="
-                !subscription.group?.daily_limit_usd &&
-                !subscription.group?.weekly_limit_usd &&
-                !subscription.group?.monthly_limit_usd
-              "
+              v-if="!hasUsageLimit(subscription)"
               class="flex items-center justify-center gap-3 rounded-2xl border border-emerald-200/70 bg-emerald-50/60 py-5 dark:border-emerald-500/30 dark:bg-emerald-500/10"
             >
               <span class="text-3xl font-light leading-none text-emerald-600 dark:text-emerald-400">∞</span>
@@ -325,6 +321,55 @@ async function loadSubscriptions() {
   } finally {
     loading.value = false
   }
+}
+
+function validLimit(limit: number | null | undefined): number | null {
+  return typeof limit === 'number' && limit > 0 ? limit : null
+}
+
+function getEffectiveLimit(
+  subscriptionLimit: number | null | undefined,
+  groupLimit: number | null | undefined
+): number | null {
+  return validLimit(subscriptionLimit) ?? validLimit(groupLimit)
+}
+
+function getDailyLimit(subscription: UserSubscription): number | null {
+  return getEffectiveLimit(
+    subscription.daily_limit_usd,
+    subscription.group?.daily_limit_usd
+  )
+}
+
+function getWeeklyLimit(subscription: UserSubscription): number | null {
+  return getEffectiveLimit(
+    subscription.weekly_limit_usd,
+    subscription.group?.weekly_limit_usd
+  )
+}
+
+function getMonthlyLimit(subscription: UserSubscription): number | null {
+  return getEffectiveLimit(
+    subscription.monthly_limit_usd,
+    subscription.group?.monthly_limit_usd
+  )
+}
+
+function hasUsageLimit(subscription: UserSubscription): boolean {
+  return Boolean(getDailyLimit(subscription) || getWeeklyLimit(subscription) || getMonthlyLimit(subscription))
+}
+
+function getRemaining(used: number | undefined, limit: number | null | undefined): number {
+  if (!limit || limit <= 0) return 0
+  return Math.max(limit - (used || 0), 0)
+}
+
+function formatUSD(value: number): string {
+  return `$${value.toFixed(2)}`
+}
+
+function formatUsage(used: number | undefined, limit: number | null | undefined): string {
+  return `${formatUSD(used || 0)} / ${limit ? formatUSD(limit) : '∞'}`
 }
 
 function getProgressWidth(used: number | undefined, limit: number | null | undefined): string {
