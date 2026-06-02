@@ -341,7 +341,7 @@
               <Icon name="infoCircle" size="sm" class="mt-0.5 flex-shrink-0 text-sky-600 dark:text-sky-300" />
               <p class="text-xs leading-5 text-sky-900 dark:text-sky-100">
                 <span class="font-semibold">完整文档包含：</span>
-                Base URL 速查、鉴权方式、所有支持的接口路径、模型查询、计费与限流详解、<code class="docs-hint-code">/v1/usage</code> 返回结构、错误码表、Codex/Gemini/Claude 三种客户端的对接示例、上线检查清单。把链接整体发给下游即可。
+                Base URL 速查、鉴权方式、所有支持的接口路径、模型查询、计费与限流详解、<code class="docs-hint-code">/v1/usage</code> 返回结构、错误码表、CC Switch/Codex/Gemini/Claude 客户端对接示例、上线检查清单。把链接整体发给下游即可。
               </p>
             </div>
           </div>
@@ -444,6 +444,7 @@ const tocItems = [
 // 客户端 → 代码块语言标签映射，让用户复制后知道该粘到哪里
 const SNIPPET_LANG_MAP: Record<string, string> = {
   'Claude Code': 'bash + json',
+  'CC Switch / Codex': 'GUI + json + toml',
   'Codex CLI': 'bash + toml',
   'Cursor': 'GUI 配置',
   'Cline': 'GUI 配置',
@@ -644,6 +645,14 @@ const baseUrlMatrix = computed(() => [
     note: 'config.toml 的 base_url；wire_api = "responses"'
   },
   {
+    client: 'CC Switch / Codex',
+    tagClass: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300',
+    protocol: 'OpenAI Responses',
+    url: openAIBaseUrl.value,
+    urlClass: 'text-emerald-700 dark:text-emerald-300',
+    note: '供应商 API 地址填 /v1，config.toml 必须有 model_providers 块'
+  },
+  {
     client: 'Gemini SDK',
     tagClass: 'bg-violet-50 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300',
     protocol: 'Gemini Native',
@@ -724,6 +733,48 @@ const snippets = computed(() => [
       'model_provider = "sub2api"',
       '',
       '# 然后还是需要导出 OPENAI_API_KEY（密钥不能直接写 toml 避免明文泄露）',
+    ].join('\n'),
+  },
+  {
+    title: 'CC Switch / Codex',
+    tag: '图形界面',
+    desc: '适合让客户在 CC Switch 图形界面里新增 Codex 供应商。最关键的是 config.toml 不能只写顶层 base_url，必须通过 model_provider 指向 model_providers.OpenAI，并设置 wire_api = "responses"。',
+    code: [
+      '# ========== CC Switch 基本字段 ==========',
+      '供应商名称：任意，例如 velorix',
+      `API 请求地址：${openAIBaseUrl.value}`,
+      'API Key：sk-你的密钥',
+      '模型名称：gpt-5.4（以 /v1/models 实际返回为准）',
+      '',
+      '# ========== auth.json ==========',
+      '{',
+      '  "OPENAI_API_KEY": "sk-你的密钥",',
+      '  "auth_mode": "apikey"',
+      '}',
+      '',
+      '# ========== config.toml ==========',
+      '# 这几行顶层配置要放在 [projects]、[windows]、[plugins] 等表头之前',
+      'model_provider = "OpenAI"',
+      'model = "gpt-5.4"',
+      'model_reasoning_effort = "xhigh"',
+      'disable_response_storage = true',
+      '',
+      '[model_providers.OpenAI]',
+      'name = "OpenAI"',
+      `base_url = "${openAIBaseUrl.value}"`,
+      'wire_api = "responses"',
+      'requires_openai_auth = true',
+      '',
+      '# ========== 常见错误 ==========',
+      '# 错误：只在顶层写 base_url',
+      '# 结果：Codex 可能继续请求 api.openai.com，出现 401 或连接失败',
+      '# 正确：base_url 必须写在 [model_providers.OpenAI] 块里',
+      '',
+      '# 错误：缺少 wire_api = "responses"',
+      '# 结果：Codex 可能走 /chat/completions，检查失败或接口不匹配',
+      '',
+      '# ========== 验证 ==========',
+      `curl ${openAIBaseUrl.value}/models -H "Authorization: Bearer sk-你的密钥"`,
     ].join('\n'),
   },
   {
