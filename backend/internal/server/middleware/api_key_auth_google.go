@@ -129,13 +129,13 @@ func APIKeyAuthWithSubscriptionGoogle(apiKeyService *service.APIKeyService, subs
 				}
 				needsMaintenance, validateErr := subscriptionService.ValidateAndCheckLimits(subscription, apiKey.Group)
 				if validateErr != nil {
-					status := 403
-					if errors.Is(validateErr, service.ErrDailyLimitExceeded) ||
-						errors.Is(validateErr, service.ErrWeeklyLimitExceeded) ||
-						errors.Is(validateErr, service.ErrMonthlyLimitExceeded) {
-						status = 429
+					// 套餐额度用完：返回 RESOURCE_EXHAUSTED + 明确中文文案 + Retry-After，避免客户端当成临时限流反复重试
+					if service.IsUsageLimitError(validateErr) {
+						detail := service.BuildSubscriptionLimitDetail(subscription, apiKey.Group, validateErr)
+						abortWithGoogleRateLimit(c, detail.Message, detail.RetryAfterSeconds)
+						return
 					}
-					abortWithGoogleError(c, status, validateErr.Error())
+					abortWithGoogleError(c, 403, validateErr.Error())
 					return
 				}
 

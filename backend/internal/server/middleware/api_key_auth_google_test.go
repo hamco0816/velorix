@@ -688,5 +688,7 @@ func TestApiKeyAuthWithSubscriptionGoogle_SubscriptionLimitExceededReturns429(t 
 	require.NoError(t, json.Unmarshal(rec.Body.Bytes(), &resp))
 	require.Equal(t, http.StatusTooManyRequests, resp.Error.Code)
 	require.Equal(t, "RESOURCE_EXHAUSTED", resp.Error.Status)
-	require.Contains(t, resp.Error.Message, "daily usage limit exceeded")
+	// 明确中文文案 + Retry-After，客户端能看懂"是套餐额度用完了"
+	require.Contains(t, resp.Error.Message, "今日额度已用完")
+	require.NotEmpty(t, rec.Header().Get("Retry-After"))
 }

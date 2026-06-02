@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/Wei-Shaw/sub2api/internal/pkg/ctxkey"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/googleapi"
@@ -73,6 +74,28 @@ func NewErrorResponse(code, message string) ErrorResponse {
 func AbortWithError(c *gin.Context, statusCode int, code, message string) {
 	c.JSON(statusCode, NewErrorResponse(code, message))
 	c.Abort()
+}
+
+// AbortWithAnthropicRateLimit 按 Anthropic API 规范返回 429 限流错误，并附带 Retry-After 头。
+// 用于"套餐额度已用完"等场景：返回标准格式 + 明确文案，让 Claude Code 等客户端能正常展示原因，
+// 而不是把 message 吞掉只显示 "429 Too Many Requests"。
+func AbortWithAnthropicRateLimit(c *gin.Context, message string, retryAfterSeconds int) {
+	if retryAfterSeconds > 0 {
+		c.Header("Retry-After", strconv.Itoa(retryAfterSeconds))
+	}
+	c.JSON(http.StatusTooManyRequests, gin.H{
+		"type":  "error",
+		"error": gin.H{"type": "rate_limit_error", "message": message},
+	})
+	c.Abort()
+}
+
+// abortWithGoogleRateLimit 按 Google API 规范返回 429 限流错误（status=RESOURCE_EXHAUSTED），并附带 Retry-After 头。
+func abortWithGoogleRateLimit(c *gin.Context, message string, retryAfterSeconds int) {
+	if retryAfterSeconds > 0 {
+		c.Header("Retry-After", strconv.Itoa(retryAfterSeconds))
+	}
+	abortWithGoogleError(c, http.StatusTooManyRequests, message)
 }
 
 // ──────────────────────────────────────────────────────────

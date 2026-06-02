@@ -188,15 +188,14 @@ func apiKeyAuthWithSubscription(apiKeyService *service.APIKeyService, subscripti
 			if subscription != nil {
 				needsMaintenance, validateErr := subscriptionService.ValidateAndCheckLimits(subscription, apiKey.Group)
 				if validateErr != nil {
-					code := "SUBSCRIPTION_INVALID"
-					status := 403
-					if errors.Is(validateErr, service.ErrDailyLimitExceeded) ||
-						errors.Is(validateErr, service.ErrWeeklyLimitExceeded) ||
-						errors.Is(validateErr, service.ErrMonthlyLimitExceeded) {
-						code = "USAGE_LIMIT_EXCEEDED"
-						status = 429
+					// 套餐额度用完：返回标准限流格式 + 明确中文文案（哪个维度/用量/重置时间），避免客户端当成临时限流反复重试
+					if service.IsUsageLimitError(validateErr) {
+						detail := service.BuildSubscriptionLimitDetail(subscription, apiKey.Group, validateErr)
+						AbortWithAnthropicRateLimit(c, detail.Message, detail.RetryAfterSeconds)
+						return
 					}
-					AbortWithError(c, status, code, validateErr.Error())
+					// 订阅过期/暂停等
+					AbortWithError(c, 403, "SUBSCRIPTION_INVALID", validateErr.Error())
 					return
 				}
 
