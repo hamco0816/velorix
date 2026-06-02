@@ -264,6 +264,67 @@ API Key: sk-xxxxxxxx
 
 代码生成任务通常时间较长，建议客户端和中间代理把读取超时设置得更长，例如 10 到 60 分钟。流式请求过程中不要主动断开连接，否则客户端可能会看到类似 `stream disconnected before completion` 的错误。
 
+### 11.1 用 cc-switch 图形化配置 Codex（图形界面用户推荐）
+
+[cc-switch](https://github.com/farion1231/cc-switch) 是常用的多供应商切换工具，可以在图形界面里管理 Codex、Claude Code 等客户端的配置。用它接入本服务时，**最容易出错的就是 `config.toml` 的写法**，下面给出可直接套用的配置。
+
+**第一步：新建 Codex 供应商，填写基本字段**
+
+| 字段 | 填写内容 |
+| --- | --- |
+| 供应商名称 | 任意，例如 `velorix` |
+| API 请求地址 | `https://api.velorix.chat/v1` |
+| API Key | `sk-xxxxxxxx`（平台分配的 Key） |
+| 模型名称 | `gpt-5.4`（以 `/v1/models` 实际返回为准） |
+
+**第二步：填写 `auth.json`**
+
+```json
+{
+  "OPENAI_API_KEY": "sk-xxxxxxxx",
+  "auth_mode": "apikey"
+}
+```
+
+**第三步：填写 `config.toml`（关键，写错就连不通）**
+
+```toml
+model_provider = "OpenAI"
+model = "gpt-5.4"
+model_reasoning_effort = "xhigh"
+disable_response_storage = true
+
+[model_providers.OpenAI]
+name = "OpenAI"
+base_url = "https://api.velorix.chat/v1"
+wire_api = "responses"
+requires_openai_auth = true
+```
+
+> 如果你的 `~/.codex/config.toml` 里原本还有 `[projects]`、`[plugins]`、`[windows]` 等个人设置，保留它们即可，只要把上面这段 `model_provider` 加 `[model_providers.OpenAI]` 补进去就行。注意 TOML 规则：所有顶层 `key = value` 必须写在第一个 `[xxx]` 表头之前。
+
+**为什么必须有 `[model_providers.OpenAI]` 这一段？**
+
+Codex **只认 `[model_providers.X]` 块里的 `base_url`**，并且要靠顶层 `model_provider = "X"` 指过去才会生效。如果只在 `config.toml` 顶层写 `base_url = "https://api.velorix.chat/v1"`、却没有对应的 provider 块，Codex 会忽略它、继续把请求发到官方 `https://api.openai.com`，于是你填的 Key 在官方那边鉴权失败，表现就是"连接不通 / 401"。`wire_api = "responses"` 也必须有，否则 Codex 会走 `/chat/completions` 而不是本服务推荐的 `/responses`。
+
+**常见错误对照**
+
+| 错误写法 | 现象 | 修正 |
+| --- | --- | --- |
+| 只在顶层写 `base_url`，没有 `[model_providers]` 块 | 请求发到 api.openai.com，401 / 连不通 | 按上面补全 provider 块 |
+| 有 provider 块但缺 `wire_api = "responses"` | 走错接口，报 404 或格式错误 | 加上 `wire_api = "responses"` |
+| `model_provider` 的值和 `[model_providers.X]` 的 X 不一致 | Codex 找不到 provider，回退官方 | 两处名称必须完全一致 |
+
+**第四步：验证**
+
+切换到该供应商后，先用一条命令确认网关侧是通的：
+
+```bash
+curl https://api.velorix.chat/v1/models -H "Authorization: Bearer sk-xxxxxxxx"
+```
+
+能返回模型列表 JSON 就说明 Key 和网络正常；之后在终端运行 `codex` 发一句话测试即可。如果 `curl` 正常但 `codex` 仍连不通，基本就是 `config.toml` 的 provider 块没写对，回到第三步检查。
+
 ## 12. 计费与限流（理解 429 的关键）
 
 下游遇到 `429` 时，可能是触发了以下任意一种限制：
