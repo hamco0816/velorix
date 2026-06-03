@@ -597,6 +597,8 @@ var ProviderSet = wire.NewSet(
 	NewPricingAdvisorService,
 	ProvidePaymentConfigService,
 	NewPaymentService,
+	NewInvoiceService,
+	wire.Bind(new(InvoiceMailer), new(*EmailService)),
 	ProvidePaymentOrderExpiryService,
 	ProvideBalanceNotifyService,
 	ProvideChannelMonitorService,

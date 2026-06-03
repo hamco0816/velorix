@@ -756,6 +756,7 @@ const flagChannelMonitor = makeSidebarFlag(FeatureFlags.channelMonitor)
 const flagPayment = makeSidebarFlag(FeatureFlags.payment)
 const flagAvailableChannels = makeSidebarFlag(FeatureFlags.availableChannels)
 const flagAffiliate = makeSidebarFlag(FeatureFlags.affiliate)
+const flagInvoice = makeSidebarFlag(FeatureFlags.invoice)
 const flagOpsMonitoring = () => adminSettingsStore.opsMonitoringEnabled
 const flagAdminPayment = () => adminSettingsStore.paymentEnabled
 
@@ -791,6 +792,7 @@ function buildSelfNavItems(withDashboard: boolean): NavItem[] {
     { path: '/purchase', label: t('nav.buySubscription'), icon: RechargeSubscriptionIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true, featureFlag: flagPayment, group: 'subscription' },
     { path: '/redeem', label: t('nav.redeem'), icon: GiftIcon, iconColor: 'text-rose-500 dark:text-rose-400', hideInSimpleMode: true, group: 'subscription' },
     { path: '/orders', label: t('nav.myOrders'), icon: OrderListIcon, iconColor: 'text-amber-500 dark:text-amber-400', hideInSimpleMode: true, featureFlag: flagPayment, group: 'subscription' },
+    { path: '/invoices', label: t('nav.myInvoices'), icon: OrderListIcon, iconColor: 'text-teal-500 dark:text-teal-400', hideInSimpleMode: true, featureFlag: flagInvoice, group: 'subscription' },
     { path: '/subscriptions', label: t('nav.mySubscriptions'), icon: CreditCardIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true, group: 'subscription' },
     { path: '/seats', label: t('nav.mySeats'), icon: BadgeIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true, featureFlag: flagPayment, group: 'subscription' },
 
@@ -920,6 +922,7 @@ const adminNavItems = computed((): NavItem[] => {
         { path: '/admin/orders', label: t('nav.orderManagement'), icon: OrderIcon, iconColor: 'text-amber-500 dark:text-amber-400' },
         { path: '/admin/orders/plans', label: t('nav.paymentPlans'), icon: CreditCardIcon, iconColor: 'text-teal-500 dark:text-teal-400' },
         { path: '/admin/orders/exclusive-pools', label: t('nav.exclusivePools'), icon: BadgeIcon, iconColor: 'text-violet-500 dark:text-violet-400' },
+        { path: '/admin/orders/invoices', label: t('nav.invoiceManagement'), icon: OrderListIcon, iconColor: 'text-teal-500 dark:text-teal-400', featureFlag: flagInvoice },
       ],
     },
     { path: '/admin/subscriptions', label: t('nav.subscriptions'), icon: CreditCardIcon, iconColor: 'text-teal-500 dark:text-teal-400', hideInSimpleMode: true },

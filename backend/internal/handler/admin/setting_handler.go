@@ -297,6 +297,8 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 		AvailableChannelsEnabled: settings.AvailableChannelsEnabled,
 
 		AffiliateEnabled: settings.AffiliateEnabled,
+
+		InvoiceEnabled: settings.InvoiceEnabled,
 	}
 
 	// OpenAI fast policy (stored under a dedicated setting key)
@@ -557,6 +559,9 @@ type UpdateSettingsRequest struct {
 
 	// Affiliate (邀请返利) feature switch
 	AffiliateEnabled *bool `json:"affiliate_enabled"`
+
+	// Invoice (开票申请) feature switch
+	InvoiceEnabled *bool `json:"invoice_enabled"`
 
 	// OpenAI fast/flex policy (optional, only updated when provided)
 	OpenAIFastPolicySettings *dto.OpenAIFastPolicySettings `json:"openai_fast_policy_settings,omitempty"`
@@ -1445,6 +1450,12 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 			}
 			return previousSettings.AffiliateEnabled
 		}(),
+		InvoiceEnabled: func() bool {
+			if req.InvoiceEnabled != nil {
+				return *req.InvoiceEnabled
+			}
+			return previousSettings.InvoiceEnabled
+		}(),
 	}
 
 	authSourceDefaults := &service.AuthSourceDefaultSettings{
@@ -1709,6 +1720,8 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		AvailableChannelsEnabled: updatedSettings.AvailableChannelsEnabled,
 
 		AffiliateEnabled: updatedSettings.AffiliateEnabled,
+
+		InvoiceEnabled: updatedSettings.InvoiceEnabled,
 	}
 	if fastPolicy, err := h.settingService.GetOpenAIFastPolicySettings(c.Request.Context()); err != nil {
 		slog.Error("openai_fast_policy_settings_get_failed", "error", err)
@@ -2105,6 +2118,9 @@ func diffSettings(before *service.SystemSettings, after *service.SystemSettings,
 	}
 	if before.AffiliateEnabled != after.AffiliateEnabled {
 		changed = append(changed, "affiliate_enabled")
+	}
+	if before.InvoiceEnabled != after.InvoiceEnabled {
+		changed = append(changed, "invoice_enabled")
 	}
 	changed = appendAuthSourceDefaultChanges(changed, beforeAuthSourceDefaults, afterAuthSourceDefaults)
 	return changed

@@ -300,6 +300,18 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/invoices',
+    name: 'MyInvoices',
+    component: () => import('@/views/user/InvoicesView.vue'),
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: false,
+      title: 'My Invoices',
+      titleKey: 'nav.myInvoices',
+      requiresPayment: true
+    }
+  },
+  {
     path: '/seats',
     name: 'MyExclusiveSeats',
     component: () => import('@/views/user/MyExclusiveSeatsView.vue'),
@@ -685,6 +697,18 @@ const routes: RouteRecordRaw[] = [
       requiresAdmin: true,
       title: 'Exclusive Pools',
       titleKey: 'nav.exclusivePools',
+      requiresPayment: true
+    }
+  },
+  {
+    path: '/admin/orders/invoices',
+    name: 'AdminInvoices',
+    component: () => import('@/views/admin/orders/AdminInvoicesView.vue'),
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: true,
+      title: 'Invoice Management',
+      titleKey: 'nav.invoiceManagement',
       requiresPayment: true
     }
   },

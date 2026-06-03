@@ -5,10 +5,12 @@ import (
 	"crypto/rand"
 	"crypto/subtle"
 	"crypto/tls"
+	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	"log/slog"
 	"math/big"
+	"mime"
 	"net"
 	"net/smtp"
 	"net/url"
@@ -182,6 +184,99 @@ func (s *EmailService) SendEmailWithConfig(config *SMTPConfig, to, subject, body
 	}
 
 	return s.sendMailPlain(addr, auth, config.From, to, []byte(msg), config.Host)
+}
+
+// SendEmailWithAttachment 发送带单个附件的邮件（multipart/mixed），使用数据库中保存的 SMTP 配置。
+// 用于发票场景：把发票 PDF 作为附件发给客户。附件字节由调用方提供，本方法不做任何持久化。
+func (s *EmailService) SendEmailWithAttachment(ctx context.Context, to, subject, htmlBody, attachmentName string, attachment []byte, attachmentMIME string) error {
+	config, err := s.GetSMTPConfig(ctx)
+	if err != nil {
+		return err
+	}
+
+	// Sanitize all header fields to prevent header injection (CR/LF removal).
+	to = sanitizeEmailHeader(to)
+	subject = sanitizeEmailHeader(subject)
+	attachmentName = sanitizeEmailHeader(attachmentName)
+	if attachmentName == "" {
+		attachmentName = "attachment"
+	}
+	if attachmentMIME == "" {
+		attachmentMIME = "application/octet-stream"
+	}
+
+	from := sanitizeEmailHeader(config.From)
+	if config.FromName != "" {
+		from = fmt.Sprintf("%s <%s>", sanitizeEmailHeader(config.FromName), sanitizeEmailHeader(config.From))
+	}
+
+	boundary, err := generateMIMEBoundary()
+	if err != nil {
+		return fmt.Errorf("generate mime boundary: %w", err)
+	}
+
+	msg := buildMultipartMessage(from, to, subject, boundary, htmlBody, attachmentName, attachmentMIME, attachment)
+
+	addr := fmt.Sprintf("%s:%d", config.Host, config.Port)
+	auth := smtp.PlainAuth("", config.Username, config.Password, config.Host)
+	if config.UseTLS {
+		return s.sendMailTLS(addr, auth, config.From, to, msg, config.Host)
+	}
+	return s.sendMailPlain(addr, auth, config.From, to, msg, config.Host)
+}
+
+// buildMultipartMessage 组装一封带单个附件的 multipart/mixed 邮件原文。
+func buildMultipartMessage(from, to, subject, boundary, htmlBody, attachmentName, attachmentMIME string, attachment []byte) []byte {
+	var b strings.Builder
+	fmt.Fprintf(&b, "From: %s\r\n", from)
+	fmt.Fprintf(&b, "To: %s\r\n", to)
+	// 中文主题用 MIME encoded-word 编码，保证各邮件客户端正确显示。
+	fmt.Fprintf(&b, "Subject: %s\r\n", mime.QEncoding.Encode("UTF-8", subject))
+	b.WriteString("MIME-Version: 1.0\r\n")
+	fmt.Fprintf(&b, "Content-Type: multipart/mixed; boundary=\"%s\"\r\n\r\n", boundary)
+
+	// 正文（HTML）
+	fmt.Fprintf(&b, "--%s\r\n", boundary)
+	b.WriteString("Content-Type: text/html; charset=UTF-8\r\n")
+	b.WriteString("Content-Transfer-Encoding: 8bit\r\n\r\n")
+	b.WriteString(htmlBody)
+	b.WriteString("\r\n")
+
+	// 附件
+	fmt.Fprintf(&b, "--%s\r\n", boundary)
+	fmt.Fprintf(&b, "Content-Type: %s; name=\"%s\"\r\n", attachmentMIME, attachmentName)
+	b.WriteString("Content-Transfer-Encoding: base64\r\n")
+	fmt.Fprintf(&b, "Content-Disposition: attachment; filename=\"%s\"\r\n\r\n", attachmentName)
+	b.WriteString(encodeBase64Lines(attachment))
+	b.WriteString("\r\n")
+
+	fmt.Fprintf(&b, "--%s--\r\n", boundary)
+	return []byte(b.String())
+}
+
+// generateMIMEBoundary 生成随机的 multipart 分隔符。
+func generateMIMEBoundary() (string, error) {
+	buf := make([]byte, 16)
+	if _, err := rand.Read(buf); err != nil {
+		return "", err
+	}
+	return "sub2api-" + hex.EncodeToString(buf), nil
+}
+
+// encodeBase64Lines 将字节流 base64 编码并按 76 字符换行（RFC 2045）。
+func encodeBase64Lines(data []byte) string {
+	encoded := base64.StdEncoding.EncodeToString(data)
+	const lineLen = 76
+	var b strings.Builder
+	for i := 0; i < len(encoded); i += lineLen {
+		end := i + lineLen
+		if end > len(encoded) {
+			end = len(encoded)
+		}
+		b.WriteString(encoded[i:end])
+		b.WriteString("\r\n")
+	}
+	return b.String()
 }
 
 // sendMailPlain sends mail without TLS using a dialer with timeout.

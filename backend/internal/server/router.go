@@ -114,4 +114,5 @@ func registerRoutes(
 	routes.RegisterAdminRoutes(v1, h, adminAuth)
 	routes.RegisterGatewayRoutes(r, h, apiKeyAuth, apiKeyService, subscriptionService, opsService, settingService, systemOverloadMonitor, cfg)
 	routes.RegisterPaymentRoutes(v1, h.Payment, h.PaymentWebhook, h.Admin.Payment, h.Seat, h.Admin.Seat, jwtAuth, adminAuth, settingService)
+	routes.RegisterInvoiceRoutes(v1, h.Invoice, h.Admin.Invoice, jwtAuth, adminAuth, settingService)
 }

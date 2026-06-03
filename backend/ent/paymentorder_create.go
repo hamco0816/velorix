@@ -259,6 +259,20 @@ func (_c *PaymentOrderCreate) SetNillableRenewalSeatID(v *int64) *PaymentOrderCr
 	return _c
 }
 
+// SetInvoiceRequestID sets the "invoice_request_id" field.
+func (_c *PaymentOrderCreate) SetInvoiceRequestID(v int64) *PaymentOrderCreate {
+	_c.mutation.SetInvoiceRequestID(v)
+	return _c
+}
+
+// SetNillableInvoiceRequestID sets the "invoice_request_id" field if the given value is not nil.
+func (_c *PaymentOrderCreate) SetNillableInvoiceRequestID(v *int64) *PaymentOrderCreate {
+	if v != nil {
+		_c.SetInvoiceRequestID(*v)
+	}
+	return _c
+}
+
 // SetStatus sets the "status" field.
 func (_c *PaymentOrderCreate) SetStatus(v string) *PaymentOrderCreate {
 	_c.mutation.SetStatus(v)
@@ -799,6 +813,10 @@ func (_c *PaymentOrderCreate) createSpec() (*PaymentOrder, *sqlgraph.CreateSpec)
 		_spec.SetField(paymentorder.FieldRenewalSeatID, field.TypeInt64, value)
 		_node.RenewalSeatID = &value
 	}
+	if value, ok := _c.mutation.InvoiceRequestID(); ok {
+		_spec.SetField(paymentorder.FieldInvoiceRequestID, field.TypeInt64, value)
+		_node.InvoiceRequestID = &value
+	}
 	if value, ok := _c.mutation.Status(); ok {
 		_spec.SetField(paymentorder.FieldStatus, field.TypeString, value)
 		_node.Status = value
@@ -1309,6 +1327,30 @@ func (u *PaymentOrderUpsert) AddRenewalSeatID(v int64) *PaymentOrderUpsert {
 // ClearRenewalSeatID clears the value of the "renewal_seat_id" field.
 func (u *PaymentOrderUpsert) ClearRenewalSeatID() *PaymentOrderUpsert {
 	u.SetNull(paymentorder.FieldRenewalSeatID)
+	return u
+}
+
+// SetInvoiceRequestID sets the "invoice_request_id" field.
+func (u *PaymentOrderUpsert) SetInvoiceRequestID(v int64) *PaymentOrderUpsert {
+	u.Set(paymentorder.FieldInvoiceRequestID, v)
+	return u
+}
+
+// UpdateInvoiceRequestID sets the "invoice_request_id" field to the value that was provided on create.
+func (u *PaymentOrderUpsert) UpdateInvoiceRequestID() *PaymentOrderUpsert {
+	u.SetExcluded(paymentorder.FieldInvoiceRequestID)
+	return u
+}
+
+// AddInvoiceRequestID adds v to the "invoice_request_id" field.
+func (u *PaymentOrderUpsert) AddInvoiceRequestID(v int64) *PaymentOrderUpsert {
+	u.Add(paymentorder.FieldInvoiceRequestID, v)
+	return u
+}
+
+// ClearInvoiceRequestID clears the value of the "invoice_request_id" field.
+func (u *PaymentOrderUpsert) ClearInvoiceRequestID() *PaymentOrderUpsert {
+	u.SetNull(paymentorder.FieldInvoiceRequestID)
 	return u
 }
 
@@ -2058,6 +2100,34 @@ func (u *PaymentOrderUpsertOne) UpdateRenewalSeatID() *PaymentOrderUpsertOne {
 func (u *PaymentOrderUpsertOne) ClearRenewalSeatID() *PaymentOrderUpsertOne {
 	return u.Update(func(s *PaymentOrderUpsert) {
 		s.ClearRenewalSeatID()
+	})
+}
+
+// SetInvoiceRequestID sets the "invoice_request_id" field.
+func (u *PaymentOrderUpsertOne) SetInvoiceRequestID(v int64) *PaymentOrderUpsertOne {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.SetInvoiceRequestID(v)
+	})
+}
+
+// AddInvoiceRequestID adds v to the "invoice_request_id" field.
+func (u *PaymentOrderUpsertOne) AddInvoiceRequestID(v int64) *PaymentOrderUpsertOne {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.AddInvoiceRequestID(v)
+	})
+}
+
+// UpdateInvoiceRequestID sets the "invoice_request_id" field to the value that was provided on create.
+func (u *PaymentOrderUpsertOne) UpdateInvoiceRequestID() *PaymentOrderUpsertOne {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.UpdateInvoiceRequestID()
+	})
+}
+
+// ClearInvoiceRequestID clears the value of the "invoice_request_id" field.
+func (u *PaymentOrderUpsertOne) ClearInvoiceRequestID() *PaymentOrderUpsertOne {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.ClearInvoiceRequestID()
 	})
 }
 
@@ -3018,6 +3088,34 @@ func (u *PaymentOrderUpsertBulk) UpdateRenewalSeatID() *PaymentOrderUpsertBulk {
 func (u *PaymentOrderUpsertBulk) ClearRenewalSeatID() *PaymentOrderUpsertBulk {
 	return u.Update(func(s *PaymentOrderUpsert) {
 		s.ClearRenewalSeatID()
+	})
+}
+
+// SetInvoiceRequestID sets the "invoice_request_id" field.
+func (u *PaymentOrderUpsertBulk) SetInvoiceRequestID(v int64) *PaymentOrderUpsertBulk {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.SetInvoiceRequestID(v)
+	})
+}
+
+// AddInvoiceRequestID adds v to the "invoice_request_id" field.
+func (u *PaymentOrderUpsertBulk) AddInvoiceRequestID(v int64) *PaymentOrderUpsertBulk {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.AddInvoiceRequestID(v)
+	})
+}
+
+// UpdateInvoiceRequestID sets the "invoice_request_id" field to the value that was provided on create.
+func (u *PaymentOrderUpsertBulk) UpdateInvoiceRequestID() *PaymentOrderUpsertBulk {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.UpdateInvoiceRequestID()
+	})
+}
+
+// ClearInvoiceRequestID clears the value of the "invoice_request_id" field.
+func (u *PaymentOrderUpsertBulk) ClearInvoiceRequestID() *PaymentOrderUpsertBulk {
+	return u.Update(func(s *PaymentOrderUpsert) {
+		s.ClearInvoiceRequestID()
 	})
 }
 

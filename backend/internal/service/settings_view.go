@@ -116,6 +116,7 @@ type SystemSettings struct {
 	DefaultConcurrency           int
 	DefaultBalance               float64
 	AffiliateEnabled             bool
+	InvoiceEnabled               bool
 	AffiliateRebateRate          float64
 	AffiliateRebateFreezeHours   int
 	AffiliateRebateDurationDays  int
@@ -246,6 +247,9 @@ type PublicSettings struct {
 
 	// Affiliate (邀请返利) feature toggle
 	AffiliateEnabled bool `json:"affiliate_enabled"`
+
+	// Invoice (开票申请) feature toggle
+	InvoiceEnabled bool `json:"invoice_enabled"`
 }
 
 type WeChatConnectOAuthConfig struct {

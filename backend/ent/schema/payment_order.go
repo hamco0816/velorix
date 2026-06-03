@@ -105,6 +105,12 @@ func (PaymentOrder) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
+		// 关联的发票申请单 ID：非空表示该订单已被某张申请单占用（待开票或已开票），
+		// 不能再次申请开票。申请单被驳回/取消时置回 NULL，订单可重新申请。
+		field.Int64("invoice_request_id").
+			Optional().
+			Nillable(),
+
 		// 状态
 		field.String("status").
 			MaxLen(30).
@@ -202,5 +208,6 @@ func (PaymentOrder) Indexes() []ent.Index {
 		index.Fields("payment_type", "paid_at"),
 		index.Fields("order_type"),
 		index.Fields("renewal_seat_id"),
+		index.Fields("invoice_request_id"),
 	}
 }

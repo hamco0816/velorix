@@ -459,6 +459,7 @@ func (s *SettingService) GetPublicSettings(ctx context.Context) (*PublicSettings
 		SettingKeyChannelMonitorDefaultIntervalSeconds,
 		SettingKeyAvailableChannelsEnabled,
 		SettingKeyAffiliateEnabled,
+		SettingKeyInvoiceEnabled,
 	}
 
 	settings, err := s.settingRepo.GetMultiple(ctx, keys)
@@ -549,6 +550,8 @@ func (s *SettingService) GetPublicSettings(ctx context.Context) (*PublicSettings
 		AvailableChannelsEnabled: settings[SettingKeyAvailableChannelsEnabled] == "true",
 
 		AffiliateEnabled: settings[SettingKeyAffiliateEnabled] == "true",
+
+		InvoiceEnabled: settings[SettingKeyInvoiceEnabled] == "true",
 	}, nil
 }
 
@@ -697,6 +700,7 @@ type PublicSettingsInjectionPayload struct {
 	ChannelMonitorDefaultIntervalSeconds int  `json:"channel_monitor_default_interval_seconds"`
 	AvailableChannelsEnabled             bool `json:"available_channels_enabled"`
 	AffiliateEnabled                     bool `json:"affiliate_enabled"`
+	InvoiceEnabled                       bool `json:"invoice_enabled"`
 }
 
 // GetPublicSettingsForInjection returns public settings in a format suitable for HTML injection.
@@ -751,6 +755,7 @@ func (s *SettingService) GetPublicSettingsForInjection(ctx context.Context) (any
 		ChannelMonitorDefaultIntervalSeconds: settings.ChannelMonitorDefaultIntervalSeconds,
 		AvailableChannelsEnabled:             settings.AvailableChannelsEnabled,
 		AffiliateEnabled:                     settings.AffiliateEnabled,
+		InvoiceEnabled:                       settings.InvoiceEnabled,
 	}, nil
 }
 
@@ -1264,6 +1269,9 @@ func (s *SettingService) buildSystemSettingsUpdates(ctx context.Context, setting
 	// Affiliate (邀请返利) feature switch
 	updates[SettingKeyAffiliateEnabled] = strconv.FormatBool(settings.AffiliateEnabled)
 
+	// Invoice (开票申请) feature switch
+	updates[SettingKeyInvoiceEnabled] = strconv.FormatBool(settings.InvoiceEnabled)
+
 	// Claude Code version check
 	updates[SettingKeyMinClaudeCodeVersion] = settings.MinClaudeCodeVersion
 	updates[SettingKeyMaxClaudeCodeVersion] = settings.MaxClaudeCodeVersion
@@ -1559,6 +1567,15 @@ func (s *SettingService) IsPromoCodeEnabled(ctx context.Context) bool {
 		return true // 默认启用
 	}
 	return value != "false"
+}
+
+// IsInvoiceEnabled 检查是否启用发票（开票申请）功能，默认关闭。
+func (s *SettingService) IsInvoiceEnabled(ctx context.Context) bool {
+	value, err := s.settingRepo.GetValue(ctx, SettingKeyInvoiceEnabled)
+	if err != nil {
+		return false // 默认关闭，避免影响未启用开票的部署
+	}
+	return value == "true"
 }
 
 // IsInvitationCodeEnabled 检查是否启用邀请码注册功能
@@ -2095,6 +2112,9 @@ func (s *SettingService) InitializeDefaultSettings(ctx context.Context) error {
 		// Affiliate (邀请返利) feature (default disabled; opt-in)
 		SettingKeyAffiliateEnabled: "false",
 
+		// Invoice (开票申请) feature (default disabled; opt-in)
+		SettingKeyInvoiceEnabled: "false",
+
 		// Claude Code version check (default: empty = disabled)
 		SettingKeyMinClaudeCodeVersion: "",
 		SettingKeyMaxClaudeCodeVersion: "",
@@ -2444,6 +2464,9 @@ func (s *SettingService) parseSettings(settings map[string]string) *SystemSettin
 
 	// Affiliate (邀请返利) feature (default: disabled; strict true)
 	result.AffiliateEnabled = settings[SettingKeyAffiliateEnabled] == "true"
+
+	// Invoice (开票申请) feature (default: disabled; strict true)
+	result.InvoiceEnabled = settings[SettingKeyInvoiceEnabled] == "true"
 
 	// Claude Code version check
 	result.MinClaudeCodeVersion = settings[SettingKeyMinClaudeCodeVersion]

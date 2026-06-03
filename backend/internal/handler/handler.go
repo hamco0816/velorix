@@ -36,6 +36,7 @@ type AdminHandlers struct {
 	Seat                   *admin.SeatHandler
 	Affiliate              *admin.AffiliateHandler
 	PricingAdvisor         *admin.PricingAdvisorHandler
+	Invoice                *admin.InvoiceHandler
 }
 
 // Handlers contains all HTTP handlers
@@ -57,6 +58,7 @@ type Handlers struct {
 	PaymentWebhook   *PaymentWebhookHandler
 	Seat             *SeatHandler
 	AvailableChannel *AvailableChannelHandler
+	Invoice          *InvoiceHandler
 }
 
 // BuildInfo contains build-time information
