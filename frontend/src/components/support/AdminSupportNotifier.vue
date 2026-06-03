@@ -1,4 +1,6 @@
-<template></template>
+<template>
+  <div class="hidden" aria-hidden="true"></div>
+</template>
 
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted } from 'vue'
