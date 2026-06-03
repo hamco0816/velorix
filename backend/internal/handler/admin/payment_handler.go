@@ -2,6 +2,7 @@ package admin
 
 import (
 	"strconv"
+	"time"
 
 	dbent "github.com/Wei-Shaw/sub2api/ent"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/response"
@@ -36,6 +37,47 @@ func (h *PaymentHandler) GetDashboard(c *gin.Context) {
 		}
 	}
 	stats, err := h.paymentService.GetDashboardStats(c.Request.Context(), days)
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+	response.Success(c, stats)
+}
+
+// GetFinanceStats returns settlement-oriented revenue statistics.
+// GET /api/v1/admin/payment/finance?period=month&month=YYYY-MM
+// GET /api/v1/admin/payment/finance?period=day&date=YYYY-MM-DD
+func (h *PaymentHandler) GetFinanceStats(c *gin.Context) {
+	period := c.DefaultQuery("period", "month")
+	loc := time.Local
+	now := time.Now().In(loc)
+
+	var start, end time.Time
+	switch period {
+	case "day":
+		date := c.DefaultQuery("date", now.Format("2006-01-02"))
+		parsed, err := time.ParseInLocation("2006-01-02", date, loc)
+		if err != nil {
+			response.BadRequest(c, "Invalid date format, use YYYY-MM-DD")
+			return
+		}
+		start = parsed
+		end = start.AddDate(0, 0, 1)
+	case "month":
+		month := c.DefaultQuery("month", now.Format("2006-01"))
+		parsed, err := time.ParseInLocation("2006-01", month, loc)
+		if err != nil {
+			response.BadRequest(c, "Invalid month format, use YYYY-MM")
+			return
+		}
+		start = parsed
+		end = start.AddDate(0, 1, 0)
+	default:
+		response.BadRequest(c, "Invalid period, use day or month")
+		return
+	}
+
+	stats, err := h.paymentService.GetFinanceRevenueStats(c.Request.Context(), start, end, period)
 	if err != nil {
 		response.ErrorFrom(c, err)
 		return

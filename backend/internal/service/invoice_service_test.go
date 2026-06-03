@@ -102,6 +102,36 @@ func TestApplyInvoice_SumsPayAmountAndLocksOrders(t *testing.T) {
 	require.Equal(t, 2, linked)
 }
 
+// 不传 order_ids 时，自动申请当前用户全部可开票订单。
+func TestApplyInvoice_AutoIncludesAllInvoiceableOrders(t *testing.T) {
+	ctx := context.Background()
+	client := newPaymentConfigServiceTestClient(t)
+	svc := NewInvoiceService(client, &fakeInvoiceMailer{}, nil)
+
+	user := newInvoiceTestUser(t, client, "auto@example.com")
+	other := newInvoiceTestUser(t, client, "other@example.com")
+	o1 := newCompletedOrder(t, client, user, 40.25, "auto1")
+	o2 := newCompletedOrder(t, client, user, 59.75, "auto2")
+	_ = newCompletedOrder(t, client, other, 999, "auto-other")
+
+	summary, err := svc.GetInvoiceableSummary(ctx, user.ID)
+	require.NoError(t, err)
+	require.Equal(t, 2, summary.TotalCount)
+	require.InDelta(t, 100.00, summary.TotalAmount, 0.001)
+
+	req := personalInvoiceRequest(nil)
+	ir, err := svc.ApplyInvoice(ctx, user.ID, req)
+	require.NoError(t, err)
+	require.InDelta(t, 100.00, ir.Amount, 0.001)
+
+	linked, err := client.PaymentOrder.Query().
+		Where(paymentorder.InvoiceRequestIDEQ(ir.ID)).
+		All(ctx)
+	require.NoError(t, err)
+	require.Len(t, linked, 2)
+	require.ElementsMatch(t, []int64{o1.ID, o2.ID}, []int64{linked[0].ID, linked[1].ID})
+}
+
 // 企业抬头缺税号应被拒绝。
 func TestApplyInvoice_CompanyRequiresTaxID(t *testing.T) {
 	ctx := context.Background()

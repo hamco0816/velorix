@@ -8,6 +8,7 @@ import type { BasePaginationResponse } from '@/types'
 import type {
   InvoiceItem,
   InvoiceableOrder,
+  InvoiceableSummary,
   ApplyInvoicePayload,
   InvoiceDetail,
 } from '@/types/invoice'
@@ -19,6 +20,11 @@ export const invoiceAPI = {
       '/invoices/invoiceable-orders',
       { params },
     )
+  },
+
+  /** 当前用户全部可开票订单的金额汇总 */
+  getInvoiceableSummary() {
+    return apiClient.get<InvoiceableSummary>('/invoices/invoiceable-summary')
   },
 
   /** 提交开票申请 */

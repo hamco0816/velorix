@@ -9,6 +9,7 @@ import (
 	dbent "github.com/Wei-Shaw/sub2api/ent"
 	"github.com/Wei-Shaw/sub2api/ent/invoicerequest"
 	"github.com/Wei-Shaw/sub2api/ent/paymentorder"
+	"github.com/Wei-Shaw/sub2api/ent/predicate"
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 
 	"entgo.io/ent/dialect"
@@ -70,16 +71,26 @@ type ApplyInvoiceRequest struct {
 	OrderIDs       []int64
 }
 
-// ListInvoiceableOrders 返回用户「可开票」的订单：已完成、实付金额大于 0、且未被任何申请单占用。
-// 余额充值与订阅/套餐购买都算（按 created_at 倒序分页）。
-func (s *InvoiceService) ListInvoiceableOrders(ctx context.Context, userID int64, page, pageSize int) ([]*dbent.PaymentOrder, int, error) {
-	pageSize, page = applyPagination(pageSize, page)
-	query := s.entClient.PaymentOrder.Query().Where(
+// InvoiceableSummary 汇总当前用户全部可开票订单，用于申请前展示自动开票金额。
+type InvoiceableSummary struct {
+	TotalAmount float64 `json:"total_amount"`
+	TotalCount  int     `json:"total_count"`
+}
+
+func invoiceableOrderPredicates(userID int64) []predicate.PaymentOrder {
+	return []predicate.PaymentOrder{
 		paymentorder.UserIDEQ(userID),
 		paymentorder.StatusEQ(OrderStatusCompleted),
 		paymentorder.PayAmountGT(0),
 		paymentorder.InvoiceRequestIDIsNil(),
-	)
+	}
+}
+
+// ListInvoiceableOrders 返回用户「可开票」的订单：已完成、实付金额大于 0、且未被任何申请单占用。
+// 余额充值与订阅/套餐购买都算（按 created_at 倒序分页）。
+func (s *InvoiceService) ListInvoiceableOrders(ctx context.Context, userID int64, page, pageSize int) ([]*dbent.PaymentOrder, int, error) {
+	pageSize, page = applyPagination(pageSize, page)
+	query := s.entClient.PaymentOrder.Query().Where(invoiceableOrderPredicates(userID)...)
 	total, err := query.Clone().Count(ctx)
 	if err != nil {
 		return nil, 0, fmt.Errorf("count invoiceable orders: %w", err)
@@ -95,15 +106,38 @@ func (s *InvoiceService) ListInvoiceableOrders(ctx context.Context, userID int64
 	return orders, total, nil
 }
 
+// GetInvoiceableSummary 返回当前用户全部可开票订单数和实付金额合计。
+func (s *InvoiceService) GetInvoiceableSummary(ctx context.Context, userID int64) (*InvoiceableSummary, error) {
+	query := s.entClient.PaymentOrder.Query().Where(invoiceableOrderPredicates(userID)...)
+	count, err := query.Clone().Count(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("count invoiceable orders: %w", err)
+	}
+
+	var rows []struct {
+		Sum *float64 `json:"sum"`
+	}
+	if err := query.
+		Aggregate(dbent.As(dbent.Sum(paymentorder.FieldPayAmount), "sum")).
+		Scan(ctx, &rows); err != nil {
+		return nil, fmt.Errorf("sum invoiceable orders: %w", err)
+	}
+	total := 0.0
+	if len(rows) > 0 && rows[0].Sum != nil {
+		total = *rows[0].Sum
+	}
+	return &InvoiceableSummary{
+		TotalAmount: decimal.NewFromFloat(total).Round(2).InexactFloat64(),
+		TotalCount:  count,
+	}, nil
+}
+
 // ApplyInvoice 提交开票申请：校验所选订单，合并金额，创建申请单并锁定订单。
 func (s *InvoiceService) ApplyInvoice(ctx context.Context, userID int64, req ApplyInvoiceRequest) (*dbent.InvoiceRequest, error) {
 	if err := validateInvoiceForm(req); err != nil {
 		return nil, err
 	}
 	orderIDs := dedupeInt64(req.OrderIDs)
-	if len(orderIDs) == 0 {
-		return nil, ErrInvoiceNoOrders
-	}
 
 	tx, err := s.entClient.Tx(ctx)
 	if err != nil {
@@ -119,8 +153,16 @@ func (s *InvoiceService) ApplyInvoice(ctx context.Context, userID int64, req App
 	// 事务内锁定并校验所选订单（PG 用 FOR UPDATE，SQLite 测试环境降级为普通查询）。
 	orderQuery := tx.PaymentOrder.Query().Where(
 		paymentorder.UserIDEQ(userID),
-		paymentorder.IDIn(orderIDs...),
 	)
+	if len(orderIDs) > 0 {
+		orderQuery = orderQuery.Where(paymentorder.IDIn(orderIDs...))
+	} else {
+		orderQuery = orderQuery.Where(
+			paymentorder.StatusEQ(OrderStatusCompleted),
+			paymentorder.PayAmountGT(0),
+			paymentorder.InvoiceRequestIDIsNil(),
+		)
+	}
 	if txIsPostgres(tx) {
 		orderQuery = orderQuery.ForUpdate()
 	}
@@ -128,16 +170,21 @@ func (s *InvoiceService) ApplyInvoice(ctx context.Context, userID int64, req App
 	if err != nil {
 		return nil, fmt.Errorf("lock orders: %w", err)
 	}
-	if len(orders) != len(orderIDs) {
+	if len(orders) == 0 {
+		return nil, ErrInvoiceNoOrders
+	}
+	if len(orderIDs) > 0 && len(orders) != len(orderIDs) {
 		return nil, ErrInvoiceOrderNotUsable
 	}
 
 	total := decimal.Zero
+	lockedOrderIDs := make([]int64, 0, len(orders))
 	for _, order := range orders {
 		if order.Status != OrderStatusCompleted || order.PayAmount <= 0 || order.InvoiceRequestID != nil {
 			return nil, ErrInvoiceOrderNotUsable
 		}
 		total = total.Add(decimal.NewFromFloat(order.PayAmount))
+		lockedOrderIDs = append(lockedOrderIDs, order.ID)
 	}
 	amount := total.Round(2).InexactFloat64()
 
@@ -160,7 +207,7 @@ func (s *InvoiceService) ApplyInvoice(ctx context.Context, userID int64, req App
 
 	// 关联订单：写入 invoice_request_id，占用这些订单。
 	if _, err := tx.PaymentOrder.Update().
-		Where(paymentorder.IDIn(orderIDs...)).
+		Where(paymentorder.IDIn(lockedOrderIDs...)).
 		SetInvoiceRequestID(created.ID).
 		Save(ctx); err != nil {
 		return nil, fmt.Errorf("link orders: %w", err)

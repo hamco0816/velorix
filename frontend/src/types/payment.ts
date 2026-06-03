@@ -286,3 +286,23 @@ export interface DashboardStats {
   payment_methods: { type: string; amount: number; count: number }[]
   top_users: { user_id: number; email: string; amount: number }[]
 }
+
+export interface FinanceRevenueBucket {
+  date: string
+  amount: number
+  gross_amount: number
+  refund_amount: number
+  count: number
+}
+
+export interface FinanceRevenueStats {
+  period: 'day' | 'month' | string
+  start_date: string
+  end_date: string
+  total_amount: number
+  gross_amount: number
+  refund_amount: number
+  total_count: number
+  avg_amount: number
+  series: FinanceRevenueBucket[]
+}

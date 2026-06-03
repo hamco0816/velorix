@@ -24,6 +24,7 @@ func RegisterInvoiceRoutes(
 	authenticated.Use(middleware.BackendModeUserGuard(settingService))
 	{
 		authenticated.GET("/invoiceable-orders", invoiceHandler.GetInvoiceableOrders)
+		authenticated.GET("/invoiceable-summary", invoiceHandler.GetInvoiceableSummary)
 		authenticated.GET("/my", invoiceHandler.GetMyInvoices)
 		authenticated.POST("", invoiceHandler.ApplyInvoice)
 		authenticated.GET("/:id", invoiceHandler.GetMyInvoice)

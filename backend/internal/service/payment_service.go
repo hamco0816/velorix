@@ -155,6 +155,26 @@ type DashboardStats struct {
 	TopUsers       []TopUserStat       `json:"top_users"`
 }
 
+type FinanceRevenueStats struct {
+	Period       string                 `json:"period"`
+	StartDate    string                 `json:"start_date"`
+	EndDate      string                 `json:"end_date"`
+	TotalAmount  float64                `json:"total_amount"`
+	GrossAmount  float64                `json:"gross_amount"`
+	RefundAmount float64                `json:"refund_amount"`
+	TotalCount   int                    `json:"total_count"`
+	AvgAmount    float64                `json:"avg_amount"`
+	Series       []FinanceRevenueBucket `json:"series"`
+}
+
+type FinanceRevenueBucket struct {
+	Date         string  `json:"date"`
+	Amount       float64 `json:"amount"`
+	GrossAmount  float64 `json:"gross_amount"`
+	RefundAmount float64 `json:"refund_amount"`
+	Count        int     `json:"count"`
+}
+
 type DailyStats struct {
 	Date   string  `json:"date"`
 	Amount float64 `json:"amount"`

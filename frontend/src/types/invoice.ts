@@ -41,6 +41,11 @@ export interface InvoiceableOrder {
   created_at: string
 }
 
+export interface InvoiceableSummary {
+  total_amount: number
+  total_count: number
+}
+
 /** 提交开票申请的入参 */
 export interface ApplyInvoicePayload {
   recipient_email: string
@@ -48,7 +53,7 @@ export interface ApplyInvoicePayload {
   title_name: string
   tax_id?: string
   user_remark?: string
-  order_ids: number[]
+  order_ids?: number[]
 }
 
 /** 申请单详情（含关联订单） */

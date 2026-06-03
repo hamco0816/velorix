@@ -87,11 +87,23 @@
     <!-- 申请开票弹窗 -->
     <BaseDialog :show="applyVisible" :title="t('invoice.apply.title')" width="wide" @close="applyVisible = false">
       <div class="space-y-5">
-        <!-- 可开票订单选择 -->
+        <div class="rounded-xl border border-teal-100 bg-teal-50 px-4 py-3 dark:border-teal-500/20 dark:bg-teal-900/20">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p class="text-sm font-medium text-teal-800 dark:text-teal-200">{{ t('invoice.apply.invoiceableSummary') }}</p>
+              <p class="mt-1 text-xs text-teal-700 dark:text-teal-300">{{ t('invoice.apply.autoApplyHint') }}</p>
+            </div>
+            <div class="text-right">
+              <div class="text-2xl font-semibold tabular-nums text-teal-800 dark:text-teal-100">¥{{ invoiceableTotal.toFixed(2) }}</div>
+              <div class="text-xs text-teal-700 dark:text-teal-300">{{ t('invoice.apply.includedOrders', { count: invoiceableSummary.total_count }) }}</div>
+            </div>
+          </div>
+        </div>
+
         <div>
-          <div class="mb-2 flex items-center justify-between">
-            <label class="input-label">{{ t('invoice.apply.selectOrders') }}</label>
-            <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('invoice.apply.amountHint') }}</span>
+          <div class="mb-2 flex items-center justify-between gap-3">
+            <label class="input-label">{{ t('invoice.apply.previewOrders') }}</label>
+            <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('invoice.apply.previewOrdersHint') }}</span>
           </div>
           <div v-if="ordersLoading" class="rounded-xl border border-gray-100 p-6 text-center text-sm text-gray-500 dark:border-dark-700 dark:text-gray-400">
             {{ t('common.loading') }}
@@ -99,28 +111,31 @@
           <div v-else-if="invoiceableOrders.length === 0" class="rounded-xl border border-gray-100 p-6 text-center text-sm text-gray-500 dark:border-dark-700 dark:text-gray-400">
             {{ t('invoice.apply.noOrders') }}
           </div>
-          <div v-else class="max-h-60 space-y-2 overflow-y-auto rounded-xl border border-gray-100 p-2 dark:border-dark-700">
-            <label
-              v-for="order in invoiceableOrders"
-              :key="order.id"
-              class="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 hover:bg-gray-50 dark:hover:bg-dark-800/60"
-            >
-              <input type="checkbox" :value="order.id" v-model="selectedOrderIds" class="h-4 w-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500" />
-              <div class="flex flex-1 items-center justify-between">
-                <div>
-                  <div class="text-sm font-medium text-gray-900 dark:text-white">{{ t(`invoice.orderType.${order.order_type}`, order.order_type) }}</div>
-                  <div class="text-xs text-gray-500 dark:text-gray-400">#{{ order.id }} · {{ formatDate(order.paid_at || order.created_at) }}</div>
-                </div>
-                <div class="text-sm font-medium text-gray-900 dark:text-white">¥{{ order.pay_amount.toFixed(2) }}</div>
-              </div>
-            </label>
+          <div v-else class="overflow-hidden rounded-xl border border-gray-100 dark:border-dark-700">
+            <div class="max-h-64 overflow-auto">
+              <table class="min-w-full divide-y divide-gray-100 text-sm dark:divide-dark-700">
+                <tbody class="divide-y divide-gray-100 dark:divide-dark-700">
+                  <tr v-for="order in invoiceableOrders" :key="order.id" class="hover:bg-gray-50/60 dark:hover:bg-dark-800/40">
+                    <td class="px-3 py-2 font-mono text-xs text-gray-500 dark:text-gray-400">#{{ order.id }}</td>
+                    <td class="px-3 py-2 text-gray-700 dark:text-gray-300">
+                      <div class="font-medium text-gray-900 dark:text-white">{{ t(`invoice.orderType.${order.order_type}`, order.order_type) }}</div>
+                      <div class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(order.paid_at || order.created_at) }}</div>
+                    </td>
+                    <td class="px-3 py-2 text-right font-medium tabular-nums text-gray-900 dark:text-white">¥{{ order.pay_amount.toFixed(2) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div v-if="invoiceablePagination.total > invoiceablePagination.page_size" class="border-t border-gray-100 p-3 dark:border-dark-700">
+              <Pagination
+                :page="invoiceablePagination.page"
+                :total="invoiceablePagination.total"
+                :page-size="invoiceablePagination.page_size"
+                @update:page="handleInvoiceablePageChange"
+                @update:pageSize="handleInvoiceablePageSizeChange"
+              />
+            </div>
           </div>
-        </div>
-
-        <!-- 合计 -->
-        <div class="flex items-center justify-between rounded-xl bg-teal-50 px-4 py-3 dark:bg-teal-900/20">
-          <span class="text-sm text-teal-700 dark:text-teal-300">{{ t('invoice.apply.total') }}</span>
-          <span class="text-lg font-semibold text-teal-700 dark:text-teal-300">¥{{ selectedTotal.toFixed(2) }}</span>
         </div>
 
         <!-- 抬头类型 -->
@@ -227,7 +242,7 @@ import { useAppStore } from '@/stores'
 import { useAuthStore } from '@/stores/auth'
 import { invoiceAPI } from '@/api/invoice'
 import { extractI18nErrorMessage } from '@/utils/apiError'
-import type { InvoiceItem, InvoiceableOrder, InvoiceTitleType } from '@/types/invoice'
+import type { InvoiceItem, InvoiceableOrder, InvoiceableSummary, InvoiceTitleType } from '@/types/invoice'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Pagination from '@/components/common/Pagination.vue'
 import BaseDialog from '@/components/common/BaseDialog.vue'
@@ -257,7 +272,8 @@ const pagination = reactive({ page: 1, page_size: 20, total: 0 })
 const applyVisible = ref(false)
 const ordersLoading = ref(false)
 const invoiceableOrders = ref<InvoiceableOrder[]>([])
-const selectedOrderIds = ref<number[]>([])
+const invoiceableSummary = ref<InvoiceableSummary>({ total_amount: 0, total_count: 0 })
+const invoiceablePagination = reactive({ page: 1, page_size: 10, total: 0 })
 const submitLoading = ref(false)
 
 const detailTarget = ref<InvoiceItem | null>(null)
@@ -285,14 +301,10 @@ const titleTypeOptions = computed(() => [
   { value: 'company', label: t('invoice.titleType.company') },
 ])
 
-const selectedTotal = computed(() =>
-  invoiceableOrders.value
-    .filter((o) => selectedOrderIds.value.includes(o.id))
-    .reduce((sum, o) => sum + o.pay_amount, 0),
-)
+const invoiceableTotal = computed(() => invoiceableSummary.value.total_amount || 0)
 
 const canSubmit = computed(() => {
-  if (selectedOrderIds.value.length === 0) return false
+  if ((invoiceableSummary.value.total_count || 0) <= 0) return false
   if (!form.recipient_email || !form.title_name) return false
   if (form.title_type === 'company' && !form.tax_id) return false
   return true
@@ -344,26 +356,52 @@ function handlePageSizeChange(size: number) { pagination.page_size = size; pagin
 
 async function openApplyDialog() {
   applyVisible.value = true
-  selectedOrderIds.value = []
+  invoiceableSummary.value = { total_amount: 0, total_count: 0 }
+  invoiceableOrders.value = []
+  invoiceablePagination.page = 1
+  invoiceablePagination.total = 0
   form.recipient_email = authStore.user?.email || ''
   form.title_type = 'personal'
   form.title_name = ''
   form.tax_id = ''
   form.user_remark = ''
-  await fetchInvoiceableOrders()
+  await Promise.all([fetchInvoiceableSummary(), fetchInvoiceableOrders()])
+}
+
+async function fetchInvoiceableSummary() {
+  try {
+    const res = await invoiceAPI.getInvoiceableSummary()
+    invoiceableSummary.value = res.data
+  } catch (err: unknown) {
+    appStore.showError(extractI18nErrorMessage(err, t, 'invoice.errors', t('common.error')))
+  }
 }
 
 async function fetchInvoiceableOrders() {
   ordersLoading.value = true
   try {
-    // 一次性拉取较多可开票订单供勾选；正常用户量级不会过大
-    const res = await invoiceAPI.getInvoiceableOrders({ page: 1, page_size: 100 })
+    const res = await invoiceAPI.getInvoiceableOrders({
+      page: invoiceablePagination.page,
+      page_size: invoiceablePagination.page_size,
+    })
     invoiceableOrders.value = res.data.items || []
+    invoiceablePagination.total = res.data.total || 0
   } catch (err: unknown) {
     appStore.showError(extractI18nErrorMessage(err, t, 'invoice.errors', t('common.error')))
   } finally {
     ordersLoading.value = false
   }
+}
+
+function handleInvoiceablePageChange(page: number) {
+  invoiceablePagination.page = page
+  fetchInvoiceableOrders()
+}
+
+function handleInvoiceablePageSizeChange(size: number) {
+  invoiceablePagination.page_size = size
+  invoiceablePagination.page = 1
+  fetchInvoiceableOrders()
 }
 
 async function submitApply() {
@@ -376,7 +414,6 @@ async function submitApply() {
       title_name: form.title_name,
       tax_id: form.title_type === 'company' ? form.tax_id : undefined,
       user_remark: form.user_remark || undefined,
-      order_ids: selectedOrderIds.value,
     })
     appStore.showSuccess(t('invoice.apply.success'))
     applyVisible.value = false

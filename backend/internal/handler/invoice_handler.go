@@ -31,7 +31,7 @@ type applyInvoiceBody struct {
 	TitleName      string  `json:"title_name" binding:"required"`
 	TaxID          string  `json:"tax_id"`
 	UserRemark     string  `json:"user_remark"`
-	OrderIDs       []int64 `json:"order_ids" binding:"required,min=1"`
+	OrderIDs       []int64 `json:"order_ids"`
 }
 
 // ensureEnabled 校验发票功能开关，未开启则写 403 并返回 false。
@@ -57,6 +57,21 @@ func (h *InvoiceHandler) GetInvoiceableOrders(c *gin.Context) {
 		return
 	}
 	response.Paginated(c, dto.InvoiceOrdersFromEnt(orders), int64(total), page, pageSize)
+}
+
+// GetInvoiceableSummary 返回当前用户全部可开票订单数和金额合计。
+// GET /api/v1/invoices/invoiceable-summary
+func (h *InvoiceHandler) GetInvoiceableSummary(c *gin.Context) {
+	subject, ok := requireAuth(c)
+	if !ok || !h.ensureEnabled(c) {
+		return
+	}
+	summary, err := h.invoiceService.GetInvoiceableSummary(c.Request.Context(), subject.UserID)
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+	response.Success(c, summary)
 }
 
 // ApplyInvoice 提交开票申请。

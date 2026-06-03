@@ -53,6 +53,42 @@ func (s *PaymentService) GetDashboardStats(ctx context.Context, days int) (*Dash
 	return st, nil
 }
 
+func (s *PaymentService) GetFinanceRevenueStats(ctx context.Context, start, end time.Time, period string) (*FinanceRevenueStats, error) {
+	if !end.After(start) {
+		end = start.AddDate(0, 0, 1)
+	}
+	orders, err := s.entClient.PaymentOrder.Query().
+		Where(
+			paymentorder.StatusIn(OrderStatusCompleted, OrderStatusPartiallyRefunded),
+			paymentorder.PaidAtGTE(start),
+			paymentorder.PaidAtLT(end),
+		).
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	st := &FinanceRevenueStats{
+		Period:    period,
+		StartDate: start.Format("2006-01-02"),
+		EndDate:   end.AddDate(0, 0, -1).Format("2006-01-02"),
+		Series:    buildFinanceRevenueSeries(orders, start, end),
+	}
+	for _, bucket := range st.Series {
+		st.TotalAmount += bucket.Amount
+		st.GrossAmount += bucket.GrossAmount
+		st.RefundAmount += bucket.RefundAmount
+		st.TotalCount += bucket.Count
+	}
+	st.TotalAmount = roundMoney(st.TotalAmount)
+	st.GrossAmount = roundMoney(st.GrossAmount)
+	st.RefundAmount = roundMoney(st.RefundAmount)
+	if st.TotalCount > 0 {
+		st.AvgAmount = roundMoney(st.TotalAmount / float64(st.TotalCount))
+	}
+	return st, nil
+}
+
 func computeBasicStats(st *DashboardStats, orders []*dbent.PaymentOrder, todayStart time.Time) {
 	var totalAmount, todayAmount float64
 	var todayCount int
@@ -70,6 +106,59 @@ func computeBasicStats(st *DashboardStats, orders []*dbent.PaymentOrder, todaySt
 	if st.TotalCount > 0 {
 		st.AvgAmount = math.Round(totalAmount/float64(st.TotalCount)*100) / 100
 	}
+}
+
+func buildFinanceRevenueSeries(orders []*dbent.PaymentOrder, start, end time.Time) []FinanceRevenueBucket {
+	bucketMap := make(map[string]*FinanceRevenueBucket)
+	for _, o := range orders {
+		if o.PaidAt == nil {
+			continue
+		}
+		date := o.PaidAt.Format("2006-01-02")
+		bucket, ok := bucketMap[date]
+		if !ok {
+			bucket = &FinanceRevenueBucket{Date: date}
+			bucketMap[date] = bucket
+		}
+		gross, refund, net := financeOrderAmounts(o)
+		if net <= 0 {
+			continue
+		}
+		bucket.GrossAmount += gross
+		bucket.RefundAmount += refund
+		bucket.Amount += net
+		bucket.Count++
+	}
+
+	days := int(end.Sub(start).Hours() / 24)
+	if days < 1 {
+		days = 1
+	}
+	series := make([]FinanceRevenueBucket, 0, days)
+	for i := 0; i < days; i++ {
+		date := start.AddDate(0, 0, i).Format("2006-01-02")
+		if bucket, ok := bucketMap[date]; ok {
+			bucket.GrossAmount = roundMoney(bucket.GrossAmount)
+			bucket.RefundAmount = roundMoney(bucket.RefundAmount)
+			bucket.Amount = roundMoney(bucket.Amount)
+			series = append(series, *bucket)
+		} else {
+			series = append(series, FinanceRevenueBucket{Date: date})
+		}
+	}
+	return series
+}
+
+func financeOrderAmounts(o *dbent.PaymentOrder) (gross, refund, net float64) {
+	gross = o.PayAmount
+	if o.Status == OrderStatusPartiallyRefunded && o.RefundAmount > 0 {
+		refund = calculateGatewayRefundAmount(o.Amount, o.PayAmount, o.RefundAmount)
+	}
+	net = gross - refund
+	if net < 0 {
+		net = 0
+	}
+	return roundMoney(gross), roundMoney(refund), roundMoney(net)
 }
 
 func buildDailySeries(orders []*dbent.PaymentOrder, since time.Time, days int) []DailyStats {
@@ -146,6 +235,10 @@ func buildTopUsers(orders []*dbent.PaymentOrder) []TopUserStat {
 		result = append(result, *userList[i])
 	}
 	return result
+}
+
+func roundMoney(v float64) float64 {
+	return math.Round(v*100) / 100
 }
 
 // --- Audit Logs ---
