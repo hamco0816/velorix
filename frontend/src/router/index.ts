@@ -275,6 +275,18 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/support/chat',
+    name: 'SupportChatWindow',
+    component: () => import('@/views/user/SupportChatWindowView.vue'),
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: false,
+      title: 'Online Support',
+      titleKey: 'support.onlineSupport',
+      standalone: true
+    }
+  },
+  {
     path: '/purchase',
     name: 'PurchaseSubscription',
     component: () => import('@/views/user/PaymentView.vue'),

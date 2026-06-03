@@ -61,7 +61,7 @@
               <p class="mb-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">
                 {{ t('common.contactSupport') }}
               </p>
-              <SupportChatPopup v-if="user" embedded />
+              <SupportChatPopup v-if="user" embedded @opened="contactDropdownOpen = false" />
               <div
                 v-if="hasContactMethods"
                 class="mt-3 border-t border-gray-100 pt-3 dark:border-dark-700"
