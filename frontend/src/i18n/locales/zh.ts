@@ -357,6 +357,45 @@ export default {
     popoverHint: '点击带 QR 标识的条目可查看二维码',
   },
 
+  support: {
+    onlineSupport: '在线客服',
+    openChat: '打开聊天',
+    welcomeTitle: '在线客服',
+    welcomeText: '请直接描述遇到的问题，客服看到后会在这里回复。',
+    inputPlaceholder: '输入消息...',
+    send: '发送',
+    loadFailed: '客服会话加载失败',
+    sendFailed: '消息发送失败，请稍后重试',
+    status: {
+      connecting: '正在连接',
+      connected: '在线',
+      reconnecting: '正在重连',
+      offline: '网络离线',
+      closed: '未连接',
+    },
+    statuses: {
+      open: '进行中',
+      closed: '已关闭',
+    },
+    admin: {
+      title: '在线客服',
+      subtitle: '处理用户在线咨询与历史消息',
+      conversations: '会话列表',
+      searchPlaceholder: '搜索用户 / 邮箱 / 内容',
+      noConversations: '暂无会话',
+      emptyPreview: '暂无消息',
+      selectConversation: '请选择一个会话',
+      replyPlaceholder: '回复用户...',
+      markRead: '标记已读',
+      closeConversation: '关闭会话',
+      reopenConversation: '重新打开',
+      loadFailed: '会话列表加载失败',
+      loadMessagesFailed: '消息加载失败',
+      closeFailed: '关闭会话失败',
+      reopenFailed: '重新打开会话失败',
+    },
+  },
+
   // Common
   common: {
     loading: '加载中...',
@@ -470,6 +509,7 @@ export default {
     },
     dashboard: '仪表盘',
     announcements: '公告',
+    onlineSupport: '在线客服',
     apiKeys: 'API 密钥',
     imageGen: '生图工坊',
     usage: '使用记录',

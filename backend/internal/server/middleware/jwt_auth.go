@@ -27,20 +27,27 @@ type userActivityToucher interface {
 func jwtAuth(authService *service.AuthService, userService jwtUserReader, activityToucher userActivityToucher) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 从Authorization header中提取token
+		tokenString := ""
+		if isWebSocketUpgradeRequest(c) {
+			tokenString = extractJWTFromWebSocketSubprotocol(c)
+		}
+
 		authHeader := c.GetHeader("Authorization")
-		if authHeader == "" {
+		if tokenString == "" && authHeader == "" {
 			AbortWithError(c, 401, "UNAUTHORIZED", "Authorization header is required")
 			return
 		}
 
 		// 验证Bearer scheme
-		parts := strings.SplitN(authHeader, " ", 2)
-		if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") {
-			AbortWithError(c, 401, "INVALID_AUTH_HEADER", "Authorization header format must be 'Bearer {token}'")
-			return
-		}
+		if tokenString == "" {
+			parts := strings.SplitN(authHeader, " ", 2)
+			if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") {
+				AbortWithError(c, 401, "INVALID_AUTH_HEADER", "Authorization header format must be 'Bearer {token}'")
+				return
+			}
 
-		tokenString := strings.TrimSpace(parts[1])
+			tokenString = strings.TrimSpace(parts[1])
+		}
 		if tokenString == "" {
 			AbortWithError(c, 401, "EMPTY_TOKEN", "Token cannot be empty")
 			return

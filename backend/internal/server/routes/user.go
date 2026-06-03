@@ -105,6 +105,15 @@ func RegisterUserRoutes(
 		}
 
 		// 卡密兑换
+		support := authenticated.Group("/support")
+		{
+			support.GET("/conversation", h.Support.GetConversation)
+			support.GET("/messages", h.Support.ListMessages)
+			support.POST("/messages", h.Support.SendMessage)
+			support.POST("/read", h.Support.MarkRead)
+			support.GET("/ws", h.Support.WebSocket)
+		}
+
 		redeem := authenticated.Group("/redeem")
 		{
 			redeem.POST("", h.Redeem.Redeem)

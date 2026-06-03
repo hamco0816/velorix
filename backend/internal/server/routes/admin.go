@@ -31,6 +31,7 @@ func RegisterAdminRoutes(
 
 		// 公告管理
 		registerAnnouncementRoutes(admin, h)
+		registerSupportRoutes(admin, h)
 
 		// OpenAI OAuth
 		registerOpenAIOAuthRoutes(admin, h)
@@ -340,6 +341,20 @@ func registerAnnouncementRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 		announcements.PUT("/:id", h.Admin.Announcement.Update)
 		announcements.DELETE("/:id", h.Admin.Announcement.Delete)
 		announcements.GET("/:id/read-status", h.Admin.Announcement.ListReadStatus)
+	}
+}
+
+func registerSupportRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
+	support := admin.Group("/support")
+	{
+		support.GET("/conversations", h.Admin.Support.ListConversations)
+		support.GET("/conversations/:id/messages", h.Admin.Support.GetMessages)
+		support.POST("/conversations/:id/messages", h.Admin.Support.SendMessage)
+		support.POST("/conversations/:id/read", h.Admin.Support.MarkRead)
+		support.POST("/conversations/:id/close", h.Admin.Support.CloseConversation)
+		support.POST("/conversations/:id/reopen", h.Admin.Support.ReopenConversation)
+		support.GET("/unread", h.Admin.Support.Unread)
+		support.GET("/ws", h.Admin.Support.WebSocket)
 	}
 }
 

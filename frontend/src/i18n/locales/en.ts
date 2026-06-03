@@ -352,6 +352,45 @@ export default {
     popoverHint: 'Items marked with QR can be clicked to reveal the code',
   },
 
+  support: {
+    onlineSupport: 'Online Support',
+    openChat: 'Open chat',
+    welcomeTitle: 'Online Support',
+    welcomeText: 'Describe your issue here. Support will reply in this chat when available.',
+    inputPlaceholder: 'Type a message...',
+    send: 'Send',
+    loadFailed: 'Failed to load support chat',
+    sendFailed: 'Failed to send message, please try again later',
+    status: {
+      connecting: 'Connecting',
+      connected: 'Online',
+      reconnecting: 'Reconnecting',
+      offline: 'Offline',
+      closed: 'Disconnected',
+    },
+    statuses: {
+      open: 'Open',
+      closed: 'Closed',
+    },
+    admin: {
+      title: 'Online Support',
+      subtitle: 'Handle user conversations and support history',
+      conversations: 'Conversations',
+      searchPlaceholder: 'Search user / email / content',
+      noConversations: 'No conversations',
+      emptyPreview: 'No messages',
+      selectConversation: 'Select a conversation',
+      replyPlaceholder: 'Reply to the user...',
+      markRead: 'Mark read',
+      closeConversation: 'Close conversation',
+      reopenConversation: 'Reopen',
+      loadFailed: 'Failed to load conversations',
+      loadMessagesFailed: 'Failed to load messages',
+      closeFailed: 'Failed to close conversation',
+      reopenFailed: 'Failed to reopen conversation',
+    },
+  },
+
   // Common
   common: {
     loading: 'Loading...',
@@ -463,6 +502,7 @@ export default {
     },
     dashboard: 'Dashboard',
     announcements: 'Announcements',
+    onlineSupport: 'Online Support',
     apiKeys: 'API Keys',
     imageGen: 'Image Studio',
     usage: 'Usage',

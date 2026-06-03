@@ -31,6 +31,7 @@ import adminPaymentAPI from './payment'
 import affiliatesAPI from './affiliates'
 import pricingAPI from './pricing'
 import adminInvoiceAPI from './invoice'
+import supportAdminAPI from './support'
 
 /**
  * Unified admin API object for convenient access
@@ -63,7 +64,8 @@ export const adminAPI = {
   payment: adminPaymentAPI,
   affiliates: affiliatesAPI,
   pricing: pricingAPI,
-  invoices: adminInvoiceAPI
+  invoices: adminInvoiceAPI,
+  support: supportAdminAPI
 }
 
 export {
@@ -94,7 +96,8 @@ export {
   adminPaymentAPI,
   affiliatesAPI,
   pricingAPI,
-  adminInvoiceAPI
+  adminInvoiceAPI,
+  supportAdminAPI
 }
 
 export default adminAPI

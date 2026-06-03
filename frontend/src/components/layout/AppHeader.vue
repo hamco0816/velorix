@@ -40,7 +40,7 @@
 
         <!-- Contact 联系方式 popover：默认展示 QQ/微信/QQ群 文字+号码，
              有 image_data 的点击弹出二维码（复用 ContactMethodsDisplay 的逻辑） -->
-        <div v-if="hasContactMethods" class="relative" ref="contactDropdownRef">
+        <div v-if="hasContactPanel" class="relative" ref="contactDropdownRef">
           <button
             type="button"
             class="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-white"
@@ -61,12 +61,18 @@
               <p class="mb-2 px-1 text-xs font-medium text-gray-500 dark:text-gray-400">
                 {{ t('common.contactSupport') }}
               </p>
-              <ContactMethodsDisplay
-                :methods="contactMethods"
-                :legacy-info="contactInfo"
-                :show-label="true"
-              />
-              <p class="mt-2 px-1 text-[11px] text-gray-400 dark:text-gray-500">
+              <SupportChatPopup v-if="user" embedded />
+              <div
+                v-if="hasContactMethods"
+                class="mt-3 border-t border-gray-100 pt-3 dark:border-dark-700"
+              >
+                <ContactMethodsDisplay
+                  :methods="contactMethods"
+                  :legacy-info="contactInfo"
+                  :show-label="true"
+                />
+              </div>
+              <p v-if="hasContactMethods" class="mt-2 px-1 text-[11px] text-gray-400 dark:text-gray-500">
                 {{ t('contactMethods.popoverHint') }}
               </p>
             </div>
@@ -220,6 +226,7 @@ import LocaleSwitcher from '@/components/common/LocaleSwitcher.vue'
 import SubscriptionProgressMini from '@/components/common/SubscriptionProgressMini.vue'
 import AnnouncementBell from '@/components/common/AnnouncementBell.vue'
 import ContactMethodsDisplay from '@/components/common/ContactMethodsDisplay.vue'
+import SupportChatPopup from '@/components/support/SupportChatPopup.vue'
 import Icon from '@/components/icons/Icon.vue'
 
 const router = useRouter()
@@ -238,6 +245,7 @@ const contactDropdownRef = ref<HTMLElement | null>(null)
 const contactInfo = computed(() => appStore.contactInfo)
 const contactMethods = computed(() => appStore.contactMethods)
 const hasContactMethods = computed(() => contactMethods.value.length > 0 || !!contactInfo.value)
+const hasContactPanel = computed(() => hasContactMethods.value || !!user.value)
 const docUrl = computed(() => appStore.docUrl)
 const avatarUrl = computed(() => user.value?.avatar_url?.trim() || '')
 
