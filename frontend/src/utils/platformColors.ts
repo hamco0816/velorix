@@ -163,3 +163,36 @@ export function platformLabel(p: string): string {
     default: return p || 'API'
   }
 }
+
+// 面向用户的产品品牌名（订阅页分区/筛选用）：用大众熟悉的 GPT / Claude 而非厂商名，
+// 与平台分区"GPT 放一块、Claude 放一块"的心智一致。
+export function platformProductLabel(p: string): string {
+  switch (p) {
+    case 'openai': return 'GPT'
+    case 'anthropic': return 'Claude'
+    case 'gemini': return 'Gemini'
+    case 'antigravity': return 'Antigravity'
+    default: return p || 'API'
+  }
+}
+
+// BrandIcon 用的品牌 key；非主流平台返回 null（前端回退到首字母）。
+export function platformBrandKey(p: string): 'claude' | 'openai' | 'gemini' | null {
+  if (p === 'anthropic') return 'claude'
+  if (p === 'openai') return 'openai'
+  if (p === 'gemini') return 'gemini'
+  return null
+}
+
+// 订阅页平台分区/筛选的展示顺序；未列出的平台排在最后（按字母）。
+export const PLATFORM_DISPLAY_ORDER: string[] = ['openai', 'anthropic', 'gemini', 'antigravity']
+
+/** 按 PLATFORM_DISPLAY_ORDER 给平台 key 排序的比较函数（未知平台靠后、字母序）。 */
+export function comparePlatformOrder(a: string, b: string): number {
+  const ia = PLATFORM_DISPLAY_ORDER.indexOf(a)
+  const ib = PLATFORM_DISPLAY_ORDER.indexOf(b)
+  const ra = ia === -1 ? PLATFORM_DISPLAY_ORDER.length : ia
+  const rb = ib === -1 ? PLATFORM_DISPLAY_ORDER.length : ib
+  if (ra !== rb) return ra - rb
+  return a.localeCompare(b)
+}

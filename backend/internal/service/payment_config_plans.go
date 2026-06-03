@@ -21,7 +21,19 @@ const seatRenewalGraceWindow = 7 * 24 * time.Hour
 
 const (
 	maxPlanBadgeTextRunes = 12
+	defaultPlanBadgeColor = "gold"
 )
+
+// 套餐角标预设色板 key（尊贵色调）；admin 只能从这组里选，避免随意配色。
+// 与前端 utils/badgeTone.ts 的 key 保持一致。
+var allowedPlanBadgeColors = map[string]struct{}{
+	"gold":     {}, // 鎏金（默认）
+	"obsidian": {}, // 黑金至尊
+	"purple":   {}, // 帝王紫
+	"emerald":  {}, // 翡翠
+	"sapphire": {}, // 宝石蓝
+	"rose":     {}, // 玫瑰金
+}
 
 // countProtectedSeatsByPlan 统计该 plan 当前被"用户业务还在持有"的 seat 数：
 //   - active：明确还在用
@@ -106,6 +118,11 @@ func validatePlanPatch(req UpdatePlanRequest) error {
 			return err
 		}
 	}
+	if req.BadgeColor != nil {
+		if _, err := normalizePlanBadgeColor(*req.BadgeColor); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -126,6 +143,18 @@ func planBadgeTextForCreate(req CreatePlanRequest) (string, error) {
 		return "", err
 	}
 	return badgeText, nil
+}
+
+// 校验角标配色：空字符串回落到默认 gold；非法 key 报错。
+func normalizePlanBadgeColor(raw string) (string, error) {
+	v := strings.TrimSpace(strings.ToLower(raw))
+	if v == "" {
+		return defaultPlanBadgeColor, nil
+	}
+	if _, ok := allowedPlanBadgeColors[v]; !ok {
+		return "", infraerrors.BadRequest("PLAN_BADGE_COLOR_INVALID", fmt.Sprintf("badge_color %q is not a supported preset", v))
+	}
+	return v, nil
 }
 
 // --- Plan CRUD ---
@@ -203,11 +232,15 @@ func (s *PaymentConfigService) CreatePlan(ctx context.Context, req CreatePlanReq
 	if err != nil {
 		return nil, err
 	}
+	badgeColor, err := normalizePlanBadgeColor(req.BadgeColor)
+	if err != nil {
+		return nil, err
+	}
 	b := s.entClient.SubscriptionPlan.Create().
 		SetGroupID(req.GroupID).SetName(req.Name).SetDescription(req.Description).
 		SetPrice(req.Price).SetValidityDays(req.ValidityDays).SetValidityUnit(req.ValidityUnit).
 		SetFeatures(req.Features).SetProductName(req.ProductName).
-		SetForSale(req.ForSale).SetSortOrder(req.SortOrder).SetIsPopular(req.IsPopular || badgeText != "").SetBadgeText(badgeText).SetKind(kind)
+		SetForSale(req.ForSale).SetSortOrder(req.SortOrder).SetIsPopular(req.IsPopular || badgeText != "").SetBadgeText(badgeText).SetBadgeColor(badgeColor).SetKind(kind)
 	if req.OriginalPrice != nil {
 		b.SetOriginalPrice(*req.OriginalPrice)
 	}
@@ -311,6 +344,13 @@ func (s *PaymentConfigService) UpdatePlan(ctx context.Context, id int64, req Upd
 	}
 	if req.BadgeText == nil && req.IsPopular != nil && !*req.IsPopular {
 		u.SetBadgeText("")
+	}
+	if req.BadgeColor != nil {
+		badgeColor, err := normalizePlanBadgeColor(*req.BadgeColor)
+		if err != nil {
+			return nil, err
+		}
+		u.SetBadgeColor(badgeColor)
 	}
 	if req.Kind != nil {
 		kind, err := normalizePlanKind(*req.Kind)

@@ -119,6 +119,11 @@ func BadgeText(v string) predicate.SubscriptionPlan {
 	return predicate.SubscriptionPlan(sql.FieldEQ(FieldBadgeText, v))
 }
 
+// BadgeColor applies equality check predicate on the "badge_color" field. It's identical to BadgeColorEQ.
+func BadgeColor(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldEQ(FieldBadgeColor, v))
+}
+
 // Kind applies equality check predicate on the "kind" field. It's identical to KindEQ.
 func Kind(v string) predicate.SubscriptionPlan {
 	return predicate.SubscriptionPlan(sql.FieldEQ(FieldKind, v))
@@ -772,6 +777,71 @@ func BadgeTextEqualFold(v string) predicate.SubscriptionPlan {
 // BadgeTextContainsFold applies the ContainsFold predicate on the "badge_text" field.
 func BadgeTextContainsFold(v string) predicate.SubscriptionPlan {
 	return predicate.SubscriptionPlan(sql.FieldContainsFold(FieldBadgeText, v))
+}
+
+// BadgeColorEQ applies the EQ predicate on the "badge_color" field.
+func BadgeColorEQ(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldEQ(FieldBadgeColor, v))
+}
+
+// BadgeColorNEQ applies the NEQ predicate on the "badge_color" field.
+func BadgeColorNEQ(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldNEQ(FieldBadgeColor, v))
+}
+
+// BadgeColorIn applies the In predicate on the "badge_color" field.
+func BadgeColorIn(vs ...string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldIn(FieldBadgeColor, vs...))
+}
+
+// BadgeColorNotIn applies the NotIn predicate on the "badge_color" field.
+func BadgeColorNotIn(vs ...string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldNotIn(FieldBadgeColor, vs...))
+}
+
+// BadgeColorGT applies the GT predicate on the "badge_color" field.
+func BadgeColorGT(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldGT(FieldBadgeColor, v))
+}
+
+// BadgeColorGTE applies the GTE predicate on the "badge_color" field.
+func BadgeColorGTE(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldGTE(FieldBadgeColor, v))
+}
+
+// BadgeColorLT applies the LT predicate on the "badge_color" field.
+func BadgeColorLT(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldLT(FieldBadgeColor, v))
+}
+
+// BadgeColorLTE applies the LTE predicate on the "badge_color" field.
+func BadgeColorLTE(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldLTE(FieldBadgeColor, v))
+}
+
+// BadgeColorContains applies the Contains predicate on the "badge_color" field.
+func BadgeColorContains(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldContains(FieldBadgeColor, v))
+}
+
+// BadgeColorHasPrefix applies the HasPrefix predicate on the "badge_color" field.
+func BadgeColorHasPrefix(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldHasPrefix(FieldBadgeColor, v))
+}
+
+// BadgeColorHasSuffix applies the HasSuffix predicate on the "badge_color" field.
+func BadgeColorHasSuffix(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldHasSuffix(FieldBadgeColor, v))
+}
+
+// BadgeColorEqualFold applies the EqualFold predicate on the "badge_color" field.
+func BadgeColorEqualFold(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldEqualFold(FieldBadgeColor, v))
+}
+
+// BadgeColorContainsFold applies the ContainsFold predicate on the "badge_color" field.
+func BadgeColorContainsFold(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldContainsFold(FieldBadgeColor, v))
 }
 
 // KindEQ applies the EQ predicate on the "kind" field.

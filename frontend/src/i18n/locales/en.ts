@@ -7035,7 +7035,12 @@ export default {
     renewNow: 'Renew',
     selectPlan: 'Select Plan',
     planFeatures: 'Features',
+    platformFilter: {
+      all: 'All',
+    },
+    tierCount: '{count} tiers',
     planCard: {
+      price: 'Price',
       rate: 'Rate',
       dailyLimit: 'Daily',
       weeklyLimit: 'Weekly',
@@ -7228,6 +7233,15 @@ export default {
       planBadgeText: 'Plan Badge',
       planBadgePlaceholder: 'Popular / Best Value / New',
       planBadgeHint: 'Optional short label shown on the user plan card. Leave blank for no badge.',
+      badgeColor: {
+        label: 'Badge Color',
+        gold: 'Gold',
+        obsidian: 'Obsidian Gold',
+        purple: 'Imperial Purple',
+        emerald: 'Emerald',
+        sapphire: 'Sapphire',
+        rose: 'Rose Gold',
+      },
       costMultiplier: 'Cost Rate',
       costMultiplierPreview: 'Cost Rate Preview',
       adminOnly: 'Admin only',

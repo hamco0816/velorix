@@ -67,6 +67,7 @@ func (h *PaymentHandler) GetPlansPublic(c *gin.Context) {
 		SortOrder     int      `json:"sort_order"`
 		IsPopular     bool     `json:"is_popular"`
 		BadgeText     string   `json:"badge_text"`
+		BadgeColor    string   `json:"badge_color"`
 	}
 	result := make([]publicPlan, 0, len(plans))
 	for _, p := range plans {
@@ -75,7 +76,7 @@ func (h *PaymentHandler) GetPlansPublic(c *gin.Context) {
 			Price: p.Price, OriginalPrice: p.OriginalPrice,
 			ValidityDays: p.ValidityDays, ValidityUnit: p.ValidityUnit,
 			Features: p.Features, ProductName: p.ProductName, SortOrder: p.SortOrder,
-			IsPopular: p.IsPopular, BadgeText: p.BadgeText,
+			IsPopular: p.IsPopular, BadgeText: p.BadgeText, BadgeColor: p.BadgeColor,
 		})
 	}
 	response.Success(c, result)
@@ -106,6 +107,7 @@ func (h *PaymentHandler) GetPlans(c *gin.Context) {
 		SortOrder     int      `json:"sort_order"`
 		IsPopular     bool     `json:"is_popular"`
 		BadgeText     string   `json:"badge_text"`
+		BadgeColor    string   `json:"badge_color"`
 		Kind          string   `json:"kind"`
 		// 独享池套餐才有效；shared 套餐为 nil（不显示库存信息）
 		StockAvailable *int `json:"stock_available,omitempty"`
@@ -136,7 +138,7 @@ func (h *PaymentHandler) GetPlans(c *gin.Context) {
 			Name: p.Name, Description: p.Description, Price: p.Price, OriginalPrice: p.OriginalPrice,
 			ValidityDays: p.ValidityDays, ValidityUnit: p.ValidityUnit, Features: p.Features,
 			ProductName: p.ProductName, ForSale: p.ForSale, SortOrder: p.SortOrder,
-			IsPopular: p.IsPopular, BadgeText: p.BadgeText, Kind: p.Kind,
+			IsPopular: p.IsPopular, BadgeText: p.BadgeText, BadgeColor: p.BadgeColor, Kind: p.Kind,
 		}
 		if p.Kind == "exclusive" {
 			s := stockByGroup[p.GroupID]
@@ -241,6 +243,7 @@ func (h *PaymentHandler) GetCheckoutInfo(c *gin.Context) {
 			ProductName:    p.ProductName,
 			IsPopular:      p.IsPopular,
 			BadgeText:      p.BadgeText,
+			BadgeColor:     p.BadgeColor,
 			Kind:           p.Kind,
 			StockAvailable: stockPtr,
 		})
@@ -297,6 +300,7 @@ type checkoutPlan struct {
 	ProductName          string   `json:"product_name"`
 	IsPopular            bool     `json:"is_popular"`
 	BadgeText            string   `json:"badge_text"`
+	BadgeColor           string   `json:"badge_color"`
 	// 套餐类型 + 独享池库存（供 SubscriptionPlanCard 渲染独享徽章 / 售罄状态）
 	// shared 套餐 StockAvailable 为 nil（前端不展示库存提示）
 	Kind           string `json:"kind"`

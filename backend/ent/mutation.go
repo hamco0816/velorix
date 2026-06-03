@@ -35393,6 +35393,7 @@ type SubscriptionPlanMutation struct {
 	addsort_order        *int
 	is_popular           *bool
 	badge_text           *string
+	badge_color          *string
 	kind                 *string
 	daily_limit_usd      *float64
 	adddaily_limit_usd   *float64
@@ -36090,6 +36091,42 @@ func (m *SubscriptionPlanMutation) ResetBadgeText() {
 	m.badge_text = nil
 }
 
+// SetBadgeColor sets the "badge_color" field.
+func (m *SubscriptionPlanMutation) SetBadgeColor(s string) {
+	m.badge_color = &s
+}
+
+// BadgeColor returns the value of the "badge_color" field in the mutation.
+func (m *SubscriptionPlanMutation) BadgeColor() (r string, exists bool) {
+	v := m.badge_color
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBadgeColor returns the old "badge_color" field's value of the SubscriptionPlan entity.
+// If the SubscriptionPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscriptionPlanMutation) OldBadgeColor(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBadgeColor is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBadgeColor requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBadgeColor: %w", err)
+	}
+	return oldValue.BadgeColor, nil
+}
+
+// ResetBadgeColor resets all changes to the "badge_color" field.
+func (m *SubscriptionPlanMutation) ResetBadgeColor() {
+	m.badge_color = nil
+}
+
 // SetKind sets the "kind" field.
 func (m *SubscriptionPlanMutation) SetKind(s string) {
 	m.kind = &s
@@ -36512,7 +36549,7 @@ func (m *SubscriptionPlanMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscriptionPlanMutation) Fields() []string {
-	fields := make([]string, 0, 20)
+	fields := make([]string, 0, 21)
 	if m.group_id != nil {
 		fields = append(fields, subscriptionplan.FieldGroupID)
 	}
@@ -36551,6 +36588,9 @@ func (m *SubscriptionPlanMutation) Fields() []string {
 	}
 	if m.badge_text != nil {
 		fields = append(fields, subscriptionplan.FieldBadgeText)
+	}
+	if m.badge_color != nil {
+		fields = append(fields, subscriptionplan.FieldBadgeColor)
 	}
 	if m.kind != nil {
 		fields = append(fields, subscriptionplan.FieldKind)
@@ -36607,6 +36647,8 @@ func (m *SubscriptionPlanMutation) Field(name string) (ent.Value, bool) {
 		return m.IsPopular()
 	case subscriptionplan.FieldBadgeText:
 		return m.BadgeText()
+	case subscriptionplan.FieldBadgeColor:
+		return m.BadgeColor()
 	case subscriptionplan.FieldKind:
 		return m.Kind()
 	case subscriptionplan.FieldDailyLimitUsd:
@@ -36656,6 +36698,8 @@ func (m *SubscriptionPlanMutation) OldField(ctx context.Context, name string) (e
 		return m.OldIsPopular(ctx)
 	case subscriptionplan.FieldBadgeText:
 		return m.OldBadgeText(ctx)
+	case subscriptionplan.FieldBadgeColor:
+		return m.OldBadgeColor(ctx)
 	case subscriptionplan.FieldKind:
 		return m.OldKind(ctx)
 	case subscriptionplan.FieldDailyLimitUsd:
@@ -36769,6 +36813,13 @@ func (m *SubscriptionPlanMutation) SetField(name string, value ent.Value) error 
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetBadgeText(v)
+		return nil
+	case subscriptionplan.FieldBadgeColor:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBadgeColor(v)
 		return nil
 	case subscriptionplan.FieldKind:
 		v, ok := value.(string)
@@ -37050,6 +37101,9 @@ func (m *SubscriptionPlanMutation) ResetField(name string) error {
 		return nil
 	case subscriptionplan.FieldBadgeText:
 		m.ResetBadgeText()
+		return nil
+	case subscriptionplan.FieldBadgeColor:
+		m.ResetBadgeColor()
 		return nil
 	case subscriptionplan.FieldKind:
 		m.ResetKind()

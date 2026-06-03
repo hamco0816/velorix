@@ -7228,7 +7228,12 @@ export default {
     renewNow: '续费',
     selectPlan: '选择套餐',
     planFeatures: '功能特性',
+    platformFilter: {
+      all: '全部',
+    },
+    tierCount: '{count} 档',
     planCard: {
+      price: '价格',
       rate: '倍率',
       dailyLimit: '日限额',
       weeklyLimit: '周限额',
@@ -7420,6 +7425,15 @@ export default {
       planBadgeText: '套餐标签',
       planBadgePlaceholder: '热门 / 最多 / 最新',
       planBadgeHint: '可选短标签，展示在用户端套餐卡片上；留空则不显示徽章。',
+      badgeColor: {
+        label: '角标配色',
+        gold: '鎏金',
+        obsidian: '黑金至尊',
+        purple: '帝王紫',
+        emerald: '翡翠',
+        sapphire: '宝石蓝',
+        rose: '玫瑰金',
+      },
       costMultiplier: '成本倍率',
       costMultiplierPreview: '成本倍率换算',
       adminOnly: '仅后台可见',

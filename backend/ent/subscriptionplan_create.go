@@ -180,6 +180,20 @@ func (_c *SubscriptionPlanCreate) SetNillableBadgeText(v *string) *SubscriptionP
 	return _c
 }
 
+// SetBadgeColor sets the "badge_color" field.
+func (_c *SubscriptionPlanCreate) SetBadgeColor(v string) *SubscriptionPlanCreate {
+	_c.mutation.SetBadgeColor(v)
+	return _c
+}
+
+// SetNillableBadgeColor sets the "badge_color" field if the given value is not nil.
+func (_c *SubscriptionPlanCreate) SetNillableBadgeColor(v *string) *SubscriptionPlanCreate {
+	if v != nil {
+		_c.SetBadgeColor(*v)
+	}
+	return _c
+}
+
 // SetKind sets the "kind" field.
 func (_c *SubscriptionPlanCreate) SetKind(v string) *SubscriptionPlanCreate {
 	_c.mutation.SetKind(v)
@@ -349,6 +363,10 @@ func (_c *SubscriptionPlanCreate) defaults() {
 		v := subscriptionplan.DefaultBadgeText
 		_c.mutation.SetBadgeText(v)
 	}
+	if _, ok := _c.mutation.BadgeColor(); !ok {
+		v := subscriptionplan.DefaultBadgeColor
+		_c.mutation.SetBadgeColor(v)
+	}
 	if _, ok := _c.mutation.Kind(); !ok {
 		v := subscriptionplan.DefaultKind
 		_c.mutation.SetKind(v)
@@ -419,6 +437,14 @@ func (_c *SubscriptionPlanCreate) check() error {
 	if v, ok := _c.mutation.BadgeText(); ok {
 		if err := subscriptionplan.BadgeTextValidator(v); err != nil {
 			return &ValidationError{Name: "badge_text", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.badge_text": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.BadgeColor(); !ok {
+		return &ValidationError{Name: "badge_color", err: errors.New(`ent: missing required field "SubscriptionPlan.badge_color"`)}
+	}
+	if v, ok := _c.mutation.BadgeColor(); ok {
+		if err := subscriptionplan.BadgeColorValidator(v); err != nil {
+			return &ValidationError{Name: "badge_color", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.badge_color": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.Kind(); !ok {
@@ -513,6 +539,10 @@ func (_c *SubscriptionPlanCreate) createSpec() (*SubscriptionPlan, *sqlgraph.Cre
 	if value, ok := _c.mutation.BadgeText(); ok {
 		_spec.SetField(subscriptionplan.FieldBadgeText, field.TypeString, value)
 		_node.BadgeText = value
+	}
+	if value, ok := _c.mutation.BadgeColor(); ok {
+		_spec.SetField(subscriptionplan.FieldBadgeColor, field.TypeString, value)
+		_node.BadgeColor = value
 	}
 	if value, ok := _c.mutation.Kind(); ok {
 		_spec.SetField(subscriptionplan.FieldKind, field.TypeString, value)
@@ -783,6 +813,18 @@ func (u *SubscriptionPlanUpsert) SetBadgeText(v string) *SubscriptionPlanUpsert 
 // UpdateBadgeText sets the "badge_text" field to the value that was provided on create.
 func (u *SubscriptionPlanUpsert) UpdateBadgeText() *SubscriptionPlanUpsert {
 	u.SetExcluded(subscriptionplan.FieldBadgeText)
+	return u
+}
+
+// SetBadgeColor sets the "badge_color" field.
+func (u *SubscriptionPlanUpsert) SetBadgeColor(v string) *SubscriptionPlanUpsert {
+	u.Set(subscriptionplan.FieldBadgeColor, v)
+	return u
+}
+
+// UpdateBadgeColor sets the "badge_color" field to the value that was provided on create.
+func (u *SubscriptionPlanUpsert) UpdateBadgeColor() *SubscriptionPlanUpsert {
+	u.SetExcluded(subscriptionplan.FieldBadgeColor)
 	return u
 }
 
@@ -1172,6 +1214,20 @@ func (u *SubscriptionPlanUpsertOne) SetBadgeText(v string) *SubscriptionPlanUpse
 func (u *SubscriptionPlanUpsertOne) UpdateBadgeText() *SubscriptionPlanUpsertOne {
 	return u.Update(func(s *SubscriptionPlanUpsert) {
 		s.UpdateBadgeText()
+	})
+}
+
+// SetBadgeColor sets the "badge_color" field.
+func (u *SubscriptionPlanUpsertOne) SetBadgeColor(v string) *SubscriptionPlanUpsertOne {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.SetBadgeColor(v)
+	})
+}
+
+// UpdateBadgeColor sets the "badge_color" field to the value that was provided on create.
+func (u *SubscriptionPlanUpsertOne) UpdateBadgeColor() *SubscriptionPlanUpsertOne {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.UpdateBadgeColor()
 	})
 }
 
@@ -1747,6 +1803,20 @@ func (u *SubscriptionPlanUpsertBulk) SetBadgeText(v string) *SubscriptionPlanUps
 func (u *SubscriptionPlanUpsertBulk) UpdateBadgeText() *SubscriptionPlanUpsertBulk {
 	return u.Update(func(s *SubscriptionPlanUpsert) {
 		s.UpdateBadgeText()
+	})
+}
+
+// SetBadgeColor sets the "badge_color" field.
+func (u *SubscriptionPlanUpsertBulk) SetBadgeColor(v string) *SubscriptionPlanUpsertBulk {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.SetBadgeColor(v)
+	})
+}
+
+// UpdateBadgeColor sets the "badge_color" field to the value that was provided on create.
+func (u *SubscriptionPlanUpsertBulk) UpdateBadgeColor() *SubscriptionPlanUpsertBulk {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.UpdateBadgeColor()
 	})
 }
 

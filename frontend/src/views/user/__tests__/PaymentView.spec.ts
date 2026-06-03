@@ -344,7 +344,8 @@ describe('PaymentView WeChat JSAPI flow', () => {
     await flushPromises()
 
     expect(wrapper.text()).not.toContain('payment.subscriptionGuide.title')
-    expect(wrapper.html()).toContain('subscription-plan-card-stub')
+    // 订阅列表现在按「平台 × 周期」渲染为档位对比表
+    expect(wrapper.html()).toContain('plan-comparison-table-stub')
   })
 
   it('keeps subscription resume context for token-only WeChat callbacks', async () => {

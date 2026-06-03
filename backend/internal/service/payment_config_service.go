@@ -162,6 +162,8 @@ type CreatePlanRequest struct {
 	IsPopular bool `json:"is_popular"`
 	// BadgeText is the short user-facing plan badge text. Empty means no badge.
 	BadgeText string `json:"badge_text"`
+	// BadgeColor 角标预设色板 key（gold/obsidian/purple/emerald/sapphire/rose），空 = gold
+	BadgeColor string `json:"badge_color"`
 	// Kind: shared = 共享池套餐；exclusive = 独享池套餐（购买后从 group 池子独占分配账号）
 	Kind string `json:"kind"`
 	// 套餐级限额/倍率覆盖：nil = 沿用 group 默认值（migration 138）
@@ -185,6 +187,7 @@ type UpdatePlanRequest struct {
 	SortOrder     *int     `json:"sort_order"`
 	IsPopular     *bool    `json:"is_popular"`
 	BadgeText     *string  `json:"badge_text"`
+	BadgeColor    *string  `json:"badge_color"`
 	Kind          *string  `json:"kind"`
 	// nil 表示请求里没传该字段，保持现状；
 	// 如果想清空覆盖回到 group 默认，前端传 0 即可（后端已把 0 视为"无效快照"在调度时回落到 group）

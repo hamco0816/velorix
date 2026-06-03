@@ -49,11 +49,29 @@
           <span>{{ t('payment.admin.planBadgeHint') }}</span>
           <span
             v-if="planForm.badge_text"
-            class="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm"
+            :class="['inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider ring-1 shadow-sm', badgeToneClass(planForm.badge_color)]"
           >
             <Icon name="sparkles" size="xs" :stroke-width="2.5" />
             {{ planForm.badge_text }}
           </span>
+        </div>
+        <!-- 角标配色：尊贵预设色板，仅在填了角标文字时才需要选 -->
+        <div v-if="planForm.badge_text" class="mt-2.5 flex flex-wrap items-center gap-2.5">
+          <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('payment.admin.badgeColor.label') }}</span>
+          <button
+            v-for="tone in BADGE_TONE_KEYS"
+            :key="tone"
+            type="button"
+            :title="t(`payment.admin.badgeColor.${tone}`)"
+            :class="[
+              'h-6 w-6 rounded-full transition-transform hover:scale-110',
+              badgeToneSwatchClass(tone),
+              planForm.badge_color === tone
+                ? 'ring-2 ring-offset-2 ring-gray-900 dark:ring-white dark:ring-offset-dark-800'
+                : 'ring-1 ring-black/10 dark:ring-white/15',
+            ]"
+            @click="planForm.badge_color = tone"
+          />
         </div>
       </div>
       <div class="grid grid-cols-2 gap-4">
@@ -231,6 +249,7 @@ import { platformTextClass } from '@/utils/platformColors'
 import { validatePlanLimits } from '@/utils/planLimits'
 import { normalizeToDays } from '@/utils/planCardType'
 import { calculatePlanCostEstimate, formatCostMultiplier } from '@/utils/planCost'
+import { BADGE_TONE_KEYS, DEFAULT_BADGE_TONE, badgeToneClass, badgeToneSwatchClass, type BadgeTone } from '@/utils/badgeTone'
 
 const props = defineProps<{
   show: boolean
@@ -276,6 +295,7 @@ const planForm = reactive({
   for_sale: true,
   is_popular: false,
   badge_text: '',
+  badge_color: DEFAULT_BADGE_TONE as BadgeTone,
   kind: 'shared' as 'shared' | 'exclusive',
   // 套餐级覆盖字段：null/0 表示沿用 group 默认值
   daily_limit_usd: null as number | null,
@@ -324,6 +344,12 @@ const selectedGroupInfo = computed(() => {
 function displayBadgeText(plan: SubscriptionPlan | null): string {
   if (!plan) return ''
   return (plan.badge_text || '').trim() || (plan.is_popular ? t('payment.admin.popularBadgeShort') : '')
+}
+
+// 把后端可能为空/旧值的 badge_color 收敛到合法色调 key
+function normalizeBadgeTone(color: string | null | undefined): BadgeTone {
+  const v = (color || '').trim().toLowerCase()
+  return (BADGE_TONE_KEYS as string[]).includes(v) ? (v as BadgeTone) : DEFAULT_BADGE_TONE
 }
 
 function positiveNumber(value: number | null | undefined): number | null {
@@ -453,6 +479,7 @@ watch(() => props.show, (visible) => {
       for_sale: props.plan.for_sale,
       is_popular: props.plan.is_popular === true,
       badge_text: displayBadgeText(props.plan),
+      badge_color: normalizeBadgeTone(props.plan.badge_color),
       kind: props.plan.kind || 'shared',
       daily_limit_usd: (props.plan as any).daily_limit_usd ?? null,
       weekly_limit_usd: (props.plan as any).weekly_limit_usd ?? null,
@@ -475,6 +502,7 @@ watch(() => props.show, (visible) => {
       for_sale: true,
       is_popular: false,
       badge_text: '',
+      badge_color: DEFAULT_BADGE_TONE,
       kind: 'shared',
       daily_limit_usd: p.daily_limit_usd ?? null,
       weekly_limit_usd: p.weekly_limit_usd ?? null,
@@ -530,6 +558,7 @@ function buildPlanPayload() {
     for_sale: planForm.for_sale,
     is_popular: planForm.badge_text.trim() !== '',
     badge_text: planForm.badge_text.trim(),
+    badge_color: planForm.badge_color,
     features,
     kind: planForm.kind,
     daily_limit_usd: optionalLimit(planForm.daily_limit_usd),

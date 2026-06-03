@@ -400,22 +400,60 @@
                 </template>
               </EmptyState>
               <template v-else>
-                <!-- 卡类型筛选：当套餐数量 > 1 且存在多种卡类型时才显示 -->
-                <div v-if="cardTypeFilters.length > 1" class="-mx-1 mb-1 flex flex-wrap gap-1 px-1">
-                  <button v-for="ct in cardTypeFilters" :key="ct"
-                    type="button"
-                    :class="[
-                      'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
-                      activeCardType === ct
-                        ? 'border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-gray-900'
-                        : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:text-gray-900 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-300 dark:hover:border-dark-600 dark:hover:text-white',
-                    ]"
-                    @click="activeCardType = ct">
-                    {{ ct === 'all' ? t('payment.admin.cardType.all') : t(`payment.admin.cardType.${ct}`) }}
-                  </button>
+                <!-- 双层筛选：平台（GPT/Claude…）在上，卡类型（周卡/月卡…）在下；各自仅在有多个选项时显示 -->
+                <div v-if="platformFilters.length > 1 || cardTypeFilters.length > 1" class="mb-4 space-y-2">
+                  <div v-if="platformFilters.length > 1" class="-mx-1 flex flex-wrap items-center gap-1.5 px-1">
+                    <button v-for="pf in platformFilters" :key="pf.key"
+                      type="button"
+                      :class="[
+                        'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors',
+                        activePlatform === pf.key
+                          ? 'border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-gray-900'
+                          : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:text-gray-900 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-300 dark:hover:border-dark-600 dark:hover:text-white',
+                      ]"
+                      @click="activePlatform = pf.key">
+                      <BrandIcon v-if="pf.key !== 'all' && platformBrandKey(pf.key)" :brand="platformBrandKey(pf.key)!" size="14px" />
+                      {{ pf.label }}
+                    </button>
+                  </div>
+                  <div v-if="cardTypeFilters.length > 1" class="-mx-1 flex flex-wrap gap-1 px-1">
+                    <button v-for="ct in cardTypeFilters" :key="ct"
+                      type="button"
+                      :class="[
+                        'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
+                        activeCardType === ct
+                          ? 'border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-gray-900'
+                          : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:text-gray-900 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-300 dark:hover:border-dark-600 dark:hover:text-white',
+                      ]"
+                      @click="activeCardType = ct">
+                      {{ ct === 'all' ? t('payment.admin.cardType.all') : t(`payment.admin.cardType.${ct}`) }}
+                    </button>
+                  </div>
                 </div>
-                <div :class="planGridClass">
-                  <SubscriptionPlanCard v-for="plan in filteredPlans" :key="plan.id" :plan="plan" :active-subscriptions="activeSubscriptions" @select="selectPlan" />
+                <!-- 筛选后无结果 -->
+                <EmptyState
+                  v-if="filteredPlans.length === 0"
+                  variant="emerald"
+                  :title="t('payment.noPlansTitle')"
+                  :description="t('payment.noPlansHint')"
+                >
+                  <template #icon>
+                    <Icon name="gift" class="empty-state-icon" />
+                  </template>
+                </EmptyState>
+                <!-- 按「平台 × 周期」分组，每组一张档位对比表（厂商在表头清晰标识）-->
+                <div v-else class="space-y-6">
+                  <PlanComparisonTable
+                    v-for="group in comparisonGroups"
+                    :key="group.key"
+                    :plans="group.plans"
+                    :platform="group.platform"
+                    :brand="group.brand"
+                    :label="group.label"
+                    :period-label="group.periodLabel"
+                    :active-subscriptions="activeSubscriptions"
+                    @select="selectPlan"
+                  />
                 </div>
               </template>
               <!-- Active subscriptions (compact, below plan list) -->
@@ -512,7 +550,7 @@ import {
   type PaymentRecoverySnapshot,
   writePaymentRecoverySnapshot,
 } from '@/components/payment/paymentFlow'
-import { collectCardTypes, derivePlanCardType, type PlanCardType } from '@/utils/planCardType'
+import { collectCardTypes, derivePlanCardType, CARD_TYPE_ORDER, type PlanCardType } from '@/utils/planCardType'
 import { getEffectiveLimitVisibility } from '@/utils/planLimits'
 import {
   platformAccentBarClass,
@@ -522,8 +560,12 @@ import {
   platformIconClass,
   platformTextClass,
   platformLabel,
+  platformProductLabel,
+  platformBrandKey,
+  comparePlatformOrder,
 } from '@/utils/platformColors'
 import SubscriptionPlanCard from '@/components/payment/SubscriptionPlanCard.vue'
+import PlanComparisonTable from '@/components/payment/PlanComparisonTable.vue'
 import PaymentStatusPanel from '@/components/payment/PaymentStatusPanel.vue'
 import Icon from '@/components/icons/Icon.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
@@ -571,6 +613,8 @@ const pendingRenewSeatId = ref<number>(0)
 const renewLastPaidPrice = ref<number>(0)
 // 卡类型筛选：'all' 显示全部，否则按 derivePlanCardType 推导后过滤
 const activeCardType = ref<'all' | PlanCardType>('all')
+// 平台筛选：'all' 显示全部，否则按 group_platform 过滤（GPT / Claude / ...）
+const activePlatform = ref<'all' | string>('all')
 
 const paymentPhase = ref<'select' | 'paying'>('select')
 
@@ -778,16 +822,6 @@ const balanceRechargeMultiplier = computed(() => {
 })
 const creditedAmount = computed(() => Math.round((validAmount.value * balanceRechargeMultiplier.value) * 100) / 100)
 
-// 自适应网格：1 张居中、2 张并排、3 张 3 列、4 张及以上 4 列。
-// 大屏 4 列充分利用横向空间，但卡片本身保留 min-height 让档位间视觉等高。
-const planGridClass = computed(() => {
-  const n = filteredPlans.value.length
-  if (n === 1) return 'grid grid-cols-1 gap-5'
-  if (n === 2) return 'grid grid-cols-1 gap-5 sm:grid-cols-2'
-  if (n === 3) return 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'
-  return 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-})
-
 // 卡类型筛选 tab：实际存在的类型 + 「全部」
 const cardTypeFilters = computed<('all' | PlanCardType)[]>(() => {
   const present = collectCardTypes(checkout.value.plans)
@@ -795,12 +829,60 @@ const cardTypeFilters = computed<('all' | PlanCardType)[]>(() => {
   return ['all', ...present]
 })
 
-// 按卡类型过滤后的套餐列表
+// 平台筛选 tab：实际存在的平台（按展示顺序）+ 「全部」。只有 1 个平台时不显示筛选。
+const platformFilters = computed<{ key: 'all' | string; label: string }[]>(() => {
+  const present = Array.from(
+    new Set(checkout.value.plans.map((p) => p.group_platform || '').filter(Boolean)),
+  ).sort(comparePlatformOrder)
+  if (present.length <= 1) return []
+  return [
+    { key: 'all', label: t('payment.platformFilter.all') },
+    ...present.map((p) => ({ key: p, label: platformProductLabel(p) })),
+  ]
+})
+
+// 按平台 + 卡类型双重过滤后的套餐列表
 const filteredPlans = computed(() => {
-  if (activeCardType.value === 'all') return checkout.value.plans
-  return checkout.value.plans.filter(
-    (p) => derivePlanCardType(p.validity_days, p.validity_unit) === activeCardType.value,
-  )
+  return checkout.value.plans.filter((p) => {
+    if (activePlatform.value !== 'all' && (p.group_platform || '') !== activePlatform.value) return false
+    if (activeCardType.value !== 'all'
+      && derivePlanCardType(p.validity_days, p.validity_unit) !== activeCardType.value) return false
+    return true
+  })
+})
+
+// 档位对比分组：按「平台 × 周期」聚合，每组就是一张对比表。
+// 组内按价格升序（Lite→Max 自动成型，sort_order / id 兜底）；
+// 组顺序先平台（PLATFORM_DISPLAY_ORDER）后周期（CARD_TYPE_ORDER），保证 GPT 各表相邻、Claude 各表相邻。
+// 这样新增套餐只要平台选对就自动归位，永远不用全局重排序。
+const comparisonGroups = computed(() => {
+  const groups = new Map<string, SubscriptionPlan[]>()
+  for (const plan of filteredPlans.value) {
+    const platform = plan.group_platform || ''
+    const cardType = derivePlanCardType(plan.validity_days, plan.validity_unit)
+    const key = `${platform}|${cardType}`
+    if (!groups.has(key)) groups.set(key, [])
+    groups.get(key)!.push(plan)
+  }
+  return Array.from(groups.entries())
+    .map(([key, plans]) => {
+      const [platform, cardType] = key.split('|')
+      return {
+        key,
+        platform,
+        cardType: cardType as PlanCardType,
+        brand: platformBrandKey(platform),
+        label: platformProductLabel(platform),
+        periodLabel: cardType === 'custom' ? '' : t(`payment.admin.cardType.${cardType}`),
+        plans: [...plans].sort(
+          (a, b) => a.price - b.price || (a.sort_order ?? 0) - (b.sort_order ?? 0) || a.id - b.id,
+        ),
+      }
+    })
+    .sort((a, b) =>
+      comparePlatformOrder(a.platform, b.platform)
+      || CARD_TYPE_ORDER.indexOf(a.cardType) - CARD_TYPE_ORDER.indexOf(b.cardType),
+    )
 })
 
 const subscriptionGuidePlans = computed(() =>
@@ -1018,6 +1100,13 @@ watch(() => [validAmount.value, selectedMethod.value] as const, ([amt, method]) 
 watch(cardTypeFilters, (filters) => {
   if (filters.length > 0 && !filters.includes(activeCardType.value)) {
     activeCardType.value = 'all'
+  }
+})
+
+// 平台筛选自愈：当前 activePlatform 对应的平台不再存在 → 重置到 all
+watch(platformFilters, (filters) => {
+  if (filters.length > 0 && !filters.some((f) => f.key === activePlatform.value)) {
+    activePlatform.value = 'all'
   }
 })
 

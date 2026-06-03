@@ -43,6 +43,8 @@ type SubscriptionPlan struct {
 	IsPopular bool `json:"is_popular,omitempty"`
 	// BadgeText holds the value of the "badge_text" field.
 	BadgeText string `json:"badge_text,omitempty"`
+	// BadgeColor holds the value of the "badge_color" field.
+	BadgeColor string `json:"badge_color,omitempty"`
 	// Kind holds the value of the "kind" field.
 	Kind string `json:"kind,omitempty"`
 	// DailyLimitUsd holds the value of the "daily_limit_usd" field.
@@ -71,7 +73,7 @@ func (*SubscriptionPlan) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullFloat64)
 		case subscriptionplan.FieldID, subscriptionplan.FieldGroupID, subscriptionplan.FieldValidityDays, subscriptionplan.FieldSortOrder:
 			values[i] = new(sql.NullInt64)
-		case subscriptionplan.FieldName, subscriptionplan.FieldDescription, subscriptionplan.FieldValidityUnit, subscriptionplan.FieldFeatures, subscriptionplan.FieldProductName, subscriptionplan.FieldBadgeText, subscriptionplan.FieldKind:
+		case subscriptionplan.FieldName, subscriptionplan.FieldDescription, subscriptionplan.FieldValidityUnit, subscriptionplan.FieldFeatures, subscriptionplan.FieldProductName, subscriptionplan.FieldBadgeText, subscriptionplan.FieldBadgeColor, subscriptionplan.FieldKind:
 			values[i] = new(sql.NullString)
 		case subscriptionplan.FieldCreatedAt, subscriptionplan.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -174,6 +176,12 @@ func (_m *SubscriptionPlan) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field badge_text", values[i])
 			} else if value.Valid {
 				_m.BadgeText = value.String
+			}
+		case subscriptionplan.FieldBadgeColor:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field badge_color", values[i])
+			} else if value.Valid {
+				_m.BadgeColor = value.String
 			}
 		case subscriptionplan.FieldKind:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -297,6 +305,9 @@ func (_m *SubscriptionPlan) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("badge_text=")
 	builder.WriteString(_m.BadgeText)
+	builder.WriteString(", ")
+	builder.WriteString("badge_color=")
+	builder.WriteString(_m.BadgeColor)
 	builder.WriteString(", ")
 	builder.WriteString("kind=")
 	builder.WriteString(_m.Kind)

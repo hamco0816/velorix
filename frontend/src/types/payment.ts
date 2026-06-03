@@ -128,6 +128,8 @@ export interface SubscriptionPlan {
   sort_order: number
   /** Short custom plan badge shown on the user plan card. Empty means no badge. */
   badge_text?: string
+  /** 角标预设色板 key（gold/obsidian/purple/emerald/sapphire/rose），空 = gold */
+  badge_color?: string
   /** Legacy popular marker retained for API compatibility. New UI uses badge_text. */
   is_popular?: boolean
   /** 'shared' = 共享池套餐；'exclusive' = 独享池套餐（购买后独占一个账号） */

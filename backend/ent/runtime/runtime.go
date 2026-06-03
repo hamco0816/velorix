@@ -1628,18 +1628,24 @@ func init() {
 	subscriptionplan.DefaultBadgeText = subscriptionplanDescBadgeText.Default.(string)
 	// subscriptionplan.BadgeTextValidator is a validator for the "badge_text" field. It is called by the builders before save.
 	subscriptionplan.BadgeTextValidator = subscriptionplanDescBadgeText.Validators[0].(func(string) error)
+	// subscriptionplanDescBadgeColor is the schema descriptor for badge_color field.
+	subscriptionplanDescBadgeColor := subscriptionplanFields[13].Descriptor()
+	// subscriptionplan.DefaultBadgeColor holds the default value on creation for the badge_color field.
+	subscriptionplan.DefaultBadgeColor = subscriptionplanDescBadgeColor.Default.(string)
+	// subscriptionplan.BadgeColorValidator is a validator for the "badge_color" field. It is called by the builders before save.
+	subscriptionplan.BadgeColorValidator = subscriptionplanDescBadgeColor.Validators[0].(func(string) error)
 	// subscriptionplanDescKind is the schema descriptor for kind field.
-	subscriptionplanDescKind := subscriptionplanFields[13].Descriptor()
+	subscriptionplanDescKind := subscriptionplanFields[14].Descriptor()
 	// subscriptionplan.DefaultKind holds the default value on creation for the kind field.
 	subscriptionplan.DefaultKind = subscriptionplanDescKind.Default.(string)
 	// subscriptionplan.KindValidator is a validator for the "kind" field. It is called by the builders before save.
 	subscriptionplan.KindValidator = subscriptionplanDescKind.Validators[0].(func(string) error)
 	// subscriptionplanDescCreatedAt is the schema descriptor for created_at field.
-	subscriptionplanDescCreatedAt := subscriptionplanFields[18].Descriptor()
+	subscriptionplanDescCreatedAt := subscriptionplanFields[19].Descriptor()
 	// subscriptionplan.DefaultCreatedAt holds the default value on creation for the created_at field.
 	subscriptionplan.DefaultCreatedAt = subscriptionplanDescCreatedAt.Default.(func() time.Time)
 	// subscriptionplanDescUpdatedAt is the schema descriptor for updated_at field.
-	subscriptionplanDescUpdatedAt := subscriptionplanFields[19].Descriptor()
+	subscriptionplanDescUpdatedAt := subscriptionplanFields[20].Descriptor()
 	// subscriptionplan.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	subscriptionplan.DefaultUpdatedAt = subscriptionplanDescUpdatedAt.Default.(func() time.Time)
 	// subscriptionplan.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

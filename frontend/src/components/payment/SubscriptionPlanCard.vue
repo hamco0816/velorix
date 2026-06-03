@@ -39,7 +39,7 @@
               <h3 class="truncate text-lg font-bold text-gray-900 dark:text-white">{{ plan.name }}</h3>
               <div class="mt-1 flex flex-wrap items-center gap-1.5">
                 <span v-if="hasBadge && !soldOut"
-                  class="inline-flex max-w-full items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-bold text-amber-800 ring-1 ring-amber-200 shadow-sm shadow-amber-100/60 dark:bg-amber-500/15 dark:text-amber-200 dark:ring-amber-400/30 dark:shadow-none">
+                  :class="['inline-flex max-w-full items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 shadow-sm dark:shadow-none', badgeToneClasses]">
                   <Icon name="sparkles" size="xs" :stroke-width="2.5" />
                   <span class="truncate">{{ badgeText }}</span>
                 </span>
@@ -194,6 +194,7 @@ import {
 } from '@/utils/platformColors'
 import { derivePlanCardType, cardTypeBadgeClass, normalizeToDays } from '@/utils/planCardType'
 import { getEffectiveLimitVisibility } from '@/utils/planLimits'
+import { badgeToneClass } from '@/utils/badgeTone'
 
 const props = defineProps<{ plan: SubscriptionPlan; activeSubscriptions?: UserSubscription[] }>()
 const emit = defineEmits<{ select: [plan: SubscriptionPlan] }>()
@@ -284,6 +285,8 @@ const rateDisplay = computed(() => {
 
 const badgeText = computed(() => (props.plan.badge_text || '').trim() || (props.plan.is_popular ? t('payment.planCard.popularBadge') : ''))
 const hasBadge = computed(() => badgeText.value !== '')
+// 角标按所选尊贵色调渲染（plan.badge_color 为空/非法时回落到鎏金）
+const badgeToneClasses = computed(() => badgeToneClass(props.plan.badge_color))
 
 // 限额可视性：废限额自动隐藏（被更紧的限额覆盖时不展示，避免用户困惑）
 const limitVisibility = computed(() =>

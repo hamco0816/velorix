@@ -66,6 +66,11 @@ func (SubscriptionPlan) Fields() []ent.Field {
 		field.String("badge_text").
 			MaxLen(48).
 			Default(""),
+		// 套餐角标配色：预设尊贵色板的 key（gold/obsidian/purple/emerald/sapphire/rose）。
+		// 仅在 badge_text 非空时生效；默认 gold（鎏金）对齐历史角标的琥珀色。
+		field.String("badge_color").
+			MaxLen(20).
+			Default("gold"),
 		// 套餐类型：shared = 共享池订阅（用户共享 group 内账号）
 		// exclusive = 独享池订阅（购买后从 group 池子里独占分配一个账号）
 		field.String("kind").
