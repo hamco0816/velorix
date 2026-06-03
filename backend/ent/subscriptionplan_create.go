@@ -194,6 +194,20 @@ func (_c *SubscriptionPlanCreate) SetNillableBadgeColor(v *string) *Subscription
 	return _c
 }
 
+// SetPlanLabel sets the "plan_label" field.
+func (_c *SubscriptionPlanCreate) SetPlanLabel(v string) *SubscriptionPlanCreate {
+	_c.mutation.SetPlanLabel(v)
+	return _c
+}
+
+// SetNillablePlanLabel sets the "plan_label" field if the given value is not nil.
+func (_c *SubscriptionPlanCreate) SetNillablePlanLabel(v *string) *SubscriptionPlanCreate {
+	if v != nil {
+		_c.SetPlanLabel(*v)
+	}
+	return _c
+}
+
 // SetKind sets the "kind" field.
 func (_c *SubscriptionPlanCreate) SetKind(v string) *SubscriptionPlanCreate {
 	_c.mutation.SetKind(v)
@@ -367,6 +381,10 @@ func (_c *SubscriptionPlanCreate) defaults() {
 		v := subscriptionplan.DefaultBadgeColor
 		_c.mutation.SetBadgeColor(v)
 	}
+	if _, ok := _c.mutation.PlanLabel(); !ok {
+		v := subscriptionplan.DefaultPlanLabel
+		_c.mutation.SetPlanLabel(v)
+	}
 	if _, ok := _c.mutation.Kind(); !ok {
 		v := subscriptionplan.DefaultKind
 		_c.mutation.SetKind(v)
@@ -445,6 +463,14 @@ func (_c *SubscriptionPlanCreate) check() error {
 	if v, ok := _c.mutation.BadgeColor(); ok {
 		if err := subscriptionplan.BadgeColorValidator(v); err != nil {
 			return &ValidationError{Name: "badge_color", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.badge_color": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.PlanLabel(); !ok {
+		return &ValidationError{Name: "plan_label", err: errors.New(`ent: missing required field "SubscriptionPlan.plan_label"`)}
+	}
+	if v, ok := _c.mutation.PlanLabel(); ok {
+		if err := subscriptionplan.PlanLabelValidator(v); err != nil {
+			return &ValidationError{Name: "plan_label", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.plan_label": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.Kind(); !ok {
@@ -543,6 +569,10 @@ func (_c *SubscriptionPlanCreate) createSpec() (*SubscriptionPlan, *sqlgraph.Cre
 	if value, ok := _c.mutation.BadgeColor(); ok {
 		_spec.SetField(subscriptionplan.FieldBadgeColor, field.TypeString, value)
 		_node.BadgeColor = value
+	}
+	if value, ok := _c.mutation.PlanLabel(); ok {
+		_spec.SetField(subscriptionplan.FieldPlanLabel, field.TypeString, value)
+		_node.PlanLabel = value
 	}
 	if value, ok := _c.mutation.Kind(); ok {
 		_spec.SetField(subscriptionplan.FieldKind, field.TypeString, value)
@@ -825,6 +855,18 @@ func (u *SubscriptionPlanUpsert) SetBadgeColor(v string) *SubscriptionPlanUpsert
 // UpdateBadgeColor sets the "badge_color" field to the value that was provided on create.
 func (u *SubscriptionPlanUpsert) UpdateBadgeColor() *SubscriptionPlanUpsert {
 	u.SetExcluded(subscriptionplan.FieldBadgeColor)
+	return u
+}
+
+// SetPlanLabel sets the "plan_label" field.
+func (u *SubscriptionPlanUpsert) SetPlanLabel(v string) *SubscriptionPlanUpsert {
+	u.Set(subscriptionplan.FieldPlanLabel, v)
+	return u
+}
+
+// UpdatePlanLabel sets the "plan_label" field to the value that was provided on create.
+func (u *SubscriptionPlanUpsert) UpdatePlanLabel() *SubscriptionPlanUpsert {
+	u.SetExcluded(subscriptionplan.FieldPlanLabel)
 	return u
 }
 
@@ -1228,6 +1270,20 @@ func (u *SubscriptionPlanUpsertOne) SetBadgeColor(v string) *SubscriptionPlanUps
 func (u *SubscriptionPlanUpsertOne) UpdateBadgeColor() *SubscriptionPlanUpsertOne {
 	return u.Update(func(s *SubscriptionPlanUpsert) {
 		s.UpdateBadgeColor()
+	})
+}
+
+// SetPlanLabel sets the "plan_label" field.
+func (u *SubscriptionPlanUpsertOne) SetPlanLabel(v string) *SubscriptionPlanUpsertOne {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.SetPlanLabel(v)
+	})
+}
+
+// UpdatePlanLabel sets the "plan_label" field to the value that was provided on create.
+func (u *SubscriptionPlanUpsertOne) UpdatePlanLabel() *SubscriptionPlanUpsertOne {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.UpdatePlanLabel()
 	})
 }
 
@@ -1817,6 +1873,20 @@ func (u *SubscriptionPlanUpsertBulk) SetBadgeColor(v string) *SubscriptionPlanUp
 func (u *SubscriptionPlanUpsertBulk) UpdateBadgeColor() *SubscriptionPlanUpsertBulk {
 	return u.Update(func(s *SubscriptionPlanUpsert) {
 		s.UpdateBadgeColor()
+	})
+}
+
+// SetPlanLabel sets the "plan_label" field.
+func (u *SubscriptionPlanUpsertBulk) SetPlanLabel(v string) *SubscriptionPlanUpsertBulk {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.SetPlanLabel(v)
+	})
+}
+
+// UpdatePlanLabel sets the "plan_label" field to the value that was provided on create.
+func (u *SubscriptionPlanUpsertBulk) UpdatePlanLabel() *SubscriptionPlanUpsertBulk {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.UpdatePlanLabel()
 	})
 }
 

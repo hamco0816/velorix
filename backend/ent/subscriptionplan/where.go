@@ -124,6 +124,11 @@ func BadgeColor(v string) predicate.SubscriptionPlan {
 	return predicate.SubscriptionPlan(sql.FieldEQ(FieldBadgeColor, v))
 }
 
+// PlanLabel applies equality check predicate on the "plan_label" field. It's identical to PlanLabelEQ.
+func PlanLabel(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldEQ(FieldPlanLabel, v))
+}
+
 // Kind applies equality check predicate on the "kind" field. It's identical to KindEQ.
 func Kind(v string) predicate.SubscriptionPlan {
 	return predicate.SubscriptionPlan(sql.FieldEQ(FieldKind, v))
@@ -842,6 +847,71 @@ func BadgeColorEqualFold(v string) predicate.SubscriptionPlan {
 // BadgeColorContainsFold applies the ContainsFold predicate on the "badge_color" field.
 func BadgeColorContainsFold(v string) predicate.SubscriptionPlan {
 	return predicate.SubscriptionPlan(sql.FieldContainsFold(FieldBadgeColor, v))
+}
+
+// PlanLabelEQ applies the EQ predicate on the "plan_label" field.
+func PlanLabelEQ(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldEQ(FieldPlanLabel, v))
+}
+
+// PlanLabelNEQ applies the NEQ predicate on the "plan_label" field.
+func PlanLabelNEQ(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldNEQ(FieldPlanLabel, v))
+}
+
+// PlanLabelIn applies the In predicate on the "plan_label" field.
+func PlanLabelIn(vs ...string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldIn(FieldPlanLabel, vs...))
+}
+
+// PlanLabelNotIn applies the NotIn predicate on the "plan_label" field.
+func PlanLabelNotIn(vs ...string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldNotIn(FieldPlanLabel, vs...))
+}
+
+// PlanLabelGT applies the GT predicate on the "plan_label" field.
+func PlanLabelGT(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldGT(FieldPlanLabel, v))
+}
+
+// PlanLabelGTE applies the GTE predicate on the "plan_label" field.
+func PlanLabelGTE(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldGTE(FieldPlanLabel, v))
+}
+
+// PlanLabelLT applies the LT predicate on the "plan_label" field.
+func PlanLabelLT(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldLT(FieldPlanLabel, v))
+}
+
+// PlanLabelLTE applies the LTE predicate on the "plan_label" field.
+func PlanLabelLTE(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldLTE(FieldPlanLabel, v))
+}
+
+// PlanLabelContains applies the Contains predicate on the "plan_label" field.
+func PlanLabelContains(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldContains(FieldPlanLabel, v))
+}
+
+// PlanLabelHasPrefix applies the HasPrefix predicate on the "plan_label" field.
+func PlanLabelHasPrefix(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldHasPrefix(FieldPlanLabel, v))
+}
+
+// PlanLabelHasSuffix applies the HasSuffix predicate on the "plan_label" field.
+func PlanLabelHasSuffix(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldHasSuffix(FieldPlanLabel, v))
+}
+
+// PlanLabelEqualFold applies the EqualFold predicate on the "plan_label" field.
+func PlanLabelEqualFold(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldEqualFold(FieldPlanLabel, v))
+}
+
+// PlanLabelContainsFold applies the ContainsFold predicate on the "plan_label" field.
+func PlanLabelContainsFold(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldContainsFold(FieldPlanLabel, v))
 }
 
 // KindEQ applies the EQ predicate on the "kind" field.

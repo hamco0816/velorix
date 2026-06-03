@@ -39,8 +39,7 @@
               <h3 class="truncate text-lg font-bold text-gray-900 dark:text-white">{{ plan.name }}</h3>
               <div class="mt-1 flex flex-wrap items-center gap-1.5">
                 <span v-if="hasBadge && !soldOut"
-                  :class="['inline-flex max-w-full items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 shadow-sm dark:shadow-none', badgeToneClasses]">
-                  <Icon name="sparkles" size="xs" :stroke-width="2.5" />
+                  :class="['inline-flex max-w-full items-center rounded-full px-2.5 py-1 text-[11px] font-bold shadow-sm dark:shadow-none', badgeToneClasses]">
                   <span class="truncate">{{ badgeText }}</span>
                 </span>
                 <span :class="['inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium', badgeLightClass]">

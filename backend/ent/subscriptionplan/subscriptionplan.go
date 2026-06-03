@@ -41,6 +41,8 @@ const (
 	FieldBadgeText = "badge_text"
 	// FieldBadgeColor holds the string denoting the badge_color field in the database.
 	FieldBadgeColor = "badge_color"
+	// FieldPlanLabel holds the string denoting the plan_label field in the database.
+	FieldPlanLabel = "plan_label"
 	// FieldKind holds the string denoting the kind field in the database.
 	FieldKind = "kind"
 	// FieldDailyLimitUsd holds the string denoting the daily_limit_usd field in the database.
@@ -76,6 +78,7 @@ var Columns = []string{
 	FieldIsPopular,
 	FieldBadgeText,
 	FieldBadgeColor,
+	FieldPlanLabel,
 	FieldKind,
 	FieldDailyLimitUsd,
 	FieldWeeklyLimitUsd,
@@ -126,6 +129,10 @@ var (
 	DefaultBadgeColor string
 	// BadgeColorValidator is a validator for the "badge_color" field. It is called by the builders before save.
 	BadgeColorValidator func(string) error
+	// DefaultPlanLabel holds the default value on creation for the "plan_label" field.
+	DefaultPlanLabel string
+	// PlanLabelValidator is a validator for the "plan_label" field. It is called by the builders before save.
+	PlanLabelValidator func(string) error
 	// DefaultKind holds the default value on creation for the "kind" field.
 	DefaultKind string
 	// KindValidator is a validator for the "kind" field. It is called by the builders before save.
@@ -214,6 +221,11 @@ func ByBadgeText(opts ...sql.OrderTermOption) OrderOption {
 // ByBadgeColor orders the results by the badge_color field.
 func ByBadgeColor(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBadgeColor, opts...).ToFunc()
+}
+
+// ByPlanLabel orders the results by the plan_label field.
+func ByPlanLabel(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPlanLabel, opts...).ToFunc()
 }
 
 // ByKind orders the results by the kind field.

@@ -35394,6 +35394,7 @@ type SubscriptionPlanMutation struct {
 	is_popular           *bool
 	badge_text           *string
 	badge_color          *string
+	plan_label           *string
 	kind                 *string
 	daily_limit_usd      *float64
 	adddaily_limit_usd   *float64
@@ -36127,6 +36128,42 @@ func (m *SubscriptionPlanMutation) ResetBadgeColor() {
 	m.badge_color = nil
 }
 
+// SetPlanLabel sets the "plan_label" field.
+func (m *SubscriptionPlanMutation) SetPlanLabel(s string) {
+	m.plan_label = &s
+}
+
+// PlanLabel returns the value of the "plan_label" field in the mutation.
+func (m *SubscriptionPlanMutation) PlanLabel() (r string, exists bool) {
+	v := m.plan_label
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlanLabel returns the old "plan_label" field's value of the SubscriptionPlan entity.
+// If the SubscriptionPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscriptionPlanMutation) OldPlanLabel(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlanLabel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlanLabel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlanLabel: %w", err)
+	}
+	return oldValue.PlanLabel, nil
+}
+
+// ResetPlanLabel resets all changes to the "plan_label" field.
+func (m *SubscriptionPlanMutation) ResetPlanLabel() {
+	m.plan_label = nil
+}
+
 // SetKind sets the "kind" field.
 func (m *SubscriptionPlanMutation) SetKind(s string) {
 	m.kind = &s
@@ -36549,7 +36586,7 @@ func (m *SubscriptionPlanMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscriptionPlanMutation) Fields() []string {
-	fields := make([]string, 0, 21)
+	fields := make([]string, 0, 22)
 	if m.group_id != nil {
 		fields = append(fields, subscriptionplan.FieldGroupID)
 	}
@@ -36591,6 +36628,9 @@ func (m *SubscriptionPlanMutation) Fields() []string {
 	}
 	if m.badge_color != nil {
 		fields = append(fields, subscriptionplan.FieldBadgeColor)
+	}
+	if m.plan_label != nil {
+		fields = append(fields, subscriptionplan.FieldPlanLabel)
 	}
 	if m.kind != nil {
 		fields = append(fields, subscriptionplan.FieldKind)
@@ -36649,6 +36689,8 @@ func (m *SubscriptionPlanMutation) Field(name string) (ent.Value, bool) {
 		return m.BadgeText()
 	case subscriptionplan.FieldBadgeColor:
 		return m.BadgeColor()
+	case subscriptionplan.FieldPlanLabel:
+		return m.PlanLabel()
 	case subscriptionplan.FieldKind:
 		return m.Kind()
 	case subscriptionplan.FieldDailyLimitUsd:
@@ -36700,6 +36742,8 @@ func (m *SubscriptionPlanMutation) OldField(ctx context.Context, name string) (e
 		return m.OldBadgeText(ctx)
 	case subscriptionplan.FieldBadgeColor:
 		return m.OldBadgeColor(ctx)
+	case subscriptionplan.FieldPlanLabel:
+		return m.OldPlanLabel(ctx)
 	case subscriptionplan.FieldKind:
 		return m.OldKind(ctx)
 	case subscriptionplan.FieldDailyLimitUsd:
@@ -36820,6 +36864,13 @@ func (m *SubscriptionPlanMutation) SetField(name string, value ent.Value) error 
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetBadgeColor(v)
+		return nil
+	case subscriptionplan.FieldPlanLabel:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlanLabel(v)
 		return nil
 	case subscriptionplan.FieldKind:
 		v, ok := value.(string)
@@ -37104,6 +37155,9 @@ func (m *SubscriptionPlanMutation) ResetField(name string) error {
 		return nil
 	case subscriptionplan.FieldBadgeColor:
 		m.ResetBadgeColor()
+		return nil
+	case subscriptionplan.FieldPlanLabel:
+		m.ResetPlanLabel()
 		return nil
 	case subscriptionplan.FieldKind:
 		m.ResetKind()

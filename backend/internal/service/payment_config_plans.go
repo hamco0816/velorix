@@ -21,6 +21,7 @@ const seatRenewalGraceWindow = 7 * 24 * time.Hour
 
 const (
 	maxPlanBadgeTextRunes = 12
+	maxPlanLabelRunes     = 24
 	defaultPlanBadgeColor = "gold"
 )
 
@@ -123,6 +124,11 @@ func validatePlanPatch(req UpdatePlanRequest) error {
 			return err
 		}
 	}
+	if req.PlanLabel != nil {
+		if _, err := normalizePlanLabel(*req.PlanLabel); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -143,6 +149,15 @@ func planBadgeTextForCreate(req CreatePlanRequest) (string, error) {
 		return "", err
 	}
 	return badgeText, nil
+}
+
+// 校验档位名：去空白；超长报错。空字符串合法（前端自动推导）。
+func normalizePlanLabel(raw string) (string, error) {
+	v := strings.TrimSpace(raw)
+	if utf8.RuneCountInString(v) > maxPlanLabelRunes {
+		return "", infraerrors.BadRequest("PLAN_LABEL_TOO_LONG", fmt.Sprintf("plan_label can contain at most %d characters", maxPlanLabelRunes))
+	}
+	return v, nil
 }
 
 // 校验角标配色：空字符串回落到默认 gold；非法 key 报错。
@@ -236,11 +251,16 @@ func (s *PaymentConfigService) CreatePlan(ctx context.Context, req CreatePlanReq
 	if err != nil {
 		return nil, err
 	}
+	planLabel, err := normalizePlanLabel(req.PlanLabel)
+	if err != nil {
+		return nil, err
+	}
+	// is_popular（推荐档，整列高亮）与 badge_text（角标文字）解耦，各自独立控制
 	b := s.entClient.SubscriptionPlan.Create().
 		SetGroupID(req.GroupID).SetName(req.Name).SetDescription(req.Description).
 		SetPrice(req.Price).SetValidityDays(req.ValidityDays).SetValidityUnit(req.ValidityUnit).
 		SetFeatures(req.Features).SetProductName(req.ProductName).
-		SetForSale(req.ForSale).SetSortOrder(req.SortOrder).SetIsPopular(req.IsPopular || badgeText != "").SetBadgeText(badgeText).SetBadgeColor(badgeColor).SetKind(kind)
+		SetForSale(req.ForSale).SetSortOrder(req.SortOrder).SetIsPopular(req.IsPopular).SetBadgeText(badgeText).SetBadgeColor(badgeColor).SetPlanLabel(planLabel).SetKind(kind)
 	if req.OriginalPrice != nil {
 		b.SetOriginalPrice(*req.OriginalPrice)
 	}
@@ -329,6 +349,7 @@ func (s *PaymentConfigService) UpdatePlan(ctx context.Context, id int64, req Upd
 	if req.SortOrder != nil {
 		u.SetSortOrder(*req.SortOrder)
 	}
+	// is_popular（推荐档高亮）与 badge_text（角标文字）解耦，各自独立 patch
 	if req.IsPopular != nil {
 		u.SetIsPopular(*req.IsPopular)
 	}
@@ -338,12 +359,13 @@ func (s *PaymentConfigService) UpdatePlan(ctx context.Context, id int64, req Upd
 			return nil, err
 		}
 		u.SetBadgeText(badgeText)
-		if req.IsPopular == nil {
-			u.SetIsPopular(badgeText != "")
-		}
 	}
-	if req.BadgeText == nil && req.IsPopular != nil && !*req.IsPopular {
-		u.SetBadgeText("")
+	if req.PlanLabel != nil {
+		planLabel, err := normalizePlanLabel(*req.PlanLabel)
+		if err != nil {
+			return nil, err
+		}
+		u.SetPlanLabel(planLabel)
 	}
 	if req.BadgeColor != nil {
 		badgeColor, err := normalizePlanBadgeColor(*req.BadgeColor)

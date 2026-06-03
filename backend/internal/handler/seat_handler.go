@@ -176,6 +176,7 @@ func renderRenewalPlanDTO(plan *dbent.SubscriptionPlan, gi service.PlanGroupInfo
 		"is_popular":              plan.IsPopular,
 		"badge_text":              plan.BadgeText,
 		"badge_color":             plan.BadgeColor,
+		"plan_label":              plan.PlanLabel,
 		"kind":                    plan.Kind,
 		"rate_multiplier":         rateMultiplier,
 		"daily_limit_usd":         dailyLimit,

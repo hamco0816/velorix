@@ -97,10 +97,9 @@
                    渐变填充 + sparkles 图标，跟用户端徽章保持视觉一致。 -->
               <span
                 v-if="planBadgeText(row)"
-                :class="['inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider ring-1 shadow-sm', badgeToneClass(row.badge_color)]"
+                :class="['inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider shadow-sm', badgeToneClass(row.badge_color)]"
                 :title="t('payment.admin.planBadgeHint')"
               >
-                <Icon name="sparkles" size="xs" :stroke-width="2.5" />
                 {{ planBadgeText(row) }}
               </span>
               <span

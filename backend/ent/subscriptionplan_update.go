@@ -265,6 +265,20 @@ func (_u *SubscriptionPlanUpdate) SetNillableBadgeColor(v *string) *Subscription
 	return _u
 }
 
+// SetPlanLabel sets the "plan_label" field.
+func (_u *SubscriptionPlanUpdate) SetPlanLabel(v string) *SubscriptionPlanUpdate {
+	_u.mutation.SetPlanLabel(v)
+	return _u
+}
+
+// SetNillablePlanLabel sets the "plan_label" field if the given value is not nil.
+func (_u *SubscriptionPlanUpdate) SetNillablePlanLabel(v *string) *SubscriptionPlanUpdate {
+	if v != nil {
+		_u.SetPlanLabel(*v)
+	}
+	return _u
+}
+
 // SetKind sets the "kind" field.
 func (_u *SubscriptionPlanUpdate) SetKind(v string) *SubscriptionPlanUpdate {
 	_u.mutation.SetKind(v)
@@ -461,6 +475,11 @@ func (_u *SubscriptionPlanUpdate) check() error {
 			return &ValidationError{Name: "badge_color", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.badge_color": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.PlanLabel(); ok {
+		if err := subscriptionplan.PlanLabelValidator(v); err != nil {
+			return &ValidationError{Name: "plan_label", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.plan_label": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Kind(); ok {
 		if err := subscriptionplan.KindValidator(v); err != nil {
 			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.kind": %w`, err)}
@@ -540,6 +559,9 @@ func (_u *SubscriptionPlanUpdate) sqlSave(ctx context.Context) (_node int, err e
 	}
 	if value, ok := _u.mutation.BadgeColor(); ok {
 		_spec.SetField(subscriptionplan.FieldBadgeColor, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.PlanLabel(); ok {
+		_spec.SetField(subscriptionplan.FieldPlanLabel, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Kind(); ok {
 		_spec.SetField(subscriptionplan.FieldKind, field.TypeString, value)
@@ -840,6 +862,20 @@ func (_u *SubscriptionPlanUpdateOne) SetNillableBadgeColor(v *string) *Subscript
 	return _u
 }
 
+// SetPlanLabel sets the "plan_label" field.
+func (_u *SubscriptionPlanUpdateOne) SetPlanLabel(v string) *SubscriptionPlanUpdateOne {
+	_u.mutation.SetPlanLabel(v)
+	return _u
+}
+
+// SetNillablePlanLabel sets the "plan_label" field if the given value is not nil.
+func (_u *SubscriptionPlanUpdateOne) SetNillablePlanLabel(v *string) *SubscriptionPlanUpdateOne {
+	if v != nil {
+		_u.SetPlanLabel(*v)
+	}
+	return _u
+}
+
 // SetKind sets the "kind" field.
 func (_u *SubscriptionPlanUpdateOne) SetKind(v string) *SubscriptionPlanUpdateOne {
 	_u.mutation.SetKind(v)
@@ -1049,6 +1085,11 @@ func (_u *SubscriptionPlanUpdateOne) check() error {
 			return &ValidationError{Name: "badge_color", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.badge_color": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.PlanLabel(); ok {
+		if err := subscriptionplan.PlanLabelValidator(v); err != nil {
+			return &ValidationError{Name: "plan_label", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.plan_label": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Kind(); ok {
 		if err := subscriptionplan.KindValidator(v); err != nil {
 			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.kind": %w`, err)}
@@ -1145,6 +1186,9 @@ func (_u *SubscriptionPlanUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 	}
 	if value, ok := _u.mutation.BadgeColor(); ok {
 		_spec.SetField(subscriptionplan.FieldBadgeColor, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.PlanLabel(); ok {
+		_spec.SetField(subscriptionplan.FieldPlanLabel, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Kind(); ok {
 		_spec.SetField(subscriptionplan.FieldKind, field.TypeString, value)

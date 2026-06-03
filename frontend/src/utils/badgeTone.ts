@@ -11,25 +11,29 @@ export const DEFAULT_BADGE_TONE: BadgeTone = 'gold'
 // 选择器与预览的展示顺序
 export const BADGE_TONE_KEYS: BadgeTone[] = ['gold', 'obsidian', 'purple', 'emerald', 'sapphire', 'rose']
 
-// pill 色调类：bg + 文字 + ring + 浅阴影（含深色模式）。结构类（圆角/字号/ring-1）留在组件里。
+// pill 色调类：渐变填充 + 文字色 + 内描边（含深浅模式自适应，渐变在两种模式都够鲜明，不再分浅色态）。
+// 结构类（圆角/字号/内边距/阴影）留在组件里，组件不再加 ring-1，描边由这里统一负责。
 const TONE: Record<BadgeTone, string> = {
-  gold: 'bg-amber-50 text-amber-800 ring-amber-300/70 shadow-amber-100/60 dark:bg-amber-500/15 dark:text-amber-200 dark:ring-amber-400/30',
-  // 黑金至尊：白卡上黑底鎏金字，最强尊贵感
-  obsidian: 'bg-gray-900 text-amber-300 ring-amber-400/40 shadow-gray-900/25 dark:bg-black dark:text-amber-300 dark:ring-amber-400/40',
-  purple: 'bg-violet-50 text-violet-800 ring-violet-300/70 shadow-violet-100/60 dark:bg-violet-500/15 dark:text-violet-200 dark:ring-violet-400/30',
-  emerald: 'bg-emerald-50 text-emerald-800 ring-emerald-300/70 shadow-emerald-100/60 dark:bg-emerald-500/15 dark:text-emerald-200 dark:ring-emerald-400/30',
-  sapphire: 'bg-blue-50 text-blue-800 ring-blue-300/70 shadow-blue-100/60 dark:bg-blue-500/15 dark:text-blue-200 dark:ring-blue-400/30',
-  rose: 'bg-rose-50 text-rose-800 ring-rose-300/70 shadow-rose-100/60 dark:bg-rose-500/15 dark:text-rose-200 dark:ring-rose-400/30',
+  // 香槟金：亮金渐变 + 深棕字，金属"刻字"质感
+  gold: 'bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 text-amber-950 ring-1 ring-inset ring-white/30',
+  // 黑金至尊：黑色渐变 + 鎏金字，最强尊贵感
+  obsidian: 'bg-gradient-to-r from-gray-800 to-gray-950 text-amber-300 ring-1 ring-inset ring-amber-400/30',
+  // 帝王紫：克制深紫渐变（不碰霓虹紫）
+  purple: 'bg-gradient-to-r from-violet-500 to-purple-600 text-white ring-1 ring-inset ring-white/20',
+  emerald: 'bg-gradient-to-r from-emerald-400 to-teal-500 text-white ring-1 ring-inset ring-white/20',
+  sapphire: 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white ring-1 ring-inset ring-white/20',
+  // 玫瑰金：玫粉渐变 + 深玫字
+  rose: 'bg-gradient-to-r from-rose-300 to-pink-400 text-rose-950 ring-1 ring-inset ring-white/30',
 }
 
-// 后台色调选择器用的色块（实心小圆点，金属色用极小渐变点缀，不影响整体克制风格）
+// 后台色调选择器用的色块（与角标同款渐变的小圆点）
 const SWATCH: Record<BadgeTone, string> = {
   gold: 'bg-gradient-to-br from-amber-300 to-amber-500',
   obsidian: 'bg-gradient-to-br from-gray-700 to-gray-950 ring-1 ring-inset ring-amber-400/50',
-  purple: 'bg-violet-500',
-  emerald: 'bg-emerald-500',
-  sapphire: 'bg-blue-500',
-  rose: 'bg-rose-400',
+  purple: 'bg-gradient-to-br from-violet-500 to-purple-600',
+  emerald: 'bg-gradient-to-br from-emerald-400 to-teal-500',
+  sapphire: 'bg-gradient-to-br from-blue-500 to-indigo-600',
+  rose: 'bg-gradient-to-br from-rose-300 to-pink-400',
 }
 
 function normalizeTone(key: string | null | undefined): BadgeTone {

@@ -42,6 +42,30 @@
         <div><label class="input-label">{{ t('payment.admin.validityDays') }} <span class="text-red-500">*</span></label><input v-model.number="planForm.validity_days" type="number" min="1" class="input" required /></div>
         <div><label class="input-label">{{ t('payment.admin.validityUnit') }} <span class="text-red-500">*</span></label><Select v-model="planForm.validity_unit" :options="validityUnitOptions" /></div>
       </div>
+      <!-- 档位名 + 推荐档：决定对比表的列头与整列高亮 -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="input-label">{{ t('payment.admin.planLabel') }}</label>
+          <input v-model.trim="planForm.plan_label" type="text" maxlength="24" class="input" :placeholder="t('payment.admin.planLabelPlaceholder')" />
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ t('payment.admin.planLabelHint') }}</p>
+        </div>
+        <div>
+          <label class="input-label">{{ t('payment.admin.recommendedTier') }}</label>
+          <div class="flex items-center gap-3 pt-1">
+            <button
+              type="button"
+              :class="[
+                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2',
+                planForm.is_popular ? 'bg-amber-500' : 'bg-gray-300 dark:bg-dark-600',
+              ]"
+              @click="planForm.is_popular = !planForm.is_popular"
+            >
+              <span :class="['pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out', planForm.is_popular ? 'translate-x-5' : 'translate-x-0']" />
+            </button>
+            <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('payment.admin.recommendedTierHint') }}</span>
+          </div>
+        </div>
+      </div>
       <div>
         <label class="input-label">{{ t('payment.admin.planBadgeText') }}</label>
         <input v-model.trim="planForm.badge_text" type="text" maxlength="12" class="input" :placeholder="t('payment.admin.planBadgePlaceholder')" />
@@ -49,9 +73,8 @@
           <span>{{ t('payment.admin.planBadgeHint') }}</span>
           <span
             v-if="planForm.badge_text"
-            :class="['inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider ring-1 shadow-sm', badgeToneClass(planForm.badge_color)]"
+            :class="['inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider shadow-sm', badgeToneClass(planForm.badge_color)]"
           >
-            <Icon name="sparkles" size="xs" :stroke-width="2.5" />
             {{ planForm.badge_text }}
           </span>
         </div>
@@ -296,6 +319,7 @@ const planForm = reactive({
   is_popular: false,
   badge_text: '',
   badge_color: DEFAULT_BADGE_TONE as BadgeTone,
+  plan_label: '',
   kind: 'shared' as 'shared' | 'exclusive',
   // 套餐级覆盖字段：null/0 表示沿用 group 默认值
   daily_limit_usd: null as number | null,
@@ -343,7 +367,8 @@ const selectedGroupInfo = computed(() => {
 
 function displayBadgeText(plan: SubscriptionPlan | null): string {
   if (!plan) return ''
-  return (plan.badge_text || '').trim() || (plan.is_popular ? t('payment.admin.popularBadgeShort') : '')
+  // 角标文字与"推荐档"(is_popular) 解耦，这里只回填角标本身
+  return (plan.badge_text || '').trim()
 }
 
 // 把后端可能为空/旧值的 badge_color 收敛到合法色调 key
@@ -480,6 +505,7 @@ watch(() => props.show, (visible) => {
       is_popular: props.plan.is_popular === true,
       badge_text: displayBadgeText(props.plan),
       badge_color: normalizeBadgeTone(props.plan.badge_color),
+      plan_label: props.plan.plan_label || '',
       kind: props.plan.kind || 'shared',
       daily_limit_usd: (props.plan as any).daily_limit_usd ?? null,
       weekly_limit_usd: (props.plan as any).weekly_limit_usd ?? null,
@@ -503,6 +529,7 @@ watch(() => props.show, (visible) => {
       is_popular: false,
       badge_text: '',
       badge_color: DEFAULT_BADGE_TONE,
+      plan_label: '',
       kind: 'shared',
       daily_limit_usd: p.daily_limit_usd ?? null,
       weekly_limit_usd: p.weekly_limit_usd ?? null,
@@ -556,9 +583,10 @@ function buildPlanPayload() {
     validity_unit: planForm.validity_unit,
     sort_order: planForm.sort_order,
     for_sale: planForm.for_sale,
-    is_popular: planForm.badge_text.trim() !== '',
+    is_popular: planForm.is_popular,
     badge_text: planForm.badge_text.trim(),
     badge_color: planForm.badge_color,
+    plan_label: planForm.plan_label.trim(),
     features,
     kind: planForm.kind,
     daily_limit_usd: optionalLimit(planForm.daily_limit_usd),

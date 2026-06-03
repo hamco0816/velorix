@@ -71,6 +71,10 @@ func (SubscriptionPlan) Fields() []ent.Field {
 		field.String("badge_color").
 			MaxLen(20).
 			Default("gold"),
+		// 档位名：订阅页档位对比表的列头显示用（如 Lite/Pro）。留空时前端从套餐名自动推导。
+		field.String("plan_label").
+			MaxLen(48).
+			Default(""),
 		// 套餐类型：shared = 共享池订阅（用户共享 group 内账号）
 		// exclusive = 独享池订阅（购买后从 group 池子里独占分配一个账号）
 		field.String("kind").
