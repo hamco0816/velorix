@@ -232,23 +232,23 @@ func buildMultipartMessage(from, to, subject, boundary, htmlBody, attachmentName
 	fmt.Fprintf(&b, "To: %s\r\n", to)
 	// 中文主题用 MIME encoded-word 编码，保证各邮件客户端正确显示。
 	fmt.Fprintf(&b, "Subject: %s\r\n", mime.QEncoding.Encode("UTF-8", subject))
-	b.WriteString("MIME-Version: 1.0\r\n")
+	_, _ = b.WriteString("MIME-Version: 1.0\r\n")
 	fmt.Fprintf(&b, "Content-Type: multipart/mixed; boundary=\"%s\"\r\n\r\n", boundary)
 
 	// 正文（HTML）
 	fmt.Fprintf(&b, "--%s\r\n", boundary)
-	b.WriteString("Content-Type: text/html; charset=UTF-8\r\n")
-	b.WriteString("Content-Transfer-Encoding: 8bit\r\n\r\n")
-	b.WriteString(htmlBody)
-	b.WriteString("\r\n")
+	_, _ = b.WriteString("Content-Type: text/html; charset=UTF-8\r\n")
+	_, _ = b.WriteString("Content-Transfer-Encoding: 8bit\r\n\r\n")
+	_, _ = b.WriteString(htmlBody)
+	_, _ = b.WriteString("\r\n")
 
 	// 附件
 	fmt.Fprintf(&b, "--%s\r\n", boundary)
 	fmt.Fprintf(&b, "Content-Type: %s; name=\"%s\"\r\n", attachmentMIME, attachmentName)
-	b.WriteString("Content-Transfer-Encoding: base64\r\n")
+	_, _ = b.WriteString("Content-Transfer-Encoding: base64\r\n")
 	fmt.Fprintf(&b, "Content-Disposition: attachment; filename=\"%s\"\r\n\r\n", attachmentName)
-	b.WriteString(encodeBase64Lines(attachment))
-	b.WriteString("\r\n")
+	_, _ = b.WriteString(encodeBase64Lines(attachment))
+	_, _ = b.WriteString("\r\n")
 
 	fmt.Fprintf(&b, "--%s--\r\n", boundary)
 	return []byte(b.String())
@@ -273,8 +273,8 @@ func encodeBase64Lines(data []byte) string {
 		if end > len(encoded) {
 			end = len(encoded)
 		}
-		b.WriteString(encoded[i:end])
-		b.WriteString("\r\n")
+		_, _ = b.WriteString(encoded[i:end])
+		_, _ = b.WriteString("\r\n")
 	}
 	return b.String()
 }
