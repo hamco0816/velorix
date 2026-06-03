@@ -48,10 +48,9 @@ func (s *SupportSubscriber) Send() <-chan []byte {
 }
 
 type SupportHub struct {
-	mu      sync.RWMutex
-	admins  map[*SupportSubscriber]struct{}
-	byUser  map[int64]map[*SupportSubscriber]struct{}
-	started bool
+	mu     sync.RWMutex
+	admins map[*SupportSubscriber]struct{}
+	byUser map[int64]map[*SupportSubscriber]struct{}
 }
 
 func NewSupportHub() *SupportHub {

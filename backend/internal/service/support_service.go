@@ -332,7 +332,9 @@ func (s *SupportService) ListMessages(ctx context.Context, conversationID int64,
 	if err != nil {
 		return nil, fmt.Errorf("list support messages: %w", err)
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	messages := make([]SupportMessage, 0, limit)
 	for rows.Next() {
@@ -423,7 +425,9 @@ func (s *SupportService) ListAdminConversations(ctx context.Context, params pagi
 	if err != nil {
 		return nil, nil, fmt.Errorf("list support conversations: %w", err)
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	items := make([]SupportConversation, 0, limit)
 	for rows.Next() {
