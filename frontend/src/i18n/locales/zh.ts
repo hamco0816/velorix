@@ -3001,6 +3001,13 @@ export default {
       resetInDaysHours: '{days} 天 {hours} 小时后重置',
       daysRemaining: '天剩余',
       remainingDays: '剩余天数',
+      remainingTime: '剩余时间',
+      remainingDaysOnly: '剩余 {days} 天',
+      remainingDaysHours: '剩余 {days} 天 {hours} 小时',
+      remainingHoursOnly: '剩余 {hours} 小时',
+      remainingHoursMinutes: '剩余 {hours} 小时 {minutes} 分钟',
+      remainingMinutes: '剩余 {minutes} 分钟',
+      remainingLessThanMinute: '不足 1 分钟',
       noExpiration: '无过期时间',
       status: {
         active: '生效中',

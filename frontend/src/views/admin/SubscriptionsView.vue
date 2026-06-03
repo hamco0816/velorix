@@ -339,17 +339,16 @@
 
           <template #cell-expires_at="{ value }">
             <div v-if="value" class="flex flex-col items-start gap-1">
-              <span class="text-sm text-gray-700 dark:text-gray-300">{{ formatDateOnly(value) }}</span>
-              <!-- 剩余天数：即将到期 (< 7 天) amber 警示 chip；正常 灰色文字 -->
+              <span class="text-sm text-gray-700 dark:text-gray-300">{{ formatExpirationDateTime(value) }}</span>
               <span
-                v-if="getDaysRemaining(value) !== null"
+                v-if="formatTimeRemaining(value)"
                 class="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium"
                 :class="isExpiringSoon(value)
                   ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
                   : 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'"
               >
                 <span class="h-1.5 w-1.5 rounded-full" :class="isExpiringSoon(value) ? 'bg-amber-500' : 'bg-gray-400'"></span>
-                {{ getDaysRemaining(value) }} {{ t('admin.subscriptions.daysRemaining') }}
+                {{ formatTimeRemaining(value) }}
               </span>
             </div>
             <span v-else class="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
@@ -603,15 +602,15 @@
             <span class="font-medium text-gray-900 dark:text-white">
               {{
                 extendingSubscription.expires_at
-                  ? formatDateOnly(extendingSubscription.expires_at)
+                  ? formatExpirationDateTime(extendingSubscription.expires_at)
                   : t('admin.subscriptions.noExpiration')
               }}
             </span>
           </p>
           <p v-if="extendingSubscription.expires_at" class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            {{ t('admin.subscriptions.remainingDays') }}:
+            {{ t('admin.subscriptions.remainingTime') }}:
             <span class="font-medium text-gray-900 dark:text-white">
-              {{ getDaysRemaining(extendingSubscription.expires_at) ?? 0 }}
+              {{ formatTimeRemaining(extendingSubscription.expires_at) ?? t('admin.subscriptions.status.expired') }}
             </span>
           </p>
         </div>
@@ -758,7 +757,7 @@ import { adminAPI } from '@/api/admin'
 import type { UserSubscription, Group, GroupPlatform, SubscriptionType } from '@/types'
 import type { SimpleUser } from '@/api/admin/usage'
 import type { Column } from '@/components/common/types'
-import { formatDateOnly } from '@/utils/format'
+import { formatDate } from '@/utils/format'
 import { getPersistedPageSize } from '@/composables/usePersistedPageSize'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import TablePageLayout from '@/components/layout/TablePageLayout.vue'
@@ -1297,17 +1296,58 @@ const confirmResetQuota = async () => {
 }
 
 // Helper functions
-const getDaysRemaining = (expiresAt: string): number | null => {
-  const now = new Date()
-  const expires = new Date(expiresAt)
-  const diff = expires.getTime() - now.getTime()
-  if (diff < 0) return null
-  return Math.ceil(diff / (1000 * 60 * 60 * 24))
+const MS_PER_MINUTE = 60 * 1000
+const MS_PER_HOUR = 60 * MS_PER_MINUTE
+const MS_PER_DAY = 24 * MS_PER_HOUR
+
+const getRemainingMs = (expiresAt: string): number | null => {
+  const expiresTime = new Date(expiresAt).getTime()
+  if (Number.isNaN(expiresTime)) return null
+
+  const diff = expiresTime - Date.now()
+  return diff > 0 ? diff : null
+}
+
+const formatExpirationDateTime = (expiresAt: string): string => {
+  return formatDate(expiresAt, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  })
+}
+
+const formatTimeRemaining = (expiresAt: string): string | null => {
+  const diff = getRemainingMs(expiresAt)
+  if (diff === null) return null
+  if (diff < MS_PER_MINUTE) return t('admin.subscriptions.remainingLessThanMinute')
+
+  const days = Math.floor(diff / MS_PER_DAY)
+  const hours = Math.floor((diff % MS_PER_DAY) / MS_PER_HOUR)
+  const minutes = Math.floor((diff % MS_PER_HOUR) / MS_PER_MINUTE)
+
+  if (days > 0) {
+    if (hours > 0) {
+      return t('admin.subscriptions.remainingDaysHours', { days, hours })
+    }
+    return t('admin.subscriptions.remainingDaysOnly', { days })
+  }
+
+  if (hours > 0) {
+    if (minutes > 0) {
+      return t('admin.subscriptions.remainingHoursMinutes', { hours, minutes })
+    }
+    return t('admin.subscriptions.remainingHoursOnly', { hours })
+  }
+
+  return t('admin.subscriptions.remainingMinutes', { minutes })
 }
 
 const isExpiringSoon = (expiresAt: string): boolean => {
-  const days = getDaysRemaining(expiresAt)
-  return days !== null && days <= 7
+  const diff = getRemainingMs(expiresAt)
+  return diff !== null && diff <= 7 * MS_PER_DAY
 }
 
 const validLimit = (limit: number | null | undefined): number | null => {

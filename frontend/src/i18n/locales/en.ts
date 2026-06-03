@@ -2916,6 +2916,13 @@ export default {
       resetInDaysHours: 'Resets in {days}d {hours}h',
       daysRemaining: 'days remaining',
       remainingDays: 'Remaining days',
+      remainingTime: 'Remaining time',
+      remainingDaysOnly: '{days}d left',
+      remainingDaysHours: '{days}d {hours}h left',
+      remainingHoursOnly: '{hours}h left',
+      remainingHoursMinutes: '{hours}h {minutes}m left',
+      remainingMinutes: '{minutes}m left',
+      remainingLessThanMinute: '< 1m left',
       noExpiration: 'No expiration',
       status: {
         active: 'Active',
