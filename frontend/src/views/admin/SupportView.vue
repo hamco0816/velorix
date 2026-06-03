@@ -13,7 +13,7 @@
             </button>
           </div>
 
-          <div class="mt-3 grid grid-cols-[1fr_112px] gap-2">
+          <div class="mt-3 space-y-2">
             <input
               v-model="search"
               type="text"
@@ -21,11 +21,20 @@
               :placeholder="t('support.admin.searchPlaceholder')"
               @keyup.enter="loadConversations"
             />
-            <select v-model="statusFilter" class="input" @change="loadConversations">
-              <option value="open">{{ t('support.statuses.open') }}</option>
-              <option value="closed">{{ t('support.statuses.closed') }}</option>
-              <option value="all">{{ t('common.all') }}</option>
-            </select>
+            <div class="flex rounded-lg border border-gray-200 bg-gray-50 p-1 dark:border-dark-700 dark:bg-dark-950">
+              <button
+                v-for="option in statusOptions"
+                :key="option.value"
+                type="button"
+                class="flex-1 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors"
+                :class="statusFilter === option.value
+                  ? 'bg-white text-primary-700 shadow-sm ring-1 ring-inset ring-gray-200 dark:bg-dark-800 dark:text-primary-300 dark:ring-dark-600'
+                  : 'text-gray-500 hover:text-gray-900 dark:text-dark-400 dark:hover:text-white'"
+                @click="setStatusFilter(option.value)"
+              >
+                {{ option.label }}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -145,11 +154,12 @@
               ></textarea>
               <button
                 type="submit"
-                class="btn btn-primary h-10 shrink-0"
+                class="btn btn-primary h-11 w-11 shrink-0 !px-0"
                 :disabled="sending || !reply.trim() || selectedConversation.status !== 'open'"
+                :title="t('support.send')"
+                :aria-label="t('support.send')"
               >
                 <Icon name="arrowRight" size="sm" />
-                {{ t('support.send') }}
               </button>
             </form>
             <p v-if="errorMessage" class="mt-2 text-xs text-rose-600 dark:text-rose-400">{{ errorMessage }}</p>
@@ -189,6 +199,12 @@ const wsStatus = ref<SupportWSStatus>('closed')
 const messageListRef = ref<HTMLElement | null>(null)
 let closeWS: (() => void) | null = null
 
+const statusOptions = computed(() => [
+  { value: 'open', label: t('support.statuses.open') },
+  { value: 'closed', label: t('support.statuses.closed') },
+  { value: 'all', label: t('common.all') }
+])
+
 const wsStatusLabel = computed(() => {
   switch (wsStatus.value) {
     case 'connected':
@@ -221,6 +237,12 @@ async function loadConversations() {
   } finally {
     loading.value = false
   }
+}
+
+function setStatusFilter(value: string) {
+  if (statusFilter.value === value) return
+  statusFilter.value = value
+  loadConversations()
 }
 
 async function selectConversation(item: SupportConversation) {
@@ -298,7 +320,7 @@ function handleRealtime(event: SupportRealtimeEvent) {
     mergeConversation(event.conversation)
   }
   if (event.type === 'support.message' && event.message) {
-      if (selectedConversation.value?.id === event.message.conversation_id) {
+    if (selectedConversation.value?.id === event.message.conversation_id) {
       mergeMessage(event.message)
       nextTick(scrollToBottom)
       if (event.message.sender_type === 'user' && isWorkbenchActive()) {

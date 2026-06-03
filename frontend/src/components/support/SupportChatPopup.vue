@@ -174,8 +174,8 @@ const wsStatusLabel = computed(() => {
 function openChatWindow() {
   const width = 430
   const height = 650
-  const left = Math.max(0, Math.round(window.screenX + window.outerWidth - width - 32))
-  const top = Math.max(0, Math.round(window.screenY + 72))
+  const left = Math.max(0, Math.round(window.screenX + (window.outerWidth - width) / 2))
+  const top = Math.max(0, Math.round(window.screenY + (window.outerHeight - height) / 2))
   const features = [
     'popup=yes',
     'resizable=yes',

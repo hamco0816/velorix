@@ -5,6 +5,7 @@ import Toast from '@/components/common/Toast.vue'
 import NavigationProgress from '@/components/common/NavigationProgress.vue'
 import { resolveDocumentTitle } from '@/router/title'
 import AnnouncementPopup from '@/components/common/AnnouncementPopup.vue'
+import AdminSupportNotifier from '@/components/support/AdminSupportNotifier.vue'
 import { useAppStore, useAuthStore, useSubscriptionStore, useAnnouncementStore } from '@/stores'
 import { getSetupStatus } from '@/api/setup'
 
@@ -116,4 +117,5 @@ onMounted(async () => {
   <RouterView />
   <Toast />
   <AnnouncementPopup v-if="!route.meta.standalone" />
+  <AdminSupportNotifier v-if="authStore.isAdmin && !route.meta.standalone && route.name !== 'AdminSupport'" />
 </template>
