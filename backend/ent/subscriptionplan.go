@@ -47,6 +47,8 @@ type SubscriptionPlan struct {
 	BadgeColor string `json:"badge_color,omitempty"`
 	// PlanLabel holds the value of the "plan_label" field.
 	PlanLabel string `json:"plan_label,omitempty"`
+	// TierStyle holds the value of the "tier_style" field.
+	TierStyle string `json:"tier_style,omitempty"`
 	// Kind holds the value of the "kind" field.
 	Kind string `json:"kind,omitempty"`
 	// DailyLimitUsd holds the value of the "daily_limit_usd" field.
@@ -75,7 +77,7 @@ func (*SubscriptionPlan) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullFloat64)
 		case subscriptionplan.FieldID, subscriptionplan.FieldGroupID, subscriptionplan.FieldValidityDays, subscriptionplan.FieldSortOrder:
 			values[i] = new(sql.NullInt64)
-		case subscriptionplan.FieldName, subscriptionplan.FieldDescription, subscriptionplan.FieldValidityUnit, subscriptionplan.FieldFeatures, subscriptionplan.FieldProductName, subscriptionplan.FieldBadgeText, subscriptionplan.FieldBadgeColor, subscriptionplan.FieldPlanLabel, subscriptionplan.FieldKind:
+		case subscriptionplan.FieldName, subscriptionplan.FieldDescription, subscriptionplan.FieldValidityUnit, subscriptionplan.FieldFeatures, subscriptionplan.FieldProductName, subscriptionplan.FieldBadgeText, subscriptionplan.FieldBadgeColor, subscriptionplan.FieldPlanLabel, subscriptionplan.FieldTierStyle, subscriptionplan.FieldKind:
 			values[i] = new(sql.NullString)
 		case subscriptionplan.FieldCreatedAt, subscriptionplan.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -190,6 +192,12 @@ func (_m *SubscriptionPlan) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field plan_label", values[i])
 			} else if value.Valid {
 				_m.PlanLabel = value.String
+			}
+		case subscriptionplan.FieldTierStyle:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field tier_style", values[i])
+			} else if value.Valid {
+				_m.TierStyle = value.String
 			}
 		case subscriptionplan.FieldKind:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -319,6 +327,9 @@ func (_m *SubscriptionPlan) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("plan_label=")
 	builder.WriteString(_m.PlanLabel)
+	builder.WriteString(", ")
+	builder.WriteString("tier_style=")
+	builder.WriteString(_m.TierStyle)
 	builder.WriteString(", ")
 	builder.WriteString("kind=")
 	builder.WriteString(_m.Kind)

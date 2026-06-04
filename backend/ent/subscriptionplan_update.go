@@ -279,6 +279,20 @@ func (_u *SubscriptionPlanUpdate) SetNillablePlanLabel(v *string) *SubscriptionP
 	return _u
 }
 
+// SetTierStyle sets the "tier_style" field.
+func (_u *SubscriptionPlanUpdate) SetTierStyle(v string) *SubscriptionPlanUpdate {
+	_u.mutation.SetTierStyle(v)
+	return _u
+}
+
+// SetNillableTierStyle sets the "tier_style" field if the given value is not nil.
+func (_u *SubscriptionPlanUpdate) SetNillableTierStyle(v *string) *SubscriptionPlanUpdate {
+	if v != nil {
+		_u.SetTierStyle(*v)
+	}
+	return _u
+}
+
 // SetKind sets the "kind" field.
 func (_u *SubscriptionPlanUpdate) SetKind(v string) *SubscriptionPlanUpdate {
 	_u.mutation.SetKind(v)
@@ -480,6 +494,11 @@ func (_u *SubscriptionPlanUpdate) check() error {
 			return &ValidationError{Name: "plan_label", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.plan_label": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.TierStyle(); ok {
+		if err := subscriptionplan.TierStyleValidator(v); err != nil {
+			return &ValidationError{Name: "tier_style", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.tier_style": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Kind(); ok {
 		if err := subscriptionplan.KindValidator(v); err != nil {
 			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.kind": %w`, err)}
@@ -562,6 +581,9 @@ func (_u *SubscriptionPlanUpdate) sqlSave(ctx context.Context) (_node int, err e
 	}
 	if value, ok := _u.mutation.PlanLabel(); ok {
 		_spec.SetField(subscriptionplan.FieldPlanLabel, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.TierStyle(); ok {
+		_spec.SetField(subscriptionplan.FieldTierStyle, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Kind(); ok {
 		_spec.SetField(subscriptionplan.FieldKind, field.TypeString, value)
@@ -876,6 +898,20 @@ func (_u *SubscriptionPlanUpdateOne) SetNillablePlanLabel(v *string) *Subscripti
 	return _u
 }
 
+// SetTierStyle sets the "tier_style" field.
+func (_u *SubscriptionPlanUpdateOne) SetTierStyle(v string) *SubscriptionPlanUpdateOne {
+	_u.mutation.SetTierStyle(v)
+	return _u
+}
+
+// SetNillableTierStyle sets the "tier_style" field if the given value is not nil.
+func (_u *SubscriptionPlanUpdateOne) SetNillableTierStyle(v *string) *SubscriptionPlanUpdateOne {
+	if v != nil {
+		_u.SetTierStyle(*v)
+	}
+	return _u
+}
+
 // SetKind sets the "kind" field.
 func (_u *SubscriptionPlanUpdateOne) SetKind(v string) *SubscriptionPlanUpdateOne {
 	_u.mutation.SetKind(v)
@@ -1090,6 +1126,11 @@ func (_u *SubscriptionPlanUpdateOne) check() error {
 			return &ValidationError{Name: "plan_label", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.plan_label": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.TierStyle(); ok {
+		if err := subscriptionplan.TierStyleValidator(v); err != nil {
+			return &ValidationError{Name: "tier_style", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.tier_style": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Kind(); ok {
 		if err := subscriptionplan.KindValidator(v); err != nil {
 			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.kind": %w`, err)}
@@ -1189,6 +1230,9 @@ func (_u *SubscriptionPlanUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 	}
 	if value, ok := _u.mutation.PlanLabel(); ok {
 		_spec.SetField(subscriptionplan.FieldPlanLabel, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.TierStyle(); ok {
+		_spec.SetField(subscriptionplan.FieldTierStyle, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Kind(); ok {
 		_spec.SetField(subscriptionplan.FieldKind, field.TypeString, value)

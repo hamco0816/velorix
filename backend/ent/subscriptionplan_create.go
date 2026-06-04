@@ -208,6 +208,20 @@ func (_c *SubscriptionPlanCreate) SetNillablePlanLabel(v *string) *SubscriptionP
 	return _c
 }
 
+// SetTierStyle sets the "tier_style" field.
+func (_c *SubscriptionPlanCreate) SetTierStyle(v string) *SubscriptionPlanCreate {
+	_c.mutation.SetTierStyle(v)
+	return _c
+}
+
+// SetNillableTierStyle sets the "tier_style" field if the given value is not nil.
+func (_c *SubscriptionPlanCreate) SetNillableTierStyle(v *string) *SubscriptionPlanCreate {
+	if v != nil {
+		_c.SetTierStyle(*v)
+	}
+	return _c
+}
+
 // SetKind sets the "kind" field.
 func (_c *SubscriptionPlanCreate) SetKind(v string) *SubscriptionPlanCreate {
 	_c.mutation.SetKind(v)
@@ -385,6 +399,10 @@ func (_c *SubscriptionPlanCreate) defaults() {
 		v := subscriptionplan.DefaultPlanLabel
 		_c.mutation.SetPlanLabel(v)
 	}
+	if _, ok := _c.mutation.TierStyle(); !ok {
+		v := subscriptionplan.DefaultTierStyle
+		_c.mutation.SetTierStyle(v)
+	}
 	if _, ok := _c.mutation.Kind(); !ok {
 		v := subscriptionplan.DefaultKind
 		_c.mutation.SetKind(v)
@@ -471,6 +489,14 @@ func (_c *SubscriptionPlanCreate) check() error {
 	if v, ok := _c.mutation.PlanLabel(); ok {
 		if err := subscriptionplan.PlanLabelValidator(v); err != nil {
 			return &ValidationError{Name: "plan_label", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.plan_label": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.TierStyle(); !ok {
+		return &ValidationError{Name: "tier_style", err: errors.New(`ent: missing required field "SubscriptionPlan.tier_style"`)}
+	}
+	if v, ok := _c.mutation.TierStyle(); ok {
+		if err := subscriptionplan.TierStyleValidator(v); err != nil {
+			return &ValidationError{Name: "tier_style", err: fmt.Errorf(`ent: validator failed for field "SubscriptionPlan.tier_style": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.Kind(); !ok {
@@ -573,6 +599,10 @@ func (_c *SubscriptionPlanCreate) createSpec() (*SubscriptionPlan, *sqlgraph.Cre
 	if value, ok := _c.mutation.PlanLabel(); ok {
 		_spec.SetField(subscriptionplan.FieldPlanLabel, field.TypeString, value)
 		_node.PlanLabel = value
+	}
+	if value, ok := _c.mutation.TierStyle(); ok {
+		_spec.SetField(subscriptionplan.FieldTierStyle, field.TypeString, value)
+		_node.TierStyle = value
 	}
 	if value, ok := _c.mutation.Kind(); ok {
 		_spec.SetField(subscriptionplan.FieldKind, field.TypeString, value)
@@ -867,6 +897,18 @@ func (u *SubscriptionPlanUpsert) SetPlanLabel(v string) *SubscriptionPlanUpsert 
 // UpdatePlanLabel sets the "plan_label" field to the value that was provided on create.
 func (u *SubscriptionPlanUpsert) UpdatePlanLabel() *SubscriptionPlanUpsert {
 	u.SetExcluded(subscriptionplan.FieldPlanLabel)
+	return u
+}
+
+// SetTierStyle sets the "tier_style" field.
+func (u *SubscriptionPlanUpsert) SetTierStyle(v string) *SubscriptionPlanUpsert {
+	u.Set(subscriptionplan.FieldTierStyle, v)
+	return u
+}
+
+// UpdateTierStyle sets the "tier_style" field to the value that was provided on create.
+func (u *SubscriptionPlanUpsert) UpdateTierStyle() *SubscriptionPlanUpsert {
+	u.SetExcluded(subscriptionplan.FieldTierStyle)
 	return u
 }
 
@@ -1284,6 +1326,20 @@ func (u *SubscriptionPlanUpsertOne) SetPlanLabel(v string) *SubscriptionPlanUpse
 func (u *SubscriptionPlanUpsertOne) UpdatePlanLabel() *SubscriptionPlanUpsertOne {
 	return u.Update(func(s *SubscriptionPlanUpsert) {
 		s.UpdatePlanLabel()
+	})
+}
+
+// SetTierStyle sets the "tier_style" field.
+func (u *SubscriptionPlanUpsertOne) SetTierStyle(v string) *SubscriptionPlanUpsertOne {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.SetTierStyle(v)
+	})
+}
+
+// UpdateTierStyle sets the "tier_style" field to the value that was provided on create.
+func (u *SubscriptionPlanUpsertOne) UpdateTierStyle() *SubscriptionPlanUpsertOne {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.UpdateTierStyle()
 	})
 }
 
@@ -1887,6 +1943,20 @@ func (u *SubscriptionPlanUpsertBulk) SetPlanLabel(v string) *SubscriptionPlanUps
 func (u *SubscriptionPlanUpsertBulk) UpdatePlanLabel() *SubscriptionPlanUpsertBulk {
 	return u.Update(func(s *SubscriptionPlanUpsert) {
 		s.UpdatePlanLabel()
+	})
+}
+
+// SetTierStyle sets the "tier_style" field.
+func (u *SubscriptionPlanUpsertBulk) SetTierStyle(v string) *SubscriptionPlanUpsertBulk {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.SetTierStyle(v)
+	})
+}
+
+// UpdateTierStyle sets the "tier_style" field to the value that was provided on create.
+func (u *SubscriptionPlanUpsertBulk) UpdateTierStyle() *SubscriptionPlanUpsertBulk {
+	return u.Update(func(s *SubscriptionPlanUpsert) {
+		s.UpdateTierStyle()
 	})
 }
 

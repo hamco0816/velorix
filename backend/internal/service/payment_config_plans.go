@@ -23,7 +23,18 @@ const (
 	maxPlanBadgeTextRunes = 12
 	maxPlanLabelRunes     = 24
 	defaultPlanBadgeColor = "gold"
+	defaultPlanTierStyle  = "basic"
 )
+
+// 档位样式升级阶梯 key（与前端 utils/tierStyle.ts 保持一致）。
+var allowedPlanTierStyles = map[string]struct{}{
+	"basic":    {}, // 简约（Lite）
+	"standard": {}, // 标准（Plus）
+	"advanced": {}, // 进阶（Pro）
+	"flagship": {}, // 旗舰（Ultra）
+	"luxury":   {}, // 豪华（Max）
+	"supreme":  {}, // 至尊（更高档）
+}
 
 // 套餐角标预设色板 key（尊贵色调）；admin 只能从这组里选，避免随意配色。
 // 与前端 utils/badgeTone.ts 的 key 保持一致。
@@ -129,6 +140,11 @@ func validatePlanPatch(req UpdatePlanRequest) error {
 			return err
 		}
 	}
+	if req.TierStyle != nil {
+		if _, err := normalizePlanTierStyle(*req.TierStyle); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -156,6 +172,18 @@ func normalizePlanLabel(raw string) (string, error) {
 	v := strings.TrimSpace(raw)
 	if utf8.RuneCountInString(v) > maxPlanLabelRunes {
 		return "", infraerrors.BadRequest("PLAN_LABEL_TOO_LONG", fmt.Sprintf("plan_label can contain at most %d characters", maxPlanLabelRunes))
+	}
+	return v, nil
+}
+
+// 校验档位样式：空字符串回落到默认 basic；非法 key 报错。
+func normalizePlanTierStyle(raw string) (string, error) {
+	v := strings.TrimSpace(strings.ToLower(raw))
+	if v == "" {
+		return defaultPlanTierStyle, nil
+	}
+	if _, ok := allowedPlanTierStyles[v]; !ok {
+		return "", infraerrors.BadRequest("PLAN_TIER_STYLE_INVALID", fmt.Sprintf("tier_style %q is not a supported preset", v))
 	}
 	return v, nil
 }
@@ -255,12 +283,16 @@ func (s *PaymentConfigService) CreatePlan(ctx context.Context, req CreatePlanReq
 	if err != nil {
 		return nil, err
 	}
+	tierStyle, err := normalizePlanTierStyle(req.TierStyle)
+	if err != nil {
+		return nil, err
+	}
 	// is_popular（推荐档，整列高亮）与 badge_text（角标文字）解耦，各自独立控制
 	b := s.entClient.SubscriptionPlan.Create().
 		SetGroupID(req.GroupID).SetName(req.Name).SetDescription(req.Description).
 		SetPrice(req.Price).SetValidityDays(req.ValidityDays).SetValidityUnit(req.ValidityUnit).
 		SetFeatures(req.Features).SetProductName(req.ProductName).
-		SetForSale(req.ForSale).SetSortOrder(req.SortOrder).SetIsPopular(req.IsPopular).SetBadgeText(badgeText).SetBadgeColor(badgeColor).SetPlanLabel(planLabel).SetKind(kind)
+		SetForSale(req.ForSale).SetSortOrder(req.SortOrder).SetIsPopular(req.IsPopular).SetBadgeText(badgeText).SetBadgeColor(badgeColor).SetPlanLabel(planLabel).SetTierStyle(tierStyle).SetKind(kind)
 	if req.OriginalPrice != nil {
 		b.SetOriginalPrice(*req.OriginalPrice)
 	}
@@ -366,6 +398,13 @@ func (s *PaymentConfigService) UpdatePlan(ctx context.Context, id int64, req Upd
 			return nil, err
 		}
 		u.SetPlanLabel(planLabel)
+	}
+	if req.TierStyle != nil {
+		tierStyle, err := normalizePlanTierStyle(*req.TierStyle)
+		if err != nil {
+			return nil, err
+		}
+		u.SetTierStyle(tierStyle)
 	}
 	if req.BadgeColor != nil {
 		badgeColor, err := normalizePlanBadgeColor(*req.BadgeColor)

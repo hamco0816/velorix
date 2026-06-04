@@ -1357,6 +1357,7 @@ var (
 		{Name: "badge_text", Type: field.TypeString, Size: 48, Default: ""},
 		{Name: "badge_color", Type: field.TypeString, Size: 20, Default: "gold"},
 		{Name: "plan_label", Type: field.TypeString, Size: 48, Default: ""},
+		{Name: "tier_style", Type: field.TypeString, Size: 20, Default: "basic"},
 		{Name: "kind", Type: field.TypeString, Size: 20, Default: "shared"},
 		{Name: "daily_limit_usd", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"postgres": "decimal(20,8)"}},
 		{Name: "weekly_limit_usd", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"postgres": "decimal(20,8)"}},

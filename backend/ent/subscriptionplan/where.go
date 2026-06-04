@@ -129,6 +129,11 @@ func PlanLabel(v string) predicate.SubscriptionPlan {
 	return predicate.SubscriptionPlan(sql.FieldEQ(FieldPlanLabel, v))
 }
 
+// TierStyle applies equality check predicate on the "tier_style" field. It's identical to TierStyleEQ.
+func TierStyle(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldEQ(FieldTierStyle, v))
+}
+
 // Kind applies equality check predicate on the "kind" field. It's identical to KindEQ.
 func Kind(v string) predicate.SubscriptionPlan {
 	return predicate.SubscriptionPlan(sql.FieldEQ(FieldKind, v))
@@ -912,6 +917,71 @@ func PlanLabelEqualFold(v string) predicate.SubscriptionPlan {
 // PlanLabelContainsFold applies the ContainsFold predicate on the "plan_label" field.
 func PlanLabelContainsFold(v string) predicate.SubscriptionPlan {
 	return predicate.SubscriptionPlan(sql.FieldContainsFold(FieldPlanLabel, v))
+}
+
+// TierStyleEQ applies the EQ predicate on the "tier_style" field.
+func TierStyleEQ(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldEQ(FieldTierStyle, v))
+}
+
+// TierStyleNEQ applies the NEQ predicate on the "tier_style" field.
+func TierStyleNEQ(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldNEQ(FieldTierStyle, v))
+}
+
+// TierStyleIn applies the In predicate on the "tier_style" field.
+func TierStyleIn(vs ...string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldIn(FieldTierStyle, vs...))
+}
+
+// TierStyleNotIn applies the NotIn predicate on the "tier_style" field.
+func TierStyleNotIn(vs ...string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldNotIn(FieldTierStyle, vs...))
+}
+
+// TierStyleGT applies the GT predicate on the "tier_style" field.
+func TierStyleGT(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldGT(FieldTierStyle, v))
+}
+
+// TierStyleGTE applies the GTE predicate on the "tier_style" field.
+func TierStyleGTE(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldGTE(FieldTierStyle, v))
+}
+
+// TierStyleLT applies the LT predicate on the "tier_style" field.
+func TierStyleLT(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldLT(FieldTierStyle, v))
+}
+
+// TierStyleLTE applies the LTE predicate on the "tier_style" field.
+func TierStyleLTE(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldLTE(FieldTierStyle, v))
+}
+
+// TierStyleContains applies the Contains predicate on the "tier_style" field.
+func TierStyleContains(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldContains(FieldTierStyle, v))
+}
+
+// TierStyleHasPrefix applies the HasPrefix predicate on the "tier_style" field.
+func TierStyleHasPrefix(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldHasPrefix(FieldTierStyle, v))
+}
+
+// TierStyleHasSuffix applies the HasSuffix predicate on the "tier_style" field.
+func TierStyleHasSuffix(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldHasSuffix(FieldTierStyle, v))
+}
+
+// TierStyleEqualFold applies the EqualFold predicate on the "tier_style" field.
+func TierStyleEqualFold(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldEqualFold(FieldTierStyle, v))
+}
+
+// TierStyleContainsFold applies the ContainsFold predicate on the "tier_style" field.
+func TierStyleContainsFold(v string) predicate.SubscriptionPlan {
+	return predicate.SubscriptionPlan(sql.FieldContainsFold(FieldTierStyle, v))
 }
 
 // KindEQ applies the EQ predicate on the "kind" field.

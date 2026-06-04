@@ -132,6 +132,8 @@ export interface SubscriptionPlan {
   badge_color?: string
   /** 档位名（对比表列头用，如 Lite/Pro），空 = 前端从套餐名自动推导 */
   plan_label?: string
+  /** 档位样式预设 key（basic/standard/advanced/flagship/luxury/supreme），空 = basic */
+  tier_style?: string
   /** Legacy popular marker retained for API compatibility. New UI uses badge_text. */
   is_popular?: boolean
   /** 'shared' = 共享池套餐；'exclusive' = 独享池套餐（购买后独占一个账号） */

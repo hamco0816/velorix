@@ -42,7 +42,7 @@
         <div><label class="input-label">{{ t('payment.admin.validityDays') }} <span class="text-red-500">*</span></label><input v-model.number="planForm.validity_days" type="number" min="1" class="input" required /></div>
         <div><label class="input-label">{{ t('payment.admin.validityUnit') }} <span class="text-red-500">*</span></label><Select v-model="planForm.validity_unit" :options="validityUnitOptions" /></div>
       </div>
-      <!-- 档位名 + 推荐档：决定对比表的列头与整列高亮 -->
+      <!-- 档位名 + 档位样式：决定对比表的列头标识（图标 + 配色，越高越豪华）-->
       <div class="grid grid-cols-2 gap-4">
         <div>
           <label class="input-label">{{ t('payment.admin.planLabel') }}</label>
@@ -50,19 +50,11 @@
           <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ t('payment.admin.planLabelHint') }}</p>
         </div>
         <div>
-          <label class="input-label">{{ t('payment.admin.recommendedTier') }}</label>
-          <div class="flex items-center gap-3 pt-1">
-            <button
-              type="button"
-              :class="[
-                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2',
-                planForm.is_popular ? 'bg-amber-500' : 'bg-gray-300 dark:bg-dark-600',
-              ]"
-              @click="planForm.is_popular = !planForm.is_popular"
-            >
-              <span :class="['pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out', planForm.is_popular ? 'translate-x-5' : 'translate-x-0']" />
-            </button>
-            <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('payment.admin.recommendedTierHint') }}</span>
+          <label class="input-label">{{ t('payment.admin.tierStyle.label') }}</label>
+          <Select v-model="planForm.tier_style" :options="tierStyleOptions" />
+          <div class="mt-1 flex items-center gap-2">
+            <span :class="['h-3.5 w-3.5 rounded-full', tierSwatchClass(planForm.tier_style)]" />
+            <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('payment.admin.tierStyle.hint') }}</span>
           </div>
         </div>
       </div>
@@ -273,6 +265,7 @@ import { validatePlanLimits } from '@/utils/planLimits'
 import { normalizeToDays } from '@/utils/planCardType'
 import { calculatePlanCostEstimate, formatCostMultiplier } from '@/utils/planCost'
 import { BADGE_TONE_KEYS, DEFAULT_BADGE_TONE, badgeToneClass, badgeToneSwatchClass, type BadgeTone } from '@/utils/badgeTone'
+import { TIER_STYLE_KEYS, DEFAULT_TIER_STYLE, tierSwatchClass, type TierStyle } from '@/utils/tierStyle'
 
 const props = defineProps<{
   show: boolean
@@ -320,6 +313,7 @@ const planForm = reactive({
   badge_text: '',
   badge_color: DEFAULT_BADGE_TONE as BadgeTone,
   plan_label: '',
+  tier_style: DEFAULT_TIER_STYLE as TierStyle,
   kind: 'shared' as 'shared' | 'exclusive',
   // 套餐级覆盖字段：null/0 表示沿用 group 默认值
   daily_limit_usd: null as number | null,
@@ -350,6 +344,10 @@ const planKindOptions = computed(() => [
   { value: 'exclusive', label: t('payment.admin.planKindExclusive') },
 ])
 
+const tierStyleOptions = computed(() =>
+  TIER_STYLE_KEYS.map(k => ({ value: k, label: t(`payment.admin.tierStyle.${k}`) })),
+)
+
 const groupOptions = computed(() =>
   props.groups
     .filter(g => g.subscription_type === 'subscription')
@@ -375,6 +373,12 @@ function displayBadgeText(plan: SubscriptionPlan | null): string {
 function normalizeBadgeTone(color: string | null | undefined): BadgeTone {
   const v = (color || '').trim().toLowerCase()
   return (BADGE_TONE_KEYS as string[]).includes(v) ? (v as BadgeTone) : DEFAULT_BADGE_TONE
+}
+
+// 把后端可能为空/旧值的 tier_style 收敛到合法 key
+function normalizeTierStyle(style: string | null | undefined): TierStyle {
+  const v = (style || '').trim().toLowerCase()
+  return (TIER_STYLE_KEYS as string[]).includes(v) ? (v as TierStyle) : DEFAULT_TIER_STYLE
 }
 
 function positiveNumber(value: number | null | undefined): number | null {
@@ -506,6 +510,7 @@ watch(() => props.show, (visible) => {
       badge_text: displayBadgeText(props.plan),
       badge_color: normalizeBadgeTone(props.plan.badge_color),
       plan_label: props.plan.plan_label || '',
+      tier_style: normalizeTierStyle(props.plan.tier_style),
       kind: props.plan.kind || 'shared',
       daily_limit_usd: (props.plan as any).daily_limit_usd ?? null,
       weekly_limit_usd: (props.plan as any).weekly_limit_usd ?? null,
@@ -530,6 +535,7 @@ watch(() => props.show, (visible) => {
       badge_text: '',
       badge_color: DEFAULT_BADGE_TONE,
       plan_label: '',
+      tier_style: DEFAULT_TIER_STYLE,
       kind: 'shared',
       daily_limit_usd: p.daily_limit_usd ?? null,
       weekly_limit_usd: p.weekly_limit_usd ?? null,
@@ -587,6 +593,7 @@ function buildPlanPayload() {
     badge_text: planForm.badge_text.trim(),
     badge_color: planForm.badge_color,
     plan_label: planForm.plan_label.trim(),
+    tier_style: planForm.tier_style,
     features,
     kind: planForm.kind,
     daily_limit_usd: optionalLimit(planForm.daily_limit_usd),

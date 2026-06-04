@@ -17,72 +17,74 @@
       <table class="w-full border-collapse text-sm">
         <thead>
           <tr>
-            <th class="sticky left-0 z-10 border-r border-gray-100 dark:border-dark-700/60 w-[5.5rem] bg-white px-4 py-3 dark:bg-dark-900"></th>
+            <th class="sticky left-0 z-10 w-24 bg-white dark:bg-dark-900"></th>
             <th
               v-for="(plan, i) in plans"
               :key="plan.id"
-              :class="['min-w-[8.5rem] px-4 py-3 text-center align-top', colClass(plan), isRecommended(plan) ? 'border-t-2 border-amber-400 dark:border-amber-500' : '']"
+              :class="['relative min-w-[10.5rem] px-4 text-center align-top', colClass(plan)]"
             >
-              <div class="text-sm font-bold text-gray-900 dark:text-white">{{ tierLabels[i] }}</div>
-              <div v-if="isRecommended(plan) || badgeOf(plan) || isSoldOut(plan) || subscribedDays(plan) !== null" class="mt-1.5 flex flex-wrap items-center justify-center gap-1">
-                <span v-if="isRecommended(plan)" class="inline-flex items-center rounded-full bg-gradient-to-r from-amber-400 to-amber-500 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm">{{ t('payment.planCard.recommended') }}</span>
-                <span v-if="badgeOf(plan)" :class="['inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold', badgeToneClass(plan.badge_color)]">{{ badgeOf(plan) }}</span>
-                <span v-if="isSoldOut(plan)" class="rounded-full bg-rose-50 px-1.5 py-0.5 text-[10px] font-semibold text-rose-700 ring-1 ring-rose-200 dark:bg-rose-900/20 dark:text-rose-300 dark:ring-rose-900/50">{{ t('payment.admin.stockSoldOut') }}</span>
-                <span v-else-if="subscribedDays(plan) !== null" class="rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:ring-emerald-900/50">{{ t('payment.planCard.subscribed', { days: subscribedDays(plan) }) }}</span>
+              <!-- 右上角真角标：售罄 > 促销角标 -->
+              <div v-if="isSoldOut(plan) || badgeOf(plan)" class="absolute right-2.5 top-2.5 z-10">
+                <span v-if="isSoldOut(plan)" class="inline-flex items-center rounded-md bg-rose-500 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-sm">{{ t('payment.admin.stockSoldOut') }}</span>
+                <span v-else :class="['inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-bold shadow-sm', badgeToneClass(plan.badge_color)]">{{ badgeOf(plan) }}</span>
+              </div>
+              <!-- 档位名（专属图标 + 配色）+ 价格（原价/折扣横放右侧）-->
+              <div class="pb-5 pt-6">
+                <div class="flex items-center justify-center gap-1.5">
+                  <Icon v-if="themes[i].icon" :name="themes[i].icon!" size="sm" :stroke-width="2" :class="themes[i].iconClass" />
+                  <span :class="['text-sm font-bold', themes[i].nameClass]">{{ tierLabels[i] }}</span>
+                </div>
+                <div class="mt-2 flex items-center justify-center gap-2">
+                  <div class="flex items-baseline gap-0.5">
+                    <span class="text-base font-semibold text-gray-400 dark:text-dark-400">¥</span>
+                    <span class="text-[30px] font-bold tabular-nums leading-none tracking-tight text-gray-900 dark:text-white">{{ plan.price }}</span>
+                  </div>
+                  <div v-if="plan.original_price && plan.original_price > 0" class="flex flex-col items-start gap-0.5 leading-none">
+                    <span class="text-[11px] text-gray-400 line-through decoration-gray-300 dark:text-dark-500">¥{{ plan.original_price }}</span>
+                    <span v-if="discountOf(plan)" class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">{{ discountOf(plan) }}</span>
+                  </div>
+                </div>
               </div>
             </th>
           </tr>
         </thead>
 
         <tbody>
-          <!-- 价格（视觉最强行）-->
-          <tr class="border-t border-gray-100 transition-colors hover:bg-gray-50/40 dark:border-dark-700/60 dark:hover:bg-white/[0.02]">
-            <th class="sticky left-0 z-10 border-r border-gray-100 dark:border-dark-700/60 bg-white px-4 py-3 text-left font-medium text-gray-500 dark:bg-dark-900 dark:text-dark-400">{{ t('payment.planCard.price') }}</th>
-            <td v-for="plan in plans" :key="plan.id" :class="['px-4 py-3 text-center align-middle', colClass(plan)]">
-              <div :class="['text-xl font-extrabold tabular-nums leading-none', platformTextClass(platform)]">¥{{ plan.price }}</div>
-              <div v-if="plan.original_price && plan.original_price > 0" class="mt-1.5 flex flex-wrap items-center justify-center gap-1">
-                <span class="text-[11px] text-gray-400 line-through dark:text-dark-500">¥{{ plan.original_price }}</span>
-                <span v-if="discountOf(plan)" :class="['rounded px-1 py-0.5 text-[10px] font-bold', platformDiscountClass(platform)]">{{ discountOf(plan) }}</span>
-              </div>
-            </td>
+          <!-- 限额区：行间用极淡分隔，整体留白为主 -->
+          <tr v-if="showRate" class="border-t border-gray-100/70 dark:border-dark-700/40">
+            <th class="sticky left-0 z-10 bg-white px-4 py-3 text-left text-[13px] font-medium text-gray-400 dark:bg-dark-900 dark:text-dark-400">{{ t('payment.planCard.rate') }}</th>
+            <td v-for="plan in plans" :key="plan.id" :class="['px-4 py-3 text-center font-semibold tabular-nums text-gray-900 dark:text-white', colClass(plan)]">{{ rateOf(plan) }}</td>
           </tr>
-          <!-- 倍率（仅当有档位非 ×1 时显示）-->
-          <tr v-if="showRate" class="border-t border-gray-100 dark:border-dark-700/60">
-            <th class="sticky left-0 z-10 border-r border-gray-100 dark:border-dark-700/60 bg-white px-4 py-2.5 text-left font-medium text-gray-500 dark:bg-dark-900 dark:text-dark-400">{{ t('payment.planCard.rate') }}</th>
-            <td v-for="plan in plans" :key="plan.id" :class="['px-4 py-2.5 text-center font-semibold tabular-nums text-gray-900 dark:text-white', colClass(plan)]">{{ rateOf(plan) }}</td>
+          <tr v-if="showDaily" class="border-t border-gray-100/70 dark:border-dark-700/40">
+            <th class="sticky left-0 z-10 bg-white px-4 py-3 text-left text-[13px] font-medium text-gray-400 dark:bg-dark-900 dark:text-dark-400">{{ t('payment.planCard.dailyLimit') }}</th>
+            <td v-for="plan in plans" :key="plan.id" :class="['px-4 py-3 text-center', colClass(plan)]"><LimitCell :value="plan.daily_limit_usd" /></td>
           </tr>
-          <!-- 日 / 周 / 月限额 -->
-          <tr v-if="showDaily" class="border-t border-gray-100 dark:border-dark-700/60">
-            <th class="sticky left-0 z-10 border-r border-gray-100 dark:border-dark-700/60 bg-white px-4 py-2.5 text-left font-medium text-gray-500 dark:bg-dark-900 dark:text-dark-400">{{ t('payment.planCard.dailyLimit') }}</th>
-            <td v-for="plan in plans" :key="plan.id" :class="['px-4 py-2.5 text-center', colClass(plan)]"><LimitCell :value="plan.daily_limit_usd" /></td>
+          <tr v-if="showWeekly" class="border-t border-gray-100/70 dark:border-dark-700/40">
+            <th class="sticky left-0 z-10 bg-white px-4 py-3 text-left text-[13px] font-medium text-gray-400 dark:bg-dark-900 dark:text-dark-400">{{ t('payment.planCard.weeklyLimit') }}</th>
+            <td v-for="plan in plans" :key="plan.id" :class="['px-4 py-3 text-center', colClass(plan)]"><LimitCell :value="plan.weekly_limit_usd" /></td>
           </tr>
-          <tr v-if="showWeekly" class="border-t border-gray-100 dark:border-dark-700/60">
-            <th class="sticky left-0 z-10 border-r border-gray-100 dark:border-dark-700/60 bg-white px-4 py-2.5 text-left font-medium text-gray-500 dark:bg-dark-900 dark:text-dark-400">{{ t('payment.planCard.weeklyLimit') }}</th>
-            <td v-for="plan in plans" :key="plan.id" :class="['px-4 py-2.5 text-center', colClass(plan)]"><LimitCell :value="plan.weekly_limit_usd" /></td>
+          <tr v-if="showMonthly" class="border-t border-gray-100/70 dark:border-dark-700/40">
+            <th class="sticky left-0 z-10 bg-white px-4 py-3 text-left text-[13px] font-medium text-gray-400 dark:bg-dark-900 dark:text-dark-400">{{ t('payment.planCard.monthlyLimit') }}</th>
+            <td v-for="plan in plans" :key="plan.id" :class="['px-4 py-3 text-center', colClass(plan)]"><LimitCell :value="plan.monthly_limit_usd" /></td>
           </tr>
-          <tr v-if="showMonthly" class="border-t border-gray-100 dark:border-dark-700/60">
-            <th class="sticky left-0 z-10 border-r border-gray-100 dark:border-dark-700/60 bg-white px-4 py-2.5 text-left font-medium text-gray-500 dark:bg-dark-900 dark:text-dark-400">{{ t('payment.planCard.monthlyLimit') }}</th>
-            <td v-for="plan in plans" :key="plan.id" :class="['px-4 py-2.5 text-center', colClass(plan)]"><LimitCell :value="plan.monthly_limit_usd" /></td>
-          </tr>
-          <!-- 全部档位都不限额时，给一行「配额：无限制」避免对比表只剩价格行 -->
-          <tr v-if="!showDaily && !showWeekly && !showMonthly" class="border-t border-gray-100 dark:border-dark-700/60">
-            <th class="sticky left-0 z-10 border-r border-gray-100 dark:border-dark-700/60 bg-white px-4 py-2.5 text-left font-medium text-gray-500 dark:bg-dark-900 dark:text-dark-400">{{ t('payment.planCard.quota') }}</th>
-            <td v-for="plan in plans" :key="plan.id" :class="['px-4 py-2.5 text-center text-base font-bold text-emerald-600 dark:text-emerald-400', colClass(plan)]">{{ t('payment.planCard.unlimited') }}</td>
+          <tr v-if="!showDaily && !showWeekly && !showMonthly" class="border-t border-gray-100/70 dark:border-dark-700/40">
+            <th class="sticky left-0 z-10 bg-white px-4 py-3 text-left text-[13px] font-medium text-gray-400 dark:bg-dark-900 dark:text-dark-400">{{ t('payment.planCard.quota') }}</th>
+            <td v-for="plan in plans" :key="plan.id" :class="['px-4 py-3 text-center text-base font-bold text-emerald-600 dark:text-emerald-400', colClass(plan)]">{{ t('payment.planCard.unlimited') }}</td>
           </tr>
         </tbody>
 
         <tfoot>
-          <tr class="border-t border-gray-100 transition-colors hover:bg-gray-50/40 dark:border-dark-700/60 dark:hover:bg-white/[0.02]">
-            <th class="sticky left-0 z-10 border-r border-gray-100 dark:border-dark-700/60 bg-white px-4 py-3 dark:bg-dark-900"></th>
-            <td v-for="plan in plans" :key="plan.id" :class="['px-4 py-3', colClass(plan)]">
+          <tr>
+            <th class="sticky left-0 z-10 bg-white px-4 pb-5 pt-4 dark:bg-dark-900"></th>
+            <td v-for="plan in plans" :key="plan.id" :class="['px-4 pb-5 pt-4 align-top', colClass(plan)]">
               <button
                 type="button"
                 :disabled="isSoldOut(plan)"
                 :class="[
-                  'w-full rounded-md px-3 py-2 text-xs font-semibold transition-colors active:scale-[0.99]',
+                  'w-full rounded-xl px-3 py-2.5 text-[13px] font-semibold transition-all active:scale-[0.99]',
                   isSoldOut(plan)
-                    ? 'cursor-not-allowed bg-gray-200 text-gray-400 dark:bg-dark-700 dark:text-dark-500'
-                    : 'bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100',
+                    ? 'cursor-not-allowed bg-gray-100 text-gray-400 dark:bg-dark-700 dark:text-dark-500'
+                    : ctaClassOf(plan) || 'bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100',
                 ]"
                 @click="!isSoldOut(plan) && emit('select', plan)"
               >
@@ -102,8 +104,9 @@ import { useI18n } from 'vue-i18n'
 import type { SubscriptionPlan } from '@/types/payment'
 import type { UserSubscription } from '@/types'
 import BrandIcon from '@/components/common/BrandIcon.vue'
-import { platformTextClass, platformDiscountClass } from '@/utils/platformColors'
+import Icon from '@/components/icons/Icon.vue'
 import { badgeToneClass } from '@/utils/badgeTone'
+import { tierTheme } from '@/utils/tierStyle'
 
 const props = defineProps<{
   plans: SubscriptionPlan[]
@@ -181,16 +184,17 @@ function badgeOf(plan: SubscriptionPlan): string {
   return (plan.badge_text || '').trim()
 }
 
-// 推荐档：每组只认第一个 is_popular 的套餐，保证整组至多高亮一列（与角标解耦）
-const recommendedId = computed(() => props.plans.find(p => p.is_popular)?.id ?? null)
+// 每个档位的样式主题（图标 / 配色 / 列底 / CTA），按列索引取用
+const themes = computed(() => props.plans.map(p => tierTheme(p.tier_style)))
 
-function isRecommended(plan: SubscriptionPlan): boolean {
-  return plan.id === recommendedId.value
+// 高档（豪华/至尊）整列点缀底色，做视觉突出（替代原"推荐"高亮）
+function colClass(plan: SubscriptionPlan): string {
+  return tierTheme(plan.tier_style).columnClass
 }
 
-// 推荐档整列高亮，做视觉锚点引导转化
-function colClass(plan: SubscriptionPlan): string {
-  return isRecommended(plan) ? 'bg-amber-50 dark:bg-amber-500/[0.08]' : ''
+// 该档 CTA 专属配色（豪华金 / 至尊黑金）；空则组件用默认黑按钮
+function ctaClassOf(plan: SubscriptionPlan): string {
+  return tierTheme(plan.tier_style).ctaClass
 }
 
 function stockOf(plan: SubscriptionPlan): number | null {

@@ -75,6 +75,11 @@ func (SubscriptionPlan) Fields() []ent.Field {
 		field.String("plan_label").
 			MaxLen(48).
 			Default(""),
+		// 档位样式：升级阶梯预设 key（basic/standard/advanced/flagship/luxury/supreme），
+		// 决定对比表里该档的专属配色 + 图标（越高越豪华）。默认 basic（简约）。
+		field.String("tier_style").
+			MaxLen(20).
+			Default("basic"),
 		// 套餐类型：shared = 共享池订阅（用户共享 group 内账号）
 		// exclusive = 独享池订阅（购买后从 group 池子里独占分配一个账号）
 		field.String("kind").
