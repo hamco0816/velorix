@@ -7232,6 +7232,7 @@ export default {
       all: '全部',
     },
     tierCount: '{count} 档',
+    savePercent: '省 {pct}',
     planCard: {
       price: '价格',
       rate: '倍率',

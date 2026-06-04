@@ -7039,6 +7039,7 @@ export default {
       all: 'All',
     },
     tierCount: '{count} tiers',
+    savePercent: 'Save {pct}',
     planCard: {
       price: 'Price',
       rate: 'Rate',
