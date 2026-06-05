@@ -95,6 +95,8 @@ type Group struct {
 	PromoEndsAt *time.Time `json:"promo_ends_at,omitempty"`
 	// 限时活动名称，如 "618 大促"，用于前端展示
 	PromoLabel *string `json:"promo_label,omitempty"`
+	// 该分组的消费是否可开票（默认不支持，仅自建号池等手动开启）
+	InvoiceEligible bool `json:"invoice_eligible,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the GroupQuery when eager-loading is set.
 	Edges        GroupEdges `json:"edges"`
@@ -203,7 +205,7 @@ func (*Group) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case group.FieldModelRouting, group.FieldSupportedModelScopes, group.FieldMessagesDispatchModelConfig:
 			values[i] = new([]byte)
-		case group.FieldIsExclusive, group.FieldAllowImageGeneration, group.FieldImageRateIndependent, group.FieldClaudeCodeOnly, group.FieldModelRoutingEnabled, group.FieldMcpXMLInject, group.FieldAllowMessagesDispatch, group.FieldRequireOauthOnly, group.FieldRequirePrivacySet:
+		case group.FieldIsExclusive, group.FieldAllowImageGeneration, group.FieldImageRateIndependent, group.FieldClaudeCodeOnly, group.FieldModelRoutingEnabled, group.FieldMcpXMLInject, group.FieldAllowMessagesDispatch, group.FieldRequireOauthOnly, group.FieldRequirePrivacySet, group.FieldInvoiceEligible:
 			values[i] = new(sql.NullBool)
 		case group.FieldRateMultiplier, group.FieldDailyLimitUsd, group.FieldWeeklyLimitUsd, group.FieldMonthlyLimitUsd, group.FieldImageRateMultiplier, group.FieldImagePrice1k, group.FieldImagePrice2k, group.FieldImagePrice4k, group.FieldPromoRateMultiplier:
 			values[i] = new(sql.NullFloat64)
@@ -482,6 +484,12 @@ func (_m *Group) assignValues(columns []string, values []any) error {
 				_m.PromoLabel = new(string)
 				*_m.PromoLabel = value.String
 			}
+		case group.FieldInvoiceEligible:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field invoice_eligible", values[i])
+			} else if value.Valid {
+				_m.InvoiceEligible = value.Bool
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -699,6 +707,9 @@ func (_m *Group) String() string {
 		builder.WriteString("promo_label=")
 		builder.WriteString(*v)
 	}
+	builder.WriteString(", ")
+	builder.WriteString("invoice_eligible=")
+	builder.WriteString(fmt.Sprintf("%v", _m.InvoiceEligible))
 	builder.WriteByte(')')
 	return builder.String()
 }

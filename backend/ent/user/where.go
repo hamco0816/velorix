@@ -165,6 +165,11 @@ func TotalRecharged(v float64) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldTotalRecharged, v))
 }
 
+// InvoiceableConsumed applies equality check predicate on the "invoiceable_consumed" field. It's identical to InvoiceableConsumedEQ.
+func InvoiceableConsumed(v float64) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldInvoiceableConsumed, v))
+}
+
 // RpmLimit applies equality check predicate on the "rpm_limit" field. It's identical to RpmLimitEQ.
 func RpmLimit(v int) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldRpmLimit, v))
@@ -1298,6 +1303,46 @@ func TotalRechargedLT(v float64) predicate.User {
 // TotalRechargedLTE applies the LTE predicate on the "total_recharged" field.
 func TotalRechargedLTE(v float64) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldTotalRecharged, v))
+}
+
+// InvoiceableConsumedEQ applies the EQ predicate on the "invoiceable_consumed" field.
+func InvoiceableConsumedEQ(v float64) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldInvoiceableConsumed, v))
+}
+
+// InvoiceableConsumedNEQ applies the NEQ predicate on the "invoiceable_consumed" field.
+func InvoiceableConsumedNEQ(v float64) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldInvoiceableConsumed, v))
+}
+
+// InvoiceableConsumedIn applies the In predicate on the "invoiceable_consumed" field.
+func InvoiceableConsumedIn(vs ...float64) predicate.User {
+	return predicate.User(sql.FieldIn(FieldInvoiceableConsumed, vs...))
+}
+
+// InvoiceableConsumedNotIn applies the NotIn predicate on the "invoiceable_consumed" field.
+func InvoiceableConsumedNotIn(vs ...float64) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldInvoiceableConsumed, vs...))
+}
+
+// InvoiceableConsumedGT applies the GT predicate on the "invoiceable_consumed" field.
+func InvoiceableConsumedGT(v float64) predicate.User {
+	return predicate.User(sql.FieldGT(FieldInvoiceableConsumed, v))
+}
+
+// InvoiceableConsumedGTE applies the GTE predicate on the "invoiceable_consumed" field.
+func InvoiceableConsumedGTE(v float64) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldInvoiceableConsumed, v))
+}
+
+// InvoiceableConsumedLT applies the LT predicate on the "invoiceable_consumed" field.
+func InvoiceableConsumedLT(v float64) predicate.User {
+	return predicate.User(sql.FieldLT(FieldInvoiceableConsumed, v))
+}
+
+// InvoiceableConsumedLTE applies the LTE predicate on the "invoiceable_consumed" field.
+func InvoiceableConsumedLTE(v float64) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldInvoiceableConsumed, v))
 }
 
 // RpmLimitEQ applies the EQ predicate on the "rpm_limit" field.

@@ -109,6 +109,13 @@ func (User) Fields() []ent.Field {
 			SchemaType(map[string]string{dialect.Postgres: "decimal(20,8)"}).
 			Default(0),
 
+		// 累计在「支持开票分组」产生的余额消费额度（与 balance 同单位，即站内额度/USD）。
+		// 记账时实时累加，不受用量日志清理影响。开票时按当前充值倍率折算成人民币，
+		// 并用真实充值付费金额封顶，作为余额消费的可开票上限。
+		field.Float("invoiceable_consumed").
+			SchemaType(map[string]string{dialect.Postgres: "decimal(20,8)"}).
+			Default(0),
+
 		// 用户级每分钟请求数上限（0 = 不限制）。仅当所在分组未设置 rpm_limit 时作为兜底生效。
 		field.Int("rpm_limit").
 			Default(0),

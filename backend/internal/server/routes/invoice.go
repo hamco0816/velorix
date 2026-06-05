@@ -23,7 +23,6 @@ func RegisterInvoiceRoutes(
 	authenticated.Use(gin.HandlerFunc(jwtAuth))
 	authenticated.Use(middleware.BackendModeUserGuard(settingService))
 	{
-		authenticated.GET("/invoiceable-orders", invoiceHandler.GetInvoiceableOrders)
 		authenticated.GET("/invoiceable-summary", invoiceHandler.GetInvoiceableSummary)
 		authenticated.GET("/my", invoiceHandler.GetMyInvoices)
 		authenticated.POST("", invoiceHandler.ApplyInvoice)

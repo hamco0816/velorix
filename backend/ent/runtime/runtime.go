@@ -918,6 +918,10 @@ func init() {
 	groupDescPromoLabel := groupFields[34].Descriptor()
 	// group.PromoLabelValidator is a validator for the "promo_label" field. It is called by the builders before save.
 	group.PromoLabelValidator = groupDescPromoLabel.Validators[0].(func(string) error)
+	// groupDescInvoiceEligible is the schema descriptor for invoice_eligible field.
+	groupDescInvoiceEligible := groupFields[35].Descriptor()
+	// group.DefaultInvoiceEligible holds the default value on creation for the invoice_eligible field.
+	group.DefaultInvoiceEligible = groupDescInvoiceEligible.Default.(bool)
 	idempotencyrecordMixin := schema.IdempotencyRecord{}.Mixin()
 	idempotencyrecordMixinFields0 := idempotencyrecordMixin[0].Fields()
 	_ = idempotencyrecordMixinFields0
@@ -1989,8 +1993,12 @@ func init() {
 	userDescTotalRecharged := userFields[18].Descriptor()
 	// user.DefaultTotalRecharged holds the default value on creation for the total_recharged field.
 	user.DefaultTotalRecharged = userDescTotalRecharged.Default.(float64)
+	// userDescInvoiceableConsumed is the schema descriptor for invoiceable_consumed field.
+	userDescInvoiceableConsumed := userFields[19].Descriptor()
+	// user.DefaultInvoiceableConsumed holds the default value on creation for the invoiceable_consumed field.
+	user.DefaultInvoiceableConsumed = userDescInvoiceableConsumed.Default.(float64)
 	// userDescRpmLimit is the schema descriptor for rpm_limit field.
-	userDescRpmLimit := userFields[19].Descriptor()
+	userDescRpmLimit := userFields[20].Descriptor()
 	// user.DefaultRpmLimit holds the default value on creation for the rpm_limit field.
 	user.DefaultRpmLimit = userDescRpmLimit.Default.(int)
 	userallowedgroupFields := schema.UserAllowedGroup{}.Fields()

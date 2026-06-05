@@ -140,6 +140,8 @@ export interface SubscriptionPlan {
   kind?: 'shared' | 'exclusive'
   /** 独享池套餐的剩余库存数；shared 套餐为 undefined */
   stock_available?: number
+  /** 该套餐所属分组消费是否可开票（购买页提示用户） */
+  invoice_eligible?: boolean
 }
 
 export type PlanKind = 'shared' | 'exclusive'

@@ -181,6 +181,12 @@ func (Group) Fields() []ent.Field {
 			Nillable().
 			MaxLen(100).
 			Comment("限时活动名称，如 \"618 大促\"，用于前端展示"),
+
+		// 该分组的消费是否可开票。默认 false：自对接的低利润分组不开票，
+		// 只有自建号池等高利润分组手动开启后，其消费才计入用户可开票额度。
+		field.Bool("invoice_eligible").
+			Default(false).
+			Comment("该分组的消费是否可开票（默认不支持，仅自建号池等手动开启）"),
 	}
 }
 

@@ -537,6 +537,20 @@ func (_c *GroupCreate) SetNillablePromoLabel(v *string) *GroupCreate {
 	return _c
 }
 
+// SetInvoiceEligible sets the "invoice_eligible" field.
+func (_c *GroupCreate) SetInvoiceEligible(v bool) *GroupCreate {
+	_c.mutation.SetInvoiceEligible(v)
+	return _c
+}
+
+// SetNillableInvoiceEligible sets the "invoice_eligible" field if the given value is not nil.
+func (_c *GroupCreate) SetNillableInvoiceEligible(v *bool) *GroupCreate {
+	if v != nil {
+		_c.SetInvoiceEligible(*v)
+	}
+	return _c
+}
+
 // AddAPIKeyIDs adds the "api_keys" edge to the APIKey entity by IDs.
 func (_c *GroupCreate) AddAPIKeyIDs(ids ...int64) *GroupCreate {
 	_c.mutation.AddAPIKeyIDs(ids...)
@@ -758,6 +772,10 @@ func (_c *GroupCreate) defaults() error {
 		v := group.DefaultRpmLimit
 		_c.mutation.SetRpmLimit(v)
 	}
+	if _, ok := _c.mutation.InvoiceEligible(); !ok {
+		v := group.DefaultInvoiceEligible
+		_c.mutation.SetInvoiceEligible(v)
+	}
 	return nil
 }
 
@@ -861,6 +879,9 @@ func (_c *GroupCreate) check() error {
 		if err := group.PromoLabelValidator(v); err != nil {
 			return &ValidationError{Name: "promo_label", err: fmt.Errorf(`ent: validator failed for field "Group.promo_label": %w`, err)}
 		}
+	}
+	if _, ok := _c.mutation.InvoiceEligible(); !ok {
+		return &ValidationError{Name: "invoice_eligible", err: errors.New(`ent: missing required field "Group.invoice_eligible"`)}
 	}
 	return nil
 }
@@ -1040,6 +1061,10 @@ func (_c *GroupCreate) createSpec() (*Group, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.PromoLabel(); ok {
 		_spec.SetField(group.FieldPromoLabel, field.TypeString, value)
 		_node.PromoLabel = &value
+	}
+	if value, ok := _c.mutation.InvoiceEligible(); ok {
+		_spec.SetField(group.FieldInvoiceEligible, field.TypeBool, value)
+		_node.InvoiceEligible = value
 	}
 	if nodes := _c.mutation.APIKeysIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1815,6 +1840,18 @@ func (u *GroupUpsert) ClearPromoLabel() *GroupUpsert {
 	return u
 }
 
+// SetInvoiceEligible sets the "invoice_eligible" field.
+func (u *GroupUpsert) SetInvoiceEligible(v bool) *GroupUpsert {
+	u.Set(group.FieldInvoiceEligible, v)
+	return u
+}
+
+// UpdateInvoiceEligible sets the "invoice_eligible" field to the value that was provided on create.
+func (u *GroupUpsert) UpdateInvoiceEligible() *GroupUpsert {
+	u.SetExcluded(group.FieldInvoiceEligible)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -2578,6 +2615,20 @@ func (u *GroupUpsertOne) UpdatePromoLabel() *GroupUpsertOne {
 func (u *GroupUpsertOne) ClearPromoLabel() *GroupUpsertOne {
 	return u.Update(func(s *GroupUpsert) {
 		s.ClearPromoLabel()
+	})
+}
+
+// SetInvoiceEligible sets the "invoice_eligible" field.
+func (u *GroupUpsertOne) SetInvoiceEligible(v bool) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetInvoiceEligible(v)
+	})
+}
+
+// UpdateInvoiceEligible sets the "invoice_eligible" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdateInvoiceEligible() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateInvoiceEligible()
 	})
 }
 
@@ -3510,6 +3561,20 @@ func (u *GroupUpsertBulk) UpdatePromoLabel() *GroupUpsertBulk {
 func (u *GroupUpsertBulk) ClearPromoLabel() *GroupUpsertBulk {
 	return u.Update(func(s *GroupUpsert) {
 		s.ClearPromoLabel()
+	})
+}
+
+// SetInvoiceEligible sets the "invoice_eligible" field.
+func (u *GroupUpsertBulk) SetInvoiceEligible(v bool) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetInvoiceEligible(v)
+	})
+}
+
+// UpdateInvoiceEligible sets the "invoice_eligible" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdateInvoiceEligible() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateInvoiceEligible()
 	})
 }
 

@@ -17360,6 +17360,7 @@ type GroupMutation struct {
 	promo_starts_at                         *time.Time
 	promo_ends_at                           *time.Time
 	promo_label                             *string
+	invoice_eligible                        *bool
 	clearedFields                           map[string]struct{}
 	api_keys                                map[int64]struct{}
 	removedapi_keys                         map[int64]struct{}
@@ -19349,6 +19350,42 @@ func (m *GroupMutation) ResetPromoLabel() {
 	delete(m.clearedFields, group.FieldPromoLabel)
 }
 
+// SetInvoiceEligible sets the "invoice_eligible" field.
+func (m *GroupMutation) SetInvoiceEligible(b bool) {
+	m.invoice_eligible = &b
+}
+
+// InvoiceEligible returns the value of the "invoice_eligible" field in the mutation.
+func (m *GroupMutation) InvoiceEligible() (r bool, exists bool) {
+	v := m.invoice_eligible
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInvoiceEligible returns the old "invoice_eligible" field's value of the Group entity.
+// If the Group object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GroupMutation) OldInvoiceEligible(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInvoiceEligible is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInvoiceEligible requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInvoiceEligible: %w", err)
+	}
+	return oldValue.InvoiceEligible, nil
+}
+
+// ResetInvoiceEligible resets all changes to the "invoice_eligible" field.
+func (m *GroupMutation) ResetInvoiceEligible() {
+	m.invoice_eligible = nil
+}
+
 // AddAPIKeyIDs adds the "api_keys" edge to the APIKey entity by ids.
 func (m *GroupMutation) AddAPIKeyIDs(ids ...int64) {
 	if m.api_keys == nil {
@@ -19707,7 +19744,7 @@ func (m *GroupMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *GroupMutation) Fields() []string {
-	fields := make([]string, 0, 38)
+	fields := make([]string, 0, 39)
 	if m.created_at != nil {
 		fields = append(fields, group.FieldCreatedAt)
 	}
@@ -19822,6 +19859,9 @@ func (m *GroupMutation) Fields() []string {
 	if m.promo_label != nil {
 		fields = append(fields, group.FieldPromoLabel)
 	}
+	if m.invoice_eligible != nil {
+		fields = append(fields, group.FieldInvoiceEligible)
+	}
 	return fields
 }
 
@@ -19906,6 +19946,8 @@ func (m *GroupMutation) Field(name string) (ent.Value, bool) {
 		return m.PromoEndsAt()
 	case group.FieldPromoLabel:
 		return m.PromoLabel()
+	case group.FieldInvoiceEligible:
+		return m.InvoiceEligible()
 	}
 	return nil, false
 }
@@ -19991,6 +20033,8 @@ func (m *GroupMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldPromoEndsAt(ctx)
 	case group.FieldPromoLabel:
 		return m.OldPromoLabel(ctx)
+	case group.FieldInvoiceEligible:
+		return m.OldInvoiceEligible(ctx)
 	}
 	return nil, fmt.Errorf("unknown Group field %s", name)
 }
@@ -20265,6 +20309,13 @@ func (m *GroupMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPromoLabel(v)
+		return nil
+	case group.FieldInvoiceEligible:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInvoiceEligible(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Group field %s", name)
@@ -20692,6 +20743,9 @@ func (m *GroupMutation) ResetField(name string) error {
 		return nil
 	case group.FieldPromoLabel:
 		m.ResetPromoLabel()
+		return nil
+	case group.FieldInvoiceEligible:
+		m.ResetInvoiceEligible()
 		return nil
 	}
 	return fmt.Errorf("unknown Group field %s", name)
@@ -43186,6 +43240,8 @@ type UserMutation struct {
 	balance_notify_extra_emails   *string
 	total_recharged               *float64
 	addtotal_recharged            *float64
+	invoiceable_consumed          *float64
+	addinvoiceable_consumed       *float64
 	rpm_limit                     *int
 	addrpm_limit                  *int
 	clearedFields                 map[string]struct{}
@@ -44282,6 +44338,62 @@ func (m *UserMutation) ResetTotalRecharged() {
 	m.addtotal_recharged = nil
 }
 
+// SetInvoiceableConsumed sets the "invoiceable_consumed" field.
+func (m *UserMutation) SetInvoiceableConsumed(f float64) {
+	m.invoiceable_consumed = &f
+	m.addinvoiceable_consumed = nil
+}
+
+// InvoiceableConsumed returns the value of the "invoiceable_consumed" field in the mutation.
+func (m *UserMutation) InvoiceableConsumed() (r float64, exists bool) {
+	v := m.invoiceable_consumed
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInvoiceableConsumed returns the old "invoiceable_consumed" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldInvoiceableConsumed(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInvoiceableConsumed is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInvoiceableConsumed requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInvoiceableConsumed: %w", err)
+	}
+	return oldValue.InvoiceableConsumed, nil
+}
+
+// AddInvoiceableConsumed adds f to the "invoiceable_consumed" field.
+func (m *UserMutation) AddInvoiceableConsumed(f float64) {
+	if m.addinvoiceable_consumed != nil {
+		*m.addinvoiceable_consumed += f
+	} else {
+		m.addinvoiceable_consumed = &f
+	}
+}
+
+// AddedInvoiceableConsumed returns the value that was added to the "invoiceable_consumed" field in this mutation.
+func (m *UserMutation) AddedInvoiceableConsumed() (r float64, exists bool) {
+	v := m.addinvoiceable_consumed
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetInvoiceableConsumed resets all changes to the "invoiceable_consumed" field.
+func (m *UserMutation) ResetInvoiceableConsumed() {
+	m.invoiceable_consumed = nil
+	m.addinvoiceable_consumed = nil
+}
+
 // SetRpmLimit sets the "rpm_limit" field.
 func (m *UserMutation) SetRpmLimit(i int) {
 	m.rpm_limit = &i
@@ -45074,7 +45186,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 23)
+	fields := make([]string, 0, 24)
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
 	}
@@ -45141,6 +45253,9 @@ func (m *UserMutation) Fields() []string {
 	if m.total_recharged != nil {
 		fields = append(fields, user.FieldTotalRecharged)
 	}
+	if m.invoiceable_consumed != nil {
+		fields = append(fields, user.FieldInvoiceableConsumed)
+	}
 	if m.rpm_limit != nil {
 		fields = append(fields, user.FieldRpmLimit)
 	}
@@ -45196,6 +45311,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.BalanceNotifyExtraEmails()
 	case user.FieldTotalRecharged:
 		return m.TotalRecharged()
+	case user.FieldInvoiceableConsumed:
+		return m.InvoiceableConsumed()
 	case user.FieldRpmLimit:
 		return m.RpmLimit()
 	}
@@ -45251,6 +45368,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldBalanceNotifyExtraEmails(ctx)
 	case user.FieldTotalRecharged:
 		return m.OldTotalRecharged(ctx)
+	case user.FieldInvoiceableConsumed:
+		return m.OldInvoiceableConsumed(ctx)
 	case user.FieldRpmLimit:
 		return m.OldRpmLimit(ctx)
 	}
@@ -45416,6 +45535,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTotalRecharged(v)
 		return nil
+	case user.FieldInvoiceableConsumed:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInvoiceableConsumed(v)
+		return nil
 	case user.FieldRpmLimit:
 		v, ok := value.(int)
 		if !ok {
@@ -45443,6 +45569,9 @@ func (m *UserMutation) AddedFields() []string {
 	if m.addtotal_recharged != nil {
 		fields = append(fields, user.FieldTotalRecharged)
 	}
+	if m.addinvoiceable_consumed != nil {
+		fields = append(fields, user.FieldInvoiceableConsumed)
+	}
 	if m.addrpm_limit != nil {
 		fields = append(fields, user.FieldRpmLimit)
 	}
@@ -45462,6 +45591,8 @@ func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedBalanceNotifyThreshold()
 	case user.FieldTotalRecharged:
 		return m.AddedTotalRecharged()
+	case user.FieldInvoiceableConsumed:
+		return m.AddedInvoiceableConsumed()
 	case user.FieldRpmLimit:
 		return m.AddedRpmLimit()
 	}
@@ -45500,6 +45631,13 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddTotalRecharged(v)
+		return nil
+	case user.FieldInvoiceableConsumed:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddInvoiceableConsumed(v)
 		return nil
 	case user.FieldRpmLimit:
 		v, ok := value.(int)
@@ -45639,6 +45777,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldTotalRecharged:
 		m.ResetTotalRecharged()
+		return nil
+	case user.FieldInvoiceableConsumed:
+		m.ResetInvoiceableConsumed()
 		return nil
 	case user.FieldRpmLimit:
 		m.ResetRpmLimit()

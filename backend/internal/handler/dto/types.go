@@ -157,6 +157,9 @@ type AdminGroup struct {
 
 	// 分组排序
 	SortOrder int `json:"sort_order"`
+
+	// 该分组消费是否可开票（默认 false，仅管理端可见可配）
+	InvoiceEligible bool `json:"invoice_eligible"`
 }
 
 type Account struct {

@@ -326,6 +326,20 @@ func (_c *UserCreate) SetNillableTotalRecharged(v *float64) *UserCreate {
 	return _c
 }
 
+// SetInvoiceableConsumed sets the "invoiceable_consumed" field.
+func (_c *UserCreate) SetInvoiceableConsumed(v float64) *UserCreate {
+	_c.mutation.SetInvoiceableConsumed(v)
+	return _c
+}
+
+// SetNillableInvoiceableConsumed sets the "invoiceable_consumed" field if the given value is not nil.
+func (_c *UserCreate) SetNillableInvoiceableConsumed(v *float64) *UserCreate {
+	if v != nil {
+		_c.SetInvoiceableConsumed(*v)
+	}
+	return _c
+}
+
 // SetRpmLimit sets the "rpm_limit" field.
 func (_c *UserCreate) SetRpmLimit(v int) *UserCreate {
 	_c.mutation.SetRpmLimit(v)
@@ -634,6 +648,10 @@ func (_c *UserCreate) defaults() error {
 		v := user.DefaultTotalRecharged
 		_c.mutation.SetTotalRecharged(v)
 	}
+	if _, ok := _c.mutation.InvoiceableConsumed(); !ok {
+		v := user.DefaultInvoiceableConsumed
+		_c.mutation.SetInvoiceableConsumed(v)
+	}
 	if _, ok := _c.mutation.RpmLimit(); !ok {
 		v := user.DefaultRpmLimit
 		_c.mutation.SetRpmLimit(v)
@@ -720,6 +738,9 @@ func (_c *UserCreate) check() error {
 	}
 	if _, ok := _c.mutation.TotalRecharged(); !ok {
 		return &ValidationError{Name: "total_recharged", err: errors.New(`ent: missing required field "User.total_recharged"`)}
+	}
+	if _, ok := _c.mutation.InvoiceableConsumed(); !ok {
+		return &ValidationError{Name: "invoiceable_consumed", err: errors.New(`ent: missing required field "User.invoiceable_consumed"`)}
 	}
 	if _, ok := _c.mutation.RpmLimit(); !ok {
 		return &ValidationError{Name: "rpm_limit", err: errors.New(`ent: missing required field "User.rpm_limit"`)}
@@ -838,6 +859,10 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.TotalRecharged(); ok {
 		_spec.SetField(user.FieldTotalRecharged, field.TypeFloat64, value)
 		_node.TotalRecharged = value
+	}
+	if value, ok := _c.mutation.InvoiceableConsumed(); ok {
+		_spec.SetField(user.FieldInvoiceableConsumed, field.TypeFloat64, value)
+		_node.InvoiceableConsumed = value
 	}
 	if value, ok := _c.mutation.RpmLimit(); ok {
 		_spec.SetField(user.FieldRpmLimit, field.TypeInt, value)
@@ -1419,6 +1444,24 @@ func (u *UserUpsert) AddTotalRecharged(v float64) *UserUpsert {
 	return u
 }
 
+// SetInvoiceableConsumed sets the "invoiceable_consumed" field.
+func (u *UserUpsert) SetInvoiceableConsumed(v float64) *UserUpsert {
+	u.Set(user.FieldInvoiceableConsumed, v)
+	return u
+}
+
+// UpdateInvoiceableConsumed sets the "invoiceable_consumed" field to the value that was provided on create.
+func (u *UserUpsert) UpdateInvoiceableConsumed() *UserUpsert {
+	u.SetExcluded(user.FieldInvoiceableConsumed)
+	return u
+}
+
+// AddInvoiceableConsumed adds v to the "invoiceable_consumed" field.
+func (u *UserUpsert) AddInvoiceableConsumed(v float64) *UserUpsert {
+	u.Add(user.FieldInvoiceableConsumed, v)
+	return u
+}
+
 // SetRpmLimit sets the "rpm_limit" field.
 func (u *UserUpsert) SetRpmLimit(v int) *UserUpsert {
 	u.Set(user.FieldRpmLimit, v)
@@ -1843,6 +1886,27 @@ func (u *UserUpsertOne) AddTotalRecharged(v float64) *UserUpsertOne {
 func (u *UserUpsertOne) UpdateTotalRecharged() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateTotalRecharged()
+	})
+}
+
+// SetInvoiceableConsumed sets the "invoiceable_consumed" field.
+func (u *UserUpsertOne) SetInvoiceableConsumed(v float64) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetInvoiceableConsumed(v)
+	})
+}
+
+// AddInvoiceableConsumed adds v to the "invoiceable_consumed" field.
+func (u *UserUpsertOne) AddInvoiceableConsumed(v float64) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.AddInvoiceableConsumed(v)
+	})
+}
+
+// UpdateInvoiceableConsumed sets the "invoiceable_consumed" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateInvoiceableConsumed() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateInvoiceableConsumed()
 	})
 }
 
@@ -2439,6 +2503,27 @@ func (u *UserUpsertBulk) AddTotalRecharged(v float64) *UserUpsertBulk {
 func (u *UserUpsertBulk) UpdateTotalRecharged() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateTotalRecharged()
+	})
+}
+
+// SetInvoiceableConsumed sets the "invoiceable_consumed" field.
+func (u *UserUpsertBulk) SetInvoiceableConsumed(v float64) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetInvoiceableConsumed(v)
+	})
+}
+
+// AddInvoiceableConsumed adds v to the "invoiceable_consumed" field.
+func (u *UserUpsertBulk) AddInvoiceableConsumed(v float64) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.AddInvoiceableConsumed(v)
+	})
+}
+
+// UpdateInvoiceableConsumed sets the "invoiceable_consumed" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateInvoiceableConsumed() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateInvoiceableConsumed()
 	})
 }
 

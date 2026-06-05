@@ -211,6 +211,8 @@ type PlanGroupInfo struct {
 	WeeklyLimitUSD  *float64 `json:"weekly_limit_usd"`
 	MonthlyLimitUSD *float64 `json:"monthly_limit_usd"`
 	ModelScopes     []string `json:"supported_model_scopes"`
+	// InvoiceEligible 该分组消费是否可开票（购买页据此提示用户）
+	InvoiceEligible bool `json:"invoice_eligible"`
 }
 
 // GetGroupPlatformMap returns a map of group_id → platform for the given plans.
@@ -250,6 +252,7 @@ func (s *PaymentConfigService) GetGroupInfoMap(ctx context.Context, plans []*dbe
 			WeeklyLimitUSD:  g.WeeklyLimitUsd,
 			MonthlyLimitUSD: g.MonthlyLimitUsd,
 			ModelScopes:     g.SupportedModelScopes,
+			InvoiceEligible: g.InvoiceEligible,
 		}
 	}
 	return m

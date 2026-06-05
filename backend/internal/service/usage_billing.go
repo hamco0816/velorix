@@ -39,6 +39,11 @@ type UsageBillingCommand struct {
 	APIKeyQuotaCost     float64
 	APIKeyRateLimitCost float64
 	AccountQuotaCost    float64
+
+	// InvoiceableConsumed 本次余额消费中计入「可开票额度」的部分（与 balance 同单位）。
+	// 仅当走余额计费且所在分组支持开票时 > 0；与扣余额在同一事务内累加到 users.invoiceable_consumed。
+	// 派生自 BalanceCost + 分组开票开关，不参与请求指纹计算。
+	InvoiceableConsumed float64
 }
 
 func (c *UsageBillingCommand) Normalize() {

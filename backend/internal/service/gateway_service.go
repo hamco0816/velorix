@@ -8170,6 +8170,10 @@ func buildUsageBillingCommand(requestID string, usageLog *UsageLog, p *postUsage
 		cmd.SubscriptionCost = p.Cost.ActualCost
 	} else if !isExclusiveBillCmd && p.Cost.ActualCost > 0 {
 		cmd.BalanceCost = p.Cost.ActualCost
+		// 余额消费且所在分组支持开票时，把这笔消费计入用户可开票额度（与扣余额同事务累加）。
+		if p.APIKey.Group != nil && p.APIKey.Group.InvoiceEligible {
+			cmd.InvoiceableConsumed = p.Cost.ActualCost
+		}
 	}
 
 	if p.shouldDeductAPIKeyQuota() {

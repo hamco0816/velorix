@@ -113,7 +113,7 @@ func (r *usageBillingRepository) applyUsageBillingEffects(ctx context.Context, t
 	}
 
 	if cmd.BalanceCost > 0 {
-		newBalance, err := deductUsageBillingBalance(ctx, tx, cmd.UserID, cmd.BalanceCost)
+		newBalance, err := deductUsageBillingBalance(ctx, tx, cmd.UserID, cmd.BalanceCost, cmd.InvoiceableConsumed)
 		if err != nil {
 			return err
 		}
@@ -173,15 +173,18 @@ func incrementUsageBillingSubscription(ctx context.Context, tx *sql.Tx, subscrip
 	return service.ErrSubscriptionNotFound
 }
 
-func deductUsageBillingBalance(ctx context.Context, tx *sql.Tx, userID int64, amount float64) (float64, error) {
+// deductUsageBillingBalance 扣减用户余额；invoiceableConsumed > 0 时在同一条 UPDATE 内
+// 把这笔消费累加到 invoiceable_consumed（支持开票分组的可开票额度），保证原子且跟随幂等。
+func deductUsageBillingBalance(ctx context.Context, tx *sql.Tx, userID int64, amount, invoiceableConsumed float64) (float64, error) {
 	var newBalance float64
 	err := tx.QueryRowContext(ctx, `
 		UPDATE users
 		SET balance = balance - $1,
+			invoiceable_consumed = invoiceable_consumed + $3,
 			updated_at = NOW()
 		WHERE id = $2 AND deleted_at IS NULL
 		RETURNING balance
-	`, amount, userID).Scan(&newBalance)
+	`, amount, userID, invoiceableConsumed).Scan(&newBalance)
 	if errors.Is(err, sql.ErrNoRows) {
 		return 0, service.ErrUserNotFound
 	}

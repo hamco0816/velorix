@@ -390,6 +390,27 @@ func (_u *UserUpdate) AddTotalRecharged(v float64) *UserUpdate {
 	return _u
 }
 
+// SetInvoiceableConsumed sets the "invoiceable_consumed" field.
+func (_u *UserUpdate) SetInvoiceableConsumed(v float64) *UserUpdate {
+	_u.mutation.ResetInvoiceableConsumed()
+	_u.mutation.SetInvoiceableConsumed(v)
+	return _u
+}
+
+// SetNillableInvoiceableConsumed sets the "invoiceable_consumed" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableInvoiceableConsumed(v *float64) *UserUpdate {
+	if v != nil {
+		_u.SetInvoiceableConsumed(*v)
+	}
+	return _u
+}
+
+// AddInvoiceableConsumed adds value to the "invoiceable_consumed" field.
+func (_u *UserUpdate) AddInvoiceableConsumed(v float64) *UserUpdate {
+	_u.mutation.AddInvoiceableConsumed(v)
+	return _u
+}
+
 // SetRpmLimit sets the "rpm_limit" field.
 func (_u *UserUpdate) SetRpmLimit(v int) *UserUpdate {
 	_u.mutation.ResetRpmLimit()
@@ -1065,6 +1086,12 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.AddedTotalRecharged(); ok {
 		_spec.AddField(user.FieldTotalRecharged, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.InvoiceableConsumed(); ok {
+		_spec.SetField(user.FieldInvoiceableConsumed, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedInvoiceableConsumed(); ok {
+		_spec.AddField(user.FieldInvoiceableConsumed, field.TypeFloat64, value)
 	}
 	if value, ok := _u.mutation.RpmLimit(); ok {
 		_spec.SetField(user.FieldRpmLimit, field.TypeInt, value)
@@ -2039,6 +2066,27 @@ func (_u *UserUpdateOne) AddTotalRecharged(v float64) *UserUpdateOne {
 	return _u
 }
 
+// SetInvoiceableConsumed sets the "invoiceable_consumed" field.
+func (_u *UserUpdateOne) SetInvoiceableConsumed(v float64) *UserUpdateOne {
+	_u.mutation.ResetInvoiceableConsumed()
+	_u.mutation.SetInvoiceableConsumed(v)
+	return _u
+}
+
+// SetNillableInvoiceableConsumed sets the "invoiceable_consumed" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableInvoiceableConsumed(v *float64) *UserUpdateOne {
+	if v != nil {
+		_u.SetInvoiceableConsumed(*v)
+	}
+	return _u
+}
+
+// AddInvoiceableConsumed adds value to the "invoiceable_consumed" field.
+func (_u *UserUpdateOne) AddInvoiceableConsumed(v float64) *UserUpdateOne {
+	_u.mutation.AddInvoiceableConsumed(v)
+	return _u
+}
+
 // SetRpmLimit sets the "rpm_limit" field.
 func (_u *UserUpdateOne) SetRpmLimit(v int) *UserUpdateOne {
 	_u.mutation.ResetRpmLimit()
@@ -2744,6 +2792,12 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	}
 	if value, ok := _u.mutation.AddedTotalRecharged(); ok {
 		_spec.AddField(user.FieldTotalRecharged, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.InvoiceableConsumed(); ok {
+		_spec.SetField(user.FieldInvoiceableConsumed, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedInvoiceableConsumed(); ok {
+		_spec.AddField(user.FieldInvoiceableConsumed, field.TypeFloat64, value)
 	}
 	if value, ok := _u.mutation.RpmLimit(); ok {
 		_spec.SetField(user.FieldRpmLimit, field.TypeInt, value)

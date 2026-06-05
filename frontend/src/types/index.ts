@@ -528,6 +528,8 @@ export interface Group {
   promo_starts_at?: string | null
   promo_ends_at?: string | null
   promo_label?: string
+  // 该分组消费是否可开票（默认 false，仅自建号池等高利润分组开启）
+  invoice_eligible?: boolean
   created_at: string
   updated_at: string
 }

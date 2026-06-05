@@ -146,6 +146,12 @@
                     {{ t('payment.rechargeRatePreview', { usd: balanceRechargeMultiplier.toFixed(2) }) }}
                   </p>
 
+                  <!-- 开票说明：余额按消费来源开票，避免用户误以为充值即可全额开票 -->
+                  <div v-if="invoiceEnabled" class="mt-4 flex items-start gap-2 rounded-lg border border-gray-100 bg-gray-50/60 px-3 py-2.5 dark:border-dark-700/60 dark:bg-dark-800/40">
+                    <Icon name="infoCircle" size="sm" class="mt-0.5 shrink-0 text-gray-400 dark:text-dark-500" :stroke-width="2" />
+                    <p class="text-[11px] leading-relaxed text-gray-500 dark:text-dark-400">{{ t('payment.invoiceNotice') }}</p>
+                  </div>
+
                   <!-- 确认支付按钮：gray-900 实色（专业稳重）+ hover amber 提示 -->
                   <button
                     class="mt-6 w-full rounded-xl bg-gray-900 px-4 py-3 text-sm font-semibold text-white shadow-[0_4px_12px_-2px_rgba(15,23,42,0.25)] transition-all hover:bg-gray-800 hover:shadow-[0_8px_20px_-4px_rgba(15,23,42,0.35)] disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100 dark:disabled:bg-dark-700 dark:disabled:text-dark-400"
@@ -371,6 +377,18 @@
                     </template>
                   </div>
 
+                  <!-- 开票提示：明确告知本套餐消费是否可开票，避免购买后才发现不能开 -->
+                  <div
+                    v-if="invoiceEnabled"
+                    class="flex items-start gap-2 rounded-xl px-3 py-2.5 text-[12px] leading-relaxed"
+                    :class="selectedPlan.invoice_eligible
+                      ? 'bg-emerald-50/70 text-emerald-700 dark:bg-emerald-900/15 dark:text-emerald-300'
+                      : 'bg-gray-50/70 text-gray-500 dark:bg-dark-800/40 dark:text-dark-400'"
+                  >
+                    <Icon :name="selectedPlan.invoice_eligible ? 'checkCircle' : 'infoCircle'" size="sm" class="mt-0.5 shrink-0" :stroke-width="2" />
+                    <span>{{ selectedPlan.invoice_eligible ? t('payment.invoiceEligible') : t('payment.invoiceIneligible') }}</span>
+                  </div>
+
                   <!-- 8. 确认 + 取消 -->
                   <div class="space-y-2">
                     <button :class="['btn w-full py-3.5 text-base font-semibold', paymentButtonClass]" :disabled="!canSubmitSubscription || submitting" @click="confirmSubscribe">
@@ -534,6 +552,7 @@ import { useAppStore } from '@/stores'
 import { paymentAPI } from '@/api/payment'
 import { extractApiErrorMessage, extractI18nErrorMessage } from '@/utils/apiError'
 import { isMobileDevice } from '@/utils/device'
+import { isFeatureFlagEnabled, FeatureFlags } from '@/utils/featureFlags'
 import type { SubscriptionPlan, CheckoutInfoResponse, CreateOrderResult, OrderType } from '@/types/payment'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import AmountInput from '@/components/payment/AmountInput.vue'
@@ -583,6 +602,9 @@ const authStore = useAuthStore()
 const paymentStore = usePaymentStore()
 const subscriptionStore = useSubscriptionStore()
 const appStore = useAppStore()
+
+// 发票功能是否开启（控制充值/订阅时的开票提示是否展示）
+const invoiceEnabled = computed(() => isFeatureFlagEnabled(FeatureFlags.invoice))
 
 const user = computed(() => authStore.user)
 const activeSubscriptions = computed(() => subscriptionStore.activeSubscriptions)

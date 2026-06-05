@@ -25,13 +25,14 @@ func NewInvoiceHandler(invoiceService *service.InvoiceService, settingService *s
 var errInvoiceDisabled = infraerrors.Forbidden("INVOICE_DISABLED", "invoice feature is disabled")
 
 // applyInvoiceBody 提交开票申请的请求体。
+// amount 为申请开票金额（人民币）；<= 0 或省略表示按当前可开票额度全额开票。
 type applyInvoiceBody struct {
 	RecipientEmail string  `json:"recipient_email" binding:"required"`
 	TitleType      string  `json:"title_type" binding:"required,oneof=personal company"`
 	TitleName      string  `json:"title_name" binding:"required"`
 	TaxID          string  `json:"tax_id"`
 	UserRemark     string  `json:"user_remark"`
-	OrderIDs       []int64 `json:"order_ids"`
+	Amount         float64 `json:"amount"`
 }
 
 // ensureEnabled 校验发票功能开关，未开启则写 403 并返回 false。
@@ -41,22 +42,6 @@ func (h *InvoiceHandler) ensureEnabled(c *gin.Context) bool {
 		return false
 	}
 	return true
-}
-
-// GetInvoiceableOrders 返回当前用户「可开票」的订单（已完成、实付>0、未被占用）。
-// GET /api/v1/invoices/invoiceable-orders
-func (h *InvoiceHandler) GetInvoiceableOrders(c *gin.Context) {
-	subject, ok := requireAuth(c)
-	if !ok || !h.ensureEnabled(c) {
-		return
-	}
-	page, pageSize := response.ParsePagination(c)
-	orders, total, err := h.invoiceService.ListInvoiceableOrders(c.Request.Context(), subject.UserID, page, pageSize)
-	if err != nil {
-		response.ErrorFrom(c, err)
-		return
-	}
-	response.Paginated(c, dto.InvoiceOrdersFromEnt(orders), int64(total), page, pageSize)
 }
 
 // GetInvoiceableSummary 返回当前用户全部可开票订单数和金额合计。
@@ -92,7 +77,7 @@ func (h *InvoiceHandler) ApplyInvoice(c *gin.Context) {
 		TitleName:      body.TitleName,
 		TaxID:          body.TaxID,
 		UserRemark:     body.UserRemark,
-		OrderIDs:       body.OrderIDs,
+		Amount:         body.Amount,
 	})
 	if err != nil {
 		response.ErrorFrom(c, err)

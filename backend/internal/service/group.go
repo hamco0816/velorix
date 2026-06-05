@@ -73,6 +73,9 @@ type Group struct {
 	PromoEndsAt         *time.Time
 	PromoLabel          string
 
+	// 该分组的消费是否可开票（默认 false，仅自建号池等高利润分组手动开启）
+	InvoiceEligible bool
+
 	CreatedAt time.Time
 	UpdatedAt time.Time
 

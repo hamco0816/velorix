@@ -244,14 +244,15 @@ func (h *PaymentHandler) GetCheckoutInfo(c *gin.Context) {
 			ModelScopes:          gi.ModelScopes,
 			Name:                 p.Name, Description: p.Description, Price: p.Price, OriginalPrice: p.OriginalPrice,
 			ValidityDays: p.ValidityDays, ValidityUnit: p.ValidityUnit, Features: parseFeatures(p.Features),
-			ProductName:    p.ProductName,
-			IsPopular:      p.IsPopular,
-			BadgeText:      p.BadgeText,
-			BadgeColor:     p.BadgeColor,
-			PlanLabel:      p.PlanLabel,
-			TierStyle:      p.TierStyle,
-			Kind:           p.Kind,
-			StockAvailable: stockPtr,
+			ProductName:     p.ProductName,
+			IsPopular:       p.IsPopular,
+			BadgeText:       p.BadgeText,
+			BadgeColor:      p.BadgeColor,
+			PlanLabel:       p.PlanLabel,
+			TierStyle:       p.TierStyle,
+			Kind:            p.Kind,
+			StockAvailable:  stockPtr,
+			InvoiceEligible: gi.InvoiceEligible,
 		})
 	}
 
@@ -313,6 +314,8 @@ type checkoutPlan struct {
 	// shared 套餐 StockAvailable 为 nil（前端不展示库存提示）
 	Kind           string `json:"kind"`
 	StockAvailable *int   `json:"stock_available,omitempty"`
+	// 该套餐所属分组消费是否可开票（购买页提示用户）
+	InvoiceEligible bool `json:"invoice_eligible"`
 }
 
 // parseFeatures splits a newline-separated features string into a string slice.

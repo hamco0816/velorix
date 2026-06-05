@@ -735,6 +735,7 @@ func groupEntityToService(g *dbent.Group) *service.Group {
 		PromoStartsAt:       g.PromoStartsAt,
 		PromoEndsAt:         g.PromoEndsAt,
 		PromoLabel:          derefString(g.PromoLabel),
+		InvoiceEligible:     g.InvoiceEligible,
 		CreatedAt:           g.CreatedAt,
 		UpdatedAt:           g.UpdatedAt,
 	}

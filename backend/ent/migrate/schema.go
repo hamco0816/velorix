@@ -742,6 +742,7 @@ var (
 		{Name: "promo_starts_at", Type: field.TypeTime, Nullable: true},
 		{Name: "promo_ends_at", Type: field.TypeTime, Nullable: true},
 		{Name: "promo_label", Type: field.TypeString, Nullable: true, Size: 100},
+		{Name: "invoice_eligible", Type: field.TypeBool, Default: false},
 	}
 	// GroupsTable holds the schema information for the "groups" table.
 	GroupsTable = &schema.Table{
@@ -1612,6 +1613,7 @@ var (
 		{Name: "balance_notify_threshold", Type: field.TypeFloat64, Nullable: true, SchemaType: map[string]string{"postgres": "decimal(20,8)"}},
 		{Name: "balance_notify_extra_emails", Type: field.TypeString, Default: "[]", SchemaType: map[string]string{"postgres": "text"}},
 		{Name: "total_recharged", Type: field.TypeFloat64, Default: 0, SchemaType: map[string]string{"postgres": "decimal(20,8)"}},
+		{Name: "invoiceable_consumed", Type: field.TypeFloat64, Default: 0, SchemaType: map[string]string{"postgres": "decimal(20,8)"}},
 		{Name: "rpm_limit", Type: field.TypeInt, Default: 0},
 	}
 	// UsersTable holds the schema information for the "users" table.

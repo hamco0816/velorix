@@ -1578,6 +1578,19 @@ func (s *SettingService) IsInvoiceEnabled(ctx context.Context) bool {
 	return value == "true"
 }
 
+// GetBalanceRechargeMultiplier 读取余额充值倍率（额度 = 人民币 × 倍率）。
+// 发票按消费开票时，用它把消费额度折算回人民币。读取失败回退默认值 1.0。
+func (s *SettingService) GetBalanceRechargeMultiplier(ctx context.Context) float64 {
+	if s == nil || s.settingRepo == nil {
+		return defaultBalanceRechargeMultiplier
+	}
+	value, err := s.settingRepo.GetValue(ctx, SettingBalanceRechargeMult)
+	if err != nil {
+		return defaultBalanceRechargeMultiplier
+	}
+	return normalizeBalanceRechargeMultiplier(pcParseFloat(value, defaultBalanceRechargeMultiplier))
+}
+
 // IsInvitationCodeEnabled 检查是否启用邀请码注册功能
 func (s *SettingService) IsInvitationCodeEnabled(ctx context.Context) bool {
 	value, err := s.settingRepo.GetValue(ctx, SettingKeyInvitationCodeEnabled)

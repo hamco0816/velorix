@@ -230,6 +230,11 @@ func PromoLabel(v string) predicate.Group {
 	return predicate.Group(sql.FieldEQ(FieldPromoLabel, v))
 }
 
+// InvoiceEligible applies equality check predicate on the "invoice_eligible" field. It's identical to InvoiceEligibleEQ.
+func InvoiceEligible(v bool) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldInvoiceEligible, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Group {
 	return predicate.Group(sql.FieldEQ(FieldCreatedAt, v))
@@ -1683,6 +1688,16 @@ func PromoLabelEqualFold(v string) predicate.Group {
 // PromoLabelContainsFold applies the ContainsFold predicate on the "promo_label" field.
 func PromoLabelContainsFold(v string) predicate.Group {
 	return predicate.Group(sql.FieldContainsFold(FieldPromoLabel, v))
+}
+
+// InvoiceEligibleEQ applies the EQ predicate on the "invoice_eligible" field.
+func InvoiceEligibleEQ(v bool) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldInvoiceEligible, v))
+}
+
+// InvoiceEligibleNEQ applies the NEQ predicate on the "invoice_eligible" field.
+func InvoiceEligibleNEQ(v bool) predicate.Group {
+	return predicate.Group(sql.FieldNEQ(FieldInvoiceEligible, v))
 }
 
 // HasAPIKeys applies the HasEdge predicate on the "api_keys" edge.

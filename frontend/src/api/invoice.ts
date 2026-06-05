@@ -7,22 +7,13 @@ import { apiClient } from './client'
 import type { BasePaginationResponse } from '@/types'
 import type {
   InvoiceItem,
-  InvoiceableOrder,
   InvoiceableSummary,
   ApplyInvoicePayload,
   InvoiceDetail,
 } from '@/types/invoice'
 
 export const invoiceAPI = {
-  /** 可开票订单（已完成、实付>0、未被占用） */
-  getInvoiceableOrders(params?: { page?: number; page_size?: number }) {
-    return apiClient.get<BasePaginationResponse<InvoiceableOrder>>(
-      '/invoices/invoiceable-orders',
-      { params },
-    )
-  },
-
-  /** 当前用户全部可开票订单的金额汇总 */
+  /** 当前用户的可开票额度明细（按支持开票分组的真实消费核定） */
   getInvoiceableSummary() {
     return apiClient.get<InvoiceableSummary>('/invoices/invoiceable-summary')
   },

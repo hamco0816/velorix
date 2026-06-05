@@ -87,55 +87,33 @@
     <!-- 申请开票弹窗 -->
     <BaseDialog :show="applyVisible" :title="t('invoice.apply.title')" width="wide" @close="applyVisible = false">
       <div class="space-y-5">
+        <!-- 可开票额度 -->
         <div class="rounded-xl border border-teal-100 bg-teal-50 px-4 py-3 dark:border-teal-500/20 dark:bg-teal-900/20">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p class="text-sm font-medium text-teal-800 dark:text-teal-200">{{ t('invoice.apply.invoiceableSummary') }}</p>
-              <p class="mt-1 text-xs text-teal-700 dark:text-teal-300">{{ t('invoice.apply.autoApplyHint') }}</p>
+              <p class="text-sm font-medium text-teal-800 dark:text-teal-200">{{ t('invoice.apply.availableTitle') }}</p>
+              <p class="mt-1 text-xs text-teal-700 dark:text-teal-300">{{ t('invoice.apply.availableHint') }}</p>
             </div>
             <div class="text-right">
-              <div class="text-2xl font-semibold tabular-nums text-teal-800 dark:text-teal-100">¥{{ invoiceableTotal.toFixed(2) }}</div>
-              <div class="text-xs text-teal-700 dark:text-teal-300">{{ t('invoice.apply.includedOrders', { count: invoiceableSummary.total_count }) }}</div>
+              <div v-if="summaryLoading" class="text-sm text-teal-700 dark:text-teal-300">{{ t('common.loading') }}</div>
+              <div v-else class="text-2xl font-semibold tabular-nums text-teal-800 dark:text-teal-100">¥{{ availableAmount.toFixed(2) }}</div>
             </div>
           </div>
         </div>
 
+        <!-- 开票金额 -->
         <div>
-          <div class="mb-2 flex items-center justify-between gap-3">
-            <label class="input-label">{{ t('invoice.apply.previewOrders') }}</label>
-            <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('invoice.apply.previewOrdersHint') }}</span>
-          </div>
-          <div v-if="ordersLoading" class="rounded-xl border border-gray-100 p-6 text-center text-sm text-gray-500 dark:border-dark-700 dark:text-gray-400">
-            {{ t('common.loading') }}
-          </div>
-          <div v-else-if="invoiceableOrders.length === 0" class="rounded-xl border border-gray-100 p-6 text-center text-sm text-gray-500 dark:border-dark-700 dark:text-gray-400">
-            {{ t('invoice.apply.noOrders') }}
-          </div>
-          <div v-else class="overflow-hidden rounded-xl border border-gray-100 dark:border-dark-700">
-            <div class="max-h-64 overflow-auto">
-              <table class="min-w-full divide-y divide-gray-100 text-sm dark:divide-dark-700">
-                <tbody class="divide-y divide-gray-100 dark:divide-dark-700">
-                  <tr v-for="order in invoiceableOrders" :key="order.id" class="hover:bg-gray-50/60 dark:hover:bg-dark-800/40">
-                    <td class="px-3 py-2 font-mono text-xs text-gray-500 dark:text-gray-400">#{{ order.id }}</td>
-                    <td class="px-3 py-2 text-gray-700 dark:text-gray-300">
-                      <div class="font-medium text-gray-900 dark:text-white">{{ t(`invoice.orderType.${order.order_type}`, order.order_type) }}</div>
-                      <div class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(order.paid_at || order.created_at) }}</div>
-                    </td>
-                    <td class="px-3 py-2 text-right font-medium tabular-nums text-gray-900 dark:text-white">¥{{ order.pay_amount.toFixed(2) }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div v-if="invoiceablePagination.total > invoiceablePagination.page_size" class="border-t border-gray-100 p-3 dark:border-dark-700">
-              <Pagination
-                :page="invoiceablePagination.page"
-                :total="invoiceablePagination.total"
-                :page-size="invoiceablePagination.page_size"
-                @update:page="handleInvoiceablePageChange"
-                @update:pageSize="handleInvoiceablePageSizeChange"
-              />
-            </div>
-          </div>
+          <label class="input-label">{{ t('invoice.apply.amountLabel') }}</label>
+          <input
+            v-model.number="form.amount"
+            type="number"
+            min="0"
+            step="0.01"
+            :max="availableAmount"
+            class="input mt-1 w-full"
+            :placeholder="t('invoice.apply.amountPlaceholder')"
+          />
+          <p class="input-hint">{{ t('invoice.apply.amountHint') }}</p>
         </div>
 
         <!-- 抬头类型 -->
@@ -270,10 +248,14 @@ const invoices = ref<InvoiceItem[]>([])
 const pagination = reactive({ page: 1, page_size: 20, total: 0 })
 
 const applyVisible = ref(false)
-const ordersLoading = ref(false)
-const invoiceableOrders = ref<InvoiceableOrder[]>([])
-const invoiceableSummary = ref<InvoiceableSummary>({ total_amount: 0, total_count: 0 })
-const invoiceablePagination = reactive({ page: 1, page_size: 10, total: 0 })
+const summaryLoading = ref(false)
+const emptyInvoiceableSummary = (): InvoiceableSummary => ({
+  available_amount: 0,
+  balance_amount: 0,
+  plan_amount: 0,
+  invoiced_amount: 0,
+})
+const invoiceableSummary = ref<InvoiceableSummary>(emptyInvoiceableSummary())
 const submitLoading = ref(false)
 
 const detailTarget = ref<InvoiceItem | null>(null)
@@ -288,12 +270,14 @@ const form = reactive<{
   title_name: string
   tax_id: string
   user_remark: string
+  amount: number | null
 }>({
   recipient_email: '',
   title_type: 'personal',
   title_name: '',
   tax_id: '',
   user_remark: '',
+  amount: null,
 })
 
 const titleTypeOptions = computed(() => [
@@ -301,12 +285,16 @@ const titleTypeOptions = computed(() => [
   { value: 'company', label: t('invoice.titleType.company') },
 ])
 
-const invoiceableTotal = computed(() => invoiceableSummary.value.total_amount || 0)
+const availableAmount = computed(() => invoiceableSummary.value.available_amount || 0)
 
 const canSubmit = computed(() => {
-  if ((invoiceableSummary.value.total_count || 0) <= 0) return false
+  if (availableAmount.value <= 0) return false
   if (!form.recipient_email || !form.title_name) return false
   if (form.title_type === 'company' && !form.tax_id) return false
+  // amount 为空表示全额开票；填了则必须 >0 且不超过可开额度
+  if (form.amount != null && form.amount !== 0) {
+    if (form.amount < 0 || form.amount > availableAmount.value + 0.001) return false
+  }
   return true
 })
 
@@ -356,52 +344,26 @@ function handlePageSizeChange(size: number) { pagination.page_size = size; pagin
 
 async function openApplyDialog() {
   applyVisible.value = true
-  invoiceableSummary.value = { total_amount: 0, total_count: 0 }
-  invoiceableOrders.value = []
-  invoiceablePagination.page = 1
-  invoiceablePagination.total = 0
+  invoiceableSummary.value = emptyInvoiceableSummary()
   form.recipient_email = authStore.user?.email || ''
   form.title_type = 'personal'
   form.title_name = ''
   form.tax_id = ''
   form.user_remark = ''
-  await Promise.all([fetchInvoiceableSummary(), fetchInvoiceableOrders()])
+  form.amount = null
+  await fetchInvoiceableSummary()
 }
 
 async function fetchInvoiceableSummary() {
+  summaryLoading.value = true
   try {
     const res = await invoiceAPI.getInvoiceableSummary()
     invoiceableSummary.value = res.data
   } catch (err: unknown) {
     appStore.showError(extractI18nErrorMessage(err, t, 'invoice.errors', t('common.error')))
-  }
-}
-
-async function fetchInvoiceableOrders() {
-  ordersLoading.value = true
-  try {
-    const res = await invoiceAPI.getInvoiceableOrders({
-      page: invoiceablePagination.page,
-      page_size: invoiceablePagination.page_size,
-    })
-    invoiceableOrders.value = res.data.items || []
-    invoiceablePagination.total = res.data.total || 0
-  } catch (err: unknown) {
-    appStore.showError(extractI18nErrorMessage(err, t, 'invoice.errors', t('common.error')))
   } finally {
-    ordersLoading.value = false
+    summaryLoading.value = false
   }
-}
-
-function handleInvoiceablePageChange(page: number) {
-  invoiceablePagination.page = page
-  fetchInvoiceableOrders()
-}
-
-function handleInvoiceablePageSizeChange(size: number) {
-  invoiceablePagination.page_size = size
-  invoiceablePagination.page = 1
-  fetchInvoiceableOrders()
 }
 
 async function submitApply() {
@@ -414,6 +376,8 @@ async function submitApply() {
       title_name: form.title_name,
       tax_id: form.title_type === 'company' ? form.tax_id : undefined,
       user_remark: form.user_remark || undefined,
+      // 省略或 0 = 全额开票
+      amount: form.amount && form.amount > 0 ? form.amount : undefined,
     })
     appStore.showSuccess(t('invoice.apply.success'))
     applyVisible.value = false

@@ -222,6 +222,8 @@ type CreateGroupInput struct {
 	PromoStartsAt       *time.Time
 	PromoEndsAt         *time.Time
 	PromoLabel          string
+	// InvoiceEligible 该分组消费是否可开票（默认 false）
+	InvoiceEligible bool
 }
 
 type UpdateGroupInput struct {
@@ -264,6 +266,8 @@ type UpdateGroupInput struct {
 	CopyAccountsFromGroupIDs []int64
 	// 限时倍率（promo rate）更新：PromoUpdate 为 nil 表示不动；非 nil 时按其内部字段值更新（nil 字段表示清空）
 	PromoUpdate *GroupPromoUpdate
+	// InvoiceEligible 该分组消费是否可开票；nil 表示未提供不改动
+	InvoiceEligible *bool
 }
 
 // GroupPromoUpdate 限时倍率更新载荷。nil 字段语义为清空对应数据库列。
@@ -1698,6 +1702,7 @@ func (s *adminServiceImpl) CreateGroup(ctx context.Context, input *CreateGroupIn
 		PromoStartsAt:                   input.PromoStartsAt,
 		PromoEndsAt:                     input.PromoEndsAt,
 		PromoLabel:                      input.PromoLabel,
+		InvoiceEligible:                 input.InvoiceEligible,
 	}
 	sanitizeGroupMessagesDispatchFields(group)
 	if err := s.groupRepo.Create(ctx, group); err != nil {
@@ -1960,6 +1965,9 @@ func (s *adminServiceImpl) UpdateGroup(ctx context.Context, id int64, input *Upd
 		group.PromoStartsAt = input.PromoUpdate.PromoStartsAt
 		group.PromoEndsAt = input.PromoUpdate.PromoEndsAt
 		group.PromoLabel = input.PromoUpdate.PromoLabel
+	}
+	if input.InvoiceEligible != nil {
+		group.InvoiceEligible = *input.InvoiceEligible
 	}
 	sanitizeGroupMessagesDispatchFields(group)
 

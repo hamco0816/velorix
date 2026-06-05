@@ -572,6 +572,19 @@
           />
           <p class="input-hint">{{ t("admin.groups.form.rpmLimitHint") }}</p>
         </div>
+        <div>
+          <label class="flex cursor-pointer items-center gap-2">
+            <input
+              v-model="createForm.invoice_eligible"
+              type="checkbox"
+              class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+              {{ t("admin.groups.form.invoiceEligible") }}
+            </span>
+          </label>
+          <p class="input-hint">{{ t("admin.groups.form.invoiceEligibleHint") }}</p>
+        </div>
         <div
           v-if="createForm.subscription_type !== 'subscription'"
           data-tour="group-form-exclusive"
@@ -1816,6 +1829,19 @@
             :placeholder="t('admin.groups.form.rpmLimitPlaceholder')"
           />
           <p class="input-hint">{{ t("admin.groups.form.rpmLimitHint") }}</p>
+        </div>
+        <div>
+          <label class="flex cursor-pointer items-center gap-2">
+            <input
+              v-model="editForm.invoice_eligible"
+              type="checkbox"
+              class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+              {{ t("admin.groups.form.invoiceEligible") }}
+            </span>
+          </label>
+          <p class="input-hint">{{ t("admin.groups.form.invoiceEligibleHint") }}</p>
         </div>
         <div v-if="editForm.subscription_type !== 'subscription'">
           <div class="mb-1.5 flex items-center gap-1">
@@ -3312,6 +3338,8 @@ const createForm = reactive({
   promo_starts_at: '' as string | null,
   promo_ends_at: '' as string | null,
   promo_label: '' as string,
+  // 该分组消费是否可开票（默认不支持，仅自建号池等高利润分组开启）
+  invoice_eligible: false,
 });
 
 // 简单账号类型（用于模型路由选择）
@@ -3605,6 +3633,8 @@ const editForm = reactive({
   promo_starts_at: '' as string | null,
   promo_ends_at: '' as string | null,
   promo_label: '' as string,
+  // 该分组消费是否可开票（默认不支持，仅自建号池等高利润分组开启）
+  invoice_eligible: false,
 });
 
 type ImagePricingFormState = {
@@ -4006,6 +4036,7 @@ const handleEdit = async (group: AdminGroup) => {
   editForm.promo_starts_at = isoToDatetimeLocal(group.promo_starts_at);
   editForm.promo_ends_at = isoToDatetimeLocal(group.promo_ends_at);
   editForm.promo_label = group.promo_label || '';
+  editForm.invoice_eligible = group.invoice_eligible ?? false;
   // 加载模型路由规则（异步加载账号名称）
   editModelRoutingRules.value = await convertApiFormatToRoutingRules(
     group.model_routing,

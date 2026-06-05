@@ -724,6 +724,20 @@ func (_u *GroupUpdate) ClearPromoLabel() *GroupUpdate {
 	return _u
 }
 
+// SetInvoiceEligible sets the "invoice_eligible" field.
+func (_u *GroupUpdate) SetInvoiceEligible(v bool) *GroupUpdate {
+	_u.mutation.SetInvoiceEligible(v)
+	return _u
+}
+
+// SetNillableInvoiceEligible sets the "invoice_eligible" field if the given value is not nil.
+func (_u *GroupUpdate) SetNillableInvoiceEligible(v *bool) *GroupUpdate {
+	if v != nil {
+		_u.SetInvoiceEligible(*v)
+	}
+	return _u
+}
+
 // AddAPIKeyIDs adds the "api_keys" edge to the APIKey entity by IDs.
 func (_u *GroupUpdate) AddAPIKeyIDs(ids ...int64) *GroupUpdate {
 	_u.mutation.AddAPIKeyIDs(ids...)
@@ -1236,6 +1250,9 @@ func (_u *GroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.PromoLabelCleared() {
 		_spec.ClearField(group.FieldPromoLabel, field.TypeString)
+	}
+	if value, ok := _u.mutation.InvoiceEligible(); ok {
+		_spec.SetField(group.FieldInvoiceEligible, field.TypeBool, value)
 	}
 	if _u.mutation.APIKeysCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2239,6 +2256,20 @@ func (_u *GroupUpdateOne) ClearPromoLabel() *GroupUpdateOne {
 	return _u
 }
 
+// SetInvoiceEligible sets the "invoice_eligible" field.
+func (_u *GroupUpdateOne) SetInvoiceEligible(v bool) *GroupUpdateOne {
+	_u.mutation.SetInvoiceEligible(v)
+	return _u
+}
+
+// SetNillableInvoiceEligible sets the "invoice_eligible" field if the given value is not nil.
+func (_u *GroupUpdateOne) SetNillableInvoiceEligible(v *bool) *GroupUpdateOne {
+	if v != nil {
+		_u.SetInvoiceEligible(*v)
+	}
+	return _u
+}
+
 // AddAPIKeyIDs adds the "api_keys" edge to the APIKey entity by IDs.
 func (_u *GroupUpdateOne) AddAPIKeyIDs(ids ...int64) *GroupUpdateOne {
 	_u.mutation.AddAPIKeyIDs(ids...)
@@ -2781,6 +2812,9 @@ func (_u *GroupUpdateOne) sqlSave(ctx context.Context) (_node *Group, err error)
 	}
 	if _u.mutation.PromoLabelCleared() {
 		_spec.ClearField(group.FieldPromoLabel, field.TypeString)
+	}
+	if value, ok := _u.mutation.InvoiceEligible(); ok {
+		_spec.SetField(group.FieldInvoiceEligible, field.TypeBool, value)
 	}
 	if _u.mutation.APIKeysCleared() {
 		edge := &sqlgraph.EdgeSpec{

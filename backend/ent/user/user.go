@@ -59,6 +59,8 @@ const (
 	FieldBalanceNotifyExtraEmails = "balance_notify_extra_emails"
 	// FieldTotalRecharged holds the string denoting the total_recharged field in the database.
 	FieldTotalRecharged = "total_recharged"
+	// FieldInvoiceableConsumed holds the string denoting the invoiceable_consumed field in the database.
+	FieldInvoiceableConsumed = "invoiceable_consumed"
 	// FieldRpmLimit holds the string denoting the rpm_limit field in the database.
 	FieldRpmLimit = "rpm_limit"
 	// EdgeAPIKeys holds the string denoting the api_keys edge name in mutations.
@@ -214,6 +216,7 @@ var Columns = []string{
 	FieldBalanceNotifyThreshold,
 	FieldBalanceNotifyExtraEmails,
 	FieldTotalRecharged,
+	FieldInvoiceableConsumed,
 	FieldRpmLimit,
 }
 
@@ -283,6 +286,8 @@ var (
 	DefaultBalanceNotifyExtraEmails string
 	// DefaultTotalRecharged holds the default value on creation for the "total_recharged" field.
 	DefaultTotalRecharged float64
+	// DefaultInvoiceableConsumed holds the default value on creation for the "invoiceable_consumed" field.
+	DefaultInvoiceableConsumed float64
 	// DefaultRpmLimit holds the default value on creation for the "rpm_limit" field.
 	DefaultRpmLimit int
 )
@@ -403,6 +408,11 @@ func ByBalanceNotifyExtraEmails(opts ...sql.OrderTermOption) OrderOption {
 // ByTotalRecharged orders the results by the total_recharged field.
 func ByTotalRecharged(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTotalRecharged, opts...).ToFunc()
+}
+
+// ByInvoiceableConsumed orders the results by the invoiceable_consumed field.
+func ByInvoiceableConsumed(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldInvoiceableConsumed, opts...).ToFunc()
 }
 
 // ByRpmLimit orders the results by the rpm_limit field.

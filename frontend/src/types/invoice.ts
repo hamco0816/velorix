@@ -41,9 +41,12 @@ export interface InvoiceableOrder {
   created_at: string
 }
 
+/** 可开票额度明细（按消费来源核定，人民币） */
 export interface InvoiceableSummary {
-  total_amount: number
-  total_count: number
+  available_amount: number // 可开票总额
+  balance_amount: number // 其中：余额按量消费可开部分
+  plan_amount: number // 其中：套餐购买可开部分
+  invoiced_amount: number // 已被待开/已开申请占用（已扣除）
 }
 
 /** 提交开票申请的入参 */
@@ -53,7 +56,8 @@ export interface ApplyInvoicePayload {
   title_name: string
   tax_id?: string
   user_remark?: string
-  order_ids?: number[]
+  // 申请开票金额（人民币）；省略或 <=0 表示按可开票额度全额开票
+  amount?: number
 }
 
 /** 申请单详情（含关联订单） */

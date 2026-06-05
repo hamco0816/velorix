@@ -3,13 +3,17 @@ package service
 import (
 	"context"
 	"fmt"
+	"math"
 	"net/mail"
 	"strings"
 
 	dbent "github.com/Wei-Shaw/sub2api/ent"
+	"github.com/Wei-Shaw/sub2api/ent/group"
 	"github.com/Wei-Shaw/sub2api/ent/invoicerequest"
 	"github.com/Wei-Shaw/sub2api/ent/paymentorder"
 	"github.com/Wei-Shaw/sub2api/ent/predicate"
+	"github.com/Wei-Shaw/sub2api/ent/user"
+	"github.com/Wei-Shaw/sub2api/internal/payment"
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 
 	"entgo.io/ent/dialect"
@@ -31,14 +35,16 @@ const (
 // --- 错误定义 ---
 
 var (
-	ErrInvoiceNotFound       = infraerrors.NotFound("INVOICE_NOT_FOUND", "invoice request not found")
-	ErrInvoiceNotOwned       = infraerrors.Forbidden("INVOICE_NOT_OWNED", "invoice request does not belong to current user")
-	ErrInvoiceNotPending     = infraerrors.Conflict("INVOICE_NOT_PENDING", "invoice request is not in pending status")
-	ErrInvoiceNoOrders       = infraerrors.BadRequest("INVOICE_NO_ORDERS", "no orders selected for invoicing")
-	ErrInvoiceOrderNotUsable = infraerrors.Conflict("INVOICE_ORDER_NOT_USABLE", "one or more orders are not eligible for invoicing")
-	ErrInvoiceTaxIDRequired  = infraerrors.BadRequest("INVOICE_TAX_ID_REQUIRED", "tax id is required for company invoice")
-	ErrInvoiceInvalidTitle   = infraerrors.BadRequest("INVOICE_INVALID_TITLE", "invalid invoice title")
-	ErrInvoiceInvalidEmail   = infraerrors.BadRequest("INVOICE_INVALID_EMAIL", "invalid recipient email")
+	ErrInvoiceNotFound      = infraerrors.NotFound("INVOICE_NOT_FOUND", "invoice request not found")
+	ErrInvoiceNotOwned      = infraerrors.Forbidden("INVOICE_NOT_OWNED", "invoice request does not belong to current user")
+	ErrInvoiceNotPending    = infraerrors.Conflict("INVOICE_NOT_PENDING", "invoice request is not in pending status")
+	ErrInvoiceTaxIDRequired = infraerrors.BadRequest("INVOICE_TAX_ID_REQUIRED", "tax id is required for company invoice")
+	ErrInvoiceInvalidTitle  = infraerrors.BadRequest("INVOICE_INVALID_TITLE", "invalid invoice title")
+	ErrInvoiceInvalidEmail  = infraerrors.BadRequest("INVOICE_INVALID_EMAIL", "invalid recipient email")
+	// ErrInvoiceNothingToInvoice 当前没有可开票金额（无支持开票分组的真实消费）。
+	ErrInvoiceNothingToInvoice = infraerrors.BadRequest("INVOICE_NOTHING_TO_INVOICE", "no invoiceable amount available")
+	// ErrInvoiceAmountExceedsAvailable 申请金额超过当前可开票额度。
+	ErrInvoiceAmountExceedsAvailable = infraerrors.Conflict("INVOICE_AMOUNT_EXCEEDS_AVAILABLE", "requested amount exceeds available invoiceable amount")
 )
 
 // InvoiceMailer 抽象发票邮件发送，便于单测替换。生产环境由 EmailService 实现。
@@ -68,76 +74,174 @@ type ApplyInvoiceRequest struct {
 	TitleName      string
 	TaxID          string
 	UserRemark     string
-	OrderIDs       []int64
+	// Amount 申请开票金额（人民币）；<= 0 表示按当前可开票额度全额开票。
+	Amount float64
 }
 
-// InvoiceableSummary 汇总当前用户全部可开票订单，用于申请前展示自动开票金额。
+// InvoiceableSummary 当前用户的可开票额度明细，用于申请前展示。
+// 口径（保守 + 非赠送）：只算「支持开票分组」的真实消费，且不超过真实付费金额。
 type InvoiceableSummary struct {
-	TotalAmount float64 `json:"total_amount"`
-	TotalCount  int     `json:"total_count"`
+	AvailableAmount float64 `json:"available_amount"` // 可开票总额（人民币）
+	BalanceAmount   float64 `json:"balance_amount"`   // 其中：余额按量消费可开部分
+	PlanAmount      float64 `json:"plan_amount"`      // 其中：套餐购买可开部分
+	InvoicedAmount  float64 `json:"invoiced_amount"`  // 已被待开/已开申请占用（已从可开额度中扣除）
 }
 
-func invoiceableOrderPredicates(userID int64) []predicate.PaymentOrder {
-	return []predicate.PaymentOrder{
+// invoiceOrderClients 聚合可开票额度计算所需的 ent 查询入口，
+// 让事务（*dbent.Tx）与非事务（*dbent.Client）路径复用同一套计算逻辑。
+type invoiceOrderClients struct {
+	orders   *dbent.PaymentOrderClient
+	invoices *dbent.InvoiceRequestClient
+	groups   *dbent.GroupClient
+}
+
+func (s *InvoiceService) clientInvoiceOrderClients() invoiceOrderClients {
+	return invoiceOrderClients{orders: s.entClient.PaymentOrder, invoices: s.entClient.InvoiceRequest, groups: s.entClient.Group}
+}
+
+func txInvoiceOrderClients(tx *dbent.Tx) invoiceOrderClients {
+	return invoiceOrderClients{orders: tx.PaymentOrder, invoices: tx.InvoiceRequest, groups: tx.Group}
+}
+
+// rechargeMultiplier 读取当前充值倍率（额度 = 人民币 × 倍率），用于把消费额度折算回人民币。
+func (s *InvoiceService) rechargeMultiplier(ctx context.Context) float64 {
+	if s.settingService == nil {
+		return defaultBalanceRechargeMultiplier
+	}
+	return s.settingService.GetBalanceRechargeMultiplier(ctx)
+}
+
+// computeInvoiceable 计算用户当前可开票额度（人民币）。
+//
+// 口径（保守 + 非赠送）：
+//   - 余额消费部分 = min(支持开票分组的消费额度 / 充值倍率, 真实余额充值付费)。
+//     左项保证「只开已消费」，右项保证「不超过真实付费」（赠送/兑换码/手动加额都不计入）。
+//   - 套餐部分 = 绑定支持开票分组的套餐订单实付金额（净退款）。
+//   - 再减去已被待开/已开申请占用的金额。
+func (s *InvoiceService) computeInvoiceable(ctx context.Context, c invoiceOrderClients, userID int64, consumedQuota, multiplier float64) (*InvoiceableSummary, error) {
+	if multiplier <= 0 {
+		multiplier = defaultBalanceRechargeMultiplier
+	}
+
+	// 支持开票的分组 ID（套餐部分按此过滤）
+	eligibleGroupIDs, err := c.groups.Query().Where(group.InvoiceEligible(true)).IDs(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("list invoice-eligible groups: %w", err)
+	}
+
+	// 真实余额充值付费（人民币，净退款）
+	balancePaid, err := sumOrderNetPay(ctx, c.orders,
 		paymentorder.UserIDEQ(userID),
-		paymentorder.StatusEQ(OrderStatusCompleted),
-		paymentorder.PayAmountGT(0),
-		paymentorder.InvoiceRequestIDIsNil(),
-	}
-}
-
-// ListInvoiceableOrders 返回用户「可开票」的订单：已完成、实付金额大于 0、且未被任何申请单占用。
-// 余额充值与订阅/套餐购买都算（按 created_at 倒序分页）。
-func (s *InvoiceService) ListInvoiceableOrders(ctx context.Context, userID int64, page, pageSize int) ([]*dbent.PaymentOrder, int, error) {
-	pageSize, page = applyPagination(pageSize, page)
-	query := s.entClient.PaymentOrder.Query().Where(invoiceableOrderPredicates(userID)...)
-	total, err := query.Clone().Count(ctx)
+		paymentorder.OrderTypeEQ(payment.OrderTypeBalance),
+		paymentorder.StatusEQ(OrderStatusCompleted))
 	if err != nil {
-		return nil, 0, fmt.Errorf("count invoiceable orders: %w", err)
-	}
-	orders, err := query.
-		Order(dbent.Desc(paymentorder.FieldCreatedAt)).
-		Offset((page - 1) * pageSize).
-		Limit(pageSize).
-		All(ctx)
-	if err != nil {
-		return nil, 0, fmt.Errorf("list invoiceable orders: %w", err)
-	}
-	return orders, total, nil
-}
-
-// GetInvoiceableSummary 返回当前用户全部可开票订单数和实付金额合计。
-func (s *InvoiceService) GetInvoiceableSummary(ctx context.Context, userID int64) (*InvoiceableSummary, error) {
-	query := s.entClient.PaymentOrder.Query().Where(invoiceableOrderPredicates(userID)...)
-	count, err := query.Clone().Count(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("count invoiceable orders: %w", err)
+		return nil, err
 	}
 
-	var rows []struct {
-		Sum *float64 `json:"sum"`
+	// 套餐可开部分（人民币，净退款）：仅支持开票分组
+	planAmount := 0.0
+	if len(eligibleGroupIDs) > 0 {
+		planAmount, err = sumOrderNetPay(ctx, c.orders,
+			paymentorder.UserIDEQ(userID),
+			paymentorder.OrderTypeEQ(payment.OrderTypeSubscription),
+			paymentorder.StatusEQ(OrderStatusCompleted),
+			paymentorder.SubscriptionGroupIDIn(eligibleGroupIDs...))
+		if err != nil {
+			return nil, err
+		}
 	}
-	if err := query.
-		Aggregate(dbent.As(dbent.Sum(paymentorder.FieldPayAmount), "sum")).
-		Scan(ctx, &rows); err != nil {
-		return nil, fmt.Errorf("sum invoiceable orders: %w", err)
+
+	// 余额消费折算人民币，并用真实付费封顶（排除赠送）
+	consumedCNY := decimal.NewFromFloat(consumedQuota).Div(decimal.NewFromFloat(multiplier)).InexactFloat64()
+	balanceInvoiceable := math.Min(consumedCNY, balancePaid)
+	if balanceInvoiceable < 0 {
+		balanceInvoiceable = 0
 	}
-	total := 0.0
-	if len(rows) > 0 && rows[0].Sum != nil {
-		total = *rows[0].Sum
+
+	// 已被待开/已开申请占用的金额
+	invoiced, err := sumInvoiceAmount(ctx, c.invoices, userID)
+	if err != nil {
+		return nil, err
 	}
+
+	available := decimal.NewFromFloat(balanceInvoiceable).
+		Add(decimal.NewFromFloat(planAmount)).
+		Sub(decimal.NewFromFloat(invoiced)).
+		Round(2).InexactFloat64()
+	if available < 0 {
+		available = 0
+	}
+
 	return &InvoiceableSummary{
-		TotalAmount: decimal.NewFromFloat(total).Round(2).InexactFloat64(),
-		TotalCount:  count,
+		AvailableAmount: available,
+		BalanceAmount:   decimal.NewFromFloat(balanceInvoiceable).Round(2).InexactFloat64(),
+		PlanAmount:      decimal.NewFromFloat(planAmount).Round(2).InexactFloat64(),
+		InvoicedAmount:  decimal.NewFromFloat(invoiced).Round(2).InexactFloat64(),
 	}, nil
 }
 
-// ApplyInvoice 提交开票申请：校验所选订单，合并金额，创建申请单并锁定订单。
+// sumOrderNetPay 汇总满足条件订单的「实付 - 退款」之和（人民币），结果不为负。
+func sumOrderNetPay(ctx context.Context, orders *dbent.PaymentOrderClient, preds ...predicate.PaymentOrder) (float64, error) {
+	var rows []struct {
+		Pay    *float64 `json:"pay"`
+		Refund *float64 `json:"refund"`
+	}
+	if err := orders.Query().Where(preds...).Aggregate(
+		dbent.As(dbent.Sum(paymentorder.FieldPayAmount), "pay"),
+		dbent.As(dbent.Sum(paymentorder.FieldRefundAmount), "refund"),
+	).Scan(ctx, &rows); err != nil {
+		return 0, fmt.Errorf("sum order net pay: %w", err)
+	}
+	net := 0.0
+	if len(rows) > 0 {
+		net = derefFloat(rows[0].Pay) - derefFloat(rows[0].Refund)
+	}
+	if net < 0 {
+		net = 0
+	}
+	return net, nil
+}
+
+// sumInvoiceAmount 汇总用户「待开票 + 已开票」申请单金额（已占用的可开额度）。
+func sumInvoiceAmount(ctx context.Context, invoices *dbent.InvoiceRequestClient, userID int64) (float64, error) {
+	var rows []struct {
+		Sum *float64 `json:"sum"`
+	}
+	if err := invoices.Query().
+		Where(invoicerequest.UserIDEQ(userID), invoicerequest.StatusIn(InvoiceStatusPending, InvoiceStatusIssued)).
+		Aggregate(dbent.As(dbent.Sum(invoicerequest.FieldAmount), "sum")).
+		Scan(ctx, &rows); err != nil {
+		return 0, fmt.Errorf("sum invoiced amount: %w", err)
+	}
+	if len(rows) > 0 {
+		return derefFloat(rows[0].Sum), nil
+	}
+	return 0, nil
+}
+
+func derefFloat(v *float64) float64 {
+	if v == nil {
+		return 0
+	}
+	return *v
+}
+
+// GetInvoiceableSummary 返回当前用户的可开票额度明细。
+func (s *InvoiceService) GetInvoiceableSummary(ctx context.Context, userID int64) (*InvoiceableSummary, error) {
+	u, err := s.entClient.User.Get(ctx, userID)
+	if err != nil {
+		return nil, fmt.Errorf("get user: %w", err)
+	}
+	return s.computeInvoiceable(ctx, s.clientInvoiceOrderClients(), userID, u.InvoiceableConsumed, s.rechargeMultiplier(ctx))
+}
+
+// ApplyInvoice 提交开票申请：按「支持开票分组的真实消费」核定可开票额度，
+// 校验申请金额不超过额度后创建申请单（金额制，不再绑定具体订单）。
 func (s *InvoiceService) ApplyInvoice(ctx context.Context, userID int64, req ApplyInvoiceRequest) (*dbent.InvoiceRequest, error) {
 	if err := validateInvoiceForm(req); err != nil {
 		return nil, err
 	}
-	orderIDs := dedupeInt64(req.OrderIDs)
+	multiplier := s.rechargeMultiplier(ctx)
 
 	tx, err := s.entClient.Tx(ctx)
 	if err != nil {
@@ -145,54 +249,42 @@ func (s *InvoiceService) ApplyInvoice(ctx context.Context, userID int64, req App
 	}
 	defer func() { _ = tx.Rollback() }()
 
-	user, err := tx.User.Get(ctx, userID)
-	if err != nil {
-		return nil, fmt.Errorf("get user: %w", err)
-	}
-
-	// 事务内锁定并校验所选订单（PG 用 FOR UPDATE，SQLite 测试环境降级为普通查询）。
-	orderQuery := tx.PaymentOrder.Query().Where(
-		paymentorder.UserIDEQ(userID),
-	)
-	if len(orderIDs) > 0 {
-		orderQuery = orderQuery.Where(paymentorder.IDIn(orderIDs...))
-	} else {
-		orderQuery = orderQuery.Where(
-			paymentorder.StatusEQ(OrderStatusCompleted),
-			paymentorder.PayAmountGT(0),
-			paymentorder.InvoiceRequestIDIsNil(),
-		)
-	}
+	// 锁定用户行，串行化同一用户的并发开票，避免可开票额度被重复占用。
+	userQuery := tx.User.Query().Where(user.IDEQ(userID))
 	if txIsPostgres(tx) {
-		orderQuery = orderQuery.ForUpdate()
+		userQuery = userQuery.ForUpdate()
 	}
-	orders, err := orderQuery.All(ctx)
+	u, err := userQuery.Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("lock orders: %w", err)
-	}
-	if len(orders) == 0 {
-		return nil, ErrInvoiceNoOrders
-	}
-	if len(orderIDs) > 0 && len(orders) != len(orderIDs) {
-		return nil, ErrInvoiceOrderNotUsable
+		return nil, fmt.Errorf("lock user: %w", err)
 	}
 
-	total := decimal.Zero
-	lockedOrderIDs := make([]int64, 0, len(orders))
-	for _, order := range orders {
-		if order.Status != OrderStatusCompleted || order.PayAmount <= 0 || order.InvoiceRequestID != nil {
-			return nil, ErrInvoiceOrderNotUsable
-		}
-		total = total.Add(decimal.NewFromFloat(order.PayAmount))
-		lockedOrderIDs = append(lockedOrderIDs, order.ID)
+	summary, err := s.computeInvoiceable(ctx, txInvoiceOrderClients(tx), userID, u.InvoiceableConsumed, multiplier)
+	if err != nil {
+		return nil, err
 	}
-	amount := total.Round(2).InexactFloat64()
+	available := summary.AvailableAmount
+	if available <= 0 {
+		return nil, ErrInvoiceNothingToInvoice
+	}
+
+	// 申请金额：<=0 表示全额开票；否则不得超过可开额度（留 0.01 容差吸收浮点误差）。
+	amount := decimal.NewFromFloat(req.Amount).Round(2).InexactFloat64()
+	if amount <= 0 {
+		amount = available
+	}
+	if amount > available+0.001 {
+		return nil, ErrInvoiceAmountExceedsAvailable
+	}
+	if amount > available {
+		amount = available
+	}
 
 	taxID := normalizeTaxID(req.TitleType, req.TaxID)
 	created, err := tx.InvoiceRequest.Create().
 		SetUserID(userID).
-		SetUserEmail(user.Email).
-		SetUserName(user.Username).
+		SetUserEmail(u.Email).
+		SetUserName(u.Username).
 		SetRecipientEmail(strings.TrimSpace(req.RecipientEmail)).
 		SetTitleType(req.TitleType).
 		SetTitleName(strings.TrimSpace(req.TitleName)).
@@ -203,14 +295,6 @@ func (s *InvoiceService) ApplyInvoice(ctx context.Context, userID int64, req App
 		Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("create invoice request: %w", err)
-	}
-
-	// 关联订单：写入 invoice_request_id，占用这些订单。
-	if _, err := tx.PaymentOrder.Update().
-		Where(paymentorder.IDIn(lockedOrderIDs...)).
-		SetInvoiceRequestID(created.ID).
-		Save(ctx); err != nil {
-		return nil, fmt.Errorf("link orders: %w", err)
 	}
 
 	if err := tx.Commit(); err != nil {
@@ -351,21 +435,4 @@ func releaseInvoiceOrders(ctx context.Context, tx *dbent.Tx, requestID int64) er
 func txIsPostgres(tx *dbent.Tx) bool {
 	d, ok := tx.Client().Driver().(interface{ Dialect() string })
 	return ok && d.Dialect() == dialect.Postgres
-}
-
-// dedupeInt64 去重并丢弃非正数 ID。
-func dedupeInt64(ids []int64) []int64 {
-	seen := make(map[int64]struct{}, len(ids))
-	out := make([]int64, 0, len(ids))
-	for _, id := range ids {
-		if id <= 0 {
-			continue
-		}
-		if _, ok := seen[id]; ok {
-			continue
-		}
-		seen[id] = struct{}{}
-		out = append(out, id)
-	}
-	return out
 }

@@ -92,6 +92,8 @@ const (
 	FieldPromoEndsAt = "promo_ends_at"
 	// FieldPromoLabel holds the string denoting the promo_label field in the database.
 	FieldPromoLabel = "promo_label"
+	// FieldInvoiceEligible holds the string denoting the invoice_eligible field in the database.
+	FieldInvoiceEligible = "invoice_eligible"
 	// EdgeAPIKeys holds the string denoting the api_keys edge name in mutations.
 	EdgeAPIKeys = "api_keys"
 	// EdgeRedeemCodes holds the string denoting the redeem_codes edge name in mutations.
@@ -205,6 +207,7 @@ var Columns = []string{
 	FieldPromoStartsAt,
 	FieldPromoEndsAt,
 	FieldPromoLabel,
+	FieldInvoiceEligible,
 }
 
 var (
@@ -292,6 +295,8 @@ var (
 	DefaultRpmLimit int
 	// PromoLabelValidator is a validator for the "promo_label" field. It is called by the builders before save.
 	PromoLabelValidator func(string) error
+	// DefaultInvoiceEligible holds the default value on creation for the "invoice_eligible" field.
+	DefaultInvoiceEligible bool
 )
 
 // OrderOption defines the ordering options for the Group queries.
@@ -475,6 +480,11 @@ func ByPromoEndsAt(opts ...sql.OrderTermOption) OrderOption {
 // ByPromoLabel orders the results by the promo_label field.
 func ByPromoLabel(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPromoLabel, opts...).ToFunc()
+}
+
+// ByInvoiceEligible orders the results by the invoice_eligible field.
+func ByInvoiceEligible(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldInvoiceEligible, opts...).ToFunc()
 }
 
 // ByAPIKeysCount orders the results by api_keys count.

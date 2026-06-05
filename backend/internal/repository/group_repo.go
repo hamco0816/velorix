@@ -68,6 +68,7 @@ func (r *groupRepository) Create(ctx context.Context, groupIn *service.Group) er
 		SetDefaultMappedModel(groupIn.DefaultMappedModel).
 		SetMessagesDispatchModelConfig(groupIn.MessagesDispatchModelConfig).
 		SetRpmLimit(groupIn.RPMLimit).
+		SetInvoiceEligible(groupIn.InvoiceEligible).
 		SetNillablePromoRateMultiplier(groupIn.PromoRateMultiplier).
 		SetNillablePromoStartsAt(groupIn.PromoStartsAt).
 		SetNillablePromoEndsAt(groupIn.PromoEndsAt)
@@ -144,7 +145,8 @@ func (r *groupRepository) Update(ctx context.Context, groupIn *service.Group) er
 		SetRequirePrivacySet(groupIn.RequirePrivacySet).
 		SetDefaultMappedModel(groupIn.DefaultMappedModel).
 		SetMessagesDispatchModelConfig(groupIn.MessagesDispatchModelConfig).
-		SetRpmLimit(groupIn.RPMLimit)
+		SetRpmLimit(groupIn.RPMLimit).
+		SetInvoiceEligible(groupIn.InvoiceEligible)
 
 	// 显式处理可空字段：nil 需要 clear，非 nil 需要 set。
 	if groupIn.DailyLimitUSD != nil {

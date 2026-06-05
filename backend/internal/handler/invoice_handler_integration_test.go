@@ -113,7 +113,7 @@ func newInvoiceTestEnv(t *testing.T, invoiceEnabled bool) *invoiceTestEnv {
 	v1 := r.Group("/api/v1")
 	inv := v1.Group("/invoices")
 	{
-		inv.GET("/invoiceable-orders", userHandler.GetInvoiceableOrders)
+		inv.GET("/invoiceable-summary", userHandler.GetInvoiceableSummary)
 		inv.GET("/my", userHandler.GetMyInvoices)
 		inv.POST("", userHandler.ApplyInvoice)
 		inv.GET("/:id", userHandler.GetMyInvoice)
@@ -141,7 +141,7 @@ func (e *invoiceTestEnv) seedUser(t *testing.T, email string) *dbent.User {
 	return u
 }
 
-// seedCompletedOrder 创建已完成付费订单。
+// seedCompletedOrder 创建一笔已完成的余额充值订单（真实付费）。
 func (e *invoiceTestEnv) seedCompletedOrder(t *testing.T, user *dbent.User, payAmount float64, suffix string) *dbent.PaymentOrder {
 	t.Helper()
 	o, err := e.client.PaymentOrder.Create().
@@ -155,6 +155,25 @@ func (e *invoiceTestEnv) seedCompletedOrder(t *testing.T, user *dbent.User, payA
 		Save(context.Background())
 	require.NoError(t, err)
 	return o
+}
+
+// seedInvoiceable 让用户拥有 amountCNY 的可开票额度：
+// 真实充值 amountCNY（封顶）+ 累计在支持开票分组的消费 amountCNY（倍率默认 1，额度=人民币）。
+func (e *invoiceTestEnv) seedInvoiceable(t *testing.T, user *dbent.User, amountCNY float64, suffix string) {
+	t.Helper()
+	e.seedCompletedOrder(t, user, amountCNY, suffix)
+	require.NoError(t, e.client.User.UpdateOneID(user.ID).SetInvoiceableConsumed(amountCNY).Exec(context.Background()))
+}
+
+// summaryAvailable 读取当前用户可开票总额（人民币）。
+func (e *invoiceTestEnv) summaryAvailable(t *testing.T, userID int64) float64 {
+	t.Helper()
+	_, env := e.do(t, http.MethodGet, "/api/v1/invoices/invoiceable-summary", userID, nil, "")
+	var summary struct {
+		AvailableAmount float64 `json:"available_amount"`
+	}
+	require.NoError(t, json.Unmarshal(env.Data, &summary))
+	return summary.AvailableAmount
 }
 
 // --- HTTP 辅助 ---
@@ -218,15 +237,13 @@ func buildInvoiceMultipart(t *testing.T, filename string, content []byte, fields
 func TestInvoiceFlow_ApplyThenIssue(t *testing.T) {
 	env := newInvoiceTestEnv(t, true)
 	user := env.seedUser(t, "flow@example.com")
-	o1 := env.seedCompletedOrder(t, user, 100, "f1")
-	o2 := env.seedCompletedOrder(t, user, 50, "f2")
+	env.seedInvoiceable(t, user, 150, "f1") // 可开票额度 150
 
-	// 用户申请开票
+	// 用户申请开票（不传金额 = 全额）
 	status, env1 := env.postJSON(t, "/api/v1/invoices", user.ID, map[string]any{
 		"recipient_email": "recipient@example.com",
 		"title_type":      "personal",
 		"title_name":      "个人",
-		"order_ids":       []int64{o1.ID, o2.ID},
 	})
 	require.Equal(t, http.StatusCreated, status)
 	require.Equal(t, 0, env1.Code)
@@ -266,13 +283,12 @@ func TestInvoiceFlow_ApplyThenIssue(t *testing.T) {
 func TestInvoiceApply_DisabledReturns403(t *testing.T) {
 	env := newInvoiceTestEnv(t, false)
 	user := env.seedUser(t, "disabled@example.com")
-	order := env.seedCompletedOrder(t, user, 100, "d1")
+	env.seedInvoiceable(t, user, 100, "d1")
 
 	status, _ := env.postJSON(t, "/api/v1/invoices", user.ID, map[string]any{
 		"recipient_email": "recipient@example.com",
 		"title_type":      "personal",
 		"title_name":      "个人",
-		"order_ids":       []int64{order.ID},
 	})
 	require.Equal(t, http.StatusForbidden, status)
 }
@@ -281,12 +297,11 @@ func TestInvoiceApply_DisabledReturns403(t *testing.T) {
 func TestInvoiceIssue_RejectsNonPDF(t *testing.T) {
 	env := newInvoiceTestEnv(t, true)
 	user := env.seedUser(t, "nonpdf@example.com")
-	order := env.seedCompletedOrder(t, user, 100, "p1")
+	env.seedInvoiceable(t, user, 100, "p1")
 	_, applyEnv := env.postJSON(t, "/api/v1/invoices", user.ID, map[string]any{
 		"recipient_email": "recipient@example.com",
 		"title_type":      "personal",
 		"title_name":      "个人",
-		"order_ids":       []int64{order.ID},
 	})
 	var applied struct {
 		ID int64 `json:"id"`
@@ -305,12 +320,11 @@ func TestInvoiceIssue_RejectsNonPDF(t *testing.T) {
 func TestInvoiceIssue_RequiresFile(t *testing.T) {
 	env := newInvoiceTestEnv(t, true)
 	user := env.seedUser(t, "nofile@example.com")
-	order := env.seedCompletedOrder(t, user, 100, "nf1")
+	env.seedInvoiceable(t, user, 100, "nf1")
 	_, applyEnv := env.postJSON(t, "/api/v1/invoices", user.ID, map[string]any{
 		"recipient_email": "recipient@example.com",
 		"title_type":      "personal",
 		"title_name":      "个人",
-		"order_ids":       []int64{order.ID},
 	})
 	var applied struct {
 		ID int64 `json:"id"`
@@ -326,12 +340,11 @@ func TestInvoiceIssue_RequiresFile(t *testing.T) {
 func TestInvoiceParsePDF_GarbageReturnsEmpty(t *testing.T) {
 	env := newInvoiceTestEnv(t, true)
 	user := env.seedUser(t, "parse@example.com")
-	order := env.seedCompletedOrder(t, user, 100, "pp1")
+	env.seedInvoiceable(t, user, 100, "pp1")
 	_, applyEnv := env.postJSON(t, "/api/v1/invoices", user.ID, map[string]any{
 		"recipient_email": "recipient@example.com",
 		"title_type":      "personal",
 		"title_name":      "个人",
-		"order_ids":       []int64{order.ID},
 	})
 	var applied struct {
 		ID int64 `json:"id"`
@@ -349,39 +362,31 @@ func TestInvoiceParsePDF_GarbageReturnsEmpty(t *testing.T) {
 	require.Empty(t, parsed.InvoiceNumber)
 }
 
-// 用户取消待开票申请释放订单，订单重新出现在可开票列表。
-func TestInvoiceCancel_ReleasesOrderViaHTTP(t *testing.T) {
+// 用户取消待开票申请后，可开票额度恢复。
+func TestInvoiceCancel_ReleasesAmountViaHTTP(t *testing.T) {
 	env := newInvoiceTestEnv(t, true)
 	user := env.seedUser(t, "httpcancel@example.com")
-	order := env.seedCompletedOrder(t, user, 100, "hc1")
+	env.seedInvoiceable(t, user, 100, "hc1")
 
 	_, applyEnv := env.postJSON(t, "/api/v1/invoices", user.ID, map[string]any{
 		"recipient_email": "recipient@example.com",
 		"title_type":      "personal",
 		"title_name":      "个人",
-		"order_ids":       []int64{order.ID},
 	})
 	var applied struct {
 		ID int64 `json:"id"`
 	}
 	require.NoError(t, json.Unmarshal(applyEnv.Data, &applied))
 
-	// 申请后可开票列表为空
-	_, listEnv := env.do(t, http.MethodGet, "/api/v1/invoices/invoiceable-orders", user.ID, nil, "")
-	var page struct {
-		Total int `json:"total"`
-	}
-	require.NoError(t, json.Unmarshal(listEnv.Data, &page))
-	require.Equal(t, 0, page.Total)
+	// 申请后额度被占用
+	require.InDelta(t, 0, env.summaryAvailable(t, user.ID), 0.001)
 
 	// 取消
 	status, _ := env.do(t, http.MethodPost, fmt.Sprintf("/api/v1/invoices/%d/cancel", applied.ID), user.ID, nil, "")
 	require.Equal(t, http.StatusOK, status)
 
-	// 取消后订单重新可开票
-	_, listEnv2 := env.do(t, http.MethodGet, "/api/v1/invoices/invoiceable-orders", user.ID, nil, "")
-	require.NoError(t, json.Unmarshal(listEnv2.Data, &page))
-	require.Equal(t, 1, page.Total)
+	// 取消后额度恢复
+	require.InDelta(t, 100, env.summaryAvailable(t, user.ID), 0.001)
 }
 
 // 越权：用户不能访问他人申请单。
@@ -389,13 +394,12 @@ func TestInvoiceGet_RejectsOtherUser(t *testing.T) {
 	env := newInvoiceTestEnv(t, true)
 	owner := env.seedUser(t, "owner@example.com")
 	other := env.seedUser(t, "other@example.com")
-	order := env.seedCompletedOrder(t, owner, 100, "o1")
+	env.seedInvoiceable(t, owner, 100, "o1")
 
 	_, applyEnv := env.postJSON(t, "/api/v1/invoices", owner.ID, map[string]any{
 		"recipient_email": "recipient@example.com",
 		"title_type":      "personal",
 		"title_name":      "个人",
-		"order_ids":       []int64{order.ID},
 	})
 	var applied struct {
 		ID int64 `json:"id"`

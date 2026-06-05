@@ -124,6 +124,8 @@ type CreateGroupRequest struct {
 	PromoStartsAt       *time.Time `json:"promo_starts_at"`
 	PromoEndsAt         *time.Time `json:"promo_ends_at"`
 	PromoLabel          string     `json:"promo_label"`
+	// 该分组消费是否可开票（默认 false）
+	InvoiceEligible bool `json:"invoice_eligible"`
 }
 
 // UpdateGroupRequest represents update group request
@@ -167,6 +169,8 @@ type UpdateGroupRequest struct {
 
 	// 限时倍率：传 promo_update 对象时执行更新（其字段为 nil 表示清空）
 	PromoUpdate *AdminPromoUpdate `json:"promo_update,omitempty"`
+	// 该分组消费是否可开票；nil 表示未提供不改动
+	InvoiceEligible *bool `json:"invoice_eligible"`
 }
 
 // AdminPromoUpdate 限时倍率更新载荷
@@ -299,6 +303,7 @@ func (h *GroupHandler) Create(c *gin.Context) {
 		PromoStartsAt:                   req.PromoStartsAt,
 		PromoEndsAt:                     req.PromoEndsAt,
 		PromoLabel:                      req.PromoLabel,
+		InvoiceEligible:                 req.InvoiceEligible,
 	})
 	if err != nil {
 		response.ErrorFrom(c, err)
@@ -355,6 +360,7 @@ func (h *GroupHandler) Update(c *gin.Context) {
 		RPMLimit:                        req.RPMLimit,
 		CopyAccountsFromGroupIDs:        req.CopyAccountsFromGroupIDs,
 		PromoUpdate:                     mapPromoUpdateToService(req.PromoUpdate),
+		InvoiceEligible:                 req.InvoiceEligible,
 	})
 	if err != nil {
 		response.ErrorFrom(c, err)
