@@ -74,6 +74,14 @@ vi.mock('@/stores', () => ({
   }),
 }))
 
+vi.mock('@/utils/featureFlags', () => ({
+  FeatureFlags: {
+    invoice: { key: 'invoice_enabled', mode: 'opt-in', label: 'Invoice' },
+  },
+  isFeatureFlagEnabled: vi.fn(() => false),
+  makeSidebarFlag: vi.fn(() => () => false),
+}))
+
 vi.mock('@/api/payment', () => ({
   paymentAPI: {
     getCheckoutInfo,
