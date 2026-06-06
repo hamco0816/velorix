@@ -436,6 +436,35 @@
       </div>
     </section>
 
+    <!-- ============== Trust FAQ：直面"会不会跑路"等顾虑 ============== -->
+    <section id="faq" class="border-y border-gray-200 bg-stone-50/70 py-20 dark:border-dark-800 dark:bg-dark-900/30 sm:py-24">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center gap-3">
+          <span class="h-5 w-1 rounded-full bg-brand-500 dark:bg-brand-400"></span>
+          <h2 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-2xl">
+            {{ t('home.faq.title') }}
+          </h2>
+        </div>
+        <p class="mt-2 text-[14px] text-gray-600 dark:text-dark-300">{{ t('home.faq.subtitle') }}</p>
+
+        <div class="mt-8 grid gap-3 sm:grid-cols-2 lg:gap-4">
+          <div
+            v-for="item in faqItems"
+            :key="item.key"
+            class="rounded-2xl border border-gray-200/70 bg-white p-6 transition-colors hover:border-brand-200/80 dark:border-dark-700/60 dark:bg-dark-800/40 dark:hover:border-brand-500/30"
+          >
+            <h3 class="flex items-start gap-2 text-[15px] font-semibold tracking-tight text-gray-900 dark:text-white">
+              <Icon name="checkCircle" size="sm" class="mt-0.5 shrink-0 text-brand-500 dark:text-brand-400" :stroke-width="2" />
+              {{ item.q }}
+            </h3>
+            <p class="mt-2 pl-7 text-[13px] leading-relaxed text-gray-600 dark:text-dark-300">
+              {{ item.a }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ============== Final CTA ============== -->
     <section id="cta" class="px-4 pb-20 sm:px-6 lg:px-8">
       <div class="relative mx-auto max-w-7xl overflow-hidden rounded-2xl bg-gray-950">
@@ -570,6 +599,16 @@ const painPointItems = computed<PainPoint[]>(() => [
   { key: 'complex', icon: 'users', title: t('home.painPoints.items.complex.title'), desc: t('home.painPoints.items.complex.desc') },
   { key: 'unstable', icon: 'chart', title: t('home.painPoints.items.unstable.title'), desc: t('home.painPoints.items.unstable.desc') },
   { key: 'noControl', icon: 'shield', title: t('home.painPoints.items.noControl.title'), desc: t('home.painPoints.items.noControl.desc') }
+])
+
+interface FaqItem { key: string; q: string; a: string }
+const faqItems = computed<FaqItem[]>(() => [
+  { key: 'runaway', q: t('home.faq.items.runaway.q'), a: t('home.faq.items.runaway.a') },
+  { key: 'invoice', q: t('home.faq.items.invoice.q'), a: t('home.faq.items.invoice.a') },
+  { key: 'refund', q: t('home.faq.items.refund.q'), a: t('home.faq.items.refund.a') },
+  { key: 'billing', q: t('home.faq.items.billing.q'), a: t('home.faq.items.billing.a') },
+  { key: 'security', q: t('home.faq.items.security.q'), a: t('home.faq.items.security.a') },
+  { key: 'support', q: t('home.faq.items.support.q'), a: t('home.faq.items.support.a') }
 ])
 
 interface StepItem { key: string; num: string; icon: HomeIconName; title: string; desc: string }

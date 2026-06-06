@@ -1,6 +1,7 @@
 <template>
   <AppLayout wide>
     <div class="affiliate-page space-y-5">
+      <PageHeader :title="t('affiliate.title')" />
       <div v-if="loading" class="flex justify-center py-12">
         <LoadingSpinner size="md" />
       </div>
@@ -143,6 +144,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppLayout from '@/components/layout/AppLayout.vue'
+import PageHeader from '@/components/common/PageHeader.vue'
 import Icon from '@/components/icons/Icon.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import userAPI from '@/api/user'

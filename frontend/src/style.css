@@ -89,7 +89,7 @@
   /* min-height 保证不论字数多少，同尺寸按钮严格等高（修按钮组对齐问题） */
   .btn {
     @apply inline-flex items-center justify-center gap-2;
-    @apply rounded-md px-3.5 py-2 text-sm font-medium;
+    @apply rounded-lg px-3.5 py-2 text-sm font-medium;
     @apply transition-colors duration-150 ease-out;
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:focus-visible:ring-brand-400/40;
     @apply disabled:cursor-not-allowed disabled:opacity-50;
@@ -156,22 +156,22 @@
   /* 尺寸节奏：sm 28px、md 36px、lg 40px，圆角统一 md，避免不同尺寸圆角变化 */
   /* 各尺寸 min-height 严格固定，即便字数不同也保证按钮组对齐 */
   .btn-sm {
-    @apply rounded-md px-2.5 py-1 text-xs;
+    @apply rounded-lg px-2.5 py-1 text-xs;
     min-height: 1.75rem;
   }
 
   .btn-md {
-    @apply rounded-md px-3.5 py-2 text-sm;
+    @apply rounded-lg px-3.5 py-2 text-sm;
     min-height: 2.25rem;
   }
 
   .btn-lg {
-    @apply rounded-md px-5 py-2.5 text-[15px];
+    @apply rounded-lg px-5 py-2.5 text-[15px];
     min-height: 2.5rem;
   }
 
   .btn-icon {
-    @apply rounded-md p-2;
+    @apply rounded-lg p-2;
     min-height: 2.25rem;
     min-width: 2.25rem;
   }
@@ -179,7 +179,7 @@
   /* ============ 输入框：低圆角、细边、focus 单色 ring ============ */
   /* min-height 与 .btn 严格同高（36px），保证 input + button 同行视觉对齐 */
   .input {
-    @apply w-full rounded-md px-3 py-2 text-sm;
+    @apply w-full rounded-lg px-3 py-2 text-sm;
     @apply bg-white dark:bg-dark-800;
     @apply border border-gray-200 dark:border-dark-600;
     @apply text-gray-900 dark:text-gray-100;
@@ -442,7 +442,7 @@
      主题色变体（card-amber/sky/emerald 等）仅用于"单张主容器"，不要用在重复列表项上 */
   .card {
     @apply bg-white dark:bg-dark-800/50;
-    @apply rounded-lg;
+    @apply rounded-xl;
     @apply border border-gray-200 dark:border-dark-700/60;
     @apply shadow-card;
     @apply transition-colors duration-200;
@@ -611,7 +611,7 @@
   }
 
   .stat-value {
-    @apply text-2xl font-bold text-gray-900 dark:text-white truncate;
+    @apply text-2xl font-bold tracking-tight text-gray-900 dark:text-white truncate;
   }
 
   .stat-label {
@@ -632,7 +632,7 @@
 
   /* ============ 表格样式 ============ */
   .table-container {
-    @apply overflow-x-auto rounded-lg border border-gray-200 dark:border-dark-700;
+    @apply overflow-x-auto rounded-xl border border-gray-200 dark:border-dark-700;
   }
 
   .table {
@@ -692,6 +692,11 @@
     @apply bg-gray-100 text-gray-700 dark:bg-dark-700 dark:text-dark-300;
   }
 
+  /* info：sky 蓝，用于"信息/已提交"等中性偏积极的状态 */
+  .badge-info {
+    @apply bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300;
+  }
+
   .badge-purple {
     @apply bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400;
   }
@@ -700,7 +705,7 @@
   .dropdown {
     @apply absolute z-50;
     @apply bg-white dark:bg-dark-800;
-    @apply rounded-lg;
+    @apply rounded-xl;
     @apply border border-gray-200 dark:border-dark-700;
     @apply shadow-md;
     @apply py-1;
@@ -823,7 +828,7 @@
   .dialog-container {
     @apply flex w-full flex-col;
     @apply max-h-[90vh];
-    @apply rounded-lg bg-white dark:bg-dark-800;
+    @apply rounded-2xl bg-white dark:bg-dark-800;
     @apply shadow-xl;
     @apply border border-gray-200 dark:border-dark-700;
   }
@@ -900,19 +905,18 @@
     @apply text-sm font-medium;
     @apply text-gray-600 dark:text-dark-300;
     @apply transition-colors duration-150;
-    @apply hover:bg-gray-100 dark:hover:bg-dark-800;
+    @apply hover:bg-gray-50 dark:hover:bg-dark-800/50;
     @apply hover:text-gray-900 dark:hover:text-white;
     padding-left: 1.0625rem;
     padding-right: 0.875rem;
   }
 
-  /* 激活态：sky 色调，与全站 hero 渐变 / 兑换码 panel 配色统一 */
+  /* 激活态：黑色实心（与黑色主按钮同语言，高级有力，暗色模式反相为白底黑字） */
   .sidebar-link-active {
-    @apply bg-sky-50 dark:bg-sky-500/10;
-    @apply text-sky-700 dark:text-sky-300;
-    @apply hover:bg-sky-100 dark:hover:bg-sky-500/15;
-    @apply hover:text-sky-800 dark:hover:text-sky-200;
-    @apply ring-1 ring-inset ring-sky-200/60 dark:ring-sky-500/20;
+    @apply bg-gray-900 text-white;
+    @apply hover:bg-gray-900 hover:text-white;
+    @apply dark:bg-white dark:text-gray-900;
+    @apply dark:hover:bg-white dark:hover:text-gray-900;
   }
 
   .sidebar-section {
@@ -931,7 +935,7 @@
   }
 
   .page-title {
-    @apply text-2xl font-bold text-gray-900 dark:text-white;
+    @apply text-2xl font-bold tracking-tight text-gray-900 dark:text-white;
   }
 
   .page-description {

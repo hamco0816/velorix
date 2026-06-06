@@ -1,34 +1,9 @@
 <template>
   <AppLayout wide>
     <div class="space-y-5">
-      <!-- 工具栏：左侧概览 chip / 右侧操作 -->
-      <div v-if="!loading" class="flex flex-wrap items-center justify-between gap-3">
-        <div class="flex flex-wrap items-center gap-2">
-          <span
-            class="inline-flex items-center gap-1.5 rounded-full bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60"
-          >
-            <Icon name="badge" size="xs" class="text-gray-400" />
-            <span class="tabular-nums">{{ subscriptions.length }}</span>
-            <span class="text-gray-400 dark:text-dark-400">{{ t('userSubscriptions.statTotal') }}</span>
-          </span>
-          <span
-            v-if="activeCount > 0"
-            class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30"
-          >
-            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span class="tabular-nums">{{ activeCount }}</span>
-            <span class="opacity-70">{{ t('userSubscriptions.statActive') }}</span>
-          </span>
-          <span
-            v-if="expiringSoonCount > 0"
-            class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30"
-          >
-            <Icon name="clock" size="xs" />
-            <span class="tabular-nums">{{ expiringSoonCount }}</span>
-            <span class="opacity-70">{{ t('userSubscriptions.statExpiringSoon') }}</span>
-          </span>
-        </div>
-        <div class="flex items-center gap-2">
+      <!-- 统一 PageHeader + 概览 chip 行 -->
+      <PageHeader :title="t('userSubscriptions.title')">
+        <template #actions>
           <button
             type="button"
             class="btn btn-secondary btn-sm"
@@ -46,7 +21,33 @@
             <Icon name="plus" size="sm" class="mr-1.5" />
             {{ t('payment.subscribeNow') }}
           </button>
-        </div>
+        </template>
+      </PageHeader>
+
+      <div v-if="!loading" class="flex flex-wrap items-center gap-2">
+        <span
+          class="inline-flex items-center gap-1.5 rounded-full bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60"
+        >
+          <Icon name="badge" size="xs" class="text-gray-400" />
+          <span class="tabular-nums">{{ subscriptions.length }}</span>
+          <span class="text-gray-400 dark:text-dark-400">{{ t('userSubscriptions.statTotal') }}</span>
+        </span>
+        <span
+          v-if="activeCount > 0"
+          class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30"
+        >
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="tabular-nums">{{ activeCount }}</span>
+          <span class="opacity-70">{{ t('userSubscriptions.statActive') }}</span>
+        </span>
+        <span
+          v-if="expiringSoonCount > 0"
+          class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30"
+        >
+          <Icon name="clock" size="xs" />
+          <span class="tabular-nums">{{ expiringSoonCount }}</span>
+          <span class="opacity-70">{{ t('userSubscriptions.statExpiringSoon') }}</span>
+        </span>
       </div>
 
       <!-- Loading State -->
@@ -289,6 +290,7 @@ import subscriptionsAPI from '@/api/subscriptions'
 import type { UserSubscription } from '@/types'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Icon from '@/components/icons/Icon.vue'
+import PageHeader from '@/components/common/PageHeader.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import { formatDateOnly } from '@/utils/format'

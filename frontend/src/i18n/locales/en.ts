@@ -208,6 +208,37 @@ export default {
       description: 'Sign up now and get free trial credits to experience seamless AI access',
       button: 'Sign Up Free'
     },
+    // Trust FAQ: address the "will they vanish" worry head-on with real platform capabilities
+    faq: {
+      title: 'On "will you run away" — let us be upfront',
+      subtitle: 'Money, invoices and records all out in the open — that earns long-term trust',
+      items: {
+        runaway: {
+          q: 'Will you suddenly shut down and run off?',
+          a: 'We ship continuous updates (new features and models); balances are refundable, company invoices are supported, and every charge is auditable — putting money, invoices and records out in the open is how we take long-term responsibility.',
+        },
+        invoice: {
+          q: 'Can I get an invoice?',
+          a: 'Company-titled e-invoices are supported, issued against your real consumption, and you can request them yourself from the console.',
+        },
+        refund: {
+          q: 'Can I refund unused balance?',
+          a: 'Refunds are supported per our refund policy — unused balance can be refunded, you are not locked in.',
+        },
+        billing: {
+          q: 'Is billing transparent?',
+          a: 'Every call is logged in detail; real-time usage and spend are viewable and exportable in the console, billed by real tokens / requests.',
+        },
+        security: {
+          q: 'Are my data and keys safe?',
+          a: 'Encrypted in transit, API keys can be paused anytime, handled on a least-privilege basis and never repurposed.',
+        },
+        support: {
+          q: 'How do I get help?',
+          a: '24/7 customer support and ticketing — your issues get a real, timely response.',
+        },
+      },
+    },
     footer: {
       allRightsReserved: 'All rights reserved.'
     }
@@ -431,6 +462,8 @@ export default {
     hide: 'Hide',
     success: 'Success',
     error: 'Error',
+    retry: 'Retry',
+    loadFailed: 'Failed to load',
     critical: 'Critical',
     warning: 'Warning',
     info: 'Info',
@@ -773,6 +806,12 @@ export default {
     title: 'Dashboard',
     welcomeMessage: "Welcome back! Here's an overview of your account.",
     welcomeTitle: 'Hi, {name}',
+    // Trust ribbon: signals a legitimate, transparent, here-to-stay service
+    trust: {
+      realtimeUsage: 'Real-time usage',
+      invoice: 'Invoices supported',
+      support: '24/7 support',
+    },
     coreStats: 'Core Stats',
     tokenStats: 'Token & Performance',
     balance: 'Balance',

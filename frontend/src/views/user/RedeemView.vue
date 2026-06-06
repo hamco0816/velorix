@@ -1,6 +1,7 @@
 <template>
   <AppLayout wide>
     <div class="space-y-5">
+      <PageHeader :title="t('redeem.title')" />
       <!-- 移动端 2 列防止 4 张卡纵向堆成长长一条；md+ 仍可 2 列；xl 起 4 列 -->
       <section class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
             <div class="redeem-stat-card">
@@ -458,6 +459,7 @@ import { useAppStore } from '@/stores/app'
 import { useSubscriptionStore } from '@/stores/subscriptions'
 import { redeemAPI, type RedeemHistoryItem } from '@/api'
 import AppLayout from '@/components/layout/AppLayout.vue'
+import PageHeader from '@/components/common/PageHeader.vue'
 import ContactMethodsDisplay from '@/components/common/ContactMethodsDisplay.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { formatDateTime } from '@/utils/format'

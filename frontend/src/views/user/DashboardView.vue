@@ -1,34 +1,37 @@
 <template>
   <AppLayout wide>
     <div class="space-y-8">
-      <!-- 工具栏：sm 起两端对齐，小屏 stack 避免溢出 -->
-      <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="text-sm text-gray-600 dark:text-dark-300">
-            {{ t('dashboard.welcomeTitle', { name: greetingName }) }}
-          </span>
-          <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
-            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-            {{ t('admin.dashboard.liveUpdated') }} {{ lastUpdatedLabel }}
-          </span>
-        </div>
-        <div class="flex flex-wrap items-center gap-2">
-          <DateRangePicker
-            v-model:start-date="startDate"
-            v-model:end-date="endDate"
-            @change="onDateRangeChange"
-          />
-          <div class="w-28">
-            <Select
-              v-model="granularity"
-              :options="granularityOptions"
-              @change="loadCharts"
+      <!-- 统一页面头部 + 信任条 -->
+      <div class="space-y-3">
+        <PageHeader
+          :title="t('dashboard.title')"
+          :subtitle="t('dashboard.welcomeTitle', { name: greetingName })"
+        >
+          <template #meta>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
+              <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+              {{ t('admin.dashboard.liveUpdated') }} {{ lastUpdatedLabel }}
+            </span>
+          </template>
+          <template #actions>
+            <DateRangePicker
+              v-model:start-date="startDate"
+              v-model:end-date="endDate"
+              @change="onDateRangeChange"
             />
-          </div>
-          <button @click="refreshAll" :disabled="loading || loadingCharts" class="btn btn-secondary btn-sm" :title="t('common.refresh')">
-            <Icon name="refresh" size="sm" :class="(loading || loadingCharts) ? 'animate-spin' : ''" />
-          </button>
-        </div>
+            <div class="w-28">
+              <Select
+                v-model="granularity"
+                :options="granularityOptions"
+                @change="loadCharts"
+              />
+            </div>
+            <button @click="refreshAll" :disabled="loading || loadingCharts" class="btn btn-secondary btn-sm" :title="t('common.refresh')">
+              <Icon name="refresh" size="sm" :class="(loading || loadingCharts) ? 'animate-spin' : ''" />
+            </button>
+          </template>
+        </PageHeader>
+        <TrustRibbon v-if="trustItems.length" :items="trustItems" />
       </div>
 
       <div v-if="loading" class="flex items-center justify-center py-20"><LoadingSpinner /></div>
@@ -58,12 +61,16 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
+import { useAppStore } from '@/stores'
+import { isFeatureFlagEnabled, FeatureFlags } from '@/utils/featureFlags'
 import { usageAPI, type UserDashboardStats as UserStatsType } from '@/api/usage'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import Icon from '@/components/icons/Icon.vue'
 import DateRangePicker from '@/components/common/DateRangePicker.vue'
 import Select from '@/components/common/Select.vue'
+import PageHeader from '@/components/common/PageHeader.vue'
+import TrustRibbon from '@/components/common/TrustRibbon.vue'
 import UserDashboardStats from '@/components/user/dashboard/UserDashboardStats.vue'
 import UserDashboardCharts from '@/components/user/dashboard/UserDashboardCharts.vue'
 import UserDashboardRecentUsage from '@/components/user/dashboard/UserDashboardRecentUsage.vue'
@@ -72,10 +79,25 @@ import type { UsageLog, TrendDataPoint, ModelStat } from '@/types'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
+const appStore = useAppStore()
 const user = computed(() => authStore.user)
 
 const greetingName = computed(() => {
   return user.value?.username || user.value?.email?.split('@')[0] || t('common.user')
+})
+
+// 信任条：只展示当前确实成立的信号，避免空口承诺
+const trustItems = computed(() => {
+  const items: { label: string; icon?: string }[] = [
+    { label: t('dashboard.trust.realtimeUsage'), icon: 'checkCircle' },
+  ]
+  if (isFeatureFlagEnabled(FeatureFlags.invoice)) {
+    items.push({ label: t('dashboard.trust.invoice'), icon: 'document' })
+  }
+  if (appStore.contactMethods.length > 0) {
+    items.push({ label: t('dashboard.trust.support'), icon: 'infoCircle' })
+  }
+  return items
 })
 
 const stats = ref<UserStatsType | null>(null)

@@ -213,6 +213,37 @@ export default {
       description: '注册即可获得免费试用额度，体验一站式 AI 服务',
       button: '免费注册'
     },
+    // 信任向 FAQ：直面"会不会跑路"等顾虑，用平台真实能力回答
+    faq: {
+      title: '关于"会不会跑路"，我们把话说在前面',
+      subtitle: '钱、票、账都摆在明面上，才值得长期托付',
+      items: {
+        runaway: {
+          q: '你们会不会突然跑路？',
+          a: '平台在持续迭代更新（功能、模型不断上新）；余额可申请退款、支持开企业发票、消费明细全程可查——把钱、票、账都摆在台面上，是对长期负责的方式。',
+        },
+        invoice: {
+          q: '能开发票吗？',
+          a: '支持开具企业抬头电子发票，按真实消费开票，在控制台即可自助申请。',
+        },
+        refund: {
+          q: '余额用不完能退吗？',
+          a: '支持按退款政策申请退款，未消费余额可退，不绑死在站内。',
+        },
+        billing: {
+          q: '计费透明吗？会不会乱扣？',
+          a: '每次调用都有明细记录，实时用量与消费可在控制台查看、导出，按 token / 次真实计费。',
+        },
+        security: {
+          q: '我的数据和密钥安全吗？',
+          a: '全程加密传输，API Key 可随时启停，按最小必要原则处理，不挪作他用。',
+        },
+        support: {
+          q: '遇到问题怎么联系？',
+          a: '提供 7×24 客服与工单入口，问题有人接、有响应。',
+        },
+      },
+    },
     footer: {
       allRightsReserved: '保留所有权利。'
     }
@@ -436,6 +467,8 @@ export default {
     hide: '隐藏',
     success: '成功',
     error: '错误',
+    retry: '重试',
+    loadFailed: '加载失败',
     critical: '严重',
     warning: '警告',
     info: '提示',
@@ -779,6 +812,12 @@ export default {
     title: '仪表盘',
     welcomeMessage: '欢迎回来！这是您账户的概览。',
     welcomeTitle: '你好，{name}',
+    // 信任条：让用户一眼觉得"正规、可查、不会跑路"
+    trust: {
+      realtimeUsage: '用量实时可查',
+      invoice: '支持企业开票',
+      support: '7×24 客服',
+    },
     coreStats: '核心数据',
     tokenStats: 'Token 与性能',
     balance: '余额',

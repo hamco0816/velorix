@@ -1,24 +1,18 @@
 <template>
   <AppLayout wide>
     <div class="space-y-5">
-      <!-- 顶部操作栏 -->
-      <div class="surface-card card-teal p-4">
-        <div class="flex flex-wrap items-center gap-3">
-          <div class="flex-1">
-            <h2 class="text-base font-semibold text-gray-900 dark:text-white">{{ t('invoice.title') }}</h2>
-            <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{{ t('invoice.subtitle') }}</p>
-          </div>
-          <div class="flex items-center gap-2">
-            <button @click="fetchInvoices" :disabled="loading" class="btn btn-secondary btn-sm" :title="t('common.refresh')">
-              <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
-            </button>
-            <button class="btn btn-primary btn-sm shrink-0 whitespace-nowrap" @click="openApplyDialog">
-              <Icon name="plus" size="sm" class="mr-1.5" />
-              <span>{{ t('invoice.apply.button') }}</span>
-            </button>
-          </div>
-        </div>
-      </div>
+      <!-- 顶部操作栏：统一 PageHeader -->
+      <PageHeader :title="t('invoice.title')" :subtitle="t('invoice.subtitle')">
+        <template #actions>
+          <button @click="fetchInvoices" :disabled="loading" class="btn btn-secondary btn-sm" :title="t('common.refresh')">
+            <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
+          </button>
+          <button class="btn btn-primary btn-sm shrink-0 whitespace-nowrap" @click="openApplyDialog">
+            <Icon name="plus" size="sm" class="mr-1.5" />
+            <span>{{ t('invoice.apply.button') }}</span>
+          </button>
+        </template>
+      </PageHeader>
 
       <!-- 列表 -->
       <div class="surface-card overflow-hidden">
@@ -50,9 +44,7 @@
                 </td>
                 <td class="px-4 py-3 text-gray-900 dark:text-white">¥{{ row.amount.toFixed(2) }}</td>
                 <td class="px-4 py-3">
-                  <span :class="statusClass(row.status)" class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium">
-                    {{ t(`invoice.status.${row.status}`) }}
-                  </span>
+                  <StatusTag :status="row.status" :label="t(`invoice.status.${row.status}`)" />
                 </td>
                 <td class="px-4 py-3 text-gray-600 dark:text-gray-300">{{ row.recipient_email }}</td>
                 <td class="px-4 py-3 text-gray-500 dark:text-gray-400">{{ formatDate(row.created_at) }}</td>
@@ -158,9 +150,7 @@
       <div v-if="detailTarget" class="space-y-4">
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <DetailRow :label="t('invoice.fields.status')">
-            <span :class="statusClass(detailTarget.status)" class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium">
-              {{ t(`invoice.status.${detailTarget.status}`) }}
-            </span>
+            <StatusTag :status="detailTarget.status" :label="t(`invoice.status.${detailTarget.status}`)" />
           </DetailRow>
           <DetailRow :label="t('invoice.fields.amount')">¥{{ detailTarget.amount.toFixed(2) }}</DetailRow>
           <DetailRow :label="t('invoice.fields.titleType')">{{ t(`invoice.titleType.${detailTarget.title_type}`) }}</DetailRow>
@@ -222,6 +212,8 @@ import { invoiceAPI } from '@/api/invoice'
 import { extractI18nErrorMessage } from '@/utils/apiError'
 import type { InvoiceItem, InvoiceableOrder, InvoiceableSummary, InvoiceTitleType } from '@/types/invoice'
 import AppLayout from '@/components/layout/AppLayout.vue'
+import PageHeader from '@/components/common/PageHeader.vue'
+import StatusTag from '@/components/common/StatusTag.vue'
 import Pagination from '@/components/common/Pagination.vue'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import Select from '@/components/common/Select.vue'
@@ -305,21 +297,6 @@ watch(
     if (type === 'personal') form.tax_id = ''
   },
 )
-
-function statusClass(status: string): string {
-  switch (status) {
-    case 'pending':
-      return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300'
-    case 'issued':
-      return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
-    case 'rejected':
-      return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
-    case 'cancelled':
-      return 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-400'
-    default:
-      return 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-400'
-  }
-}
 
 function formatDate(value?: string): string {
   if (!value) return '-'
