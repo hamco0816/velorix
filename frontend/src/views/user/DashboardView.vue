@@ -4,8 +4,8 @@
       <!-- 统一页面头部 + 信任条 -->
       <div class="space-y-3">
         <PageHeader
-          :title="t('dashboard.title')"
-          :subtitle="t('dashboard.welcomeTitle', { name: greetingName })"
+          :title="t('dashboard.welcomeTitle', { name: greetingName })"
+          :subtitle="t('dashboard.welcomeMessage')"
         >
           <template #meta>
             <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
@@ -34,7 +34,7 @@
         <TrustRibbon v-if="trustItems.length" :items="trustItems" />
       </div>
 
-      <div v-if="loading" class="flex items-center justify-center py-20"><LoadingSpinner /></div>
+      <UserDashboardSkeleton v-if="loading" />
       <template v-else-if="stats">
         <UserDashboardStats
           :stats="stats"
@@ -53,6 +53,7 @@
           <div class="lg:col-span-1"><UserDashboardQuickActions /></div>
         </div>
       </template>
+      <ErrorState v-else-if="loadError" @retry="refreshAll" />
     </div>
   </AppLayout>
 </template>
@@ -65,13 +66,14 @@ import { useAppStore } from '@/stores'
 import { isFeatureFlagEnabled, FeatureFlags } from '@/utils/featureFlags'
 import { usageAPI, type UserDashboardStats as UserStatsType } from '@/api/usage'
 import AppLayout from '@/components/layout/AppLayout.vue'
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import Icon from '@/components/icons/Icon.vue'
 import DateRangePicker from '@/components/common/DateRangePicker.vue'
 import Select from '@/components/common/Select.vue'
 import PageHeader from '@/components/common/PageHeader.vue'
 import TrustRibbon from '@/components/common/TrustRibbon.vue'
 import UserDashboardStats from '@/components/user/dashboard/UserDashboardStats.vue'
+import UserDashboardSkeleton from '@/components/user/dashboard/UserDashboardSkeleton.vue'
+import ErrorState from '@/components/common/ErrorState.vue'
 import UserDashboardCharts from '@/components/user/dashboard/UserDashboardCharts.vue'
 import UserDashboardRecentUsage from '@/components/user/dashboard/UserDashboardRecentUsage.vue'
 import UserDashboardQuickActions from '@/components/user/dashboard/UserDashboardQuickActions.vue'
@@ -102,6 +104,7 @@ const trustItems = computed(() => {
 
 const stats = ref<UserStatsType | null>(null)
 const loading = ref(false)
+const loadError = ref(false)
 const loadingUsage = ref(false)
 const loadingCharts = ref(false)
 const trendData = ref<TrendDataPoint[]>([])
@@ -162,12 +165,14 @@ const onDateRangeChange = (range: { startDate: string; endDate: string; preset: 
 
 const loadStats = async () => {
   loading.value = true
+  loadError.value = false
   try {
     await authStore.refreshUser()
     stats.value = await usageAPI.getDashboardStats()
     lastUpdated.value = new Date()
   } catch (error) {
     console.error('Failed to load dashboard stats:', error)
+    loadError.value = true
   } finally {
     loading.value = false
   }

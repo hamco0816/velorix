@@ -49,7 +49,7 @@
         <!-- Row 1: Main Stats Cards -->
         <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <!-- 30-Day Total Cost -->
-          <div class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40">
+          <div class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-card dark:border-dark-700/60 dark:bg-dark-800/40">
             <div class="mb-2 flex items-center justify-between">
               <span class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{
                 t('admin.accounts.stats.totalCost')
@@ -85,7 +85,7 @@
           </div>
 
           <!-- 30-Day Total Requests -->
-          <div class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40">
+          <div class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-card dark:border-dark-700/60 dark:bg-dark-800/40">
             <div class="mb-2 flex items-center justify-between">
               <span class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{
                 t('admin.accounts.stats.totalRequests')
@@ -103,7 +103,7 @@
           </div>
 
           <!-- Daily Average Cost -->
-          <div class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40">
+          <div class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-card dark:border-dark-700/60 dark:bg-dark-800/40">
             <div class="mb-2 flex items-center justify-between">
               <span class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{
                 t('admin.accounts.stats.avgDailyCost')
@@ -133,7 +133,7 @@
           </div>
 
           <!-- Daily Average Requests -->
-          <div class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40">
+          <div class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-card dark:border-dark-700/60 dark:bg-dark-800/40">
             <div class="mb-2 flex items-center justify-between">
               <span class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{
                 t('admin.accounts.stats.avgDailyRequests')

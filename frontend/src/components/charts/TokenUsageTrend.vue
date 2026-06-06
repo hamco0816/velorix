@@ -69,7 +69,8 @@ const isDarkMode = computed(() => {
 
 const chartColors = computed(() => ({
   text: isDarkMode.value ? '#e5e7eb' : '#374151',
-  grid: isDarkMode.value ? '#374151' : '#e5e7eb',
+  muted: isDarkMode.value ? '#9ca3af' : '#9ca3af',
+  grid: isDarkMode.value ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.06)',
   input: '#3b82f6',
   output: '#10b981',
   cacheCreation: '#f59e0b',
@@ -135,6 +136,11 @@ const chartData = computed(() => {
 const lineOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
+  // 默认隐藏数据点、hover 时浮现；线条更细，曲线更克制——干净的高级折线图
+  elements: {
+    point: { radius: 0, hoverRadius: 4, hitRadius: 12, borderWidth: 2 },
+    line: { borderWidth: 2 }
+  },
   interaction: {
     intersect: false,
     mode: 'index' as const
@@ -153,6 +159,16 @@ const lineOptions = computed(() => ({
       }
     },
     tooltip: {
+      usePointStyle: true,
+      backgroundColor: isDarkMode.value ? 'rgba(17,24,39,0.95)' : 'rgba(17,24,39,0.92)',
+      titleColor: '#f9fafb',
+      bodyColor: '#e5e7eb',
+      footerColor: '#9ca3af',
+      borderColor: 'rgba(255,255,255,0.08)',
+      borderWidth: 1,
+      padding: 12,
+      cornerRadius: 10,
+      boxPadding: 6,
       callbacks: {
         label: (context: any) => {
           if (context.dataset.yAxisID === 'yPercent') {
@@ -174,10 +190,13 @@ const lineOptions = computed(() => ({
   scales: {
     x: {
       grid: {
-        color: chartColors.value.grid
+        display: false
+      },
+      border: {
+        display: false
       },
       ticks: {
-        color: chartColors.value.text,
+        color: chartColors.value.muted,
         font: {
           size: 10
         }
@@ -187,11 +206,15 @@ const lineOptions = computed(() => ({
       grid: {
         color: chartColors.value.grid
       },
+      border: {
+        display: false
+      },
       ticks: {
-        color: chartColors.value.text,
+        color: chartColors.value.muted,
         font: {
           size: 10
         },
+        padding: 8,
         callback: (value: string | number) => formatTokens(Number(value))
       }
     },
@@ -230,7 +253,7 @@ const formatCost = (value: number): string => {
 
 <style scoped>
 .surface-card {
-  @apply rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)];
+  @apply rounded-2xl border border-gray-200/70 bg-white shadow-card;
   @apply dark:border-dark-700/60 dark:bg-dark-800/40;
 }
 </style>

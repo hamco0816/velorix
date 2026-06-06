@@ -59,7 +59,7 @@ const formatCost = (c: number) => c.toFixed(4)
 
 <style scoped>
 .surface-card {
-  @apply rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)];
+  @apply rounded-2xl border border-gray-200/70 bg-white shadow-card;
   @apply dark:border-dark-700/60 dark:bg-dark-800/40;
 }
 </style>

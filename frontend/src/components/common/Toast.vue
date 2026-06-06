@@ -17,7 +17,7 @@
           v-for="toast in toasts"
           :key="toast.id"
           :class="[
-            'pointer-events-auto min-w-[320px] max-w-md overflow-hidden rounded-md shadow-md',
+            'pointer-events-auto min-w-[320px] max-w-md overflow-hidden rounded-xl shadow-elevated',
             'bg-white dark:bg-dark-800',
             'border border-gray-200 dark:border-dark-700',
             'border-l-2',

@@ -752,13 +752,13 @@ onBeforeUnmount(() => {
 <style scoped>
 /* ============ Surface 通用卡片容器：中性白底，让 metric-icon 主题色做区分 ============ */
 .surface-card {
-  @apply rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all;
+  @apply rounded-2xl border border-gray-200/70 bg-white shadow-card transition-all;
   @apply dark:border-dark-700/60 dark:bg-dark-800/40;
 }
 
 /* ============ KPI 主卡：白底 + 不同 metric-icon 区分 ============ */
 .kpi-card {
-  @apply relative flex flex-col gap-1 overflow-hidden rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-200 sm:p-5;
+  @apply relative flex flex-col gap-1 overflow-hidden rounded-2xl border border-gray-200/70 bg-white p-4 shadow-card transition-all duration-200 sm:p-5;
   @apply dark:border-dark-700/60 dark:bg-dark-800/40;
 }
 .kpi-card:hover {
@@ -795,7 +795,7 @@ onBeforeUnmount(() => {
 
 /* ============ 系统健康度副卡：白底，metric-icon 已区分 ============ */
 .metric-card {
-  @apply flex items-start gap-3 rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-200 sm:p-5;
+  @apply flex items-start gap-3 rounded-2xl border border-gray-200/70 bg-white p-4 shadow-card transition-all duration-200 sm:p-5;
   @apply dark:border-dark-700/60 dark:bg-dark-800/40;
 }
 .metric-card:hover {

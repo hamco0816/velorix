@@ -2,7 +2,7 @@
   <div class="space-y-5">
     <section
       data-testid="profile-overview-hero"
-      class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40"
+      class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-card dark:border-dark-700/60 dark:bg-dark-800/40"
     >
       <div class="px-6 py-6 md:px-7">
         <div class="flex flex-col gap-6 lg:flex-row lg:items-start">
@@ -115,7 +115,7 @@
       <div data-testid="profile-main-column" class="space-y-5">
         <section
           data-testid="profile-basics-panel"
-          class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40"
+          class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-card dark:border-dark-700/60 dark:bg-dark-800/40"
         >
           <div class="border-b border-gray-100 bg-gray-50/60 px-5 py-4 dark:border-dark-700/60 dark:bg-dark-800/30">
             <h3 class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white">
@@ -144,7 +144,7 @@
 
         <section
           data-testid="profile-auth-bindings-panel"
-          class="rounded-2xl border border-gray-200/70 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40"
+          class="rounded-2xl border border-gray-200/70 bg-white p-5 shadow-card dark:border-dark-700/60 dark:bg-dark-800/40"
         >
           <ProfileIdentityBindingsSection
             :user="user"
@@ -163,7 +163,7 @@
       <div data-testid="profile-side-column" class="space-y-5">
         <section
           v-if="sourceHints.length"
-          class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40"
+          class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-card dark:border-dark-700/60 dark:bg-dark-800/40"
         >
           <div class="border-b border-gray-100 bg-gray-50/60 px-5 py-4 dark:border-dark-700/60 dark:bg-dark-800/30">
             <h3 class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white">

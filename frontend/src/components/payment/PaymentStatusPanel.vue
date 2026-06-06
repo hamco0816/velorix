@@ -4,7 +4,7 @@
 
     <!-- Success -->
     <template v-if="outcome === 'success'">
-      <div class="rounded-2xl border border-gray-200/70 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40">
+      <div class="rounded-2xl border border-gray-200/70 bg-white p-6 shadow-card dark:border-dark-700/60 dark:bg-dark-800/40">
         <div class="flex flex-col items-center space-y-4 py-4">
           <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 ring-1 ring-inset ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30">
             <Icon name="check" size="lg" :stroke-width="2.5" />
@@ -37,7 +37,7 @@
 
     <!-- Cancelled -->
     <template v-else-if="outcome === 'cancelled'">
-      <div class="rounded-2xl border border-gray-200/70 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40">
+      <div class="rounded-2xl border border-gray-200/70 bg-white p-6 shadow-card dark:border-dark-700/60 dark:bg-dark-800/40">
         <div class="flex flex-col items-center space-y-4 py-4">
           <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-50 text-gray-500 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-700/40 dark:text-gray-400 dark:ring-dark-600/60">
             <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
@@ -53,7 +53,7 @@
 
     <!-- Expired / Failed -->
     <template v-else-if="outcome === 'expired'">
-      <div class="rounded-2xl border border-gray-200/70 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40">
+      <div class="rounded-2xl border border-gray-200/70 bg-white p-6 shadow-card dark:border-dark-700/60 dark:bg-dark-800/40">
         <div class="flex flex-col items-center space-y-4 py-4">
           <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 ring-1 ring-inset ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30">
             <Icon name="clock" size="lg" :stroke-width="2.2" />
@@ -69,7 +69,7 @@
 
     <!-- QR Code Mode -->
     <template v-else-if="qrUrl || qrImageUrl">
-      <div class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40">
+      <div class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-card dark:border-dark-700/60 dark:bg-dark-800/40">
         <!-- 品牌头部 -->
         <div :class="['flex items-center gap-3 px-5 py-3', qrHeaderBgClass]">
           <span class="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-gray-100 dark:bg-dark-900 dark:ring-dark-700">
@@ -132,7 +132,7 @@
 
     <!-- Waiting for Popup/Redirect Mode -->
     <template v-else>
-      <div class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40">
+      <div class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-card dark:border-dark-700/60 dark:bg-dark-800/40">
         <div class="flex flex-col items-center gap-4 px-5 py-10">
           <div class="h-10 w-10 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
           <p class="text-sm text-gray-700 dark:text-gray-200">{{ t('payment.qr.payInNewWindowHint') }}</p>

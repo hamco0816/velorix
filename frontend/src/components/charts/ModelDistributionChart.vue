@@ -367,7 +367,10 @@ const chartData = computed(() => {
       {
         data: displayModelStats.value.map((m) => props.metric === 'actual_cost' ? m.actual_cost : m.total_tokens),
         backgroundColor: chartColors.slice(0, displayModelStats.value.length),
-        borderWidth: 0
+        borderWidth: 0,
+        borderRadius: 4,
+        spacing: 2,
+        hoverOffset: 6
       }
     ]
   }
@@ -392,7 +395,10 @@ const rankingChartData = computed(() => {
       {
         data,
         backgroundColor,
-        borderWidth: 0
+        borderWidth: 0,
+        borderRadius: 4,
+        spacing: 2,
+        hoverOffset: 6
       }
     ]
   }
@@ -436,6 +442,15 @@ const doughnutOptions = computed(() => ({
       display: false
     },
     tooltip: {
+      usePointStyle: true,
+      backgroundColor: 'rgba(17,24,39,0.92)',
+      titleColor: '#f9fafb',
+      bodyColor: '#e5e7eb',
+      borderColor: 'rgba(255,255,255,0.08)',
+      borderWidth: 1,
+      padding: 12,
+      cornerRadius: 10,
+      boxPadding: 6,
       callbacks: {
         label: (context: any) => {
           const value = context.raw as number
@@ -459,6 +474,15 @@ const rankingDoughnutOptions = computed(() => ({
       display: false
     },
     tooltip: {
+      usePointStyle: true,
+      backgroundColor: 'rgba(17,24,39,0.92)',
+      titleColor: '#f9fafb',
+      bodyColor: '#e5e7eb',
+      borderColor: 'rgba(255,255,255,0.08)',
+      borderWidth: 1,
+      padding: 12,
+      cornerRadius: 10,
+      boxPadding: 6,
       callbacks: {
         label: (context: any) => {
           const value = context.raw as number
@@ -503,7 +527,7 @@ const formatCost = (value: number | null | undefined): string => {
 
 <style scoped>
 .surface-card {
-  @apply rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)];
+  @apply rounded-2xl border border-gray-200/70 bg-white shadow-card;
   @apply dark:border-dark-700/60 dark:bg-dark-800/40;
 }
 </style>

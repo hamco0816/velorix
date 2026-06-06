@@ -1,7 +1,6 @@
 <template>
   <AppLayout wide>
     <div class="affiliate-page space-y-5">
-      <PageHeader :title="t('affiliate.title')" />
       <div v-if="loading" class="flex justify-center py-12">
         <LoadingSpinner size="md" />
       </div>
@@ -9,7 +8,7 @@
       <template v-else-if="detail">
         <!-- 移动端 2 列防止 4 张卡纵向堆成长长一条 -->
         <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-          <div class="card p-3 sm:p-5">
+          <div class="card card-hover p-3 sm:p-5">
             <p class="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-dark-400">
               <Icon name="dollar" size="sm" class="shrink-0 text-primary-500" />
               <span class="truncate">{{ t('affiliate.stats.rebateRate') }}</span>
@@ -21,19 +20,19 @@
               {{ t('affiliate.stats.rebateRateHint') }}
             </p>
           </div>
-          <div class="card p-3 sm:p-5">
+          <div class="card card-hover p-3 sm:p-5">
             <p class="text-xs sm:text-sm text-gray-500 dark:text-dark-400">{{ t('affiliate.stats.invitedUsers') }}</p>
             <p class="mt-2 text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">
               {{ formatCount(detail.aff_count) }}
             </p>
           </div>
-          <div class="card p-3 sm:p-5">
+          <div class="card card-hover p-3 sm:p-5">
             <p class="text-xs sm:text-sm text-gray-500 dark:text-dark-400">{{ t('affiliate.stats.availableQuota') }}</p>
             <p class="mt-2 text-xl font-semibold text-emerald-600 sm:text-2xl dark:text-emerald-400 tabular-nums">
               ¥{{ detail.aff_quota.toFixed(2) }}
             </p>
           </div>
-          <div class="card p-3 sm:p-5">
+          <div class="card card-hover p-3 sm:p-5">
             <p class="text-xs sm:text-sm text-gray-500 dark:text-dark-400">{{ t('affiliate.stats.totalQuota') }}</p>
             <p class="mt-2 text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white tabular-nums">
               ¥{{ detail.aff_history_quota.toFixed(2) }}
@@ -144,7 +143,6 @@
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppLayout from '@/components/layout/AppLayout.vue'
-import PageHeader from '@/components/common/PageHeader.vue'
 import Icon from '@/components/icons/Icon.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import userAPI from '@/api/user'

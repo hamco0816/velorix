@@ -1204,7 +1204,7 @@ onMounted(() => {
   border-color: rgb(209 213 219);
   border-radius: 0.5rem;
   padding: 0.625rem 0.875rem;
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+  box-shadow: 0 1px 1px rgb(16 24 40 / 0.03), 0 2px 5px -1px rgb(16 24 40 / 0.05);
 }
 
 .risk-select :deep(.select-trigger-open) {
@@ -1228,7 +1228,7 @@ onMounted(() => {
   color: rgb(17 24 39);
   font-size: 0.875rem;
   line-height: 1.25rem;
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+  box-shadow: 0 1px 1px rgb(16 24 40 / 0.03), 0 2px 5px -1px rgb(16 24 40 / 0.05);
   transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
@@ -1288,7 +1288,7 @@ onMounted(() => {
   border: 1px solid rgb(209 213 219);
   background: rgb(255 255 255);
   color: rgb(55 65 81);
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+  box-shadow: 0 1px 1px rgb(16 24 40 / 0.03), 0 2px 5px -1px rgb(16 24 40 / 0.05);
 }
 
 .risk-icon-button {
@@ -1343,7 +1343,7 @@ onMounted(() => {
   border: 1px solid rgb(229 231 235 / 0.7);
   background: white;
   padding: 1rem;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 1px 1px rgb(16 24 40 / 0.03), 0 2px 5px -1px rgb(16 24 40 / 0.05);
   transition: all 0.2s;
 }
 .metric-card:hover {

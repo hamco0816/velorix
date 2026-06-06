@@ -79,9 +79,11 @@ export default {
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
       },
       boxShadow: {
-        // 极淡阴影代替光晕，配合 ring-1 实现"轻量浮起"
-        card: '0 1px 2px rgba(0, 0, 0, 0.04)',
-        'card-hover': '0 2px 8px rgba(0, 0, 0, 0.06)',
+        // 分层柔和阴影：贴地接触阴影 + 环境阴影，静止克制、有真实立体感（Stripe/Linear 质感）
+        card: '0 1px 1px rgba(16, 24, 40, 0.03), 0 2px 5px -1px rgba(16, 24, 40, 0.05)',
+        'card-hover': '0 10px 28px -8px rgba(16, 24, 40, 0.14), 0 3px 8px -3px rgba(16, 24, 40, 0.07)',
+        // 浮层（下拉/弹窗）专用：更明显的悬浮投影，让浮层"脱离"页面
+        elevated: '0 14px 36px -10px rgba(16, 24, 40, 0.20), 0 4px 12px -4px rgba(16, 24, 40, 0.10)',
         // 顶部内嵌高光，让深色按钮有金属质感（不靠外阴影发光）
         'inner-top': 'inset 0 1px 0 rgba(255, 255, 255, 0.08)'
       },

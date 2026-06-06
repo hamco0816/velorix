@@ -1,7 +1,6 @@
 <template>
   <AppLayout wide>
     <div class="space-y-5">
-      <PageHeader :title="t('redeem.title')" />
       <!-- 移动端 2 列防止 4 张卡纵向堆成长长一条；md+ 仍可 2 列；xl 起 4 列 -->
       <section class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
             <div class="redeem-stat-card">
@@ -136,7 +135,7 @@
                 <button
                   type="submit"
                   :disabled="!redeemCode || submitting"
-                  class="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-sky-600 via-blue-600 to-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition hover:brightness-105 disabled:cursor-not-allowed disabled:bg-none disabled:bg-gray-100 disabled:text-gray-400 disabled:shadow-none dark:disabled:bg-dark-700 dark:disabled:text-dark-400"
+                  class="inline-flex w-full items-center justify-center rounded-xl bg-primary-950 px-4 py-3 text-sm font-semibold text-white shadow-card transition-colors hover:bg-primary-800 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 disabled:shadow-none dark:bg-white dark:text-primary-950 dark:hover:bg-primary-100 dark:disabled:bg-dark-700 dark:disabled:text-dark-400"
                 >
                   <svg
                     v-if="submitting"
@@ -459,7 +458,6 @@ import { useAppStore } from '@/stores/app'
 import { useSubscriptionStore } from '@/stores/subscriptions'
 import { redeemAPI, type RedeemHistoryItem } from '@/api'
 import AppLayout from '@/components/layout/AppLayout.vue'
-import PageHeader from '@/components/common/PageHeader.vue'
 import ContactMethodsDisplay from '@/components/common/ContactMethodsDisplay.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { formatDateTime } from '@/utils/format'
@@ -653,7 +651,7 @@ onMounted(async () => {
   border-radius: 1rem;
   border: 1px solid rgb(229 231 235);
   background: rgb(255 255 255);
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+  box-shadow: 0 1px 1px rgb(16 24 40 / 0.03), 0 2px 5px -1px rgb(16 24 40 / 0.05);
 }
 
 .redeem-stat-card {

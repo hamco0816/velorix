@@ -5010,7 +5010,7 @@
               </div>
               <template v-if="form.payment_enabled">
                 <!-- Row 1: Product name -->
-                <div class="grid grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-dark-700 dark:bg-dark-900/60 md:grid-cols-3">
+                <div class="grid grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-card dark:border-dark-700 dark:bg-dark-900/60 md:grid-cols-3">
                   <div>
                     <label class="input-label">{{
                       t("admin.settings.payment.productNamePrefix")
@@ -5049,7 +5049,7 @@
                   </div>
                 </div>
                 <!-- Row 2: Balance toggle + amounts -->
-                <div class="grid grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-dark-700 dark:bg-dark-900/60 sm:grid-cols-2 xl:grid-cols-6">
+                <div class="grid grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-card dark:border-dark-700 dark:bg-dark-900/60 sm:grid-cols-2 xl:grid-cols-6">
                   <div>
                     <label class="input-label">{{
                       t("admin.settings.payment.minAmount")
@@ -5209,7 +5209,7 @@
                   </div>
                 </div>
                 <!-- Row 3: Quick recharge amounts -->
-                <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-dark-700 dark:bg-dark-900/60">
+                <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-card dark:border-dark-700 dark:bg-dark-900/60">
                   <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,420px)] lg:items-start">
                     <div>
                       <label class="input-label">{{
@@ -5249,7 +5249,7 @@
                 </div>
                 <!-- Row 3: Pending orders + load balance + cancel rate limit -->
                 <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(420px,2fr)]">
-                  <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-dark-700 dark:bg-dark-900/60">
+                  <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-card dark:border-dark-700 dark:bg-dark-900/60">
                     <label class="input-label">{{
                       t("admin.settings.payment.maxPendingOrders")
                     }}</label>
@@ -5260,7 +5260,7 @@
                       class="input"
                     />
                   </div>
-                  <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-dark-700 dark:bg-dark-900/60">
+                  <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-card dark:border-dark-700 dark:bg-dark-900/60">
                     <label class="input-label">{{
                       t("admin.settings.payment.loadBalanceStrategy")
                     }}</label>
@@ -5270,7 +5270,7 @@
                       class="w-full"
                     />
                   </div>
-                  <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-dark-700 dark:bg-dark-900/60">
+                  <div class="rounded-2xl border border-gray-100 bg-white p-4 shadow-card dark:border-dark-700 dark:bg-dark-900/60">
                     <div class="flex items-start justify-between gap-4">
                       <div class="min-w-0">
                         <label class="input-label mb-1">{{
@@ -5365,7 +5365,7 @@
                   </div>
                 </div>
                 <!-- Row 4: Enabled payment types (provider badges like sub2apipay) -->
-                <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-dark-700 dark:bg-dark-900/60">
+                <div class="rounded-2xl border border-gray-100 bg-white p-5 shadow-card dark:border-dark-700 dark:bg-dark-900/60">
                   <label class="input-label">{{
                     t("admin.settings.payment.enabledPaymentTypes")
                   }}</label>
@@ -5401,7 +5401,7 @@
                   </p>
                 </div>
                 <!-- Row 5: Help image + text -->
-                <div class="grid grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-dark-700 dark:bg-dark-900/60 lg:grid-cols-2">
+                <div class="grid grid-cols-1 gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-card dark:border-dark-700 dark:bg-dark-900/60 lg:grid-cols-2">
                   <div>
                     <label class="input-label">{{
                       t("admin.settings.payment.helpImage")

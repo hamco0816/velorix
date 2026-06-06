@@ -1592,19 +1592,19 @@ function handleToolbarRefresh() {
 <style scoped>
 /* ============ 与仪表盘统一的 Notion 风卡片 ============ */
 .surface-card {
-  @apply rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all;
+  @apply rounded-2xl border border-gray-200/70 bg-white shadow-card transition-all;
   @apply dark:border-dark-700/60 dark:bg-dark-800/40;
 }
 
 .metric-card {
-  @apply rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-200;
+  @apply rounded-2xl border border-gray-200/70 bg-white p-4 shadow-card transition-all duration-200;
   @apply dark:border-dark-700/60 dark:bg-dark-800/40;
-  @apply hover:border-gray-300 hover:shadow-[0_4px_16px_rgba(15,23,42,0.06)] dark:hover:border-dark-600;
+  @apply hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-card-hover dark:hover:border-dark-600;
 }
 
 /* 系统资源卡：比 metric-card 更紧凑（CPU/内存/DB/Redis/协程/Jobs 这些状态条目） */
 .resource-card {
-  @apply rounded-xl border border-gray-200/70 bg-white p-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-colors;
+  @apply rounded-xl border border-gray-200/70 bg-white p-3 shadow-card transition-colors;
   @apply dark:border-dark-700/60 dark:bg-dark-800/40;
   @apply hover:border-gray-300 dark:hover:border-dark-600;
 }

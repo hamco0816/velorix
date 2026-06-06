@@ -156,7 +156,7 @@ const extraModelsCountLabel = computed(() => {
   border-radius: 1rem;
   border: 1px solid rgb(229 231 235 / 0.8);
   background: rgb(255 255 255 / 0.85);
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+  box-shadow: 0 1px 1px rgb(16 24 40 / 0.03), 0 2px 5px -1px rgb(16 24 40 / 0.05);
   backdrop-filter: blur(14px);
 }
 :root.dark .monitor-card {

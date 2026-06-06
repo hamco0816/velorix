@@ -261,7 +261,7 @@
               <!-- 重设计后：单列居中布局，max-w-2xl 收窄宽度，
                    消除左右大空白。从上到下：套餐头 → 限额 stats → 模型 → 支付方式 → 摘要 → CTA。
                    续费场景在 stats 下方加一条琥珀警告（用量不重置）。 -->
-              <section :class="['mx-auto max-w-2xl overflow-hidden rounded-2xl border bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:bg-dark-800/40 dark:shadow-none', planBorderClass]">
+              <section :class="['mx-auto max-w-2xl overflow-hidden rounded-2xl border bg-white shadow-card dark:bg-dark-800/40 dark:shadow-none', planBorderClass]">
                 <div :class="['h-1.5', planAccentClass]" />
                 <div class="space-y-5 p-5 sm:p-6">
 

@@ -1,28 +1,26 @@
 <template>
   <AppLayout wide>
     <div class="space-y-5">
-      <!-- 统一 PageHeader + 概览 chip 行 -->
-      <PageHeader :title="t('userSubscriptions.title')">
-        <template #actions>
-          <button
-            type="button"
-            class="btn btn-secondary btn-sm"
-            :title="t('common.refresh')"
-            :aria-label="t('common.refresh')"
-            @click="loadSubscriptions"
-          >
-            <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary btn-sm"
-            @click="router.push({ path: '/purchase', query: { tab: 'subscription' } })"
-          >
-            <Icon name="plus" size="sm" class="mr-1.5" />
-            {{ t('payment.subscribeNow') }}
-          </button>
-        </template>
-      </PageHeader>
+      <!-- 顶部操作栏 + 概览 chip 行：标题由全局 AppHeader 提供，这里只放操作按钮 -->
+      <div class="flex flex-wrap items-center justify-end gap-2">
+        <button
+          type="button"
+          class="btn btn-secondary btn-sm"
+          :title="t('common.refresh')"
+          :aria-label="t('common.refresh')"
+          @click="loadSubscriptions"
+        >
+          <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          @click="router.push({ path: '/purchase', query: { tab: 'subscription' } })"
+        >
+          <Icon name="plus" size="sm" class="mr-1.5" />
+          {{ t('payment.subscribeNow') }}
+        </button>
+      </div>
 
       <div v-if="!loading" class="flex flex-wrap items-center gap-2">
         <span
@@ -74,7 +72,7 @@
         <div
           v-for="subscription in subscriptions"
           :key="subscription.id"
-          class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-shadow hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-18px_rgba(15,23,42,0.22)] dark:border-dark-700/60 dark:bg-dark-800/40"
+          class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/40 dark:hover:border-dark-600"
         >
           <!-- Header -->
           <div
@@ -290,7 +288,6 @@ import subscriptionsAPI from '@/api/subscriptions'
 import type { UserSubscription } from '@/types'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Icon from '@/components/icons/Icon.vue'
-import PageHeader from '@/components/common/PageHeader.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import { formatDateOnly } from '@/utils/format'

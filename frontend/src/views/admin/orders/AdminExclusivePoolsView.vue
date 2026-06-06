@@ -799,9 +799,9 @@ onMounted(() => {
 
 <style scoped>
 .metric-card {
-  @apply flex items-start gap-3 rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-200;
+  @apply flex items-start gap-3 rounded-2xl border border-gray-200/70 bg-white p-4 shadow-card transition-all duration-200;
   @apply dark:border-dark-700/60 dark:bg-dark-800/40;
-  @apply hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-[0_4px_16px_rgba(15,23,42,0.06)] dark:hover:border-dark-600;
+  @apply hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-card-hover dark:hover:border-dark-600;
 }
 
 .metric-card[disabled] {

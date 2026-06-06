@@ -1,6 +1,6 @@
 <template>
-  <div class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm shadow-gray-200/60 dark:border-dark-700 dark:bg-dark-900 dark:shadow-none">
-    <div class="border-b border-gray-100 bg-gradient-to-br from-sky-50 via-white to-emerald-50 px-6 py-5 dark:border-dark-700 dark:from-sky-950/20 dark:via-dark-900 dark:to-emerald-950/20">
+  <div class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-card dark:border-dark-700/60 dark:bg-dark-900 dark:shadow-none">
+    <div class="border-b border-gray-100 bg-gray-50/60 px-6 py-5 dark:border-dark-700 dark:bg-dark-800/30">
       <div class="flex items-start gap-3">
         <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-sky-500/10 text-sky-600 dark:bg-sky-500/10 dark:text-sky-300">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">

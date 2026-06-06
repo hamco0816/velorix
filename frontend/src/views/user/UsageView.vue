@@ -2,7 +2,18 @@
   <AppLayout wide>
     <TablePageLayout>
       <template #actions>
-        <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <!-- 首次加载：统计卡骨架，避免闪 '0'（与表格骨架一致） -->
+        <div v-if="loading && !usageStats" class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <div v-for="i in 4" :key="`kpi-skel-${i}`" class="kpi-card">
+            <div class="h-10 w-10 flex-shrink-0 animate-pulse rounded-xl bg-gray-100 dark:bg-dark-700/70"></div>
+            <div class="min-w-0 flex-1 space-y-2">
+              <div class="h-3 w-16 animate-pulse rounded bg-gray-200 dark:bg-dark-700"></div>
+              <div class="h-6 w-24 animate-pulse rounded bg-gray-200 dark:bg-dark-700"></div>
+              <div class="h-3 w-20 animate-pulse rounded bg-gray-100 dark:bg-dark-700/70"></div>
+            </div>
+          </div>
+        </div>
+        <div v-else class="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <!-- Total Requests -->
           <div class="kpi-card group">
             <div class="kpi-icon kpi-icon-sky">
@@ -946,7 +957,7 @@ onMounted(() => {
 /* KPI 卡：白底 + 仅顶部细 indigo accent bar，色彩克制不抢戏 */
 .kpi-card {
   @apply relative flex items-start gap-2.5 overflow-hidden rounded-2xl border border-gray-200/70 bg-white p-3 transition-shadow sm:gap-3 sm:p-4 dark:border-dark-700/60 dark:bg-dark-800/40;
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+  box-shadow: 0 1px 1px rgb(16 24 40 / 0.03), 0 2px 5px -1px rgb(16 24 40 / 0.05);
 }
 .kpi-card::before {
   content: '';

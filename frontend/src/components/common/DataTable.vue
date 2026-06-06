@@ -36,7 +36,7 @@
       <div
         v-for="(row, index) in sortedData"
         :key="resolveRowKey(row, index)"
-        class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40"
+        class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-card dark:border-dark-700/60 dark:bg-dark-800/40"
       >
         <div class="space-y-3">
           <div

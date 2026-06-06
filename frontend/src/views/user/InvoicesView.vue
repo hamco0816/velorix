@@ -1,18 +1,38 @@
 <template>
   <AppLayout wide>
     <div class="space-y-5">
-      <!-- 顶部操作栏：统一 PageHeader -->
-      <PageHeader :title="t('invoice.title')" :subtitle="t('invoice.subtitle')">
-        <template #actions>
-          <button @click="fetchInvoices" :disabled="loading" class="btn btn-secondary btn-sm" :title="t('common.refresh')">
-            <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
+      <!-- 可开票额度概览：页面加载即展示真实可开金额与明细，强化透明（标题由全局 AppHeader 提供） -->
+      <div class="surface-card flex flex-wrap items-end justify-between gap-4 p-5">
+        <div class="min-w-0">
+          <p class="text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('invoice.summary.title') }}</p>
+          <p class="mt-1 text-[1.75rem] font-bold leading-tight tracking-tight tabular-nums text-gray-900 dark:text-white">
+            ¥{{ invoiceableSummary.available_amount.toFixed(2) }}
+          </p>
+          <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-dark-400">
+            <span>{{ t('invoice.summary.balance') }}
+              <span class="tabular-nums font-medium text-gray-700 dark:text-gray-300">¥{{ invoiceableSummary.balance_amount.toFixed(2) }}</span>
+            </span>
+            <span class="text-gray-300 dark:text-dark-600">·</span>
+            <span>{{ t('invoice.summary.plan') }}
+              <span class="tabular-nums font-medium text-gray-700 dark:text-gray-300">¥{{ invoiceableSummary.plan_amount.toFixed(2) }}</span>
+            </span>
+            <span class="text-gray-300 dark:text-dark-600">·</span>
+            <span>{{ t('invoice.summary.invoiced') }}
+              <span class="tabular-nums font-medium text-gray-700 dark:text-gray-300">¥{{ invoiceableSummary.invoiced_amount.toFixed(2) }}</span>
+            </span>
+          </div>
+          <p class="mt-2 max-w-2xl text-xs text-gray-400 dark:text-dark-500">{{ t('invoice.apply.availableHint') }}</p>
+        </div>
+        <div class="flex shrink-0 items-center gap-2">
+          <button @click="refreshAll" :disabled="loading || summaryLoading" class="btn btn-secondary btn-sm" :title="t('common.refresh')">
+            <Icon name="refresh" size="sm" :class="(loading || summaryLoading) ? 'animate-spin' : ''" />
           </button>
           <button class="btn btn-primary btn-sm shrink-0 whitespace-nowrap" @click="openApplyDialog">
             <Icon name="plus" size="sm" class="mr-1.5" />
             <span>{{ t('invoice.apply.button') }}</span>
           </button>
-        </template>
-      </PageHeader>
+        </div>
+      </div>
 
       <!-- 列表 -->
       <div class="surface-card overflow-hidden">
@@ -212,7 +232,6 @@ import { invoiceAPI } from '@/api/invoice'
 import { extractI18nErrorMessage } from '@/utils/apiError'
 import type { InvoiceItem, InvoiceableOrder, InvoiceableSummary, InvoiceTitleType } from '@/types/invoice'
 import AppLayout from '@/components/layout/AppLayout.vue'
-import PageHeader from '@/components/common/PageHeader.vue'
 import StatusTag from '@/components/common/StatusTag.vue'
 import Pagination from '@/components/common/Pagination.vue'
 import BaseDialog from '@/components/common/BaseDialog.vue'
@@ -399,5 +418,11 @@ async function confirmCancel() {
   }
 }
 
-onMounted(fetchInvoices)
+// 同时刷新发票列表与可开票额度概览
+function refreshAll() {
+  fetchInvoices()
+  fetchInvoiceableSummary()
+}
+
+onMounted(refreshAll)
 </script>

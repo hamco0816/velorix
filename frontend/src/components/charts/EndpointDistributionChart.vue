@@ -247,7 +247,10 @@ const chartData = computed(() => {
           props.metric === 'actual_cost' ? item.actual_cost : item.total_tokens
         ),
         backgroundColor: chartColors.slice(0, displayEndpointStats.value.length),
-        borderWidth: 0
+        borderWidth: 0,
+        borderRadius: 4,
+        spacing: 2,
+        hoverOffset: 6
       }
     ]
   }
@@ -261,6 +264,15 @@ const doughnutOptions = computed(() => ({
       display: false
     },
     tooltip: {
+      usePointStyle: true,
+      backgroundColor: 'rgba(17,24,39,0.92)',
+      titleColor: '#f9fafb',
+      bodyColor: '#e5e7eb',
+      borderColor: 'rgba(255,255,255,0.08)',
+      borderWidth: 1,
+      padding: 12,
+      cornerRadius: 10,
+      boxPadding: 6,
       callbacks: {
         label: (context: any) => {
           const value = context.raw as number

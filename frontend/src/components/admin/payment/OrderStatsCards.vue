@@ -6,8 +6,8 @@
         <Icon name="dollar" size="sm" :stroke-width="1.75" />
       </span>
       <div class="min-w-0 flex-1">
-        <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.todayRevenue') }}</p>
-        <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[24px] text-gray-900 dark:text-white">¥{{ formatMoney(stats.today_amount) }}</p>
+        <p class="text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.todayRevenue') }}</p>
+        <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[26px] text-gray-900 dark:text-white">¥{{ formatMoney(stats.today_amount) }}</p>
         <p class="mt-1 text-xs tabular-nums text-gray-500 dark:text-dark-400">
           <span class="font-medium text-gray-700 dark:text-gray-300">{{ stats.today_count }}</span>
           {{ t('payment.admin.orders') }}
@@ -21,8 +21,8 @@
         <Icon name="creditCard" size="sm" :stroke-width="1.75" />
       </span>
       <div class="min-w-0 flex-1">
-        <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.totalRevenue') }}</p>
-        <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[24px] text-gray-900 dark:text-white">¥{{ formatMoney(stats.total_amount) }}</p>
+        <p class="text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.totalRevenue') }}</p>
+        <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[26px] text-gray-900 dark:text-white">¥{{ formatMoney(stats.total_amount) }}</p>
         <p class="mt-1 text-xs tabular-nums text-gray-500 dark:text-dark-400">
           <span class="font-medium text-gray-700 dark:text-gray-300">{{ stats.total_count }}</span>
           {{ t('payment.admin.orders') }}
@@ -36,8 +36,8 @@
         <Icon name="chart" size="sm" :stroke-width="1.75" />
       </span>
       <div class="min-w-0 flex-1">
-        <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.todayOrders') }}</p>
-        <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[24px] text-gray-900 dark:text-white">{{ stats.today_count }}</p>
+        <p class="text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.todayOrders') }}</p>
+        <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[26px] text-gray-900 dark:text-white">{{ stats.today_count }}</p>
       </div>
     </div>
 
@@ -47,8 +47,8 @@
         <Icon name="chart" size="sm" :stroke-width="1.75" />
       </span>
       <div class="min-w-0 flex-1">
-        <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.avgAmount') }}</p>
-        <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[24px] text-gray-900 dark:text-white">¥{{ formatMoney(stats.avg_amount) }}</p>
+        <p class="text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.avgAmount') }}</p>
+        <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[26px] text-gray-900 dark:text-white">¥{{ formatMoney(stats.avg_amount) }}</p>
       </div>
     </div>
   </div>
@@ -72,9 +72,9 @@ function formatMoney(value: number): string {
 
 <style scoped>
 .metric-card {
-  @apply flex items-start gap-2.5 rounded-2xl border border-gray-200/70 bg-white p-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-all duration-200 sm:gap-3 sm:p-4;
+  @apply flex items-start gap-2.5 rounded-2xl border border-gray-200/70 bg-white p-3 shadow-card transition-all duration-200 sm:gap-3 sm:p-4;
   @apply dark:border-dark-700/60 dark:bg-dark-800/40;
-  @apply hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-[0_4px_16px_rgba(15,23,42,0.06)] dark:hover:border-dark-600;
+  @apply hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-card-hover dark:hover:border-dark-600;
 }
 
 .metric-icon {

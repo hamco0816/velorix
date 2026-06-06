@@ -1,4 +1,5 @@
 import { DriveStep } from 'driver.js'
+import { useAppStore } from '@/stores/app'
 
 /**
  * 管理员完整引导流程
@@ -6,13 +7,14 @@ import { DriveStep } from 'driver.js'
  * @param t 国际化函数
  * @param isSimpleMode 是否为简易模式（简易模式下会过滤分组相关步骤）
  */
-export const getAdminSteps = (t: (key: string) => string, isSimpleMode = false): DriveStep[] => {
+export const getAdminSteps = (t: (key: string, params?: Record<string, unknown>) => string, isSimpleMode = false): DriveStep[] => {
+  const siteName = useAppStore().siteName
   const allSteps: DriveStep[] = [
   // ========== 欢迎介绍 ==========
   {
     popover: {
-      title: t('onboarding.admin.welcome.title'),
-      description: t('onboarding.admin.welcome.description'),
+      title: t('onboarding.admin.welcome.title', { siteName }),
+      description: t('onboarding.admin.welcome.description', { siteName }),
       align: 'center',
       nextBtnText: t('onboarding.admin.welcome.nextBtn'),
       prevBtnText: t('onboarding.admin.welcome.prevBtn')
@@ -24,7 +26,7 @@ export const getAdminSteps = (t: (key: string) => string, isSimpleMode = false):
     element: '#sidebar-group-manage',
     popover: {
       title: t('onboarding.admin.groupManage.title'),
-      description: t('onboarding.admin.groupManage.description'),
+      description: t('onboarding.admin.groupManage.description', { siteName }),
       side: 'right',
       align: 'center',
       showButtons: ['close'],
@@ -246,11 +248,11 @@ export const getAdminSteps = (t: (key: string) => string, isSimpleMode = false):
 /**
  * 普通用户引导流程
  */
-export const getUserSteps = (t: (key: string) => string): DriveStep[] => [
+export const getUserSteps = (t: (key: string, params?: Record<string, unknown>) => string): DriveStep[] => [
   {
     popover: {
-      title: t('onboarding.user.welcome.title'),
-      description: t('onboarding.user.welcome.description'),
+      title: t('onboarding.user.welcome.title', { siteName: useAppStore().siteName }),
+      description: t('onboarding.user.welcome.description', { siteName: useAppStore().siteName }),
       align: 'center',
       nextBtnText: t('onboarding.user.welcome.nextBtn'),
       prevBtnText: t('onboarding.user.welcome.prevBtn')

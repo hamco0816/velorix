@@ -193,7 +193,7 @@ interface ModelRow {
 }
 
 const models = computed<ModelRow[]>(() => [
-  { name: 'Claude Opus 4.7', value: '99.9%', brand: 'claude', iconBg: 'bg-orange-50 dark:bg-orange-500/15' },
+  { name: 'Claude Opus 4.8', value: '99.9%', brand: 'claude', iconBg: 'bg-orange-50 dark:bg-orange-500/15' },
   { name: 'ChatGPT-5.5', value: '99.0%', brand: 'openai', iconBg: 'bg-gray-100 dark:bg-white/15' },
   { name: 'Gemini 3.1 Pro', value: '99.6%', brand: 'gemini', iconBg: 'bg-blue-50 dark:bg-blue-500/15' },
   { name: 'DeepSeek V3.2', value: '99.7%', letter: 'D', iconBg: 'bg-violet-100 dark:bg-violet-500/20', textClass: 'text-violet-700 dark:text-violet-300' }

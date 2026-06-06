@@ -84,7 +84,10 @@ const chartData = computed(() => {
       {
         data: categories.value.map((c) => c.count),
         backgroundColor: categories.value.map((c) => c.color),
-        borderWidth: 0
+        borderWidth: 0,
+        borderRadius: 4,
+        spacing: 2,
+        hoverOffset: 6
       }
     ]
   }
@@ -96,9 +99,15 @@ const options = computed(() => ({
   plugins: {
     legend: { display: false },
     tooltip: {
+      usePointStyle: true,
       backgroundColor: isDarkMode.value ? '#1f2937' : '#ffffff',
       titleColor: isDarkMode.value ? '#f3f4f6' : '#111827',
-      bodyColor: isDarkMode.value ? '#d1d5db' : '#4b5563'
+      bodyColor: isDarkMode.value ? '#d1d5db' : '#4b5563',
+      borderColor: isDarkMode.value ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)',
+      borderWidth: 1,
+      padding: 12,
+      cornerRadius: 10,
+      boxPadding: 6
     }
   }
 }))

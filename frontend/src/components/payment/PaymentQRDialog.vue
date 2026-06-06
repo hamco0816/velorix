@@ -4,7 +4,7 @@
     <div v-if="!success" class="flex flex-col items-center space-y-4">
       <!-- QR Code mode：白色卡片 + 柔边，让二维码区域成为视觉中心 -->
       <template v-if="qrUrl">
-        <div class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-white">
+        <div class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-card dark:border-dark-700/60 dark:bg-white">
           <canvas ref="qrCanvas" class="mx-auto"></canvas>
         </div>
         <p v-if="scanHint" class="text-center text-sm text-gray-500 dark:text-gray-400">

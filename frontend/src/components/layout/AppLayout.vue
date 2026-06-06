@@ -1,7 +1,5 @@
 <template>
   <div class="app-bg min-h-screen">
-    <!-- 多色 mesh gradient：4 个角各一个 5-8% 透明度的色彩 blob，给"空白处"加温度和层次 -->
-    <div class="bg-mesh pointer-events-none fixed inset-0"></div>
     <!-- 极淡 dot pattern：24px 网格让纯白区域也有"纸质质感"，类似 Notion / Linear 的细节 -->
     <div class="bg-dots pointer-events-none fixed inset-0"></div>
 
@@ -61,7 +59,7 @@ defineExpose({ replayTour })
 </script>
 
 <style scoped>
-/* ============ 全局背景：暖底 + 多色 mesh + 极淡 dot 纹理 ============ */
+/* ============ 全局背景：暖底 + 极淡 dot 纹理 ============ */
 /* 底色：stone-50 暖白（#fafaf9），比 gray-50 更温和，避免"消毒水冷感" */
 .app-bg {
   background-color: #fafaf9;
@@ -69,24 +67,6 @@ defineExpose({ replayTour })
 
 :root.dark .app-bg {
   background-color: rgb(9, 9, 11); /* zinc-950 */
-}
-
-/* mesh：4 个角 radial blob 各取一个色相，透明度 5-8%。
-   构成"温暖+冷静"色彩平衡，让大面积留白也有温度，但不抢卡片视线 */
-.bg-mesh {
-  background-image:
-    radial-gradient(circle at 12% 18%, rgba(249, 115, 22, 0.08) 0px, transparent 45%),
-    radial-gradient(circle at 88% 12%, rgba(59, 130, 246, 0.05) 0px, transparent 45%),
-    radial-gradient(circle at 80% 88%, rgba(139, 92, 246, 0.05) 0px, transparent 50%),
-    radial-gradient(circle at 18% 82%, rgba(16, 185, 129, 0.05) 0px, transparent 45%);
-}
-
-:root.dark .bg-mesh {
-  background-image:
-    radial-gradient(circle at 12% 18%, rgba(249, 115, 22, 0.10) 0px, transparent 45%),
-    radial-gradient(circle at 88% 12%, rgba(59, 130, 246, 0.06) 0px, transparent 45%),
-    radial-gradient(circle at 80% 88%, rgba(139, 92, 246, 0.06) 0px, transparent 50%),
-    radial-gradient(circle at 18% 82%, rgba(16, 185, 129, 0.06) 0px, transparent 45%);
 }
 
 /* dot pattern：24px 间距、1px 圆点、3% 黑透明度，肉眼几乎不可见但让"空白有纸感"

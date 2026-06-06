@@ -67,12 +67,12 @@ onUnmounted(() => {
 
 /* 筛选条 panel：Notion 风温和卡片（与 surface-card 同款） */
 .filters-panel {
-  @apply rounded-2xl border border-gray-200/70 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40 sm:p-5;
+  @apply rounded-2xl border border-gray-200/70 bg-white p-4 shadow-card dark:border-dark-700/60 dark:bg-dark-800/40 sm:p-5;
 }
 
 /* 表格滚动容器 - 与全站 surface-card 统一 */
 .table-scroll-container {
-  @apply flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] dark:border-dark-700/60 dark:bg-dark-800/40;
+  @apply flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-card dark:border-dark-700/60 dark:bg-dark-800/40;
 }
 
 .table-scroll-container :deep(.table-wrapper) {

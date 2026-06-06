@@ -6,12 +6,16 @@
         {{ t('dashboard.coreStats') }}
       </h2>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <!-- Balance：余额作为账户首要指标，brand 主色 + 占比条 -->
-        <div v-if="!isSimple" class="kpi-card">
+        <!-- Balance：余额是用户最关心的首要指标，用深色主卡 + 充值入口建立视觉主次 -->
+        <div v-if="!isSimple" class="kpi-card kpi-card--primary">
           <div class="kpi-card-header">
-            <div class="metric-icon metric-icon-brand">
+            <div class="metric-icon metric-icon--on-primary">
               <Icon name="dollar" size="sm" :stroke-width="1.75" />
             </div>
+            <button type="button" class="kpi-recharge-btn" @click="goRecharge">
+              {{ t('dashboard.recharge') }}
+              <Icon name="chevronRight" size="xs" />
+            </button>
           </div>
           <p class="kpi-card-label">{{ t('dashboard.balance') }}</p>
           <p class="kpi-card-value">${{ formatBalance(balance) }}</p>
@@ -193,6 +197,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import Icon from '@/components/icons/Icon.vue'
 import SparklineMini from '@/components/charts/SparklineMini.vue'
@@ -222,6 +227,10 @@ const props = withDefaults(
   }
 )
 const { t } = useI18n()
+const router = useRouter()
+
+// 跳转到充值页
+const goRecharge = () => router.push({ path: '/purchase', query: { tab: 'recharge' } })
 
 // 至少 2 个点 + 不全为 0 才显示 sparkline，避免无数据时出现空白条
 const hasSpark = (series?: number[]) => Array.isArray(series) && series.length >= 2 && series.some((v) => v > 0)
@@ -249,15 +258,60 @@ const formatDuration = (ms: number) => ms >= 1000 ? `${(ms / 1000).toFixed(2)}s`
 .kpi-card {
   @apply relative flex flex-col gap-1 overflow-hidden rounded-2xl border border-gray-200/70 bg-white p-5 transition-all duration-200;
   @apply dark:border-dark-700/60 dark:bg-dark-800/40;
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+  box-shadow: 0 1px 1px rgb(16 24 40 / 0.03), 0 2px 5px -1px rgb(16 24 40 / 0.05);
 }
 .kpi-card:hover {
   border-color: rgb(209 213 219);
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -12px rgb(15 23 42 / 0.18);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px -8px rgb(16 24 40 / 0.14), 0 3px 8px -3px rgb(16 24 40 / 0.07);
 }
 :root.dark .kpi-card:hover {
   border-color: rgb(75 85 99);
 }
+
+/* 余额主卡：深色实心，作为仪表盘视觉焦点（light 深底白字 / dark 反相为白底深字） */
+.kpi-card--primary {
+  background: #020617;
+  border-color: #020617;
+}
+.kpi-card--primary:hover {
+  border-color: #020617;
+  box-shadow: 0 12px 30px -8px rgb(2 6 23 / 0.35), 0 4px 10px -4px rgb(2 6 23 / 0.25);
+}
+:root.dark .kpi-card--primary {
+  background: #ffffff;
+  border-color: #ffffff;
+}
+:root.dark .kpi-card--primary:hover {
+  border-color: #ffffff;
+}
+.kpi-card--primary .kpi-card-label { color: rgb(255 255 255 / 0.6); }
+.kpi-card--primary .kpi-card-value { color: #ffffff; }
+.kpi-card--primary .kpi-card-hint { color: rgb(255 255 255 / 0.55); }
+:root.dark .kpi-card--primary .kpi-card-label { color: rgb(2 6 23 / 0.55); }
+:root.dark .kpi-card--primary .kpi-card-value { color: #020617; }
+:root.dark .kpi-card--primary .kpi-card-hint { color: rgb(2 6 23 / 0.5); }
+
+/* 深色主卡上的图标底 */
+.metric-icon--on-primary {
+  @apply flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl;
+  background: rgb(255 255 255 / 0.1);
+  color: #ffffff;
+}
+:root.dark .metric-icon--on-primary {
+  background: rgb(2 6 23 / 0.08);
+  color: #020617;
+}
+
+/* 充值入口按钮（主卡右上角） */
+.kpi-recharge-btn {
+  @apply inline-flex items-center gap-0.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-colors;
+  background: rgb(255 255 255 / 0.12);
+  color: #ffffff;
+}
+.kpi-recharge-btn:hover { background: rgb(255 255 255 / 0.22); }
+:root.dark .kpi-recharge-btn { background: rgb(2 6 23 / 0.1); color: #020617; }
+:root.dark .kpi-recharge-btn:hover { background: rgb(2 6 23 / 0.18); }
 
 .kpi-card-header { @apply flex items-start justify-between gap-2; }
 .kpi-card-label { @apply mt-3 text-[13px] font-medium text-gray-500 dark:text-dark-400; }
@@ -270,11 +324,12 @@ const formatDuration = (ms: number) => ms >= 1000 ? `${(ms / 1000).toFixed(2)}s`
 .metric-card {
   @apply flex items-start gap-3 rounded-2xl border border-gray-200/70 bg-white p-5 transition-all duration-200;
   @apply dark:border-dark-700/60 dark:bg-dark-800/40;
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+  box-shadow: 0 1px 1px rgb(16 24 40 / 0.03), 0 2px 5px -1px rgb(16 24 40 / 0.05);
 }
 .metric-card:hover {
   border-color: rgb(209 213 219);
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 4px 16px -8px rgb(15 23 42 / 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px -8px rgb(16 24 40 / 0.14), 0 3px 8px -3px rgb(16 24 40 / 0.07);
 }
 :root.dark .metric-card:hover {
   border-color: rgb(75 85 99);

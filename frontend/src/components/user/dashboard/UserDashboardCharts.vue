@@ -62,17 +62,29 @@ const modelData = computed(() => !props.models?.length ? null : {
   datasets: [{
     data: props.models.map((m: ModelStat) => m.total_tokens),
     backgroundColor: ['#f97316', '#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4', '#84cc16'],
-    borderWidth: 0
+    borderWidth: 0,
+    borderRadius: 4,
+    spacing: 2,
+    hoverOffset: 6
   }]
 })
 
 const doughnutOptions = {
   responsive: true,
   maintainAspectRatio: false,
-  cutout: '68%',
+  cutout: '70%',
   plugins: {
     legend: { display: false },
     tooltip: {
+      usePointStyle: true,
+      backgroundColor: 'rgba(17,24,39,0.92)',
+      titleColor: '#f9fafb',
+      bodyColor: '#e5e7eb',
+      borderColor: 'rgba(255,255,255,0.08)',
+      borderWidth: 1,
+      padding: 12,
+      cornerRadius: 10,
+      boxPadding: 6,
       callbacks: { label: (context: any) => `${context.label}: ${formatTokens(context.parsed)} tokens` }
     }
   }
@@ -81,7 +93,7 @@ const doughnutOptions = {
 
 <style scoped>
 .surface-card {
-  @apply rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)];
+  @apply rounded-2xl border border-gray-200/70 bg-white shadow-card;
   @apply dark:border-dark-700/60 dark:bg-dark-800/40;
 }
 </style>

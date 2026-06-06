@@ -196,7 +196,7 @@
           <div
             v-for="item in painPointItems"
             :key="item.key"
-            class="group rounded-2xl border border-gray-200/70 bg-white p-6 transition-colors hover:border-brand-200/80 dark:border-dark-700/60 dark:bg-dark-800/40 dark:hover:border-brand-500/30"
+            class="group rounded-2xl border border-gray-200/70 bg-white p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-200/80 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/40 dark:hover:border-brand-500/30"
           >
             <!-- 圆角方块图标筐：与全站 ring inset 调统一 -->
             <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600 ring-1 ring-inset ring-brand-200/70 dark:bg-brand-500/15 dark:text-brand-300 dark:ring-brand-500/30">
@@ -229,7 +229,7 @@
             <div
               v-for="step in stepItems"
               :key="step.key"
-              class="group flex items-start gap-4 rounded-2xl border border-gray-200/70 bg-white p-5 transition-colors hover:border-brand-200/80 dark:border-dark-700/60 dark:bg-dark-800/40 dark:hover:border-brand-500/30"
+              class="group flex items-start gap-4 rounded-2xl border border-gray-200/70 bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-200/80 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/40 dark:hover:border-brand-500/30"
             >
               <!-- 步骤编号：font-semibold 克制 -->
               <span class="font-mono text-[22px] font-semibold leading-none tracking-tight text-brand-600 dark:text-brand-400">
@@ -332,7 +332,7 @@
               <div
                 v-for="provider in providerCards"
                 :key="provider.key"
-                class="group flex items-center gap-3 rounded-xl border border-gray-200/70 bg-white p-3.5 transition-colors hover:border-gray-300 dark:border-dark-700/60 dark:bg-dark-800/40"
+                class="group flex items-center gap-3 rounded-xl border border-gray-200/70 bg-white p-3.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/40"
               >
                 <div :class="['flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl', provider.bg]">
                   <BrandIcon v-if="provider.brand" :brand="provider.brand" size="22px" />
@@ -369,10 +369,10 @@
             <div
               v-for="plan in plans"
               :key="plan.id"
-              class="relative flex flex-col rounded-2xl p-6 transition-colors"
+              class="relative flex flex-col rounded-2xl p-6 transition-all duration-200"
               :class="plan.recommended
                 ? 'border border-gray-900 bg-gray-950 text-white dark:border-white'
-                : 'border border-gray-200/70 bg-white hover:border-gray-300 dark:border-dark-700/60 dark:bg-dark-800/40'"
+                : 'border border-gray-200/70 bg-white hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/40'"
             >
               <span
                 v-if="plan.recommended"
@@ -451,7 +451,7 @@
           <div
             v-for="item in faqItems"
             :key="item.key"
-            class="rounded-2xl border border-gray-200/70 bg-white p-6 transition-colors hover:border-brand-200/80 dark:border-dark-700/60 dark:bg-dark-800/40 dark:hover:border-brand-500/30"
+            class="rounded-2xl border border-gray-200/70 bg-white p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-200/80 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/40 dark:hover:border-brand-500/30"
           >
             <h3 class="flex items-start gap-2 text-[15px] font-semibold tracking-tight text-gray-900 dark:text-white">
               <Icon name="checkCircle" size="sm" class="mt-0.5 shrink-0 text-brand-500 dark:text-brand-400" :stroke-width="2" />

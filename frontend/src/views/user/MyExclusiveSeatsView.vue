@@ -91,7 +91,7 @@
       <!-- Seats list -->
       <div v-if="seats.length > 0" class="grid gap-4 lg:grid-cols-2">
         <div v-for="seat in seats" :key="seat.id"
-          class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-shadow hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-18px_rgba(15,23,42,0.22)] dark:border-dark-700/60 dark:bg-dark-800/40">
+          class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/40 dark:hover:border-dark-600">
           <!-- Header -->
           <div class="flex items-center gap-3 border-b border-gray-100 px-4 py-3 dark:border-dark-700/60">
             <div :class="['flex h-10 w-10 items-center justify-center rounded-xl', statusIconClass(seat.status)]">

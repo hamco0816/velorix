@@ -4,6 +4,7 @@ package web
 
 import (
 	"bytes"
+	"compress/gzip"
 	"context"
 	"embed"
 	"encoding/json"
@@ -40,6 +41,9 @@ type FrontendServer struct {
 	cache       *HTMLCache
 	settings    PublicSettingsProvider
 	overrideDir string // local file override directory
+	// gzipAssets：启动时对可压缩静态资源预先 gzip，键为相对路径（如 assets/index-XXXX.js）。
+	// 请求时若客户端支持 gzip 直接发预压缩字节，避免每请求重复压缩。
+	gzipAssets map[string][]byte
 }
 
 // NewFrontendServer creates a new frontend server with settings injection
@@ -71,7 +75,69 @@ func NewFrontendServer(settingsProvider PublicSettingsProvider) (*FrontendServer
 		cache:       cache,
 		settings:    settingsProvider,
 		overrideDir: filepath.Join("data", "public"),
+		gzipAssets:  buildGzipAssets(distFS),
 	}, nil
+}
+
+// buildGzipAssets 启动时遍历 dist，对可压缩文本资源预先 gzip（仅缓存确有压缩收益的）。
+func buildGzipAssets(distFS fs.FS) map[string][]byte {
+	out := make(map[string][]byte)
+	_ = fs.WalkDir(distFS, ".", func(p string, d fs.DirEntry, err error) error {
+		if err != nil || d.IsDir() || !isCompressibleAsset(p) {
+			return nil
+		}
+		data, readErr := fs.ReadFile(distFS, p)
+		if readErr != nil || len(data) < 1024 { // 太小的文件压缩无意义
+			return nil
+		}
+		var buf bytes.Buffer
+		gw, _ := gzip.NewWriterLevel(&buf, gzip.BestCompression)
+		if _, werr := gw.Write(data); werr != nil {
+			_ = gw.Close()
+			return nil
+		}
+		if cerr := gw.Close(); cerr != nil {
+			return nil
+		}
+		if buf.Len() < len(data) {
+			out[p] = append([]byte(nil), buf.Bytes()...)
+		}
+		return nil
+	})
+	return out
+}
+
+// isCompressibleAsset 仅对文本类静态资源做 gzip（图片/字体已是压缩格式，跳过）。
+func isCompressibleAsset(p string) bool {
+	switch filepath.Ext(p) {
+	case ".js", ".mjs", ".css", ".svg", ".json", ".map", ".txt", ".webmanifest":
+		return true
+	}
+	return false
+}
+
+// staticContentType 按扩展名返回静态资源 Content-Type（gzip 直发时需显式设置）。
+func staticContentType(p string) string {
+	switch filepath.Ext(p) {
+	case ".js", ".mjs":
+		return "text/javascript; charset=utf-8"
+	case ".css":
+		return "text/css; charset=utf-8"
+	case ".svg":
+		return "image/svg+xml"
+	case ".json", ".map":
+		return "application/json; charset=utf-8"
+	case ".txt":
+		return "text/plain; charset=utf-8"
+	case ".webmanifest":
+		return "application/manifest+json"
+	}
+	return "application/octet-stream"
+}
+
+// clientAcceptsGzip 判断客户端是否接受 gzip 编码。
+func clientAcceptsGzip(c *gin.Context) bool {
+	return strings.Contains(c.GetHeader("Accept-Encoding"), "gzip")
 }
 
 // InvalidateCache invalidates the HTML cache (call when settings change)
@@ -103,8 +169,26 @@ func (s *FrontendServer) Middleware() gin.HandlerFunc {
 			return
 		}
 
+		// 静态资源缓存策略：/assets/* 是内容哈希命名（如 index-XXXX.js），内容永不变，
+		// 强缓存一年 + immutable，浏览器重复访问直接命中本地缓存（解决"每次加载都重新拉资源"）。
+		// 其余静态文件（logo 等）短缓存 1 小时。
+		if strings.HasPrefix(cleanPath, "assets/") {
+			c.Header("Cache-Control", "public, max-age=31536000, immutable")
+		} else {
+			c.Header("Cache-Control", "public, max-age=3600")
+		}
+
 		// Try local override first
 		if s.tryServeOverride(c, cleanPath) {
+			return
+		}
+
+		// 预压缩静态资源：客户端支持 gzip 时直发启动时压缩好的字节（不阻塞、零每请求 CPU）
+		if gz, ok := s.gzipAssets[cleanPath]; ok && clientAcceptsGzip(c) {
+			c.Header("Content-Encoding", "gzip")
+			c.Header("Vary", "Accept-Encoding")
+			c.Data(http.StatusOK, staticContentType(cleanPath), gz)
+			c.Abort()
 			return
 		}
 
