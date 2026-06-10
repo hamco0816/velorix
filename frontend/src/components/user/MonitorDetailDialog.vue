@@ -14,7 +14,7 @@
     <div v-else class="overflow-x-auto">
       <table class="w-full text-left text-sm">
         <thead>
-          <tr class="border-b border-gray-200/70 text-[12px] font-medium text-gray-500 dark:border-dark-700/60 dark:text-dark-400">
+          <tr class="border-b border-gray-200/70 text-xs font-medium text-gray-500 dark:border-dark-700/60 dark:text-dark-400">
             <th class="py-2.5 pr-3 font-medium">{{ t('channelStatus.detailColumns.model') }}</th>
             <th class="py-2.5 pr-3 text-center font-medium">{{ t('channelStatus.detailColumns.latestStatus') }}</th>
             <th class="py-2.5 pr-3 text-right font-medium">{{ t('channelStatus.detailColumns.latestLatency') }}</th>
@@ -33,7 +33,7 @@
             <td class="py-2.5 pr-3 font-medium text-gray-900 dark:text-gray-100">{{ m.model }}</td>
             <td class="py-2.5 pr-3 text-center">
               <span
-                class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium"
+                class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-2xs font-medium"
                 :class="statusBadgeClass(m.latest_status)"
               >
                 <span class="h-1.5 w-1.5 rounded-full" :class="statusDotClass(m.latest_status)"></span>

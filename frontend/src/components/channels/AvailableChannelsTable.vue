@@ -2,7 +2,7 @@
   <div class="h-full overflow-auto">
     <table class="w-full table-fixed border-collapse text-sm">
       <thead class="sticky top-0 z-10 bg-gray-50/80 backdrop-blur-sm dark:bg-dark-800/60">
-        <tr class="border-b border-gray-200/60 text-[13px] font-medium text-gray-500 dark:border-dark-700/60 dark:text-dark-400">
+        <tr class="border-b border-gray-200/60 text-sm font-medium text-gray-500 dark:border-dark-700/60 dark:text-dark-400">
           <th class="w-[180px] px-5 py-3.5 text-left">{{ columns.name }}</th>
           <th class="w-[220px] px-5 py-3.5 text-left">{{ columns.description }}</th>
           <th class="w-[140px] px-5 py-3.5 text-left">{{ columns.platform }}</th>
@@ -62,7 +62,7 @@
           <td class="align-top px-5 py-4">
             <span
               :class="[
-                'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium',
+                'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-2xs font-medium',
                 platformBadgeClass(section.platform),
               ]"
             >
@@ -79,7 +79,7 @@
                 class="flex flex-wrap items-center gap-1.5"
               >
                 <span
-                  class="inline-flex items-center gap-0.5 text-[10px] font-medium uppercase text-purple-600 dark:text-purple-400"
+                  class="inline-flex items-center gap-0.5 text-2xs font-medium uppercase text-purple-600 dark:text-purple-400"
                   :title="t('availableChannels.exclusiveTooltip')"
                 >
                   <Icon name="shield" size="xs" class="h-3 w-3" />
@@ -104,7 +104,7 @@
                 class="flex flex-wrap items-center gap-1.5"
               >
                 <span
-                  class="inline-flex items-center gap-0.5 text-[10px] font-medium uppercase text-gray-500 dark:text-gray-400"
+                  class="inline-flex items-center gap-0.5 text-2xs font-medium uppercase text-gray-500 dark:text-gray-400"
                   :title="t('availableChannels.publicTooltip')"
                 >
                   <Icon name="globe" size="xs" class="h-3 w-3" />

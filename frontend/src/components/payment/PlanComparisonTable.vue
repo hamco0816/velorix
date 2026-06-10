@@ -7,10 +7,10 @@
         <BrandIcon v-if="brand" :brand="brand" size="18px" />
         <span v-else class="text-sm font-bold text-gray-500 dark:text-gray-300">{{ (label || 'API').charAt(0) }}</span>
       </span>
-      <h3 class="text-[15px] font-semibold tracking-tight text-gray-900 dark:text-white">{{ label }}</h3>
-      <span v-if="periodLabel" class="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-600 dark:bg-dark-700 dark:text-dark-200">{{ periodLabel }}</span>
-      <span v-if="allExclusive" class="rounded-full bg-violet-50 px-2 py-0.5 text-[11px] font-semibold text-violet-700 ring-1 ring-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:ring-violet-900/50">{{ t('payment.admin.kindBadgeExclusive') }}</span>
-      <span class="ml-auto text-[11px] tabular-nums text-gray-400 dark:text-dark-500">{{ t('payment.tierCount', { count: plans.length }) }}</span>
+      <h3 class="text-base font-semibold tracking-tight text-gray-900 dark:text-white">{{ label }}</h3>
+      <span v-if="periodLabel" class="rounded-full bg-gray-100 px-2 py-0.5 text-2xs font-medium text-gray-600 dark:bg-dark-700 dark:text-dark-200">{{ periodLabel }}</span>
+      <span v-if="allExclusive" class="rounded-full bg-violet-50 px-2 py-0.5 text-2xs font-semibold text-violet-700 ring-1 ring-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:ring-violet-900/50">{{ t('payment.admin.kindBadgeExclusive') }}</span>
+      <span class="ml-auto text-2xs tabular-nums text-gray-400 dark:text-dark-500">{{ t('payment.tierCount', { count: plans.length }) }}</span>
     </header>
 
     <div class="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-5 p-6">
@@ -74,7 +74,7 @@
           type="button"
           :disabled="isSoldOut(plan)"
           :class="[
-            'mt-6 w-full rounded-xl px-3 py-2.5 text-[13px] font-semibold transition-all active:scale-[0.99]',
+            'mt-6 w-full rounded-xl px-3 py-2.5 text-sm font-semibold transition-all active:scale-[0.99]',
             isSoldOut(plan)
               ? 'cursor-not-allowed bg-gray-100 text-gray-400 dark:bg-dark-700 dark:text-dark-500'
               : ctaClassOf(plan) || 'bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100',

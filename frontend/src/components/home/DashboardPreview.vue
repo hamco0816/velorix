@@ -13,7 +13,7 @@
           <span class="h-2.5 w-2.5 rounded-full bg-yellow-400"></span>
           <span class="h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
         </div>
-        <div class="ml-2 text-[11px] font-medium text-gray-500 dark:text-dark-400">
+        <div class="ml-2 text-2xs font-medium text-gray-500 dark:text-dark-400">
           {{ t('home.dashPreview.title') }}
         </div>
       </div>
@@ -26,7 +26,7 @@
             <button
               v-for="(item, i) in navItems"
               :key="item.key"
-              class="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-[11px] font-medium transition-colors"
+              class="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-2xs font-medium transition-colors"
               :class="i === 0
                 ? 'bg-brand-50 text-brand-700 dark:bg-brand-500/10 dark:text-brand-300'
                 : 'text-gray-500 hover:bg-gray-100 dark:text-dark-400 dark:hover:bg-dark-800'"
@@ -43,7 +43,7 @@
           <div class="grid gap-3 sm:grid-cols-5 sm:gap-3">
             <!-- Model status list (3/5) -->
             <div class="rounded-lg border border-gray-100 bg-gray-50/50 p-3 dark:border-dark-700 dark:bg-dark-800/40 sm:col-span-3">
-              <div class="text-[11px] font-semibold text-gray-700 dark:text-dark-200">
+              <div class="text-2xs font-semibold text-gray-700 dark:text-dark-200">
                 {{ t('home.dashPreview.modelStatus') }}
               </div>
               <ul class="mt-2.5 space-y-2">
@@ -54,14 +54,14 @@
                 >
                   <div :class="['flex h-5 w-5 flex-shrink-0 items-center justify-center rounded', m.iconBg]">
                     <BrandIcon v-if="m.brand" :brand="m.brand" size="12px" />
-                    <span v-else :class="['text-[9px] font-bold', m.textClass]">{{ m.letter }}</span>
+                    <span v-else :class="['text-2xs font-bold', m.textClass]">{{ m.letter }}</span>
                   </div>
-                  <span class="flex-1 truncate text-[11px] font-medium text-gray-700 dark:text-dark-200">{{ m.name }}</span>
-                  <span class="inline-flex items-center gap-1.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
+                  <span class="flex-1 truncate text-2xs font-medium text-gray-700 dark:text-dark-200">{{ m.name }}</span>
+                  <span class="inline-flex items-center gap-1.5 text-2xs font-medium text-emerald-600 dark:text-emerald-400">
                     <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                     {{ t('home.dashPreview.stateAvailable') }}
                   </span>
-                  <span class="font-mono text-[10px] tabular-nums text-gray-500 dark:text-dark-400">{{ m.value }}</span>
+                  <span class="font-mono text-2xs tabular-nums text-gray-500 dark:text-dark-400">{{ m.value }}</span>
                 </li>
               </ul>
             </div>
@@ -70,13 +70,13 @@
             <div class="space-y-2 sm:col-span-2">
               <!-- Today usage -->
               <div class="rounded-lg border border-gray-100 bg-white p-3 dark:border-dark-700 dark:bg-dark-800/40">
-                <div class="text-[10px] font-medium text-gray-500 dark:text-dark-400">
+                <div class="text-2xs font-medium text-gray-500 dark:text-dark-400">
                   {{ t('home.dashPreview.todayUsage') }}
                 </div>
                 <div class="mt-1 text-lg font-semibold tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400">
                   ¥ 12.86
                 </div>
-                <div class="mt-0.5 inline-flex items-center gap-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
+                <div class="mt-0.5 inline-flex items-center gap-0.5 text-2xs font-medium text-emerald-600 dark:text-emerald-400">
                   <svg class="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M5 15l7-7 7 7" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" />
                   </svg>
@@ -86,7 +86,7 @@
               <!-- Two small stats -->
               <div class="grid grid-cols-2 gap-2">
                 <div class="rounded-lg border border-gray-100 bg-white p-2.5 dark:border-dark-700 dark:bg-dark-800/40">
-                  <div class="text-[10px] font-medium text-gray-500 dark:text-dark-400">
+                  <div class="text-2xs font-medium text-gray-500 dark:text-dark-400">
                     {{ t('home.dashPreview.totalRequests') }}
                   </div>
                   <div class="mt-0.5 text-sm font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">
@@ -94,7 +94,7 @@
                   </div>
                 </div>
                 <div class="rounded-lg border border-gray-100 bg-white p-2.5 dark:border-dark-700 dark:bg-dark-800/40">
-                  <div class="text-[10px] font-medium text-gray-500 dark:text-dark-400">
+                  <div class="text-2xs font-medium text-gray-500 dark:text-dark-400">
                     {{ t('home.dashPreview.successRate') }}
                   </div>
                   <div class="mt-0.5 text-sm font-semibold tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400">
@@ -109,11 +109,11 @@
           <div class="mt-3 grid gap-3 sm:grid-cols-5">
             <!-- API Key input -->
             <div class="rounded-lg border border-gray-100 bg-gray-50/40 p-3 dark:border-dark-700 dark:bg-dark-800/40 sm:col-span-2">
-              <div class="text-[10px] font-medium text-gray-500 dark:text-dark-400">
+              <div class="text-2xs font-medium text-gray-500 dark:text-dark-400">
                 {{ t('home.dashPreview.apiKey') }}
               </div>
               <div class="mt-1.5 flex items-center gap-1.5 rounded-md bg-white px-2 py-1.5 ring-1 ring-gray-200 dark:bg-dark-900 dark:ring-dark-700">
-                <span class="font-mono text-[10px] tabular-nums text-gray-700 dark:text-dark-200">sk-***********</span>
+                <span class="font-mono text-2xs tabular-nums text-gray-700 dark:text-dark-200">sk-***********</span>
                 <span class="ml-auto text-gray-400 dark:text-dark-500">
                   <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178zM15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -124,7 +124,7 @@
 
             <!-- Trend chart -->
             <div class="rounded-lg border border-gray-100 bg-white p-3 dark:border-dark-700 dark:bg-dark-800/40 sm:col-span-3">
-              <div class="text-[10px] font-medium text-gray-500 dark:text-dark-400">
+              <div class="text-2xs font-medium text-gray-500 dark:text-dark-400">
                 {{ t('home.dashPreview.recent7d') }}
               </div>
               <!-- 简单 SVG 趋势线 -->

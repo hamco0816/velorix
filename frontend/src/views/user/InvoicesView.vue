@@ -4,7 +4,7 @@
       <!-- 可开票额度概览：页面加载即展示真实可开金额与明细，强化透明（标题由全局 AppHeader 提供） -->
       <div class="surface-card flex flex-wrap items-end justify-between gap-4 p-5">
         <div class="min-w-0">
-          <p class="text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('invoice.summary.title') }}</p>
+          <p class="text-sm font-medium text-gray-500 dark:text-dark-400">{{ t('invoice.summary.title') }}</p>
           <p class="mt-1 text-[1.75rem] font-bold leading-tight tracking-tight tabular-nums text-gray-900 dark:text-white">
             ¥{{ invoiceableSummary.available_amount.toFixed(2) }}
           </p>
@@ -34,15 +34,9 @@
         </div>
       </div>
 
-      <!-- 列表 -->
+      <!-- 列表：tbody 内按 加载骨架 > 加载失败 > 空 > 数据 四态展示 -->
       <div class="surface-card overflow-hidden">
-        <div v-if="loading && invoices.length === 0" class="p-10 text-center text-sm text-gray-500 dark:text-gray-400">
-          {{ t('common.loading') }}
-        </div>
-        <div v-else-if="invoices.length === 0" class="p-10 text-center">
-          <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('invoice.empty') }}</p>
-        </div>
-        <div v-else class="overflow-x-auto">
+        <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-100 text-sm dark:divide-dark-700">
             <thead class="bg-gray-50/60 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:bg-dark-800/60 dark:text-gray-400">
               <tr>
@@ -56,7 +50,25 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 dark:divide-dark-700">
-              <tr v-for="row in invoices" :key="row.id" class="hover:bg-gray-50/60 dark:hover:bg-dark-800/40">
+              <!-- 加载中：骨架行占位 -->
+              <tr v-if="loading" v-for="i in 5" :key="`skeleton-${i}`">
+                <td v-for="col in 7" :key="col" class="px-4 py-3">
+                  <div class="h-4 w-3/4 animate-pulse rounded bg-gray-200 dark:bg-dark-700"></div>
+                </td>
+              </tr>
+              <!-- 加载失败：展示错误提示并支持重试 -->
+              <tr v-else-if="loadFailed">
+                <td colspan="7" class="py-6">
+                  <ErrorState @retry="fetchInvoices" />
+                </td>
+              </tr>
+              <!-- 暂无开票申请 -->
+              <tr v-else-if="invoices.length === 0">
+                <td colspan="7" class="py-6">
+                  <EmptyState :title="t('invoice.empty')" />
+                </td>
+              </tr>
+              <tr v-else v-for="row in invoices" :key="row.id" class="hover:bg-gray-50/60 dark:hover:bg-dark-800/40">
                 <td class="px-4 py-3 font-mono text-gray-500 dark:text-gray-400">{{ row.id }}</td>
                 <td class="px-4 py-3">
                   <div class="font-medium text-gray-900 dark:text-white">{{ row.title_name }}</div>
@@ -234,6 +246,8 @@ import type { InvoiceItem, InvoiceableOrder, InvoiceableSummary, InvoiceTitleTyp
 import AppLayout from '@/components/layout/AppLayout.vue'
 import StatusTag from '@/components/common/StatusTag.vue'
 import Pagination from '@/components/common/Pagination.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
+import ErrorState from '@/components/common/ErrorState.vue'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import Select from '@/components/common/Select.vue'
 import Icon from '@/components/icons/Icon.vue'
@@ -255,6 +269,8 @@ const DetailRow = defineComponent({
 })
 
 const loading = ref(false)
+// 发票列表是否加载失败，用于展示可重试的错误态
+const loadFailed = ref(false)
 const invoices = ref<InvoiceItem[]>([])
 const pagination = reactive({ page: 1, page_size: 20, total: 0 })
 
@@ -324,11 +340,13 @@ function formatDate(value?: string): string {
 
 async function fetchInvoices() {
   loading.value = true
+  loadFailed.value = false
   try {
     const res = await invoiceAPI.getMyInvoices({ page: pagination.page, page_size: pagination.page_size })
     invoices.value = res.data.items || []
     pagination.total = res.data.total || 0
   } catch (err: unknown) {
+    loadFailed.value = true
     appStore.showError(extractI18nErrorMessage(err, t, 'invoice.errors', t('common.error')))
   } finally {
     loading.value = false

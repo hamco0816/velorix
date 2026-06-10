@@ -105,7 +105,7 @@
           {{ t('pricing.filterPanelToggle') }}
           <span
             v-if="activeFilterCount > 0"
-            class="inline-flex items-center justify-center rounded-full bg-brand-100 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-brand-700 dark:bg-brand-500/20 dark:text-brand-300"
+            class="inline-flex items-center justify-center rounded-full bg-brand-100 px-1.5 py-0.5 text-2xs font-semibold tabular-nums text-brand-700 dark:bg-brand-500/20 dark:text-brand-300"
           >
             {{ activeFilterCount }}
           </span>
@@ -179,7 +179,7 @@
                       <span class="break-all font-medium leading-tight">{{ group.name }}</span>
                     </div>
                     <span
-                      class="inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-semibold tabular-nums ring-1 ring-inset"
+                      class="inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-2xs font-semibold tabular-nums ring-1 ring-inset"
                       :class="
                         promoActive(group)
                           ? 'bg-rose-50 text-rose-700 ring-rose-200/70 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/30'
@@ -195,7 +195,7 @@
                   <!-- 副行：仅在 promo 激活时显示 — fire 图标 + 倒计时 + 原价划线 -->
                   <div
                     v-if="promoActive(group)"
-                    class="flex items-center justify-between gap-2 text-[10px] tabular-nums"
+                    class="flex items-center justify-between gap-2 text-2xs tabular-nums"
                   >
                     <span class="inline-flex items-center gap-1 text-rose-600 dark:text-rose-400">
                       <Icon name="fire" size="xs" class="animate-pulse" />
@@ -325,13 +325,13 @@
                   <PlatformIcon :platform="model.platform as GroupPlatform" size="md" />
                 </div>
                 <div class="min-w-0 flex-1">
-                  <p class="truncate text-[15px] font-semibold tracking-tight text-gray-900 dark:text-white" :title="model.name">
+                  <p class="truncate text-base font-semibold tracking-tight text-gray-900 dark:text-white" :title="model.name">
                     {{ model.name }}
                   </p>
                   <div class="mt-1 flex flex-wrap items-center gap-1.5">
                     <span
                       :class="[
-                        'inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset',
+                        'inline-flex items-center rounded-full px-2 py-0.5 text-2xs font-medium ring-1 ring-inset',
                         billingModeChipClass(model.billingMode),
                       ]"
                     >
@@ -339,7 +339,7 @@
                     </span>
                     <span
                       v-if="!model.fromChannel"
-                      class="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2 py-0.5 text-[11px] font-medium text-gray-500 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60"
+                      class="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2 py-0.5 text-2xs font-medium text-gray-500 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60"
                       :title="t('pricing.standardModelHint')"
                     >
                       <Icon name="database" size="xs" />
@@ -399,7 +399,7 @@
                         </template>
                       </span>
                     </div>
-                    <p v-if="selectedGroupImageIndependent" class="text-[10px] italic text-gray-400 dark:text-dark-500">
+                    <p v-if="selectedGroupImageIndependent" class="text-2xs italic text-gray-400 dark:text-dark-500">
                       {{ t('pricing.imageRateNote', { rate: selectedGroupImageRateLabel }) }}
                     </p>
                   </template>
@@ -481,7 +481,7 @@
                   v-for="g in sortGroupsByRate(model.accessibleGroups)"
                   :key="g.id"
                   type="button"
-                  class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset transition-colors"
+                  class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-2xs font-medium ring-1 ring-inset transition-colors"
                   :class="
                     selectedGroupId === g.id
                       ? 'bg-brand-50 text-brand-700 ring-brand-200/70 dark:bg-brand-500/15 dark:text-brand-300 dark:ring-brand-500/30'
@@ -502,7 +502,7 @@
           <!-- 倍率提示：选中"全部分组"时说明显示原价 -->
           <p
             v-if="!loading && filteredModels.length > 0 && !selectedGroup"
-            class="mt-4 inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-[12px] font-medium text-amber-700 ring-1 ring-inset ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30"
+            class="mt-4 inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30"
           >
             <Icon name="infoCircle" size="xs" />
             {{ t('pricing.standardPriceHint') }}

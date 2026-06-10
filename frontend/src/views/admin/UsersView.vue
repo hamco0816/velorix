@@ -237,12 +237,14 @@
           :columns="columns"
           :data="users"
           :loading="loading"
+          :error="loadFailed"
           :actions-count="7"
           :server-side-sort="true"
           default-sort-key="created_at"
           default-sort-order="desc"
           :sort-storage-key="USER_SORT_STORAGE_KEY"
           @sort="handleSort"
+          @retry="loadUsers"
         >
           <template #cell-email="{ value, row }">
             <div class="flex items-center gap-2.5">
@@ -342,7 +344,7 @@
                   v-if="expandedGroupUserId === row.id"
                   class="absolute left-0 top-full z-50 mt-1.5 min-w-[160px] overflow-hidden rounded-lg border border-gray-200 bg-white py-1 text-xs shadow-xl dark:border-dark-600 dark:bg-dark-700"
                 >
-                  <div class="border-b border-gray-100 px-3 py-1.5 text-[11px] font-medium text-gray-500 dark:border-dark-600 dark:text-dark-400">
+                  <div class="border-b border-gray-100 px-3 py-1.5 text-2xs font-medium text-gray-500 dark:border-dark-600 dark:text-dark-400">
                     {{ t('admin.users.clickToReplace') }}
                   </div>
                   <div
@@ -437,13 +439,13 @@
                 <span class="font-semibold text-gray-900 dark:text-white">
                   ${{ (usageStats[row.id]?.today_actual_cost ?? 0).toFixed(4) }}
                 </span>
-                <span class="text-[11px] text-gray-400 dark:text-dark-500">{{ t('admin.users.today') }}</span>
+                <span class="text-2xs text-gray-400 dark:text-dark-500">{{ t('admin.users.today') }}</span>
               </div>
               <div class="mt-0.5 flex items-baseline gap-1 tabular-nums text-xs">
                 <span class="font-medium text-gray-500 dark:text-dark-400">
                   ${{ (usageStats[row.id]?.total_actual_cost ?? 0).toFixed(4) }}
                 </span>
-                <span class="text-[11px] text-gray-400 dark:text-dark-500">{{ t('admin.users.total') }}</span>
+                <span class="text-2xs text-gray-400 dark:text-dark-500">{{ t('admin.users.total') }}</span>
               </div>
             </div>
           </template>
@@ -854,6 +856,8 @@ const columns = computed<Column[]>(() =>
 
 const users = ref<AdminUser[]>([])
 const loading = ref(false)
+// 用户列表加载失败标记，用于表格展示错误态并提供重试
+const loadFailed = ref(false)
 const searchQuery = ref('')
 const USER_SORT_STORAGE_KEY = 'admin-users-table-sort'
 const loadInitialSortState = (): { sort_by: string; sort_order: 'asc' | 'desc' } => {
@@ -1207,6 +1211,7 @@ const loadUsers = async () => {
   abortController = currentAbortController
   const { signal } = currentAbortController
   loading.value = true
+  loadFailed.value = false
   try {
     // Build attribute filters from active filters
     const attrFilters: Record<number, string> = {}
@@ -1254,6 +1259,7 @@ const loadUsers = async () => {
     if (errorInfo?.name === 'AbortError' || errorInfo?.name === 'CanceledError' || errorInfo?.code === 'ERR_CANCELED') {
       return
     }
+    loadFailed.value = true
     const message = error.response?.data?.detail || error.message || t('admin.users.failedToLoad')
     appStore.showError(message)
     console.error('Error loading users:', error)

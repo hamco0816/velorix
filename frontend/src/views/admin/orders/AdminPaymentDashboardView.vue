@@ -35,7 +35,7 @@
                 <Icon name="chart" size="sm" :stroke-width="1.75" />
               </span>
               <div>
-                <h3 class="text-[15px] font-semibold text-gray-900 dark:text-white">{{ t('payment.admin.financeTitle') }}</h3>
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white">{{ t('payment.admin.financeTitle') }}</h3>
                 <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{{ t('payment.admin.financeDesc') }}</p>
               </div>
             </div>
@@ -140,7 +140,7 @@
               <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300">
                 <Icon name="creditCard" size="sm" :stroke-width="1.75" />
               </span>
-              <h3 class="text-[15px] font-semibold text-gray-900 dark:text-white">{{ t('payment.admin.paymentDistribution') }}</h3>
+              <h3 class="text-base font-semibold text-gray-900 dark:text-white">{{ t('payment.admin.paymentDistribution') }}</h3>
             </header>
             <div class="p-6">
               <div v-if="!stats.payment_methods?.length" class="flex h-32 flex-col items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
@@ -170,7 +170,7 @@
               <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300">
                 <Icon name="chart" size="sm" :stroke-width="1.75" />
               </span>
-              <h3 class="text-[15px] font-semibold text-gray-900 dark:text-white">{{ t('payment.admin.topUsers') }}</h3>
+              <h3 class="text-base font-semibold text-gray-900 dark:text-white">{{ t('payment.admin.topUsers') }}</h3>
             </header>
             <div class="p-6">
               <div v-if="!stats.top_users?.length" class="flex h-32 flex-col items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">

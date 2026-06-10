@@ -40,11 +40,13 @@
           :columns="columns"
           :data="records"
           :loading="loading"
+          :error="loadFailed"
           :server-side-sort="true"
           default-sort-key="created_at"
           default-sort-order="desc"
           :sort-storage-key="sortStorageKey"
           @sort="handleSort"
+          @retry="loadRecords"
         >
           <template #empty>
             <EmptyState
@@ -201,6 +203,8 @@ const props = defineProps<{
 const { t } = useI18n()
 const appStore = useAppStore()
 const loading = ref(false)
+// 记录列表加载是否失败，失败时表格显示错误态并提供重试
+const loadFailed = ref(false)
 const records = ref<AffiliateRecord[]>([])
 const filters = reactive({ search: '', start_at: '', end_at: '' })
 const pagination = reactive({ page: 1, page_size: 20, total: 0 })
@@ -361,11 +365,13 @@ async function fetchRecords(params: ListAffiliateRecordsParams): Promise<Paginat
 
 async function loadRecords() {
   loading.value = true
+  loadFailed.value = false
   try {
     const res = await fetchRecords(buildParams())
     records.value = res.items || []
     pagination.total = res.total || 0
   } catch (error) {
+    loadFailed.value = true
     appStore.showError(extractI18nErrorMessage(error, t, 'admin.affiliates.errors', t('common.error')))
   } finally {
     loading.value = false

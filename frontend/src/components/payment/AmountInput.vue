@@ -24,7 +24,7 @@
           ]"
           @click="selectAmount(amt)"
         >
-          <span :class="['text-[10px] font-medium tracking-wide', modelValue === amt ? 'text-gray-500' : 'text-gray-400 dark:text-dark-400']">¥</span>
+          <span :class="['text-2xs font-medium tracking-wide', modelValue === amt ? 'text-gray-500' : 'text-gray-400 dark:text-dark-400']">¥</span>
           <span class="text-base tabular-nums leading-tight">{{ amt }}</span>
         </button>
       </div>

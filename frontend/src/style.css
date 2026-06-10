@@ -167,7 +167,7 @@
   }
 
   .btn-lg {
-    @apply rounded-lg px-5 py-2.5 text-[15px];
+    @apply rounded-lg px-5 py-2.5 text-base;
     min-height: 2.5rem;
   }
 
@@ -233,7 +233,7 @@
 
   /* 标签：标准字号 + 加深颜色，让 label 与 input 形成清晰层级 */
   .auth-input-label {
-    @apply mb-1.5 block text-[13px] font-medium text-gray-900 dark:text-white;
+    @apply mb-1.5 block text-sm font-medium text-gray-900 dark:text-white;
   }
 
   /* 辅助提示：灰色小字（如"至少 6 个字符"） */
@@ -249,42 +249,33 @@
     @apply dark:text-white dark:decoration-dark-500 dark:hover:decoration-white;
   }
 
-  /* 品牌区合并标题中的分隔点：用场景色让"siteName · 动作"出现一抹颜色锚点 */
-  .auth-brand-dot-sky {
-    @apply mx-2 font-medium text-sky-500 dark:text-sky-400;
-  }
+  /* 品牌区合并标题中的分隔点：统一用品牌橙点睛 */
+  .auth-brand-dot-sky,
   .auth-brand-dot-emerald {
-    @apply mx-2 font-medium text-emerald-500 dark:text-emerald-400;
+    @apply mx-2 font-medium text-brand-500 dark:text-brand-400;
   }
 
-  /* ============ Hero 容器：与兑换码页一致的 mini 渐变区 ============
-   * 登录用 sky-violet，注册用 emerald-teal；包裹 logo + 合并标题。 */
+  /* ============ Hero 容器：登录/注册共用的品牌渐变区（白底 + 暖橙微光） ============
+   * 历史上登录/注册各有一套场景色，现统一为品牌色，类名保留以兼容既有页面。 */
   .auth-hero {
     @apply relative flex flex-col items-center overflow-hidden rounded-lg border px-6 py-10;
-    box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
+    box-shadow: 0 18px 44px -34px rgb(9 9 11 / 0.45);
   }
 
-  .auth-hero-sky {
-    border-color: rgb(219 234 254);
-    background:
-      radial-gradient(circle at 76% 22%, rgb(56 189 248 / 0.22), transparent 35%),
-      radial-gradient(circle at 94% 12%, rgb(168 85 247 / 0.16), transparent 30%),
-      linear-gradient(135deg, rgb(240 249 255), rgb(255 255 255) 48%, rgb(245 243 255));
-  }
-
+  .auth-hero-sky,
   .auth-hero-emerald {
-    border-color: rgb(187 247 208);
+    border-color: rgb(228 228 231);
     background:
-      radial-gradient(circle at 76% 22%, rgb(52 211 153 / 0.22), transparent 35%),
-      radial-gradient(circle at 94% 12%, rgb(20 184 166 / 0.16), transparent 30%),
-      linear-gradient(135deg, rgb(236 253 245), rgb(255 255 255) 48%, rgb(240 253 250));
+      radial-gradient(circle at 78% 20%, rgb(249 115 22 / 0.12), transparent 36%),
+      radial-gradient(circle at 96% 70%, rgb(251 146 60 / 0.07), transparent 32%),
+      linear-gradient(135deg, rgb(250 250 250), rgb(255 255 255) 55%);
   }
 
   /* ============ 通用彩色 panel：与兑换码 redeem-panel 一致 ============
    * 给 SettingsView 等卡片化页面统一外观（白底 + 微阴影 + 浅色头部）。 */
   .colored-panel {
     @apply overflow-hidden rounded-lg border border-gray-200 bg-white;
-    box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
+    box-shadow: 0 18px 44px -34px rgb(9 9 11 / 0.45);
   }
 
   /* ============ Page Hero：页面级渐变标题区（左对齐版本，与 auth-hero 区分） ============
@@ -292,99 +283,49 @@
    *      内部自由放置 tag、标题、描述。共用兑换码 hero 同款 shadow 和渐变色调。 */
   .page-hero {
     @apply relative overflow-hidden rounded-lg border px-6 py-7 sm:px-8 sm:py-9;
-    box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
+    box-shadow: 0 18px 44px -34px rgb(9 9 11 / 0.45);
   }
 
-  .page-hero-sky {
-    border-color: rgb(219 234 254);
-    background:
-      radial-gradient(circle at 76% 22%, rgb(56 189 248 / 0.22), transparent 35%),
-      radial-gradient(circle at 94% 12%, rgb(168 85 247 / 0.16), transparent 30%),
-      linear-gradient(135deg, rgb(240 249 255), rgb(255 255 255) 48%, rgb(245 243 255));
-  }
-
-  .page-hero-emerald {
-    border-color: rgb(187 247 208);
-    background:
-      radial-gradient(circle at 76% 22%, rgb(52 211 153 / 0.22), transparent 35%),
-      radial-gradient(circle at 94% 12%, rgb(20 184 166 / 0.16), transparent 30%),
-      linear-gradient(135deg, rgb(236 253 245), rgb(255 255 255) 48%, rgb(240 253 250));
-  }
-
-  .page-hero-violet {
-    border-color: rgb(221 214 254);
-    background:
-      radial-gradient(circle at 76% 22%, rgb(168 85 247 / 0.22), transparent 35%),
-      radial-gradient(circle at 94% 12%, rgb(56 189 248 / 0.16), transparent 30%),
-      linear-gradient(135deg, rgb(245 243 255), rgb(255 255 255) 48%, rgb(240 249 255));
-  }
-
-  .page-hero-amber {
-    border-color: rgb(253 230 138);
-    background:
-      radial-gradient(circle at 76% 22%, rgb(245 158 11 / 0.20), transparent 35%),
-      radial-gradient(circle at 94% 12%, rgb(244 63 94 / 0.14), transparent 30%),
-      linear-gradient(135deg, rgb(255 251 235), rgb(255 255 255) 48%, rgb(255 241 242));
-  }
-
-  .page-hero-rose {
-    border-color: rgb(254 205 211);
-    background:
-      radial-gradient(circle at 76% 22%, rgb(244 63 94 / 0.20), transparent 35%),
-      radial-gradient(circle at 94% 12%, rgb(168 85 247 / 0.14), transparent 30%),
-      linear-gradient(135deg, rgb(255 241 242), rgb(255 255 255) 48%, rgb(245 243 255));
-  }
-
-  .page-hero-teal {
-    border-color: rgb(153 246 228);
-    background:
-      radial-gradient(circle at 76% 22%, rgb(20 184 166 / 0.20), transparent 35%),
-      radial-gradient(circle at 94% 12%, rgb(56 189 248 / 0.14), transparent 30%),
-      linear-gradient(135deg, rgb(240 253 250), rgb(255 255 255) 48%, rgb(240 249 255));
-  }
-
+  /* 历史上有 sky/emerald/violet/amber/rose/teal/indigo 七套场景色，
+     现统一收敛为品牌暖橙微光，类名保留以兼容既有页面 */
+  .page-hero-sky,
+  .page-hero-emerald,
+  .page-hero-violet,
+  .page-hero-amber,
+  .page-hero-rose,
+  .page-hero-teal,
   .page-hero-indigo {
-    border-color: rgb(199 210 254);
+    border-color: rgb(228 228 231);
     background:
-      radial-gradient(circle at 76% 22%, rgb(99 102 241 / 0.20), transparent 35%),
-      radial-gradient(circle at 94% 12%, rgb(168 85 247 / 0.14), transparent 30%),
-      linear-gradient(135deg, rgb(238 242 255), rgb(255 255 255) 48%, rgb(245 243 255));
+      radial-gradient(circle at 78% 20%, rgb(249 115 22 / 0.12), transparent 36%),
+      radial-gradient(circle at 96% 70%, rgb(251 146 60 / 0.07), transparent 32%),
+      linear-gradient(135deg, rgb(250 250 250), rgb(255 255 255) 55%);
   }
 
-  /* Hero 内的"标签徽章"：浅磨砂背景，标识页面类别 */
+  /* Hero 内的"标签徽章"：浅磨砂背景，统一品牌橙文字 */
   .page-hero-tag {
     @apply inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium backdrop-blur-sm;
     background: rgb(255 255 255 / 0.7);
   }
-  .page-hero-tag-sky { @apply text-sky-700; }
-  .page-hero-tag-emerald { @apply text-emerald-700; }
-  .page-hero-tag-violet { @apply text-violet-700; }
-  .page-hero-tag-amber { @apply text-amber-700; }
-  .page-hero-tag-rose { @apply text-rose-700; }
-  .page-hero-tag-teal { @apply text-teal-700; }
-  .page-hero-tag-indigo { @apply text-indigo-700; }
+  .page-hero-tag-sky,
+  .page-hero-tag-emerald,
+  .page-hero-tag-violet,
+  .page-hero-tag-amber,
+  .page-hero-tag-rose,
+  .page-hero-tag-teal,
+  .page-hero-tag-indigo {
+    @apply text-brand-700;
+  }
 
-  /* 浅色卡片头部（按色调供选择） */
-  .colored-header-sky {
-    @apply border-b border-sky-100/70 bg-sky-50/60;
-  }
-  .colored-header-emerald {
-    @apply border-b border-emerald-100/70 bg-emerald-50/60;
-  }
-  .colored-header-amber {
-    @apply border-b border-amber-100/70 bg-amber-50/60;
-  }
-  .colored-header-violet {
-    @apply border-b border-violet-100/70 bg-violet-50/60;
-  }
-  .colored-header-teal {
-    @apply border-b border-teal-100/70 bg-teal-50/60;
-  }
-  .colored-header-rose {
-    @apply border-b border-rose-100/70 bg-rose-50/60;
-  }
+  /* 浅色卡片头部：历史七彩变体统一为中性灰头部 */
+  .colored-header-sky,
+  .colored-header-emerald,
+  .colored-header-amber,
+  .colored-header-violet,
+  .colored-header-teal,
+  .colored-header-rose,
   .colored-header-indigo {
-    @apply border-b border-indigo-100/70 bg-indigo-50/60;
+    @apply border-b border-gray-100/80 bg-gray-50/60;
   }
 
   /* 主按钮：纯黑底 + 白字 + 细微阴影（暗色模式反相） */
@@ -462,100 +403,30 @@
    * ✅ 正确用法：左侧筛选 panel / 单张订单详情 / hero 区使用，作为视觉锚点
    * ============================================================ */
 
-  /* amber：钱包 / 充值氛围（PaymentView） */
-  .card-amber {
-    border-color: rgb(254 215 170 / 0.7);
-    background:
-      radial-gradient(circle at 100% 0%, rgb(245 158 11 / 0.12), transparent 32%),
-      radial-gradient(circle at 0% 100%, rgb(249 115 22 / 0.06), transparent 38%),
-      linear-gradient(135deg, rgb(255 251 235), rgb(255 255 255) 55%, rgb(254 243 199));
-  }
-  :root.dark .card-amber {
-    border-color: rgb(120 53 15 / 0.4);
-    background:
-      radial-gradient(circle at 100% 0%, rgb(245 158 11 / 0.10), transparent 32%),
-      radial-gradient(circle at 0% 100%, rgb(249 115 22 / 0.06), transparent 38%),
-      linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
-  }
-
-  /* sky：信息 / 文档 / 渠道氛围 */
-  .card-sky {
-    border-color: rgb(186 230 253 / 0.7);
-    background:
-      radial-gradient(circle at 100% 0%, rgb(14 165 233 / 0.12), transparent 32%),
-      radial-gradient(circle at 0% 100%, rgb(59 130 246 / 0.06), transparent 38%),
-      linear-gradient(135deg, rgb(240 249 255), rgb(255 255 255) 55%, rgb(224 242 254));
-  }
-  :root.dark .card-sky {
-    border-color: rgb(7 89 133 / 0.4);
-    background:
-      radial-gradient(circle at 100% 0%, rgb(14 165 233 / 0.10), transparent 32%),
-      radial-gradient(circle at 0% 100%, rgb(59 130 246 / 0.06), transparent 38%),
-      linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
-  }
-
-  /* emerald：订单 / 计费 / 完成氛围 */
-  .card-emerald {
-    border-color: rgb(167 243 208 / 0.7);
-    background:
-      radial-gradient(circle at 100% 0%, rgb(16 185 129 / 0.12), transparent 32%),
-      radial-gradient(circle at 0% 100%, rgb(20 184 166 / 0.06), transparent 38%),
-      linear-gradient(135deg, rgb(236 253 245), rgb(255 255 255) 55%, rgb(204 251 241));
-  }
-  :root.dark .card-emerald {
-    border-color: rgb(6 78 59 / 0.4);
-    background:
-      radial-gradient(circle at 100% 0%, rgb(16 185 129 / 0.10), transparent 32%),
-      radial-gradient(circle at 0% 100%, rgb(20 184 166 / 0.06), transparent 38%),
-      linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
-  }
-
-  /* violet：订阅 / 独享号 / 仪表盘氛围 */
-  .card-violet {
-    border-color: rgb(221 214 254 / 0.7);
-    background:
-      radial-gradient(circle at 100% 0%, rgb(139 92 246 / 0.12), transparent 32%),
-      radial-gradient(circle at 0% 100%, rgb(168 85 247 / 0.06), transparent 38%),
-      linear-gradient(135deg, rgb(245 243 255), rgb(255 255 255) 55%, rgb(243 232 255));
-  }
-  :root.dark .card-violet {
-    border-color: rgb(76 29 149 / 0.4);
-    background:
-      radial-gradient(circle at 100% 0%, rgb(139 92 246 / 0.10), transparent 32%),
-      radial-gradient(circle at 0% 100%, rgb(168 85 247 / 0.06), transparent 38%),
-      linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
-  }
-
-  /* rose：兑换 / 提示 / 营销氛围 */
-  .card-rose {
-    border-color: rgb(254 205 211 / 0.7);
-    background:
-      radial-gradient(circle at 100% 0%, rgb(244 63 94 / 0.12), transparent 32%),
-      radial-gradient(circle at 0% 100%, rgb(236 72 153 / 0.06), transparent 38%),
-      linear-gradient(135deg, rgb(255 241 242), rgb(255 255 255) 55%, rgb(252 231 243));
-  }
-  :root.dark .card-rose {
-    border-color: rgb(136 19 55 / 0.4);
-    background:
-      radial-gradient(circle at 100% 0%, rgb(244 63 94 / 0.10), transparent 32%),
-      radial-gradient(circle at 0% 100%, rgb(236 72 153 / 0.06), transparent 38%),
-      linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
-  }
-
-  /* indigo：API 密钥 / 文档 氛围 */
+  /* 历史上有 amber/sky/emerald/violet/rose/indigo 六套彩色氛围卡片，
+     现统一收敛为品牌暖橙微光，类名保留以兼容既有页面 */
+  .card-amber,
+  .card-sky,
+  .card-emerald,
+  .card-violet,
+  .card-rose,
   .card-indigo {
-    border-color: rgb(199 210 254 / 0.7);
+    border-color: rgb(254 215 170 / 0.6);
     background:
-      radial-gradient(circle at 100% 0%, rgb(99 102 241 / 0.12), transparent 32%),
-      radial-gradient(circle at 0% 100%, rgb(79 70 229 / 0.06), transparent 38%),
-      linear-gradient(135deg, rgb(238 242 255), rgb(255 255 255) 55%, rgb(224 231 255));
+      radial-gradient(circle at 100% 0%, rgb(249 115 22 / 0.10), transparent 32%),
+      radial-gradient(circle at 0% 100%, rgb(245 158 11 / 0.05), transparent 38%),
+      linear-gradient(135deg, rgb(255 251 235), rgb(255 255 255) 55%);
   }
+  :root.dark .card-amber,
+  :root.dark .card-sky,
+  :root.dark .card-emerald,
+  :root.dark .card-violet,
+  :root.dark .card-rose,
   :root.dark .card-indigo {
-    border-color: rgb(55 48 163 / 0.4);
+    border-color: rgb(124 45 18 / 0.4);
     background:
-      radial-gradient(circle at 100% 0%, rgb(99 102 241 / 0.10), transparent 32%),
-      radial-gradient(circle at 0% 100%, rgb(79 70 229 / 0.06), transparent 38%),
-      linear-gradient(135deg, rgb(30 41 59 / 0.6), rgb(17 24 39 / 0.5));
+      radial-gradient(circle at 100% 0%, rgb(249 115 22 / 0.10), transparent 32%),
+      linear-gradient(135deg, rgb(39 39 42 / 0.6), rgb(24 24 27 / 0.5));
   }
 
   /* 可交互卡片：hover 时微微浮起 + 投影加深，给"可点"的高级反馈 */
@@ -617,7 +488,7 @@
   }
 
   .stat-label {
-    @apply text-[13px] font-medium text-gray-500 dark:text-dark-400;
+    @apply text-sm font-medium text-gray-500 dark:text-dark-400;
   }
 
   .stat-trend {
@@ -1122,116 +993,56 @@
 :root.dark .auth-hero {
   box-shadow: none;
 }
-:root.dark .auth-hero-sky {
-  border-color: rgb(55 65 81);
-  background:
-    radial-gradient(circle at 76% 22%, rgb(14 165 233 / 0.15), transparent 35%),
-    radial-gradient(circle at 94% 12%, rgb(139 92 246 / 0.12), transparent 30%),
-    linear-gradient(135deg, rgb(15 23 42), rgb(17 24 39));
-}
+:root.dark .auth-hero-sky,
 :root.dark .auth-hero-emerald {
-  border-color: rgb(55 65 81);
+  border-color: rgb(63 63 70);
   background:
-    radial-gradient(circle at 76% 22%, rgb(16 185 129 / 0.15), transparent 35%),
-    radial-gradient(circle at 94% 12%, rgb(13 148 136 / 0.12), transparent 30%),
-    linear-gradient(135deg, rgb(15 23 42), rgb(17 24 39));
+    radial-gradient(circle at 78% 20%, rgb(249 115 22 / 0.14), transparent 36%),
+    linear-gradient(135deg, rgb(24 24 27), rgb(9 9 11));
 }
 
-/* page-hero 暗色模式：与 auth-hero 同款的暗色配色 */
+/* page-hero 暗色模式：与 auth-hero 同款的品牌暗色配色 */
 :root.dark .page-hero {
   box-shadow: none;
 }
-:root.dark .page-hero-sky {
-  border-color: rgb(55 65 81);
-  background:
-    radial-gradient(circle at 76% 22%, rgb(14 165 233 / 0.15), transparent 35%),
-    radial-gradient(circle at 94% 12%, rgb(139 92 246 / 0.12), transparent 30%),
-    linear-gradient(135deg, rgb(15 23 42), rgb(17 24 39));
-}
-:root.dark .page-hero-emerald {
-  border-color: rgb(55 65 81);
-  background:
-    radial-gradient(circle at 76% 22%, rgb(16 185 129 / 0.15), transparent 35%),
-    radial-gradient(circle at 94% 12%, rgb(13 148 136 / 0.12), transparent 30%),
-    linear-gradient(135deg, rgb(15 23 42), rgb(17 24 39));
-}
-:root.dark .page-hero-violet {
-  border-color: rgb(55 65 81);
-  background:
-    radial-gradient(circle at 76% 22%, rgb(139 92 246 / 0.15), transparent 35%),
-    radial-gradient(circle at 94% 12%, rgb(14 165 233 / 0.12), transparent 30%),
-    linear-gradient(135deg, rgb(15 23 42), rgb(17 24 39));
-}
-:root.dark .page-hero-amber {
-  border-color: rgb(55 65 81);
-  background:
-    radial-gradient(circle at 76% 22%, rgb(245 158 11 / 0.15), transparent 35%),
-    radial-gradient(circle at 94% 12%, rgb(244 63 94 / 0.12), transparent 30%),
-    linear-gradient(135deg, rgb(15 23 42), rgb(17 24 39));
-}
-:root.dark .page-hero-rose {
-  border-color: rgb(55 65 81);
-  background:
-    radial-gradient(circle at 76% 22%, rgb(244 63 94 / 0.15), transparent 35%),
-    radial-gradient(circle at 94% 12%, rgb(139 92 246 / 0.12), transparent 30%),
-    linear-gradient(135deg, rgb(15 23 42), rgb(17 24 39));
-}
-:root.dark .page-hero-teal {
-  border-color: rgb(55 65 81);
-  background:
-    radial-gradient(circle at 76% 22%, rgb(20 184 166 / 0.15), transparent 35%),
-    radial-gradient(circle at 94% 12%, rgb(14 165 233 / 0.12), transparent 30%),
-    linear-gradient(135deg, rgb(15 23 42), rgb(17 24 39));
-}
+:root.dark .page-hero-sky,
+:root.dark .page-hero-emerald,
+:root.dark .page-hero-violet,
+:root.dark .page-hero-amber,
+:root.dark .page-hero-rose,
+:root.dark .page-hero-teal,
 :root.dark .page-hero-indigo {
-  border-color: rgb(55 65 81);
+  border-color: rgb(63 63 70);
   background:
-    radial-gradient(circle at 76% 22%, rgb(99 102 241 / 0.15), transparent 35%),
-    radial-gradient(circle at 94% 12%, rgb(139 92 246 / 0.12), transparent 30%),
-    linear-gradient(135deg, rgb(15 23 42), rgb(17 24 39));
+    radial-gradient(circle at 78% 20%, rgb(249 115 22 / 0.14), transparent 36%),
+    linear-gradient(135deg, rgb(24 24 27), rgb(9 9 11));
 }
 :root.dark .page-hero-tag {
-  background: rgb(31 41 55 / 0.7);
+  background: rgb(39 39 42 / 0.7);
 }
-:root.dark .page-hero-tag-sky { color: rgb(125 211 252); }
-:root.dark .page-hero-tag-emerald { color: rgb(110 231 183); }
-:root.dark .page-hero-tag-violet { color: rgb(196 181 253); }
-:root.dark .page-hero-tag-amber { color: rgb(252 211 77); }
-:root.dark .page-hero-tag-rose { color: rgb(253 164 175); }
-:root.dark .page-hero-tag-teal { color: rgb(94 234 212); }
-:root.dark .page-hero-tag-indigo { color: rgb(165 180 252); }
+:root.dark .page-hero-tag-sky,
+:root.dark .page-hero-tag-emerald,
+:root.dark .page-hero-tag-violet,
+:root.dark .page-hero-tag-amber,
+:root.dark .page-hero-tag-rose,
+:root.dark .page-hero-tag-teal,
+:root.dark .page-hero-tag-indigo {
+  color: rgb(253 186 116);
+}
 
 :root.dark .colored-panel {
-  border-color: rgb(55 65 81);
-  background-color: rgb(31 41 55);
+  border-color: rgb(63 63 70);
+  background-color: rgb(39 39 42);
   box-shadow: none;
 }
 
-:root.dark .colored-header-sky {
-  border-color: rgb(55 65 81);
-  background-color: rgb(14 165 233 / 0.08);
-}
-:root.dark .colored-header-emerald {
-  border-color: rgb(55 65 81);
-  background-color: rgb(16 185 129 / 0.08);
-}
-:root.dark .colored-header-amber {
-  border-color: rgb(55 65 81);
-  background-color: rgb(245 158 11 / 0.08);
-}
-:root.dark .colored-header-violet {
-  border-color: rgb(55 65 81);
-  background-color: rgb(139 92 246 / 0.08);
-}
-:root.dark .colored-header-teal {
-  border-color: rgb(55 65 81);
-  background-color: rgb(20 184 166 / 0.08);
-}
-:root.dark .colored-header-rose {
-  border-color: rgb(55 65 81);
-  background-color: rgb(244 63 94 / 0.08);
-}
+:root.dark .colored-header-sky,
+:root.dark .colored-header-emerald,
+:root.dark .colored-header-amber,
+:root.dark .colored-header-violet,
+:root.dark .colored-header-teal,
+:root.dark .colored-header-rose,
 :root.dark .colored-header-indigo {
-  border-color: rgb(55 65 81);
-  background-color: rgb(99 102 241 / 0.08);
+  border-color: rgb(63 63 70);
+  background-color: rgb(255 255 255 / 0.04);
 }

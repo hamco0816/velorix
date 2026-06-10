@@ -336,7 +336,7 @@
                 />
                 <span
                   v-else
-                  class="inline-flex h-4 w-4 items-center justify-center rounded bg-violet-100 text-[10px] font-bold text-violet-700 dark:bg-violet-900/40 dark:text-violet-300"
+                  class="inline-flex h-4 w-4 items-center justify-center rounded bg-violet-100 text-2xs font-bold text-violet-700 dark:bg-violet-900/40 dark:text-violet-300"
                 >A</span>
                 <span class="text-xs font-medium text-gray-700 dark:text-dark-200">{{ platform.label }}</span>
               </label>

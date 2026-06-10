@@ -53,10 +53,12 @@
           :columns="columns"
           :data="channels"
           :loading="loading"
+          :error="loadFailed"
           :server-side-sort="true"
           default-sort-key="created_at"
           default-sort-order="desc"
           @sort="handleSort"
+          @retry="loadChannels"
         >
           <template #cell-name="{ value }">
             <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
@@ -315,12 +317,12 @@
                     />
                     <span :class="['font-medium', platformTextClass(group.platform)]">{{ group.name }}</span>
                     <span
-                      :class="['rounded-full px-1 py-0 text-[10px]', platformBadgeLightClass(group.platform)]"
+                      :class="['rounded-full px-1 py-0 text-2xs', platformBadgeLightClass(group.platform)]"
                     >{{ group.rate_multiplier }}x</span>
-                    <span class="text-[10px] text-gray-400">{{ group.account_count || 0 }}</span>
+                    <span class="text-2xs text-gray-400">{{ group.account_count || 0 }}</span>
                     <span
                       v-if="isGroupInOtherChannel(group.id, section.platform)"
-                      class="text-[10px] text-gray-400"
+                      class="text-2xs text-gray-400"
                     >{{ getGroupInOtherChannelLabel(group.id) }}</span>
                   </label>
                 </div>
@@ -334,7 +336,7 @@
                   <label class="text-xs font-medium text-gray-700 dark:text-gray-300">
                     {{ t('admin.channels.form.webSearchEmulation') }}
                   </label>
-                  <p class="mt-0.5 text-[11px] text-red-500 dark:text-red-400">
+                  <p class="mt-0.5 text-2xs text-red-500 dark:text-red-400">
                     {{ t('admin.channels.form.webSearchEmulationHint') }}
                   </p>
                 </div>
@@ -680,6 +682,8 @@ const billingModelSourceOptions = computed(() => [
 // ── State ──
 const channels = ref<Channel[]>([])
 const loading = ref(false)
+// 渠道列表加载失败标记，用于表格展示错误态并提供重试
+const loadFailed = ref(false)
 const searchQuery = ref('')
 const filters = reactive({ status: '' })
 const pagination = reactive({
@@ -1120,6 +1124,7 @@ async function loadChannels() {
   const ctrl = new AbortController()
   abortController = ctrl
   loading.value = true
+  loadFailed.value = false
 
   try {
     const response = await adminAPI.channels.list(pagination.page, pagination.page_size, {
@@ -1135,6 +1140,7 @@ async function loadChannels() {
   } catch (error: unknown) {
     const e = error as { name?: string; code?: string }
     if (e?.name === 'AbortError' || e?.code === 'ERR_CANCELED') return
+    loadFailed.value = true
     appStore.showError(extractApiErrorMessage(error, t('admin.channels.loadError', 'Failed to load channels')))
   } finally {
     if (abortController === ctrl) {

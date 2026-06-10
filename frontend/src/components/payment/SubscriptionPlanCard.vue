@@ -17,7 +17,7 @@
       class="pointer-events-none absolute right-0 top-0 z-10 overflow-hidden"
     >
       <div class="relative h-[88px] w-[88px]">
-        <div class="absolute -right-[26px] top-[18px] flex w-[120px] rotate-45 items-center justify-center bg-rose-500 py-1 text-[11px] font-bold uppercase tracking-wider text-white shadow-md">
+        <div class="absolute -right-[26px] top-[18px] flex w-[120px] rotate-45 items-center justify-center bg-rose-500 py-1 text-2xs font-bold uppercase tracking-wider text-white shadow-md">
           {{ t('payment.admin.stockSoldOut') }}
         </div>
       </div>
@@ -39,35 +39,35 @@
               <h3 class="truncate text-lg font-bold text-gray-900 dark:text-white">{{ plan.name }}</h3>
               <div class="mt-1 flex flex-wrap items-center gap-1.5">
                 <span v-if="hasBadge && !soldOut"
-                  :class="['inline-flex max-w-full items-center rounded-full px-2.5 py-1 text-[11px] font-bold shadow-sm dark:shadow-none', badgeToneClasses]">
+                  :class="['inline-flex max-w-full items-center rounded-full px-2.5 py-1 text-2xs font-bold shadow-sm dark:shadow-none', badgeToneClasses]">
                   <span class="truncate">{{ badgeText }}</span>
                 </span>
-                <span :class="['inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium', badgeLightClass]">
+                <span :class="['inline-flex rounded-full px-2 py-0.5 text-2xs font-medium', badgeLightClass]">
                   {{ pLabel }}
                 </span>
                 <span v-if="plan.kind === 'exclusive'"
-                  class="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 text-[11px] font-semibold text-violet-700 ring-1 ring-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:ring-violet-900/50">
+                  class="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 text-2xs font-semibold text-violet-700 ring-1 ring-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:ring-violet-900/50">
                   <Icon name="badge" size="xs" :stroke-width="2.5" />
                   {{ t('payment.admin.kindBadgeExclusive') }}
                 </span>
                 <span v-if="cardType !== 'custom'"
-                  :class="['inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold', cardTypeBadgeClass(cardType)]">
+                  :class="['inline-flex rounded-full px-2 py-0.5 text-2xs font-semibold', cardTypeBadgeClass(cardType)]">
                   {{ t(`payment.admin.cardType.${cardType}`) }}
                 </span>
                 <!-- 套餐自带限额覆盖：标识"独立档位"，让买家看到这档跟同 group 其他档限额不同 -->
                 <span v-if="plan.has_plan_limit_override"
-                  class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-700 ring-1 ring-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:ring-indigo-900/50"
+                  class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-2xs font-semibold text-indigo-700 ring-1 ring-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:ring-indigo-900/50"
                   :title="t('payment.planCard.tierBadgeHint')">
                   <Icon name="badge" size="xs" :stroke-width="2.5" />
                   {{ t('payment.planCard.tierBadge') }}
                 </span>
                 <span v-if="plan.kind === 'exclusive' && stockInfo"
-                  :class="['inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold', stockInfo.cls]">
+                  :class="['inline-flex rounded-full px-2 py-0.5 text-2xs font-semibold', stockInfo.cls]">
                   {{ stockInfo.text }}
                 </span>
                 <!-- 已订阅状态：同一 group 已有活跃订阅时显示，3 个色档让用户看到紧迫感 -->
                 <span v-if="subscriptionInfo"
-                  :class="['inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1', subscriptionChipClass]">
+                  :class="['inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-2xs font-semibold ring-1', subscriptionChipClass]">
                   <Icon name="checkCircle" size="xs" :stroke-width="2.5" />
                   {{ t('payment.planCard.subscribed', { days: subscriptionInfo.daysRemaining }) }}
                 </span>
@@ -93,7 +93,7 @@
               </span>
               <span v-if="plan.original_price" class="inline-flex items-center gap-1.5">
                 <span class="text-sm text-gray-400 line-through dark:text-dark-500">¥{{ plan.original_price }}</span>
-                <span v-if="discountText" :class="['rounded-full px-2 py-0.5 text-[11px] font-bold', discountClass]">{{ discountText }}</span>
+                <span v-if="discountText" :class="['rounded-full px-2 py-0.5 text-2xs font-bold', discountClass]">{{ discountText }}</span>
               </span>
             </div>
           </div>
@@ -103,35 +103,35 @@
       <div class="mb-4 space-y-3 rounded-xl border border-gray-100 bg-slate-50/70 p-3 dark:border-dark-700 dark:bg-dark-800/45">
         <div class="plan-limits grid grid-cols-2 gap-2">
         <div class="rounded-lg bg-white px-3 py-2.5 dark:bg-dark-900/70">
-          <span class="block text-[11px] font-medium text-gray-400 dark:text-dark-500">{{ t('payment.planCard.rate') }}</span>
+          <span class="block text-2xs font-medium text-gray-400 dark:text-dark-500">{{ t('payment.planCard.rate') }}</span>
           <span :class="['mt-1 block text-base font-bold', textClass]">{{ rateDisplay }}</span>
         </div>
         <!-- 限额：value > 0 显示具体额度；value <= 0 显示"无限制"。
              被更紧限额覆盖的"废限额"由 limitVisibility 自动隐藏，避免用户看到 ×0.6 倍率 + 周$280 + 月$1200 这种没意义的并列。 -->
         <div v-if="limitVisibility.showDaily" class="rounded-lg bg-white px-3 py-2.5 dark:bg-dark-900/70">
-          <span class="block text-[11px] font-medium text-gray-400 dark:text-dark-500">{{ t('payment.planCard.dailyLimit') }}</span>
+          <span class="block text-2xs font-medium text-gray-400 dark:text-dark-500">{{ t('payment.planCard.dailyLimit') }}</span>
           <span v-if="(plan.daily_limit_usd ?? 0) > 0" class="mt-1 block text-base font-bold text-gray-900 dark:text-white">${{ plan.daily_limit_usd }}</span>
           <span v-else class="mt-1 block text-base font-bold text-emerald-600 dark:text-emerald-400">{{ t('payment.planCard.unlimited') }}</span>
         </div>
         <div v-if="limitVisibility.showWeekly" class="rounded-lg bg-white px-3 py-2.5 dark:bg-dark-900/70">
-          <span class="block text-[11px] font-medium text-gray-400 dark:text-dark-500">{{ t('payment.planCard.weeklyLimit') }}</span>
+          <span class="block text-2xs font-medium text-gray-400 dark:text-dark-500">{{ t('payment.planCard.weeklyLimit') }}</span>
           <span v-if="(plan.weekly_limit_usd ?? 0) > 0" class="mt-1 block text-base font-bold text-gray-900 dark:text-white">${{ plan.weekly_limit_usd }}</span>
           <span v-else class="mt-1 block text-base font-bold text-emerald-600 dark:text-emerald-400">{{ t('payment.planCard.unlimited') }}</span>
         </div>
         <div v-if="limitVisibility.showMonthly" class="rounded-lg bg-white px-3 py-2.5 dark:bg-dark-900/70">
-          <span class="block text-[11px] font-medium text-gray-400 dark:text-dark-500">{{ t('payment.planCard.monthlyLimit') }}</span>
+          <span class="block text-2xs font-medium text-gray-400 dark:text-dark-500">{{ t('payment.planCard.monthlyLimit') }}</span>
           <span v-if="(plan.monthly_limit_usd ?? 0) > 0" class="mt-1 block text-base font-bold text-gray-900 dark:text-white">${{ plan.monthly_limit_usd }}</span>
           <span v-else class="mt-1 block text-base font-bold text-emerald-600 dark:text-emerald-400">{{ t('payment.planCard.unlimited') }}</span>
         </div>
         <div v-if="plan.daily_limit_usd == null && plan.weekly_limit_usd == null && plan.monthly_limit_usd == null" class="rounded-lg bg-white px-3 py-2.5 dark:bg-dark-900/70">
-          <span class="block text-[11px] font-medium text-gray-400 dark:text-dark-500">{{ t('payment.planCard.quota') }}</span>
+          <span class="block text-2xs font-medium text-gray-400 dark:text-dark-500">{{ t('payment.planCard.quota') }}</span>
           <span class="mt-1 block text-base font-bold text-gray-900 dark:text-white">{{ t('payment.planCard.unlimited') }}</span>
         </div>
         </div>
 
         <div v-if="modelScopeItems.length > 0" class="rounded-lg bg-white px-3 py-3 dark:bg-dark-900/70">
           <div class="mb-2 flex items-center justify-between gap-3">
-            <span class="text-[11px] font-medium text-gray-400 dark:text-dark-500">{{ t('payment.planCard.models') }}</span>
+            <span class="text-2xs font-medium text-gray-400 dark:text-dark-500">{{ t('payment.planCard.models') }}</span>
             <span class="h-px flex-1 bg-slate-200 dark:bg-dark-600" />
           </div>
           <div class="flex flex-wrap gap-2">

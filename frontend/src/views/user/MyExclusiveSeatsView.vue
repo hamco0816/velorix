@@ -101,7 +101,7 @@
               <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ seat.plan_name || `Plan #${seat.plan_id}` }}</p>
               <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ seat.account_label }}</p>
             </div>
-            <span :class="['inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset', statusPillClass(seat.status)]">
+            <span :class="['inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-2xs font-medium ring-1 ring-inset', statusPillClass(seat.status)]">
               <span class="h-1.5 w-1.5 rounded-full" :class="statusDotClass(seat.status)"></span>
               {{ t(`exclusiveSeats.status.${seat.status}`) }}
             </span>
@@ -226,15 +226,15 @@
             <span class="text-sm text-gray-500 dark:text-gray-400">{{ t('payment.actualPay') }}</span>
             <div class="flex items-baseline gap-2">
               <span v-if="renewDialogTrend === 'up'"
-                class="inline-flex items-center rounded-md bg-amber-100/80 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                class="inline-flex items-center rounded-md bg-amber-100/80 px-1.5 py-0.5 text-2xs font-bold tabular-nums text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
                 +¥{{ (renewPreview.price - renewPreview.last_paid_price).toFixed(2) }}
               </span>
               <span v-else-if="renewDialogTrend === 'down'"
-                class="inline-flex items-center rounded-md bg-emerald-100/80 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                class="inline-flex items-center rounded-md bg-emerald-100/80 px-1.5 py-0.5 text-2xs font-bold tabular-nums text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
                 −¥{{ (renewPreview.last_paid_price - renewPreview.price).toFixed(2) }}
               </span>
               <span v-else
-                class="inline-flex items-center rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-dark-700 dark:text-dark-300">
+                class="inline-flex items-center rounded-md bg-gray-100 px-1.5 py-0.5 text-2xs font-medium text-gray-500 dark:bg-dark-700 dark:text-dark-300">
                 {{ t('payment.renewalBanner.priceSame') }}
               </span>
               <span class="font-mono text-2xl font-bold tabular-nums leading-none"

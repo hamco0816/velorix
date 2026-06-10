@@ -77,7 +77,7 @@ const options = computed(() => {
 <template>
   <div class="surface-card flex h-full flex-col p-6">
     <div class="mb-4 flex items-center justify-between">
-      <h3 class="flex items-center gap-2 text-[15px] font-semibold text-gray-900 dark:text-white">
+      <h3 class="flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white">
         <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300">
           <Icon name="clock" size="sm" :stroke-width="1.75" />
         </span>

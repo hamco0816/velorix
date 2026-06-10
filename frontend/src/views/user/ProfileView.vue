@@ -28,7 +28,7 @@
               {{ t('profile.securityDescription') }}
             </p>
           </div>
-          <div class="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-gray-50 px-2.5 py-1 text-[11px] font-medium text-gray-500 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60">
+          <div class="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-gray-50 px-2.5 py-1 text-2xs font-medium text-gray-500 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60">
             <Icon name="lock" size="xs" class="text-gray-400" />
             Password · 2FA
           </div>

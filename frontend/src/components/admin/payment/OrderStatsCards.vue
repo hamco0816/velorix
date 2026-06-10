@@ -6,7 +6,7 @@
         <Icon name="dollar" size="sm" :stroke-width="1.75" />
       </span>
       <div class="min-w-0 flex-1">
-        <p class="text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.todayRevenue') }}</p>
+        <p class="text-sm font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.todayRevenue') }}</p>
         <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[26px] text-gray-900 dark:text-white">¥{{ formatMoney(stats.today_amount) }}</p>
         <p class="mt-1 text-xs tabular-nums text-gray-500 dark:text-dark-400">
           <span class="font-medium text-gray-700 dark:text-gray-300">{{ stats.today_count }}</span>
@@ -21,7 +21,7 @@
         <Icon name="creditCard" size="sm" :stroke-width="1.75" />
       </span>
       <div class="min-w-0 flex-1">
-        <p class="text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.totalRevenue') }}</p>
+        <p class="text-sm font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.totalRevenue') }}</p>
         <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[26px] text-gray-900 dark:text-white">¥{{ formatMoney(stats.total_amount) }}</p>
         <p class="mt-1 text-xs tabular-nums text-gray-500 dark:text-dark-400">
           <span class="font-medium text-gray-700 dark:text-gray-300">{{ stats.total_count }}</span>
@@ -36,7 +36,7 @@
         <Icon name="chart" size="sm" :stroke-width="1.75" />
       </span>
       <div class="min-w-0 flex-1">
-        <p class="text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.todayOrders') }}</p>
+        <p class="text-sm font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.todayOrders') }}</p>
         <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[26px] text-gray-900 dark:text-white">{{ stats.today_count }}</p>
       </div>
     </div>
@@ -47,7 +47,7 @@
         <Icon name="chart" size="sm" :stroke-width="1.75" />
       </span>
       <div class="min-w-0 flex-1">
-        <p class="text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.avgAmount') }}</p>
+        <p class="text-sm font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.avgAmount') }}</p>
         <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[26px] text-gray-900 dark:text-white">¥{{ formatMoney(stats.avg_amount) }}</p>
       </div>
     </div>

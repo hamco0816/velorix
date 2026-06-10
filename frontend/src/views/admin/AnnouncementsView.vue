@@ -47,10 +47,12 @@
           :columns="columns"
           :data="announcements"
           :loading="loading"
+          :error="loadError"
           :server-side-sort="true"
           default-sort-key="created_at"
           default-sort-order="desc"
           @sort="handleSort"
+          @retry="loadAnnouncements"
         >
           <template #cell-title="{ value, row }">
             <div class="min-w-0">
@@ -151,7 +153,7 @@
 
           <template #empty>
             <EmptyState
-              :title="loadError ? t('admin.announcements.failedToLoad') : t('empty.noData')"
+              :title="t('empty.noData')"
               :description="''"
               :action-text="t('admin.announcements.createAnnouncement')"
               @action="openCreateDialog"

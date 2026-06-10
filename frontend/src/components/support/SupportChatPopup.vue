@@ -16,7 +16,7 @@
       <span v-if="embedded" class="ml-auto text-xs text-gray-400 dark:text-dark-500">{{ t('support.openChat') }}</span>
       <span
         v-if="unreadCount > 0"
-        class="absolute -right-1 -top-1 min-w-[18px] rounded-full bg-rose-500 px-1 text-center text-[10px] font-semibold leading-[18px] text-white"
+        class="absolute -right-1 -top-1 min-w-[18px] rounded-full bg-rose-500 px-1 text-center text-2xs font-semibold leading-[18px] text-white"
       >
         {{ unreadCount > 99 ? '99+' : unreadCount }}
       </span>
@@ -76,7 +76,7 @@
           >
             <div class="whitespace-pre-wrap break-words leading-6">{{ message.content }}</div>
             <div
-              class="mt-1 text-[11px]"
+              class="mt-1 text-2xs"
               :class="message.sender_type === 'user' ? 'text-primary-100' : 'text-gray-400 dark:text-dark-400'"
             >
               {{ formatMessageTime(message.created_at) }}

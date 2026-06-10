@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import Icon from '@/components/icons/Icon.vue'
 import { useClipboard } from '@/composables/useClipboard'
 import type { CustomEndpoint } from '@/types'
 
@@ -73,7 +74,7 @@ onBeforeUnmount(() => {
       <span class="font-semibold text-gray-700 dark:text-gray-200">{{ item.name }}</span>
       <span
         v-if="item.isDefault"
-        class="rounded-full bg-primary-50 px-2 py-0.5 text-[11px] font-semibold leading-tight text-primary-600 dark:bg-primary-900/30 dark:text-primary-400"
+        class="rounded-full bg-primary-50 px-2 py-0.5 text-2xs font-semibold leading-tight text-primary-600 dark:bg-primary-900/30 dark:text-primary-400"
       >{{ t('keys.endpoints.default') }}</span>
 
       <span class="text-gray-300 dark:text-dark-500">|</span>
@@ -89,7 +90,7 @@ onBeforeUnmount(() => {
             {{ item.description }}
           </p>
           <p
-            class="flex items-center gap-1.5 text-[11px] leading-4 text-primary-600 dark:text-primary-300"
+            class="flex items-center gap-1.5 text-2xs leading-4 text-primary-600 dark:text-primary-300"
             :class="item.description ? 'mt-1.5' : ''"
           >
             <span class="h-1.5 w-1.5 rounded-full bg-primary-500 dark:bg-primary-300"></span>
@@ -99,7 +100,7 @@ onBeforeUnmount(() => {
         </div>
 
         <code
-          class="cursor-pointer font-mono text-[15px] font-semibold text-slate-700 decoration-gray-400 decoration-dashed underline-offset-2 hover:text-primary-600 hover:underline focus:text-primary-600 focus:underline focus:outline-none dark:text-slate-200 dark:decoration-gray-500 dark:hover:text-primary-400 dark:focus:text-primary-400"
+          class="cursor-pointer font-mono text-base font-semibold text-slate-700 decoration-gray-400 decoration-dashed underline-offset-2 hover:text-primary-600 hover:underline focus:text-primary-600 focus:underline focus:outline-none dark:text-slate-200 dark:decoration-gray-500 dark:hover:text-primary-400 dark:focus:text-primary-400"
           role="button"
           tabindex="0"
           @click="copy(item.endpoint)"
@@ -116,9 +117,7 @@ onBeforeUnmount(() => {
           :aria-label="tooltipHint(item.endpoint)"
           @click="copy(item.endpoint)"
         >
-          <svg v-if="copiedEndpoint === item.endpoint" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
+          <Icon v-if="copiedEndpoint === item.endpoint" name="check" size="xs" :stroke-width="2.2" />
           <svg v-else class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
           </svg>

@@ -5,7 +5,7 @@
       v-if="windowStats && (windowStats.requests > 0 || windowStats.tokens > 0)"
       class="mb-1 flex items-center"
     >
-      <div class="flex flex-wrap items-center gap-1.5 text-[11px] text-gray-500 dark:text-gray-400">
+      <div class="flex flex-wrap items-center gap-1.5 text-2xs text-gray-500 dark:text-gray-400">
         <span class="rounded bg-gray-100 px-1.5 py-0.5 dark:bg-gray-800 tabular-nums">
           {{ formatRequests }} req
         </span>
@@ -29,7 +29,7 @@
     <div class="flex items-center gap-1.5">
       <!-- Label badge (fixed width for alignment) -->
       <span
-        :class="['w-[36px] shrink-0 rounded px-1 py-0.5 text-center text-[11px] font-medium', labelClass]"
+        :class="['w-[36px] shrink-0 rounded px-1 py-0.5 text-center text-2xs font-medium', labelClass]"
       >
         {{ label }}
       </span>
@@ -43,12 +43,12 @@
       </div>
 
       <!-- Percentage -->
-      <span :class="['w-[40px] shrink-0 text-right text-[11px] font-medium tabular-nums', textClass]">
+      <span :class="['w-[40px] shrink-0 text-right text-2xs font-medium tabular-nums', textClass]">
         {{ displayPercent }}
       </span>
 
       <!-- Reset time -->
-      <span v-if="shouldShowResetTime" class="shrink-0 text-[11px] tabular-nums text-gray-400">
+      <span v-if="shouldShowResetTime" class="shrink-0 text-2xs tabular-nums text-gray-400">
         {{ formatResetTime }}
       </span>
     </div>

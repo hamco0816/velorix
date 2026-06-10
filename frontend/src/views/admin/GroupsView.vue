@@ -87,10 +87,12 @@
           :columns="columns"
           :data="groups"
           :loading="loading"
+          :error="loadFailed"
           :server-side-sort="true"
           default-sort-key="sort_order"
           default-sort-order="asc"
           @sort="handleSort"
+          @retry="loadGroups"
         >
           <template #cell-name="{ value }">
             <span class="font-medium text-gray-900 dark:text-white">{{
@@ -221,7 +223,7 @@
               <span class="flex items-baseline gap-0.5 font-mono tabular-nums leading-none">
                 <span
                   :class="[
-                    'text-[15px] font-bold',
+                    'text-base font-bold',
                     ((row.active_account_count || 0) - (row.rate_limited_account_count || 0)) > 0
                       ? 'text-emerald-600 dark:text-emerald-400'
                       : 'text-gray-400 dark:text-dark-500',
@@ -229,12 +231,12 @@
                 >
                   {{ (row.active_account_count || 0) - (row.rate_limited_account_count || 0) }}
                 </span>
-                <span class="text-[11px] text-gray-400 dark:text-dark-500">/</span>
-                <span class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ row.account_count || 0 }}</span>
+                <span class="text-2xs text-gray-400 dark:text-dark-500">/</span>
+                <span class="text-xs font-medium text-gray-500 dark:text-dark-400">{{ row.account_count || 0 }}</span>
               </span>
               <span
                 v-if="row.rate_limited_account_count"
-                class="inline-flex items-center gap-0.5 rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 ring-1 ring-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:ring-amber-900/50"
+                class="inline-flex items-center gap-0.5 rounded-md bg-amber-50 px-1.5 py-0.5 text-2xs font-semibold text-amber-700 ring-1 ring-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:ring-amber-900/50"
                 :title="t('admin.groups.accountsRateLimitedHint')"
               >
                 <Icon name="exclamationTriangle" size="xs" :stroke-width="2.5" />
@@ -255,7 +257,7 @@
               :title="t('admin.groups.activeSubscriptionsHint')"
             >
               <span class="font-semibold">{{ row.active_subscription_count || 0 }}</span>
-              <span class="text-[10px] text-gray-400">{{ t('admin.groups.subscriptionsUnit') }}</span>
+              <span class="text-2xs text-gray-400">{{ t('admin.groups.subscriptionsUnit') }}</span>
             </span>
           </template>
 
@@ -279,17 +281,17 @@
                 <span class="font-semibold text-gray-900 dark:text-white">
                   ${{ formatCost(usageMap.get(row.id)?.today_cost ?? 0) }}
                 </span>
-                <span class="text-[11px] text-gray-400 dark:text-dark-500">{{ t("admin.groups.usageToday") }}</span>
+                <span class="text-2xs text-gray-400 dark:text-dark-500">{{ t("admin.groups.usageToday") }}</span>
               </div>
               <div class="mt-0.5 flex items-baseline gap-1 tabular-nums text-xs">
                 <span class="font-medium text-gray-500 dark:text-dark-400">
                   ${{ formatCost(usageMap.get(row.id)?.total_cost ?? 0) }}
                 </span>
-                <span class="text-[11px] text-gray-400 dark:text-dark-500">{{ t("admin.groups.usageTotal") }}</span>
+                <span class="text-2xs text-gray-400 dark:text-dark-500">{{ t("admin.groups.usageTotal") }}</span>
               </div>
               <!-- 日限额进度条：今日 / daily_limit 占比超过 80% amber、超过 100% red -->
               <div v-if="row.subscription_type === 'subscription' && row.daily_limit_usd" class="mt-1.5">
-                <div class="flex items-baseline justify-between text-[10px]">
+                <div class="flex items-baseline justify-between text-2xs">
                   <span class="text-gray-400">{{ t('admin.groups.dailyUsage') }}</span>
                   <span class="tabular-nums" :class="usagePercentColor(row)">
                     {{ usagePercent(row).toFixed(0) }}%
@@ -1580,26 +1582,7 @@
             class="btn btn-primary"
             data-tour="group-form-submit"
           >
-            <svg
-              v-if="submitting"
-              class="-ml-1 mr-2 h-4 w-4 animate-spin"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
+            <LoadingSpinner v-if="submitting" size="sm" color="current" class="-ml-1 mr-2" />
             {{ submitting ? t("admin.groups.creating") : t("common.create") }}
           </button>
         </div>
@@ -2835,26 +2818,7 @@
             class="btn btn-primary"
             data-tour="group-form-submit"
           >
-            <svg
-              v-if="submitting"
-              class="-ml-1 mr-2 h-4 w-4 animate-spin"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
+            <LoadingSpinner v-if="submitting" size="sm" color="current" class="-ml-1 mr-2" />
             {{ submitting ? t("admin.groups.updating") : t("common.update") }}
           </button>
         </div>
@@ -2937,26 +2901,7 @@
             :disabled="sortSubmitting"
             class="btn btn-primary"
           >
-            <svg
-              v-if="sortSubmitting"
-              class="-ml-1 mr-2 h-4 w-4 animate-spin"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
+            <LoadingSpinner v-if="sortSubmitting" size="sm" color="current" class="-ml-1 mr-2" />
             {{ sortSubmitting ? t("common.saving") : t("common.save") }}
           </button>
         </div>
@@ -3000,6 +2945,7 @@ import EmptyState from "@/components/common/EmptyState.vue";
 import Select from "@/components/common/Select.vue";
 import PlatformIcon from "@/components/common/PlatformIcon.vue";
 import Icon from "@/components/icons/Icon.vue";
+import LoadingSpinner from "@/components/common/LoadingSpinner.vue";
 import GroupRateMultipliersModal from "@/components/admin/group/GroupRateMultipliersModal.vue";
 import GroupRPMOverridesModal from "@/components/admin/group/GroupRPMOverridesModal.vue";
 import GroupCapacityBadge from "@/components/common/GroupCapacityBadge.vue";
@@ -3239,6 +3185,8 @@ const copyAccountsGroupOptionsForEdit = computed(() => {
 
 const groups = ref<AdminGroup[]>([]);
 const loading = ref(false);
+// 分组列表加载失败标记，用于表格展示错误态并提供重试
+const loadFailed = ref(false);
 const usageMap = ref<Map<number, { today_cost: number; total_cost: number }>>(
   new Map(),
 );
@@ -3714,6 +3662,7 @@ const loadGroups = async () => {
   abortController = currentController;
   const { signal } = currentController;
   loading.value = true;
+  loadFailed.value = false;
   try {
     const response = await adminAPI.groups.list(
       pagination.page,
@@ -3744,6 +3693,7 @@ const loadGroups = async () => {
     ) {
       return;
     }
+    loadFailed.value = true;
     appStore.showError(t("admin.groups.failedToLoad"));
     console.error("Error loading groups:", error);
   } finally {

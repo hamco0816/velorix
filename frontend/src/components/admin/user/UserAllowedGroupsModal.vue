@@ -48,9 +48,7 @@
                       class="peer sr-only"
                     />
                     <div class="h-5 w-5 rounded-md border-2 border-gray-300 transition-all peer-checked:border-primary-500 peer-checked:bg-primary-500 dark:border-dark-500 peer-checked:dark:border-primary-500">
-                      <svg v-if="config.isSelected" class="h-full w-full text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
+                      <Icon v-if="config.isSelected" name="check" class="h-full w-full text-white" :stroke-width="3" />
                     </div>
                   </label>
                 </div>
@@ -59,7 +57,7 @@
                 <div class="min-w-0 flex-1">
                   <div class="flex items-center gap-2">
                     <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ config.groupName }}</span>
-                    <span class="inline-flex items-center rounded-full bg-violet-50 px-2 py-0.5 text-[11px] font-medium text-violet-700 ring-1 ring-inset ring-violet-200/70 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30">
+                    <span class="inline-flex items-center rounded-full bg-violet-50 px-2 py-0.5 text-2xs font-medium text-violet-700 ring-1 ring-inset ring-violet-200/70 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30">
                       {{ t('admin.groups.exclusive') }}
                     </span>
                   </div>
@@ -110,9 +108,7 @@
                 <!-- 复选框（禁用状态） -->
                 <div class="flex-shrink-0">
                   <div class="flex h-5 w-5 items-center justify-center rounded-md bg-emerald-500 ring-1 ring-inset ring-emerald-400 dark:bg-emerald-600 dark:ring-emerald-500">
-                    <svg class="h-full w-full text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
+                    <Icon name="check" class="h-full w-full text-white" :stroke-width="3" />
                   </div>
                 </div>
 
@@ -167,10 +163,7 @@
       <div class="flex justify-end gap-3">
         <button @click="$emit('close')" class="btn btn-secondary px-5">{{ t('common.cancel') }}</button>
         <button @click="handleSave" :disabled="submitting" class="btn btn-primary px-6">
-          <svg v-if="submitting" class="-ml-1 mr-2 h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
+          <LoadingSpinner v-if="submitting" size="sm" color="current" class="-ml-1 mr-2" />
           {{ submitting ? t('common.saving') : t('common.save') }}
         </button>
       </div>
@@ -185,7 +178,9 @@ import { useAppStore } from '@/stores/app'
 import { adminAPI } from '@/api/admin'
 import type { AdminUser, Group, GroupPlatform } from '@/types'
 import BaseDialog from '@/components/common/BaseDialog.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import PlatformIcon from '@/components/common/PlatformIcon.vue'
+import Icon from '@/components/icons/Icon.vue'
 
 interface GroupRateConfig {
   groupId: number

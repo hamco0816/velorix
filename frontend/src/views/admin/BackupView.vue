@@ -216,7 +216,7 @@
           <div class="fixed inset-0 bg-black/50" @click="showR2Guide = false"></div>
           <div class="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-6 shadow-2xl dark:bg-dark-800">
             <button type="button" class="absolute right-4 top-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" @click="showR2Guide = false">
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+              <Icon name="x" size="md" :stroke-width="2" />
             </button>
 
             <h2 class="mb-4 text-lg font-bold text-gray-900 dark:text-white">{{ t('admin.backup.r2Guide.title') }}</h2>
@@ -292,6 +292,57 @@
         </div>
       </transition>
     </teleport>
+
+    <!-- 删除备份的统一确认弹窗（useConfirm 驱动） -->
+    <ConfirmDialog
+      :show="confirmState.show"
+      :title="confirmState.title"
+      :message="confirmState.message"
+      :confirm-text="confirmState.confirmText"
+      :cancel-text="confirmState.cancelText"
+      :danger="confirmState.danger"
+      @confirm="handleConfirmAccept"
+      @cancel="handleConfirmCancel"
+    />
+
+    <!-- 恢复备份对话框：展示覆盖警告并要求输入恢复密码后才能执行 -->
+    <BaseDialog
+      :show="restoreTarget !== null"
+      :title="t('admin.backup.actions.restore')"
+      width="narrow"
+      @close="closeRestoreDialog"
+    >
+      <div class="space-y-4">
+        <p class="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+          {{ t('admin.backup.actions.restoreConfirm') }}
+        </p>
+        <Input
+          v-model="restorePassword"
+          type="password"
+          :label="t('admin.backup.actions.restorePasswordPrompt')"
+          autocomplete="off"
+          @enter="confirmRestore"
+        />
+      </div>
+      <template #footer>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          :disabled="restoringId !== ''"
+          @click="closeRestoreDialog"
+        >
+          {{ t('common.cancel') }}
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          :disabled="restoringId !== '' || !restorePassword"
+          @click="confirmRestore"
+        >
+          {{ restoringId !== '' ? t('common.processing') : t('common.confirm') }}
+        </button>
+      </template>
+    </BaseDialog>
 </template>
 
 <script setup lang="ts">
@@ -299,10 +350,18 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { adminAPI } from '@/api'
 import { useAppStore } from '@/stores'
+import { useConfirm } from '@/composables/useConfirm'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
+import BaseDialog from '@/components/common/BaseDialog.vue'
+import Input from '@/components/common/Input.vue'
+import Icon from '@/components/icons/Icon.vue'
 import type { BackupS3Config, BackupScheduleConfig, BackupRecord } from '@/api/admin/backup'
 
 const { t } = useI18n()
 const appStore = useAppStore()
+
+// 通用确认弹窗：替代浏览器原生 confirm()，由模板底部的 ConfirmDialog 实例渲染
+const { confirmState, requestConfirm, handleConfirmAccept, handleConfirmCancel } = useConfirm()
 
 // S3 config
 const s3Form = ref<BackupS3Config>({
@@ -333,6 +392,10 @@ const loadingBackups = ref(false)
 const creatingBackup = ref(false)
 const restoringId = ref('')
 const manualExpireDays = ref(14)
+
+// 恢复备份对话框状态：restoreTarget 为待恢复的备份 ID（null 表示对话框关闭），restorePassword 为输入的恢复密码
+const restoreTarget = ref<string | null>(null)
+const restorePassword = ref('')
 
 // Polling
 const pollingTimer = ref<ReturnType<typeof setInterval> | null>(null)
@@ -562,13 +625,26 @@ async function downloadBackup(id: string) {
   }
 }
 
-async function restoreBackup(id: string) {
-  if (!window.confirm(t('admin.backup.actions.restoreConfirm'))) return
-  const password = window.prompt(t('admin.backup.actions.restorePasswordPrompt'))
-  if (!password) return
+// 点击"恢复"按钮：打开恢复确认对话框，等待管理员输入恢复密码
+function restoreBackup(id: string) {
+  restoreTarget.value = id
+  restorePassword.value = ''
+}
+
+// 关闭恢复对话框并清空密码（恢复请求提交中不允许关闭）
+function closeRestoreDialog() {
+  if (restoringId.value) return
+  restoreTarget.value = null
+  restorePassword.value = ''
+}
+
+// 确认恢复：密码非空才提交，调用恢复接口并启动进度轮询，提交完成后关闭对话框
+async function confirmRestore() {
+  const id = restoreTarget.value
+  if (!id || !restorePassword.value || restoringId.value) return
   restoringId.value = id
   try {
-    const record = await adminAPI.backup.restoreBackup(id, password)
+    const record = await adminAPI.backup.restoreBackup(id, restorePassword.value)
     updateRecordInList(record)
     startRestorePolling(id)
   } catch (error: any) {
@@ -579,10 +655,18 @@ async function restoreBackup(id: string) {
     }
     restoringId.value = ''
   }
+  restoreTarget.value = null
+  restorePassword.value = ''
 }
 
+// 删除备份：弹出危险确认框，确认后调用删除接口并刷新列表
 async function removeBackup(id: string) {
-  if (!window.confirm(t('admin.backup.actions.deleteConfirm'))) return
+  const confirmed = await requestConfirm({
+    title: t('common.warning'),
+    message: t('admin.backup.actions.deleteConfirm'),
+    danger: true
+  })
+  if (!confirmed) return
   try {
     await adminAPI.backup.deleteBackup(id)
     appStore.showSuccess(t('admin.backup.actions.deleted'))

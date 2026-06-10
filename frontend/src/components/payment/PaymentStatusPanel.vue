@@ -40,9 +40,7 @@
       <div class="rounded-2xl border border-gray-200/70 bg-white p-6 shadow-card dark:border-dark-700/60 dark:bg-dark-800/40">
         <div class="flex flex-col items-center space-y-4 py-4">
           <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-50 text-gray-500 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-700/40 dark:text-gray-400 dark:ring-dark-600/60">
-            <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <Icon name="x" size="lg" class="h-7 w-7" :stroke-width="2.2" />
           </div>
           <p class="text-base font-semibold tracking-tight text-gray-900 dark:text-white">{{ t('payment.qr.cancelled') }}</p>
           <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('payment.qr.cancelledDesc') }}</p>
@@ -80,7 +78,7 @@
             <p v-if="scanHint" class="text-xs text-gray-500 dark:text-gray-400">{{ scanHint }}</p>
           </div>
           <div class="hidden text-right sm:block">
-            <p class="text-[11px] uppercase tracking-wide text-gray-400 dark:text-gray-500">{{ t('payment.qr.expiresIn') }}</p>
+            <p class="text-2xs uppercase tracking-wide text-gray-400 dark:text-gray-500">{{ t('payment.qr.expiresIn') }}</p>
             <p :class="['text-base font-semibold tabular-nums', countdownColorClass]">{{ countdownDisplay }}</p>
           </div>
         </div>
@@ -110,7 +108,7 @@
             </span>
             <span>{{ t('payment.qr.waitingPayment') }}</span>
           </div>
-          <p class="mt-1 text-[11px] sm:hidden" :class="countdownColorClass">
+          <p class="mt-1 text-2xs sm:hidden" :class="countdownColorClass">
             {{ t('payment.qr.expiresIn') }} · <span class="tabular-nums">{{ countdownDisplay }}</span>
           </p>
         </div>
@@ -146,7 +144,7 @@
             <span>{{ t('payment.qr.expiresIn') }}</span>
             <span :class="['font-semibold tabular-nums', countdownColorClass]">{{ countdownDisplay }}</span>
           </div>
-          <p class="inline-flex items-center gap-1.5 text-[11px] text-gray-400 dark:text-gray-500">
+          <p class="inline-flex items-center gap-1.5 text-2xs text-gray-400 dark:text-gray-500">
             <span class="h-1.5 w-1.5 rounded-full bg-sky-500 animate-pulse"></span>
             {{ t('payment.qr.waitingPayment') }}
           </p>

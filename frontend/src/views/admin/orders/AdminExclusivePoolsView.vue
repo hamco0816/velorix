@@ -27,7 +27,7 @@
             <Icon name="badge" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0 flex-1">
-            <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.statTotal') }}</p>
+            <p class="text-2xs font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.statTotal') }}</p>
             <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[24px] text-gray-900 dark:text-white">{{ inventory.total }}</p>
           </div>
         </div>
@@ -36,14 +36,14 @@
             <Icon name="check" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0 flex-1">
-            <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400" :title="t('payment.admin.exclusivePools.statSchedulableHint')">
+            <p class="text-2xs font-medium text-gray-500 dark:text-dark-400" :title="t('payment.admin.exclusivePools.statSchedulableHint')">
               {{ t('payment.admin.exclusivePools.statAvailableNow') }}
             </p>
             <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[24px] text-emerald-600 dark:text-emerald-400">
               {{ typeof inventory.schedulable === 'number' ? inventory.schedulable : inventory.free }}
             </p>
             <p v-if="typeof inventory.schedulable === 'number' && inventory.schedulable !== inventory.free"
-              class="mt-1 text-[11px] tabular-nums text-gray-500 dark:text-gray-400">
+              class="mt-1 text-2xs tabular-nums text-gray-500 dark:text-gray-400">
               {{ t('payment.admin.exclusivePools.statFreeRaw', { n: inventory.free }) }}
             </p>
           </div>
@@ -53,7 +53,7 @@
             <Icon name="link" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0 flex-1">
-            <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.statUsed') }}</p>
+            <p class="text-2xs font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.statUsed') }}</p>
             <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[24px] text-sky-600 dark:text-sky-400">{{ inventory.used }}</p>
           </div>
         </div>
@@ -69,9 +69,9 @@
             <Icon name="clock" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0 flex-1">
-            <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.statExpiring') }}</p>
+            <p class="text-2xs font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.statExpiring') }}</p>
             <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[24px] text-amber-600 dark:text-amber-400">{{ inventory.expiring_in_7 }}</p>
-            <p v-if="inventory.expiring_in_7 > 0" class="mt-1 text-[11px] text-amber-700/80 dark:text-amber-300/70">
+            <p v-if="inventory.expiring_in_7 > 0" class="mt-1 text-2xs text-amber-700/80 dark:text-amber-300/70">
               {{ expiringFilter ? t('payment.admin.exclusivePools.statExpiringClickClear') : t('payment.admin.exclusivePools.statExpiringClickFilter') }}
             </p>
           </div>
@@ -114,12 +114,12 @@
           <table class="min-w-full divide-y divide-gray-200/60 dark:divide-dark-700/60">
             <thead class="bg-gray-50/60 dark:bg-dark-800/60">
               <tr>
-                <th class="px-4 py-3 text-left text-[13px] font-medium text-gray-500 dark:text-dark-400">ID</th>
-                <th class="px-4 py-3 text-left text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.colUser') }}</th>
-                <th class="px-4 py-3 text-left text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.colAccount') }}</th>
-                <th class="px-4 py-3 text-left text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.colStatus') }}</th>
-                <th class="px-4 py-3 text-left text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.colExpiresAt') }}</th>
-                <th class="px-4 py-3 text-right text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.colActions') }}</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-dark-400">ID</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.colUser') }}</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.colAccount') }}</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.colStatus') }}</th>
+                <th class="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.colExpiresAt') }}</th>
+                <th class="px-4 py-3 text-right text-sm font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.colActions') }}</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 dark:divide-dark-700/60">
@@ -128,13 +128,13 @@
                 <td class="px-4 py-3">
                   <div class="flex flex-col">
                     <span class="font-medium text-gray-900 dark:text-white">{{ userLabel(seat.user_id) }}</span>
-                    <span class="font-mono text-[11px] text-gray-400">#{{ seat.user_id }}</span>
+                    <span class="font-mono text-2xs text-gray-400">#{{ seat.user_id }}</span>
                   </div>
                 </td>
                 <td class="px-4 py-3">
                   <div class="flex flex-col">
                     <span class="text-gray-900 dark:text-gray-200">{{ accountLabel(seat.account_id) }}</span>
-                    <span class="font-mono text-[11px] text-gray-400">#{{ seat.account_id }}</span>
+                    <span class="font-mono text-2xs text-gray-400">#{{ seat.account_id }}</span>
                   </div>
                 </td>
                 <td class="px-4 py-3">
@@ -156,7 +156,7 @@
                   <div class="flex flex-col items-start gap-1">
                     <span class="text-sm tabular-nums" :class="expiresColor(seat)">{{ formatDate(seat.expires_at) }}</span>
                     <!-- 倒计时 chip：< 3 天 rose / 3-7 天 amber，更醒目 -->
-                    <span v-if="seat.status === 'active' && expiryDays(seat) !== null" class="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium" :class="expiryChipClass(seat)">
+                    <span v-if="seat.status === 'active' && expiryDays(seat) !== null" class="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-2xs font-medium" :class="expiryChipClass(seat)">
                       <Icon name="clock" size="xs" />
                       {{ expiryChipLabel(seat) }}
                     </span>
@@ -346,7 +346,7 @@
               {{ extendPreviewDate }}
             </span>
           </div>
-          <p v-if="extendPreviewInvalid" class="mt-1 text-[11px] text-red-600">
+          <p v-if="extendPreviewInvalid" class="mt-1 text-2xs text-red-600">
             {{ t('payment.admin.exclusivePools.extendPreviewInvalidPast') }}
           </p>
         </div>

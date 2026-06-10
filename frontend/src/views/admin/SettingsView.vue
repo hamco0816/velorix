@@ -87,26 +87,7 @@
                   :disabled="adminApiKeyOperating"
                   class="btn btn-primary btn-sm"
                 >
-                  <svg
-                    v-if="adminApiKeyOperating"
-                    class="mr-1 h-4 w-4 animate-spin"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      class="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      stroke-width="4"
-                    ></circle>
-                    <path
-                      class="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
+                  <LoadingSpinner v-if="adminApiKeyOperating" size="sm" color="current" class="mr-1" />
                   {{
                     adminApiKeyOperating
                       ? t("admin.settings.adminApiKey.creating")
@@ -260,26 +241,7 @@
                     :disabled="overloadCooldownSaving"
                     class="btn btn-primary btn-sm"
                   >
-                    <svg
-                      v-if="overloadCooldownSaving"
-                      class="mr-1 h-4 w-4 animate-spin"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        class="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        stroke-width="4"
-                      ></circle>
-                      <path
-                        class="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
+                    <LoadingSpinner v-if="overloadCooldownSaving" size="sm" color="current" class="mr-1" />
                     {{
                       overloadCooldownSaving
                         ? t("common.saving")
@@ -440,26 +402,7 @@
                     :disabled="streamTimeoutSaving"
                     class="btn btn-primary btn-sm"
                   >
-                    <svg
-                      v-if="streamTimeoutSaving"
-                      class="mr-1 h-4 w-4 animate-spin"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        class="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        stroke-width="4"
-                      ></circle>
-                      <path
-                        class="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
+                    <LoadingSpinner v-if="streamTimeoutSaving" size="sm" color="current" class="mr-1" />
                     {{
                       streamTimeoutSaving
                         ? t("common.saving")
@@ -607,19 +550,7 @@
                         "
                         class="btn btn-ghost btn-xs text-red-500 hover:text-red-700"
                       >
-                        <svg
-                          class="h-4 w-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
+                        <Icon name="x" size="sm" :stroke-width="2" />
                       </button>
                     </div>
                     <button
@@ -642,26 +573,7 @@
                     :disabled="rectifierSaving"
                     class="btn btn-primary btn-sm"
                   >
-                    <svg
-                      v-if="rectifierSaving"
-                      class="mr-1 h-4 w-4 animate-spin"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        class="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        stroke-width="4"
-                      ></circle>
-                      <path
-                        class="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
+                    <LoadingSpinner v-if="rectifierSaving" size="sm" color="current" class="mr-1" />
                     {{
                       rectifierSaving ? t("common.saving") : t("common.save")
                     }}
@@ -814,19 +726,7 @@
                         @click="rule.model_whitelist!.splice(index, 1)"
                         class="shrink-0 rounded p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
                       >
-                        <svg
-                          class="h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
+                        <Icon name="x" size="sm" :stroke-width="2" />
                       </button>
                     </div>
                     <!-- Add pattern button -->
@@ -838,19 +738,7 @@
                       "
                       class="mb-2 inline-flex items-center gap-1 text-xs text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
                     >
-                      <svg
-                        class="h-3.5 w-3.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        stroke-width="2"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M12 4v16m8-8H4"
-                        />
-                      </svg>
+                      <Icon name="plus" size="xs" class="h-3.5 w-3.5" :stroke-width="2" />
                       {{ t("admin.settings.betaPolicy.addModelPattern") }}
                     </button>
                     <!-- Common pattern chips -->
@@ -921,26 +809,7 @@
                     :disabled="betaPolicySaving"
                     class="btn btn-primary btn-sm"
                   >
-                    <svg
-                      v-if="betaPolicySaving"
-                      class="mr-1 h-4 w-4 animate-spin"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        class="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        stroke-width="4"
-                      ></circle>
-                      <path
-                        class="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
+                    <LoadingSpinner v-if="betaPolicySaving" size="sm" color="current" class="mr-1" />
                     {{
                       betaPolicySaving ? t("common.saving") : t("common.save")
                     }}
@@ -992,19 +861,7 @@
                     class="rounded p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
                     :title="t('admin.settings.openaiFastPolicy.removeRule')"
                   >
-                    <svg
-                      class="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      stroke-width="2"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
+                    <Icon name="x" size="sm" :stroke-width="2" />
                   </button>
                 </div>
 
@@ -1121,19 +978,7 @@
                       "
                       class="shrink-0 rounded p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
                     >
-                      <svg
-                        class="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        stroke-width="2"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
+                      <Icon name="x" size="sm" :stroke-width="2" />
                     </button>
                   </div>
                   <button
@@ -1141,19 +986,7 @@
                     @click="addOpenAIFastPolicyModelPattern(rule)"
                     class="mb-2 inline-flex items-center gap-1 text-xs text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
                   >
-                    <svg
-                      class="h-3.5 w-3.5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      stroke-width="2"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M12 4v16m8-8H4"
-                      />
-                    </svg>
+                    <Icon name="plus" size="xs" class="h-3.5 w-3.5" :stroke-width="2" />
                     {{ t("admin.settings.openaiFastPolicy.addModelPattern") }}
                   </button>
                 </div>
@@ -1207,19 +1040,7 @@
                   @click="addOpenAIFastPolicyRule"
                   class="btn btn-secondary btn-sm inline-flex items-center gap-1"
                 >
-                  <svg
-                    class="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M12 4v16m8-8H4"
-                    />
-                  </svg>
+                  <Icon name="plus" size="sm" :stroke-width="2" />
                   {{ t("admin.settings.openaiFastPolicy.addRule") }}
                 </button>
                 <p class="mt-2 text-xs text-gray-400 dark:text-gray-500">
@@ -1403,7 +1224,7 @@
                       class="input text-sm"
                       :placeholder="t('admin.settings.registration.ipLimitMaxPlaceholder')"
                     />
-                    <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
+                    <p class="mt-1 text-2xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.registration.ipLimitMaxNote") }}
                     </p>
                   </div>
@@ -1419,7 +1240,7 @@
                       class="input text-sm"
                       :placeholder="t('admin.settings.registration.ipLimitWindowPlaceholder')"
                     />
-                    <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
+                    <p class="mt-1 text-2xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.registration.ipLimitWindowNote") }}
                     </p>
                   </div>
@@ -1451,7 +1272,7 @@
                       :disabled="aiReviewApiKeysLoading"
                       searchable
                     />
-                    <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
+                    <p class="mt-1 text-2xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.registration.aiReviewApiKeyIdNote") }}
                     </p>
                   </div>
@@ -1466,7 +1287,7 @@
                       :disabled="aiReviewGroupsLoading"
                       searchable
                     />
-                    <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
+                    <p class="mt-1 text-2xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.registration.aiReviewGroupIdNote") }}
                     </p>
                   </div>
@@ -1480,7 +1301,7 @@
                       class="input text-sm"
                       placeholder="claude-haiku-4-5"
                     />
-                    <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
+                    <p class="mt-1 text-2xs text-gray-500 dark:text-gray-400">
                       {{ t("admin.settings.registration.aiReviewModelNote") }}
                     </p>
                   </div>
@@ -3348,20 +3169,13 @@
                     @click="toggleProviderExpand(pIdx)"
                   >
                     <div class="flex items-center gap-3">
-                      <svg
-                        class="h-4 w-4 text-gray-400 transition-transform"
+                      <Icon
+                        name="chevronRight"
+                        size="sm"
+                        class="text-gray-400 transition-transform"
                         :class="{ 'rotate-90': expandedProviders[pIdx] }"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
+                        :stroke-width="2"
+                      />
                       <Select
                         v-model="provider.type"
                         :options="[
@@ -3888,19 +3702,7 @@
                         class="rounded p-1 text-red-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
                         @click="removeEndpoint(index)"
                       >
-                        <svg
-                          class="h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                          />
-                        </svg>
+                        <Icon name="trash" size="sm" :stroke-width="2" />
                       </button>
                     </div>
                     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -3970,19 +3772,7 @@
                   class="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 px-4 py-2.5 text-sm text-gray-500 transition-colors hover:border-primary-400 hover:text-primary-600 dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-500 dark:hover:text-primary-400"
                   @click="addEndpoint"
                 >
-                  <svg
-                    class="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M12 4v16m8-8H4"
-                    />
-                  </svg>
+                  <Icon name="plus" size="sm" :stroke-width="2" />
                   {{ t("admin.settings.site.customEndpoints.add") }}
                 </button>
               </div>
@@ -4135,7 +3925,7 @@
                             <img :src="method.image_data" alt="QR" class="h-full w-full object-contain" />
                             <button
                               type="button"
-                              class="absolute right-0 top-0 rounded-bl bg-red-500 px-1.5 py-0.5 text-[10px] font-medium text-white hover:bg-red-600"
+                              class="absolute right-0 top-0 rounded-bl bg-red-500 px-1.5 py-0.5 text-2xs font-medium text-white hover:bg-red-600"
                               @click="method.image_data = ''"
                             >
                               {{ t("common.delete") }}
@@ -4157,13 +3947,13 @@
                               <Icon name="plus" size="xs" />
                               {{ method.image_data ? t("admin.settings.site.contactMethodReplaceQr") : t("admin.settings.site.contactMethodUploadQr") }}
                             </label>
-                            <p class="text-[11px] text-gray-500 dark:text-gray-400">
+                            <p class="text-2xs text-gray-500 dark:text-gray-400">
                               {{ t("admin.settings.site.contactMethodQrHint") }}
                             </p>
-                            <p v-if="contactQrError[index]" class="break-words text-[11px] text-red-600 dark:text-red-400">
+                            <p v-if="contactQrError[index]" class="break-words text-2xs text-red-600 dark:text-red-400">
                               {{ contactQrError[index] }}
                             </p>
-                            <p v-else-if="contactQrInfo[index]" class="text-[11px] text-emerald-600 dark:text-emerald-400">
+                            <p v-else-if="contactQrInfo[index]" class="text-2xs text-emerald-600 dark:text-emerald-400">
                               {{ contactQrInfo[index] }}
                             </p>
                           </div>
@@ -4320,19 +4110,7 @@
                       :title="t('admin.settings.customMenu.moveDown')"
                       @click="moveMenuItem(index, 1)"
                     >
-                      <svg
-                        class="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        stroke-width="2"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
+                      <Icon name="chevronDown" size="sm" :stroke-width="2" />
                     </button>
                     <!-- Delete -->
                     <button
@@ -4341,19 +4119,7 @@
                       :title="t('admin.settings.customMenu.remove')"
                       @click="removeMenuItem(index)"
                     >
-                      <svg
-                        class="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        stroke-width="2"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        />
-                      </svg>
+                      <Icon name="trash" size="sm" :stroke-width="2" />
                     </button>
                   </div>
                 </div>
@@ -4435,19 +4201,7 @@
                 class="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 py-3 text-sm text-gray-500 transition-colors hover:border-primary-400 hover:text-primary-600 dark:border-dark-600 dark:text-gray-400 dark:hover:border-primary-500 dark:hover:text-primary-400"
                 @click="addMenuItem"
               >
-                <svg
-                  class="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
+                <Icon name="plus" size="sm" :stroke-width="2" />
                 {{ t("admin.settings.customMenu.add") }}
               </button>
             </div>
@@ -4742,7 +4496,7 @@
                           {{ entry.aff_code }}
                           <span
                             v-if="entry.aff_code_custom"
-                            class="ml-1 inline-block rounded bg-primary-100 px-1.5 py-0.5 text-[10px] font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300"
+                            class="ml-1 inline-block rounded bg-primary-100 px-1.5 py-0.5 text-2xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300"
                           >{{ t('admin.settings.features.affiliate.customUsers.customBadge') }}</span>
                         </td>
                         <td class="px-3 py-2 text-sm text-right tabular-nums">
@@ -5493,26 +5247,7 @@
                 :disabled="testingSmtp || loadFailed"
                 class="btn btn-secondary btn-sm"
               >
-                <svg
-                  v-if="testingSmtp"
-                  class="h-4 w-4 animate-spin"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    class="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    stroke-width="4"
-                  ></circle>
-                  <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
+                <LoadingSpinner v-if="testingSmtp" size="sm" color="current" />
                 {{
                   testingSmtp
                     ? t("admin.settings.smtp.testing")
@@ -5674,26 +5409,7 @@
                   "
                   class="btn btn-secondary"
                 >
-                  <svg
-                    v-if="sendingTestEmail"
-                    class="h-4 w-4 animate-spin"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      class="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      stroke-width="4"
-                    ></circle>
-                    <path
-                      class="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
+                  <LoadingSpinner v-if="sendingTestEmail" size="sm" color="current" />
                   {{
                     sendingTestEmail
                       ? t("admin.settings.testEmail.sending")
@@ -5853,26 +5569,7 @@
             :disabled="saving || loadFailed"
             class="btn btn-primary min-w-[148px] justify-center px-7 py-3"
           >
-            <svg
-              v-if="saving"
-              class="h-4 w-4 animate-spin"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
+            <LoadingSpinner v-if="saving" size="sm" color="current" />
             {{
               saving
                 ? t("admin.settings.saving")
@@ -5913,6 +5610,17 @@
         @confirm="handleAffiliateConfirm"
         @cancel="cancelAffiliateConfirm"
       />
+      <!-- 通用确认弹窗：useConfirm 驱动，用于重置用量、管理 API Key 重新生成/删除等确认场景 -->
+      <ConfirmDialog
+        :show="confirmState.show"
+        :title="confirmState.title"
+        :message="confirmState.message"
+        :confirm-text="confirmState.confirmText"
+        :cancel-text="confirmState.cancelText"
+        :danger="confirmState.danger"
+        @confirm="handleConfirmAccept"
+        @cancel="handleConfirmCancel"
+      />
 
       <!-- AI 审核测试弹窗：admin 输入一段文本，立即拿到模型判定，验证 prompt 是否正确 -->
       <BaseDialog
@@ -5942,7 +5650,7 @@
               v-for="sample in aiReviewTestSamples"
               :key="sample.label"
               type="button"
-              class="rounded border border-gray-200 bg-white px-2 py-1 text-[11px] font-medium text-gray-600 hover:border-primary-300 hover:text-primary-700 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-300"
+              class="rounded border border-gray-200 bg-white px-2 py-1 text-2xs font-medium text-gray-600 hover:border-primary-300 hover:text-primary-700 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-300"
               @click="aiReviewTestPrompt = sample.text"
             >
               {{ sample.label }}
@@ -5954,14 +5662,14 @@
               <span :class="['badge', aiTestResultBadge]">
                 {{ aiTestResultLabel }}
               </span>
-              <span v-if="aiReviewTestResult.category" class="text-[10px] text-gray-500">
+              <span v-if="aiReviewTestResult.category" class="text-2xs text-gray-500">
                 {{ aiReviewTestResult.category }}
               </span>
             </div>
             <p v-if="aiReviewTestResult.reason" class="mt-2 text-sm text-gray-700 dark:text-gray-300">
               {{ aiReviewTestResult.reason }}
             </p>
-            <p v-if="aiReviewTestResult.raw" class="mt-1 break-words font-mono text-[11px] text-gray-400">
+            <p v-if="aiReviewTestResult.raw" class="mt-1 break-words font-mono text-2xs text-gray-400">
               原文片段：{{ aiReviewTestResult.raw }}
             </p>
           </div>
@@ -6021,6 +5729,7 @@ import { keysAPI } from "@/api/keys";
 import type { SelectOption } from "@/components/common/Select.vue";
 import type { ProviderInstance } from "@/types/payment";
 import AppLayout from "@/components/layout/AppLayout.vue";
+import LoadingSpinner from "@/components/common/LoadingSpinner.vue";
 import Icon from "@/components/icons/Icon.vue";
 import Select from "@/components/common/Select.vue";
 import ConfirmDialog from "@/components/common/ConfirmDialog.vue";
@@ -6038,6 +5747,7 @@ import ImageUpload from "@/components/common/ImageUpload.vue";
 import ContactMethodIcon from "@/components/common/ContactMethodIcon.vue";
 import BackupSettings from "@/views/admin/BackupView.vue";
 import { useClipboard } from "@/composables/useClipboard";
+import { useConfirm } from "@/composables/useConfirm";
 import { affiliatesAPI, type AffiliateAdminEntry, type SimpleUser as AffiliateSimpleUser } from "@/api/admin/affiliates";
 import { extractApiErrorMessage, extractI18nErrorMessage } from "@/utils/apiError";
 import { useAppStore } from "@/stores";
@@ -6060,6 +5770,9 @@ import {
 const { t, locale } = useI18n();
 const appStore = useAppStore();
 const adminSettingsStore = useAdminSettingsStore();
+
+// 通用确认弹窗：替代浏览器原生 confirm()，由模板底部的 ConfirmDialog 实例渲染
+const { confirmState, requestConfirm, handleConfirmAccept, handleConfirmCancel } = useConfirm();
 
 function localText(zh: string, en: string): string {
   return locale.value.startsWith("zh") ? zh : en;
@@ -6492,8 +6205,11 @@ function quotaPercentage(provider: WebSearchProviderConfig): number {
 async function resetWebSearchUsage(idx: number) {
   const provider = webSearchConfig.providers[idx];
   if (!provider) return;
-  if (!confirm(t("admin.settings.webSearchEmulation.resetUsageConfirm")))
-    return;
+  const ok = await requestConfirm({
+    title: t("common.warning"),
+    message: t("admin.settings.webSearchEmulation.resetUsageConfirm"),
+  });
+  if (!ok) return;
   try {
     await adminAPI.settings.resetWebSearchUsage({
       provider_type: provider.type,
@@ -7941,12 +7657,24 @@ async function createAdminApiKey() {
 }
 
 async function regenerateAdminApiKey() {
-  if (!confirm(t("admin.settings.adminApiKey.regenerateConfirm"))) return;
+  // 重新生成会使旧 Key 立即失效，按危险操作二次确认
+  const ok = await requestConfirm({
+    title: t("common.warning"),
+    message: t("admin.settings.adminApiKey.regenerateConfirm"),
+    danger: true,
+  });
+  if (!ok) return;
   await createAdminApiKey();
 }
 
 async function deleteAdminApiKey() {
-  if (!confirm(t("admin.settings.adminApiKey.deleteConfirm"))) return;
+  // 删除管理 API Key 属危险操作，二次确认后执行
+  const ok = await requestConfirm({
+    title: t("common.warning"),
+    message: t("admin.settings.adminApiKey.deleteConfirm"),
+    danger: true,
+  });
+  if (!ok) return;
   adminApiKeyOperating.value = true;
   try {
     await adminAPI.settings.deleteAdminApiKey();
@@ -9032,11 +8760,11 @@ watch(
 }
 
 .settings-page :deep(.card > div:first-child h2) {
-  @apply text-[15px] font-semibold tracking-tight text-gray-900 dark:text-white;
+  @apply text-base font-semibold tracking-tight text-gray-900 dark:text-white;
 }
 
 .settings-page :deep(.card > div:first-child p) {
-  @apply mt-1 max-w-3xl text-[13px] leading-relaxed text-gray-500 dark:text-dark-400;
+  @apply mt-1 max-w-3xl text-sm leading-relaxed text-gray-500 dark:text-dark-400;
 }
 
 /* 卡片内容区：统一 padding，桌面端略宽 */
@@ -9240,7 +8968,7 @@ watch(
 .settings-tab {
   @apply relative flex items-center justify-center gap-1.5;
   @apply whitespace-nowrap px-4 py-2.5 -mb-px;
-  @apply text-[13px] font-medium text-gray-500 dark:text-dark-400;
+  @apply text-sm font-medium text-gray-500 dark:text-dark-400;
   @apply border-b-2 border-transparent;
   @apply transition-colors duration-150;
   border-radius: 0;

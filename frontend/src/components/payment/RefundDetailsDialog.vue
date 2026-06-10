@@ -5,7 +5,7 @@
       <div class="rounded-xl border border-rose-200/70 bg-rose-50/60 px-5 py-4 dark:border-rose-500/30 dark:bg-rose-500/10">
         <div class="flex items-start justify-between gap-4">
           <div>
-            <p class="text-[12px] font-medium text-rose-600/80 dark:text-rose-300/80">
+            <p class="text-xs font-medium text-rose-600/80 dark:text-rose-300/80">
               {{ t('payment.orders.refundAmountLabel') }}
             </p>
             <div class="mt-1 flex items-end gap-1">
@@ -14,7 +14,7 @@
                 {{ (order.refund_amount || 0).toFixed(2) }}
               </span>
             </div>
-            <p v-if="isPartial" class="mt-1.5 text-[11px] text-rose-500/80 dark:text-rose-300/70">
+            <p v-if="isPartial" class="mt-1.5 text-2xs text-rose-500/80 dark:text-rose-300/70">
               {{ t('payment.orders.refundPartialNote', { paid: order.pay_amount.toFixed(2) }) }}
             </p>
           </div>
@@ -38,7 +38,7 @@
             <dd class="inline-flex items-center gap-1.5 text-gray-900 dark:text-white">
               <PaymentBrandIcon :type="order.payment_type" size="16px" />
               {{ paymentMethodLabel }}
-              <span class="ml-1 text-[11px] text-gray-400">{{ t('payment.orders.refundOriginalRoute') }}</span>
+              <span class="ml-1 text-2xs text-gray-400">{{ t('payment.orders.refundOriginalRoute') }}</span>
             </dd>
           </div>
           <div v-if="refundedAtDisplay" class="flex justify-between py-2.5">
@@ -54,7 +54,7 @@
 
       <!-- 退款原因 -->
       <div v-if="reasonText">
-        <p class="mb-1.5 text-[12px] font-medium text-gray-500 dark:text-gray-400">
+        <p class="mb-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">
           {{ t('payment.orders.refundReason') }}
         </p>
         <div class="rounded-xl border border-amber-200/70 bg-amber-50/60 px-4 py-3 text-sm leading-relaxed text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
@@ -71,7 +71,7 @@
       </div>
 
       <!-- 提示 -->
-      <p class="text-center text-[11px] text-gray-400 dark:text-gray-500">
+      <p class="text-center text-2xs text-gray-400 dark:text-gray-500">
         {{ t('payment.orders.refundProcessHint') }}
       </p>
     </div>

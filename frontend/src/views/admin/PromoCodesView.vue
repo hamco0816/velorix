@@ -44,10 +44,12 @@
           :columns="columns"
           :data="codes"
           :loading="loading"
+          :error="loadFailed"
           :server-side-sort="true"
           default-sort-key="created_at"
           default-sort-order="desc"
           @sort="handleSort"
+          @retry="loadCodes"
         >
           <template #cell-code="{ value }">
             <div class="flex items-center space-x-2">
@@ -63,14 +65,7 @@
                 :title="copiedCode === value ? t('admin.promo.copied') : t('keys.copyToClipboard')"
               >
                 <Icon v-if="copiedCode !== value" name="copy" size="sm" :stroke-width="2" />
-                <svg v-else class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
+                <Icon v-else name="check" size="sm" :stroke-width="2" />
               </button>
             </div>
           </template>
@@ -424,6 +419,8 @@ const { copyToClipboard: clipboardCopy } = useClipboard()
 // State
 const codes = ref<PromoCode[]>([])
 const loading = ref(false)
+// 优惠码列表加载失败标记，用于表格展示错误态并提供重试
+const loadFailed = ref(false)
 const creating = ref(false)
 const updating = ref(false)
 const searchQuery = ref('')
@@ -533,6 +530,7 @@ const loadCodes = async () => {
   const currentController = new AbortController()
   abortController = currentController
   loading.value = true
+  loadFailed.value = false
 
   try {
     const response = await adminAPI.promo.list(
@@ -559,6 +557,7 @@ const loadCodes = async () => {
     ) {
       return
     }
+    loadFailed.value = true
     appStore.showError(t('admin.promo.failedToLoad'))
     console.error('Error loading promo codes:', error)
   } finally {

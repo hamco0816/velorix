@@ -73,7 +73,7 @@
             <Icon :name="stat.icon" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0 flex-1">
-            <p class="text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ stat.label }}</p>
+            <p class="text-sm font-medium text-gray-500 dark:text-dark-400">{{ stat.label }}</p>
             <p class="mt-1 text-xl font-semibold leading-tight tabular-nums text-gray-900 sm:text-[24px] dark:text-white">{{ stat.value }}</p>
             <p class="mt-1 text-xs text-gray-400 dark:text-dark-500">{{ stat.hint }}</p>
           </div>
@@ -165,7 +165,7 @@
             <p v-if="allowlistSearchQuery && allowlistSearchResults.length === 0 && !allowlistSearchLoading" class="mt-1 text-xs text-amber-600 dark:text-amber-400">
               没有匹配的用户
             </p>
-            <p v-else class="mt-1 text-[11px] text-gray-400">
+            <p v-else class="mt-1 text-2xs text-gray-400">
               点击搜索结果直接加入白名单；白名单用户后续所有请求跳过敏感词检测
             </p>
           </div>
@@ -261,7 +261,7 @@
                 </tr>
               </tbody>
             </table>
-            <p class="mt-2 text-[11px] text-gray-400">
+            <p class="mt-2 text-2xs text-gray-400">
               * 误报率 = AI pass / 总命中。30%+ 说明该规则容易误报；启用 AI 审核后才有数据。
             </p>
           </div>
@@ -340,7 +340,7 @@
                       <div v-if="aiParse(item.ai_review_result).reason" class="mt-1 max-w-[180px] truncate text-xs text-gray-500 dark:text-gray-400" :title="aiParse(item.ai_review_result).reason">
                         {{ aiParse(item.ai_review_result).reason }}
                       </div>
-                      <div v-if="aiParse(item.ai_review_result).category" class="text-[10px] text-gray-400">
+                      <div v-if="aiParse(item.ai_review_result).category" class="text-2xs text-gray-400">
                         {{ aiParse(item.ai_review_result).category }}
                       </div>
                     </template>

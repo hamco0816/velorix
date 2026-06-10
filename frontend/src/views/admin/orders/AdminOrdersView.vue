@@ -25,7 +25,7 @@
       </div>
 
       <!-- Table -->
-      <OrderTable :orders="orders" :loading="ordersLoading" show-user @inspect-refund="refundDetailsTarget = $event">
+      <OrderTable :orders="orders" :loading="ordersLoading" :error="ordersLoadFailed" show-user @inspect-refund="refundDetailsTarget = $event" @retry="loadOrders">
         <template #actions="{ row }">
           <div class="flex items-center gap-1">
             <button @click="showOrderDetail(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-dark-600">
@@ -151,6 +151,8 @@ const { t } = useI18n()
 const appStore = useAppStore()
 
 const ordersLoading = ref(false)
+// 订单列表加载是否失败，失败时表格显示错误态并提供重试
+const ordersLoadFailed = ref(false)
 const orders = ref<PaymentOrder[]>([])
 const orderSearch = ref('')
 const orderFilters = reactive({ status: '', payment_type: '', order_type: '' })
@@ -170,6 +172,7 @@ function debounceLoadOrders() {
 
 async function loadOrders() {
   ordersLoading.value = true
+  ordersLoadFailed.value = false
   try {
     const res = await adminPaymentAPI.getOrders({
       page: orderPagination.page, page_size: orderPagination.page_size,
@@ -179,6 +182,7 @@ async function loadOrders() {
     orders.value = res.data.items || []
     orderPagination.total = res.data.total || 0
   } catch (err: unknown) {
+    ordersLoadFailed.value = true
     appStore.showError(extractI18nErrorMessage(err, t, 'payment.errors', t('common.error')))
   } finally { ordersLoading.value = false }
 }

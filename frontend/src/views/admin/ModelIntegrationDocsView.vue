@@ -15,7 +15,7 @@
           <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
             <Icon name="checkCircle" size="sm" :stroke-width="1.75" />
           </span>
-          <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">新平台上线顺序</h2>
+          <h2 class="text-base font-semibold text-gray-900 dark:text-white">新平台上线顺序</h2>
         </div>
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
           <article
@@ -28,7 +28,7 @@
               <div class="min-w-0">
                 <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ step.title }}</h3>
                 <p class="mt-1.5 text-xs leading-5 text-gray-600 dark:text-dark-300">{{ step.desc }}</p>
-                <code class="mt-2 inline-block rounded-md bg-gray-50 px-1.5 py-0.5 font-mono text-[11px] text-gray-600 ring-1 ring-gray-200 dark:bg-dark-800/60 dark:text-dark-300 dark:ring-dark-700">{{ step.path }}</code>
+                <code class="mt-2 inline-block rounded-md bg-gray-50 px-1.5 py-0.5 font-mono text-2xs text-gray-600 ring-1 ring-gray-200 dark:bg-dark-800/60 dark:text-dark-300 dark:ring-dark-700">{{ step.path }}</code>
               </div>
             </div>
           </article>
@@ -42,7 +42,7 @@
             <Icon name="grid" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0">
-            <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">后台术语词典</h2>
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white">后台术语词典</h2>
             <p class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">
               这里解释配置项的业务含义，不替代表单校验。遇到问题时优先从"影响"和"常见错误"两列定位。
             </p>
@@ -52,10 +52,10 @@
           <table class="min-w-full divide-y divide-gray-200/60 text-sm dark:divide-dark-700/60">
             <thead>
               <tr class="bg-gray-50/60 dark:bg-dark-800/60">
-                <th class="whitespace-nowrap px-4 py-3 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">配置/术语</th>
-                <th class="px-4 py-3 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">白话解释</th>
-                <th class="px-4 py-3 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">影响</th>
-                <th class="px-4 py-3 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">常见错误</th>
+                <th class="whitespace-nowrap px-4 py-3 text-left text-2xs font-medium text-gray-500 dark:text-dark-400">配置/术语</th>
+                <th class="px-4 py-3 text-left text-2xs font-medium text-gray-500 dark:text-dark-400">白话解释</th>
+                <th class="px-4 py-3 text-left text-2xs font-medium text-gray-500 dark:text-dark-400">影响</th>
+                <th class="px-4 py-3 text-left text-2xs font-medium text-gray-500 dark:text-dark-400">常见错误</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 dark:divide-dark-700/60">
@@ -82,7 +82,7 @@
               <Icon :name="section.icon" size="sm" :stroke-width="1.75" />
             </span>
             <div class="min-w-0">
-              <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">{{ section.title }}</h2>
+              <h2 class="text-base font-semibold text-gray-900 dark:text-white">{{ section.title }}</h2>
               <p class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">{{ section.summary }}</p>
             </div>
           </header>
@@ -105,7 +105,7 @@
             <Icon name="shield" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0">
-            <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">风控与敏感词处理建议</h2>
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white">风控与敏感词处理建议</h2>
             <p class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">分级拦截、留好证据，避免误杀也避免漏杀</p>
           </div>
         </header>
@@ -128,7 +128,7 @@
             <Icon name="questionCircle" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0">
-            <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">常见排查路径</h2>
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white">常见排查路径</h2>
             <p class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">出现问题时按这个顺序排查，避免在错误层级反复尝试</p>
           </div>
         </header>

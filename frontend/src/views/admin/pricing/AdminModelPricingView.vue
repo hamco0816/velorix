@@ -4,14 +4,14 @@
       <!-- 3 张元信息 metric-card：数据源 / 上次更新 / 模型数 -->
       <div class="grid gap-4 md:grid-cols-3">
         <div class="surface-card p-5">
-          <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('admin.pricing.source') }}</p>
+          <p class="text-2xs font-medium text-gray-500 dark:text-dark-400">{{ t('admin.pricing.source') }}</p>
           <p v-if="metadata" class="mt-2 break-all font-mono text-xs text-gray-700 dark:text-gray-300">
             {{ metadata.remote_url || t('admin.pricing.sourceUnknown') }}
           </p>
           <p v-else class="mt-2 text-gray-400">—</p>
         </div>
         <div class="surface-card p-5">
-          <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('admin.pricing.lastUpdated') }}</p>
+          <p class="text-2xs font-medium text-gray-500 dark:text-dark-400">{{ t('admin.pricing.lastUpdated') }}</p>
           <p class="mt-2 text-sm text-gray-700 dark:text-gray-300">
             {{ metadata?.last_updated ? formatRelativeWithDateTime(metadata.last_updated) : '—' }}
           </p>
@@ -21,7 +21,7 @@
             <Icon name="cube" size="sm" :stroke-width="1.75" />
           </span>
           <div>
-            <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('admin.pricing.modelCount') }}</p>
+            <p class="text-2xs font-medium text-gray-500 dark:text-dark-400">{{ t('admin.pricing.modelCount') }}</p>
             <p class="mt-1 text-[26px] font-semibold leading-tight tabular-nums text-gray-900 dark:text-white">
               {{ metadata?.model_count ?? '—' }}
             </p>
@@ -55,7 +55,7 @@
           </div>
           <div class="ml-auto flex items-end gap-3">
             <div class="text-sm">
-              <p class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('admin.pricing.effectiveMultiplier') }}</p>
+              <p class="text-2xs font-medium text-gray-500 dark:text-dark-400">{{ t('admin.pricing.effectiveMultiplier') }}</p>
               <p class="mt-0.5 text-xl font-semibold tabular-nums" :class="multiplierColor">
                 {{ effectiveMultiplier.toFixed(2) }}x
               </p>
@@ -84,7 +84,7 @@
         >
           {{ tab.label }}
           <span
-            class="rounded-full px-1.5 py-0.5 text-[10px] font-semibold tabular-nums"
+            class="rounded-full px-1.5 py-0.5 text-2xs font-semibold tabular-nums"
             :class="tab.key === activeProvider
               ? 'bg-white/20 text-white dark:bg-gray-900/20 dark:text-gray-900'
               : 'bg-gray-200 text-gray-600 dark:bg-dark-600 dark:text-gray-300'"
@@ -104,7 +104,7 @@
                   v-for="col in tableColumns"
                   :key="col.key"
                   :class="[
-                    'px-4 py-3 text-[13px] font-medium text-gray-500 dark:text-dark-400 border-b border-gray-200/60 dark:border-dark-700/60',
+                    'px-4 py-3 text-sm font-medium text-gray-500 dark:text-dark-400 border-b border-gray-200/60 dark:border-dark-700/60',
                     col.align === 'right' ? 'text-right' : col.align === 'center' ? 'text-center' : 'text-left',
                     col.sortable ? 'cursor-pointer select-none hover:bg-gray-100/80 dark:hover:bg-dark-700/40' : '',
                   ]"
@@ -127,7 +127,7 @@
               <tr v-for="row in sortedRows" :key="row.model" class="align-middle text-sm hover:bg-gray-50 dark:hover:bg-dark-800">
                 <td class="px-4 py-2.5 text-left font-mono text-xs text-gray-900 dark:text-white">{{ row.model }}</td>
                 <td class="px-4 py-2.5 text-left">
-                  <span :class="['rounded-full px-2 py-0.5 text-[11px] font-semibold', providerPillClass(row.provider)]">
+                  <span :class="['rounded-full px-2 py-0.5 text-2xs font-semibold', providerPillClass(row.provider)]">
                     {{ row.provider || '—' }}
                   </span>
                 </td>
@@ -136,9 +136,9 @@
                 <td class="px-4 py-2.5 text-right font-mono tabular-nums text-gray-700 dark:text-gray-300">{{ formatPriceMTok(row.cache_read_input_token_cost) }}</td>
                 <td class="px-4 py-2.5 text-right font-mono tabular-nums text-gray-700 dark:text-gray-300">{{ formatPriceMTok(row.cache_creation_input_token_cost) }}</td>
                 <td class="px-4 py-2.5 text-center text-xs">
-                  <span v-if="row.supports_prompt_caching" class="mr-1 inline-block rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300" :title="t('admin.pricing.flagCachingTip')">cache</span>
-                  <span v-if="row.supports_service_tier" class="mr-1 inline-block rounded bg-violet-100 px-1.5 py-0.5 text-[10px] font-medium text-violet-700 dark:bg-violet-900/30 dark:text-violet-300" :title="t('admin.pricing.flagPriorityTip')">priority</span>
-                  <span v-if="row.mode" class="inline-block rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600 dark:bg-dark-700 dark:text-gray-300">{{ row.mode }}</span>
+                  <span v-if="row.supports_prompt_caching" class="mr-1 inline-block rounded bg-emerald-100 px-1.5 py-0.5 text-2xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300" :title="t('admin.pricing.flagCachingTip')">cache</span>
+                  <span v-if="row.supports_service_tier" class="mr-1 inline-block rounded bg-violet-100 px-1.5 py-0.5 text-2xs font-medium text-violet-700 dark:bg-violet-900/30 dark:text-violet-300" :title="t('admin.pricing.flagPriorityTip')">priority</span>
+                  <span v-if="row.mode" class="inline-block rounded bg-gray-100 px-1.5 py-0.5 text-2xs font-medium text-gray-600 dark:bg-dark-700 dark:text-gray-300">{{ row.mode }}</span>
                 </td>
               </tr>
               <tr v-if="!loading && sortedRows.length === 0">

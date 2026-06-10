@@ -173,10 +173,12 @@
           :columns="columns"
           :data="subscriptions"
           :loading="loading"
+          :error="loadFailed"
           :server-side-sort="true"
           default-sort-key="created_at"
           default-sort-order="desc"
           @sort="handleSort"
+          @retry="loadSubscriptions"
         >
           <template #cell-user="{ row }">
             <div class="flex items-center gap-2">
@@ -233,19 +235,7 @@
                   </span>
                 </div>
                 <div class="reset-info" v-if="row.daily_window_start">
-                  <svg
-                    class="h-3 w-3"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+                  <Icon name="clock" size="xs" :stroke-width="2" />
                   <span>{{ formatResetTime(row.daily_window_start, 'daily') }}</span>
                 </div>
               </div>
@@ -270,19 +260,7 @@
                   </span>
                 </div>
                 <div class="reset-info" v-if="row.weekly_window_start">
-                  <svg
-                    class="h-3 w-3"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+                  <Icon name="clock" size="xs" :stroke-width="2" />
                   <span>{{ formatResetTime(row.weekly_window_start, 'weekly') }}</span>
                 </div>
               </div>
@@ -307,19 +285,7 @@
                   </span>
                 </div>
                 <div class="reset-info" v-if="row.monthly_window_start">
-                  <svg
-                    class="h-3 w-3"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+                  <Icon name="clock" size="xs" :stroke-width="2" />
                   <span>{{ formatResetTime(row.monthly_window_start, 'monthly') }}</span>
                 </div>
               </div>
@@ -342,7 +308,7 @@
               <span class="text-sm text-gray-700 dark:text-gray-300">{{ formatExpirationDateTime(value) }}</span>
               <span
                 v-if="formatTimeRemaining(value)"
-                class="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium"
+                class="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-2xs font-medium"
                 :class="isExpiringSoon(value)
                   ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
                   : 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'"
@@ -551,26 +517,7 @@
             :disabled="submitting"
             class="btn btn-primary"
           >
-            <svg
-              v-if="submitting"
-              class="-ml-1 mr-2 h-4 w-4 animate-spin"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
+            <LoadingSpinner v-if="submitting" size="sm" color="current" class="-ml-1 mr-2" />
             {{ submitting ? t('admin.subscriptions.assigning') : t('admin.subscriptions.assign') }}
           </button>
         </div>
@@ -674,7 +621,7 @@
           <div class="fixed inset-0 bg-black/50" @click="showGuideModal = false"></div>
           <div class="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-6 shadow-2xl dark:bg-dark-800">
             <button type="button" class="absolute right-4 top-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" @click="showGuideModal = false">
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+              <Icon name="x" size="md" :stroke-width="2" />
             </button>
 
             <h2 class="mb-4 text-lg font-bold text-gray-900 dark:text-white">{{ t('admin.subscriptions.guide.title') }}</h2>
@@ -770,6 +717,7 @@ import Select from '@/components/common/Select.vue'
 import GroupBadge from '@/components/common/GroupBadge.vue'
 import GroupOptionItem from '@/components/common/GroupOptionItem.vue'
 import Icon from '@/components/icons/Icon.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 const { t } = useI18n()
 const appStore = useAppStore()
@@ -910,6 +858,8 @@ const statusOptions = computed(() => [
 const subscriptions = ref<UserSubscription[]>([])
 const groups = ref<Group[]>([])
 const loading = ref(false)
+// 订阅列表加载失败标记，用于表格展示错误态并提供重试
+const loadFailed = ref(false)
 let abortController: AbortController | null = null
 
 // Toolbar user filter (fuzzy search -> select user_id)
@@ -1010,6 +960,7 @@ const loadSubscriptions = async () => {
   const { signal } = requestController
 
   loading.value = true
+  loadFailed.value = false
   try {
     const response = await adminAPI.subscriptions.list(
       pagination.page,
@@ -1034,6 +985,7 @@ const loadSubscriptions = async () => {
     if (signal.aborted || error?.name === 'AbortError' || error?.code === 'ERR_CANCELED') {
       return
     }
+    loadFailed.value = true
     appStore.showError(t('admin.subscriptions.failedToLoad'))
     console.error('Error loading subscriptions:', error)
   } finally {
@@ -1484,6 +1436,6 @@ onUnmounted(() => {
 }
 
 .reset-info {
-  @apply flex items-center gap-1 pl-12 text-[10px] text-blue-600 dark:text-blue-400;
+  @apply flex items-center gap-1 pl-12 text-2xs text-blue-600 dark:text-blue-400;
 }
 </style>

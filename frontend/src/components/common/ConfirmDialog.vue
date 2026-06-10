@@ -39,17 +39,7 @@
         ]"
       >
         <!-- loading=true 时显示转圈 icon + 切换文案为 common.processing；防双击 + 用户感知"在转" -->
-        <svg
-          v-if="loading"
-          class="-ml-0.5 mr-1.5 h-4 w-4 animate-spin text-white"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-        </svg>
+        <LoadingSpinner v-if="loading" size="sm" color="current" class="-ml-0.5 mr-1.5 text-white" />
         {{ loading ? processingText : confirmText }}
       </button>
     </template>
@@ -60,6 +50,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import BaseDialog from './BaseDialog.vue'
+import LoadingSpinner from './LoadingSpinner.vue'
 import Icon from '@/components/icons/Icon.vue'
 
 const { t } = useI18n()

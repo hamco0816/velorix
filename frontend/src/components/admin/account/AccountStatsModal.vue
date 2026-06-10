@@ -51,7 +51,7 @@
           <!-- 30-Day Total Cost -->
           <div class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-card dark:border-dark-700/60 dark:bg-dark-800/40">
             <div class="mb-2 flex items-center justify-between">
-              <span class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{
+              <span class="text-xs font-medium text-gray-500 dark:text-dark-400">{{
                 t('admin.accounts.stats.totalCost')
               }}</span>
               <div class="rounded-lg bg-emerald-50 p-1.5 ring-1 ring-inset ring-emerald-200/70 dark:bg-emerald-500/15 dark:ring-emerald-500/30">
@@ -61,7 +61,7 @@
             <p class="text-xl font-semibold tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400">
               ${{ formatCost(stats.summary.total_cost) }}
             </p>
-            <p class="mt-1 text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
+            <p class="mt-1 text-2xs leading-relaxed text-gray-500 dark:text-gray-400">
               {{ t('admin.accounts.stats.accumulatedCost') }}
               <span class="text-gray-400 dark:text-gray-500">
                 ({{ t('usage.userBilled') }}: ${{ formatCost(stats.summary.total_user_cost) }} ·
@@ -75,7 +75,7 @@
           <!-- 30-Day Total Requests -->
           <div class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-card dark:border-dark-700/60 dark:bg-dark-800/40">
             <div class="mb-2 flex items-center justify-between">
-              <span class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{
+              <span class="text-xs font-medium text-gray-500 dark:text-dark-400">{{
                 t('admin.accounts.stats.totalRequests')
               }}</span>
               <div class="rounded-lg bg-sky-50 p-1.5 ring-1 ring-inset ring-sky-200/70 dark:bg-sky-500/15 dark:ring-sky-500/30">
@@ -85,7 +85,7 @@
             <p class="text-xl font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">
               {{ formatNumber(stats.summary.total_requests) }}
             </p>
-            <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
+            <p class="mt-1 text-2xs text-gray-500 dark:text-gray-400">
               {{ t('admin.accounts.stats.totalCalls') }}
             </p>
           </div>
@@ -93,7 +93,7 @@
           <!-- Daily Average Cost -->
           <div class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-card dark:border-dark-700/60 dark:bg-dark-800/40">
             <div class="mb-2 flex items-center justify-between">
-              <span class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{
+              <span class="text-xs font-medium text-gray-500 dark:text-dark-400">{{
                 t('admin.accounts.stats.avgDailyCost')
               }}</span>
               <div class="rounded-lg bg-amber-50 p-1.5 ring-1 ring-inset ring-amber-200/70 dark:bg-amber-500/15 dark:ring-amber-500/30">
@@ -122,7 +122,7 @@
           <!-- Daily Average Requests -->
           <div class="rounded-2xl border border-gray-200/70 bg-white p-4 shadow-card dark:border-dark-700/60 dark:bg-dark-800/40">
             <div class="mb-2 flex items-center justify-between">
-              <span class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{
+              <span class="text-xs font-medium text-gray-500 dark:text-dark-400">{{
                 t('admin.accounts.stats.avgDailyRequests')
               }}</span>
               <div class="rounded-lg bg-violet-50 p-1.5 ring-1 ring-inset ring-violet-200/70 dark:bg-violet-500/15 dark:ring-violet-500/30">
@@ -144,7 +144,7 @@
             <p class="text-xl font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">
               {{ formatNumber(Math.round(stats.summary.avg_daily_requests)) }}
             </p>
-            <p class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
+            <p class="mt-1 text-2xs text-gray-500 dark:text-gray-400">
               {{ t('admin.accounts.stats.avgDailyUsage') }}
             </p>
           </div>

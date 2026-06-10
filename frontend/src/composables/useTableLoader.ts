@@ -26,6 +26,8 @@ export function useTableLoader<T, P extends Record<string, any>>(options: TableL
 
   const items = ref<T[]>([])
   const loading = ref(false)
+  // 列表加载失败标记，供表格展示错误态并提供重试
+  const error = ref(false)
   const params = reactive<P>({ ...(initialParams || {}) } as P)
   const pagination = reactive<PaginationState>({
     page: 1,
@@ -47,6 +49,7 @@ export function useTableLoader<T, P extends Record<string, any>>(options: TableL
     const currentController = new AbortController()
     abortController = currentController
     loading.value = true
+    error.value = false
 
     try {
       const response = await fetchFn(
@@ -59,10 +62,11 @@ export function useTableLoader<T, P extends Record<string, any>>(options: TableL
       items.value = response.items || []
       pagination.total = response.total || 0
       pagination.pages = response.pages || 0
-    } catch (error) {
-      if (!isAbortError(error)) {
-        console.error('Table load error:', error)
-        throw error
+    } catch (loadError) {
+      if (!isAbortError(loadError)) {
+        error.value = true
+        console.error('Table load error:', loadError)
+        throw loadError
       }
     } finally {
       if (abortController === currentController) {
@@ -99,6 +103,7 @@ export function useTableLoader<T, P extends Record<string, any>>(options: TableL
   return {
     items,
     loading,
+    error,
     params,
     pagination,
     load,

@@ -1,5 +1,5 @@
 <template>
-  <DataTable :columns="columns" :data="orders" :loading="loading">
+  <DataTable :columns="columns" :data="orders" :loading="loading" :error="error" @retry="$emit('retry')">
     <template #cell-id="{ value }">
       <span class="font-mono text-sm">#{{ value }}</span>
     </template>
@@ -64,13 +64,19 @@ import Icon from '@/components/icons/Icon.vue'
 
 const { t } = useI18n()
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   orders: PaymentOrder[]
   loading: boolean
   showUser?: boolean
-}>()
+  /** 父页面加载订单失败时为 true，表格显示错误态 */
+  error?: boolean
+}>(), {
+  showUser: false,
+  error: false,
+})
 
-defineEmits<{ 'inspect-refund': [order: PaymentOrder] }>()
+// retry：错误态点击重试时向父页面转发
+defineEmits<{ 'inspect-refund': [order: PaymentOrder]; retry: [] }>()
 
 function isRefundStatus(status: string): boolean {
   return status === 'REFUNDED' || status === 'PARTIALLY_REFUNDED' || status === 'REFUND_REQUESTED' || status === 'REFUNDING' || status === 'REFUND_FAILED'

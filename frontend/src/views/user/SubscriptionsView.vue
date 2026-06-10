@@ -85,7 +85,7 @@
                   <h3 class="font-semibold text-gray-900 dark:text-white truncate">
                     {{ subscription.group?.name || `Group #${subscription.group_id}` }}
                   </h3>
-                  <span :class="['inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium', platformBadgeClass(subscription.group?.platform || '')]">
+                  <span :class="['inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-2xs font-medium', platformBadgeClass(subscription.group?.platform || '')]">
                     {{ platformLabel(subscription.group?.platform || '') }}
                   </span>
                 </div>

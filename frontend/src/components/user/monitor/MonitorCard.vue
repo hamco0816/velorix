@@ -20,20 +20,20 @@
              跟其他两个 chip 视觉层级一致，整行有规整韵律 -->
         <div class="mt-1 flex flex-wrap items-center gap-1.5 min-w-0">
           <span
-            class="inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium flex-shrink-0"
+            class="inline-flex items-center rounded-md px-1.5 py-0.5 text-2xs font-medium flex-shrink-0"
             :class="providerBadgeClass(item.provider)"
           >
             {{ providerLabel(item.provider) }}
           </span>
           <span
-            class="inline-flex max-w-[16ch] items-center truncate rounded-md bg-gray-100 px-1.5 py-0.5 font-mono text-[10px] font-medium text-gray-700 dark:bg-dark-700 dark:text-gray-200"
+            class="inline-flex max-w-[16ch] items-center truncate rounded-md bg-gray-100 px-1.5 py-0.5 font-mono text-2xs font-medium text-gray-700 dark:bg-dark-700 dark:text-gray-200"
             :title="item.primary_model"
           >
             {{ item.primary_model }}
           </span>
           <span
             v-if="item.group_name"
-            class="inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300 flex-shrink-0"
+            class="inline-flex items-center rounded-md px-1.5 py-0.5 text-2xs font-medium bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300 flex-shrink-0"
           >
             {{ item.group_name }}
           </span>

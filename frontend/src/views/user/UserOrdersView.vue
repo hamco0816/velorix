@@ -19,7 +19,7 @@
       </div>
 
       <!-- Table -->
-      <OrderTable :orders="orders" :loading="loading" @inspect-refund="openRefundDetails">
+      <OrderTable :orders="orders" :loading="loading" :error="loadFailed" @inspect-refund="openRefundDetails" @retry="fetchOrders">
         <template #actions="{ row }">
           <div class="flex items-center gap-2">
             <button v-if="canResumePayment(row)" @click="openResumeDialog(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/20">
@@ -131,6 +131,8 @@ const router = useRouter()
 const appStore = useAppStore()
 
 const loading = ref(false)
+// 订单列表加载是否失败，失败时表格显示错误态并提供重试
+const loadFailed = ref(false)
 const actionLoading = ref(false)
 const orders = ref<PaymentOrder[]>([])
 const refundEligibleProviders = ref<Set<string>>(new Set())
@@ -156,6 +158,7 @@ const statusFilters = computed(() => [
 
 async function fetchOrders() {
   loading.value = true
+  loadFailed.value = false
   try {
     const res = await paymentAPI.getMyOrders({
       page: pagination.page,
@@ -165,6 +168,7 @@ async function fetchOrders() {
     orders.value = res.data.items || []
     pagination.total = res.data.total || 0
   } catch (err: unknown) {
+    loadFailed.value = true
     appStore.showError(extractI18nErrorMessage(err, t, 'payment.errors', t('common.error')))
   } finally {
     loading.value = false

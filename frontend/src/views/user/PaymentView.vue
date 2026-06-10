@@ -10,7 +10,7 @@
           <div class="mx-auto flex max-w-xl items-center gap-1">
             <button v-for="tab in tabs" :key="tab.key"
               type="button"
-              class="relative flex items-center justify-center gap-1.5 px-5 py-3 text-[13px] font-medium transition-colors -mb-px border-b-2"
+              class="relative flex items-center justify-center gap-1.5 px-5 py-3 text-sm font-medium transition-colors -mb-px border-b-2"
               :class="activeTab === tab.key
                 ? 'border-gray-900 text-gray-900 dark:border-white dark:text-white'
                 : 'border-transparent text-gray-500 hover:text-gray-900 dark:text-dark-400 dark:hover:text-white'"
@@ -83,13 +83,13 @@
                         <Icon name="creditCard" size="md" />
                       </div>
                       <div>
-                        <p class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.rechargeAccount') }}</p>
+                        <p class="text-xs font-medium text-gray-500 dark:text-dark-400">{{ t('payment.rechargeAccount') }}</p>
                         <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ user?.username || '' }}</p>
                       </div>
                     </div>
                     <!-- 当前余额：右上紧凑 chip -->
                     <div class="rounded-xl bg-emerald-50 px-3 py-2 ring-1 ring-inset ring-emerald-200/70 dark:bg-emerald-500/15 dark:ring-emerald-500/30">
-                      <p class="text-[10px] font-medium text-emerald-700/70 dark:text-emerald-300/70">{{ t('payment.currentBalance') }}</p>
+                      <p class="text-2xs font-medium text-emerald-700/70 dark:text-emerald-300/70">{{ t('payment.currentBalance') }}</p>
                       <p class="text-lg font-semibold tabular-nums leading-tight text-emerald-700 dark:text-emerald-300">${{ user?.balance?.toFixed(2) || '0.00' }}</p>
                     </div>
                   </div>
@@ -117,7 +117,7 @@
                   <!-- 实付金额：左侧 amber 强调条 + 金额放大到 5xl，建立明确视觉锚点 -->
                   <div class="relative pl-4">
                     <span class="absolute left-0 top-1 h-[calc(100%-0.5rem)] w-[3px] rounded-full bg-gradient-to-b from-amber-400 to-amber-500" aria-hidden="true"></span>
-                    <p class="text-[11px] font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400">
+                    <p class="text-2xs font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400">
                       {{ t('payment.actualPay') }}
                     </p>
                     <p class="mt-1.5 flex items-baseline gap-1 text-gray-900 dark:text-white">
@@ -142,14 +142,14 @@
                     </div>
                   </div>
 
-                  <p v-if="balanceRechargeMultiplier !== 1" class="mt-3 text-[11px] leading-relaxed text-gray-500 dark:text-dark-400">
+                  <p v-if="balanceRechargeMultiplier !== 1" class="mt-3 text-2xs leading-relaxed text-gray-500 dark:text-dark-400">
                     {{ t('payment.rechargeRatePreview', { usd: balanceRechargeMultiplier.toFixed(2) }) }}
                   </p>
 
                   <!-- 开票说明：余额按消费来源开票，避免用户误以为充值即可全额开票 -->
                   <div v-if="invoiceEnabled" class="mt-4 flex items-start gap-2 rounded-lg border border-gray-100 bg-gray-50/60 px-3 py-2.5 dark:border-dark-700/60 dark:bg-dark-800/40">
                     <Icon name="infoCircle" size="sm" class="mt-0.5 shrink-0 text-gray-400 dark:text-dark-500" :stroke-width="2" />
-                    <p class="text-[11px] leading-relaxed text-gray-500 dark:text-dark-400">{{ t('payment.invoiceNotice') }}</p>
+                    <p class="text-2xs leading-relaxed text-gray-500 dark:text-dark-400">{{ t('payment.invoiceNotice') }}</p>
                   </div>
 
                   <!-- 确认支付按钮：gray-900 实色（专业稳重）+ hover amber 提示 -->
@@ -205,11 +205,11 @@
                   class="border-t border-gray-100 bg-gradient-to-b from-gray-50/40 to-gray-50/80 px-5 py-4 dark:border-dark-700 dark:from-dark-800/30 dark:to-dark-800/60">
                   <!-- label 行（统一在金额上方） -->
                   <div class="grid grid-cols-[1fr_auto_1fr] gap-4">
-                    <div class="text-right text-[10px] font-medium uppercase tracking-wider text-gray-400 dark:text-dark-400">
+                    <div class="text-right text-2xs font-medium uppercase tracking-wider text-gray-400 dark:text-dark-400">
                       {{ t('payment.renewalBanner.lastPaid') }}
                     </div>
                     <div></div>
-                    <div class="text-left text-[10px] font-medium uppercase tracking-wider text-gray-400 dark:text-dark-400">
+                    <div class="text-left text-2xs font-medium uppercase tracking-wider text-gray-400 dark:text-dark-400">
                       {{ t('payment.renewalBanner.thisTime') }}
                     </div>
                   </div>
@@ -243,15 +243,15 @@
                         ¥{{ selectedPlan.price.toFixed(2) }}
                       </span>
                       <span v-if="renewPriceTrend === 'up'"
-                        class="inline-flex items-center rounded-md bg-amber-100/80 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                        class="inline-flex items-center rounded-md bg-amber-100/80 px-1.5 py-0.5 text-2xs font-bold tabular-nums text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
                         +¥{{ (selectedPlan.price - renewLastPaidPrice).toFixed(2) }}
                       </span>
                       <span v-else-if="renewPriceTrend === 'down'"
-                        class="inline-flex items-center rounded-md bg-emerald-100/80 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                        class="inline-flex items-center rounded-md bg-emerald-100/80 px-1.5 py-0.5 text-2xs font-bold tabular-nums text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
                         −¥{{ (renewLastPaidPrice - selectedPlan.price).toFixed(2) }}
                       </span>
                       <span v-else
-                        class="inline-flex items-center rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-dark-700 dark:text-dark-300">
+                        class="inline-flex items-center rounded-md bg-gray-100 px-1.5 py-0.5 text-2xs font-medium text-gray-500 dark:bg-dark-700 dark:text-dark-300">
                         {{ t('payment.renewalBanner.priceSame') }}
                       </span>
                     </div>
@@ -275,7 +275,7 @@
                       <div class="min-w-0">
                         <div class="flex flex-wrap items-center gap-2">
                           <h3 class="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ selectedPlan.name }}</h3>
-                          <span :class="['rounded-full px-2 py-0.5 text-[11px] font-medium', planBadgeLightClass]">{{ platformLabel(selectedPlan.group_platform || '') }}</span>
+                          <span :class="['rounded-full px-2 py-0.5 text-2xs font-medium', planBadgeLightClass]">{{ platformLabel(selectedPlan.group_platform || '') }}</span>
                         </div>
                         <p v-if="selectedPlan.description" class="mt-1.5 max-w-md text-sm leading-relaxed text-gray-500 dark:text-gray-400">{{ selectedPlan.description }}</p>
                       </div>
@@ -286,13 +286,13 @@
                         <span :class="['text-4xl font-bold leading-none tracking-tight tabular-nums', planTextClass]">{{ selectedPlan.price }}</span>
                       </div>
                       <div class="mt-2 flex flex-wrap items-center gap-2 sm:justify-end">
-                        <span class="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2.5 py-1 text-[11px] font-medium text-gray-600 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60">
+                        <span class="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2.5 py-1 text-2xs font-medium text-gray-600 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60">
                           <Icon name="calendar" size="xs" :stroke-width="2" />
                           {{ planValiditySuffix }}
                         </span>
                         <span v-if="selectedPlan.original_price" class="inline-flex items-center gap-1.5">
                           <span class="text-xs text-gray-400 line-through dark:text-gray-500">¥{{ selectedPlan.original_price }}</span>
-                          <span v-if="selectedPlanDiscountText" :class="['inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold', selectedPlanDiscountClass]">{{ selectedPlanDiscountText }}</span>
+                          <span v-if="selectedPlanDiscountText" :class="['inline-flex rounded-full px-2 py-0.5 text-2xs font-semibold', selectedPlanDiscountClass]">{{ selectedPlanDiscountText }}</span>
                         </span>
                       </div>
                     </div>
@@ -301,32 +301,32 @@
                   <!-- 2. 限额 stats：废限额已通过 limitVisibility 过滤，只显示真正起约束的 -->
                   <div class="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
                     <div class="rounded-xl bg-gray-50/70 px-4 py-3 dark:bg-dark-800/40">
-                      <span class="block text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.rate') }}</span>
+                      <span class="block text-xs font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.rate') }}</span>
                       <span :class="['mt-1 block text-lg font-semibold tabular-nums tracking-tight', planTextClass]">{{ selectedPlanRateDisplay }}</span>
                     </div>
                     <div v-if="selectedPlanLimitVisibility.showDaily" class="rounded-xl bg-gray-50/70 px-4 py-3 dark:bg-dark-800/40">
-                      <span class="block text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.dailyLimit') }}</span>
+                      <span class="block text-xs font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.dailyLimit') }}</span>
                       <span v-if="(selectedPlan.daily_limit_usd ?? 0) > 0" class="mt-1 block text-lg font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">${{ selectedPlan.daily_limit_usd }}</span>
                       <span v-else class="mt-1 block text-lg font-semibold tracking-tight text-emerald-600 dark:text-emerald-400">{{ t('payment.planCard.unlimited') }}</span>
                     </div>
                     <div v-if="selectedPlanLimitVisibility.showWeekly" class="rounded-xl bg-gray-50/70 px-4 py-3 dark:bg-dark-800/40">
-                      <span class="block text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.weeklyLimit') }}</span>
+                      <span class="block text-xs font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.weeklyLimit') }}</span>
                       <span v-if="(selectedPlan.weekly_limit_usd ?? 0) > 0" class="mt-1 block text-lg font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">${{ selectedPlan.weekly_limit_usd }}</span>
                       <span v-else class="mt-1 block text-lg font-semibold tracking-tight text-emerald-600 dark:text-emerald-400">{{ t('payment.planCard.unlimited') }}</span>
                     </div>
                     <div v-if="selectedPlanLimitVisibility.showMonthly" class="rounded-xl bg-gray-50/70 px-4 py-3 dark:bg-dark-800/40">
-                      <span class="block text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.monthlyLimit') }}</span>
+                      <span class="block text-xs font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.monthlyLimit') }}</span>
                       <span v-if="(selectedPlan.monthly_limit_usd ?? 0) > 0" class="mt-1 block text-lg font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">${{ selectedPlan.monthly_limit_usd }}</span>
                       <span v-else class="mt-1 block text-lg font-semibold tracking-tight text-emerald-600 dark:text-emerald-400">{{ t('payment.planCard.unlimited') }}</span>
                     </div>
                     <div v-if="selectedPlan.daily_limit_usd == null && selectedPlan.weekly_limit_usd == null && selectedPlan.monthly_limit_usd == null" class="rounded-xl bg-gray-50/70 px-4 py-3 dark:bg-dark-800/40">
-                      <span class="block text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.quota') }}</span>
+                      <span class="block text-xs font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.quota') }}</span>
                       <span class="mt-1 block text-lg font-semibold tracking-tight text-emerald-600 dark:text-emerald-400">{{ t('payment.planCard.unlimited') }}</span>
                     </div>
                   </div>
 
                   <!-- 3. 续费用户提示：仅同一 group 已有活跃订阅时显示，避免误以为续费即清零用量 -->
-                  <p v-if="paymentNoticeIsRenewal" class="flex items-start gap-1.5 rounded-lg bg-amber-50/60 px-3 py-2 text-[12px] leading-relaxed text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
+                  <p v-if="paymentNoticeIsRenewal" class="flex items-start gap-1.5 rounded-lg bg-amber-50/60 px-3 py-2 text-xs leading-relaxed text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
                     <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
                     <span>{{ t('payment.purchaseNotice.renewalHint') }}</span>
                   </p>
@@ -334,7 +334,7 @@
                   <!-- 4. 模型 scopes（仅 antigravity 平台用户能看到）-->
                   <div v-if="selectedPlanModelScopeItems.length > 0" class="rounded-xl bg-gray-50/70 px-4 py-3 dark:bg-dark-800/40">
                     <div class="mb-2 flex items-center justify-between gap-3">
-                      <span class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.models') }}</span>
+                      <span class="text-xs font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.models') }}</span>
                       <span class="h-px flex-1 bg-gray-200/70 dark:bg-dark-700/60" />
                     </div>
                     <div class="flex flex-wrap gap-1.5">
@@ -380,7 +380,7 @@
                   <!-- 开票提示：明确告知本套餐消费是否可开票，避免购买后才发现不能开 -->
                   <div
                     v-if="invoiceEnabled"
-                    class="flex items-start gap-2 rounded-xl px-3 py-2.5 text-[12px] leading-relaxed"
+                    class="flex items-start gap-2 rounded-xl px-3 py-2.5 text-xs leading-relaxed"
                     :class="selectedPlan.invoice_eligible
                       ? 'bg-emerald-50/70 text-emerald-700 dark:bg-emerald-900/15 dark:text-emerald-300'
                       : 'bg-gray-50/70 text-gray-500 dark:bg-dark-800/40 dark:text-dark-400'"
@@ -476,7 +476,7 @@
               </template>
               <!-- Active subscriptions (compact, below plan list) -->
               <div v-if="activeSubscriptions.length > 0">
-                <p class="mb-2 text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ t('payment.activeSubscription') }}</p>
+                <p class="mb-2 text-xs font-medium text-gray-500 dark:text-dark-400">{{ t('payment.activeSubscription') }}</p>
                 <div class="space-y-2">
                   <div v-for="sub in activeSubscriptions" :key="sub.id"
                     class="flex items-center gap-3 rounded-xl border border-gray-200/70 bg-white px-3 py-2 dark:border-dark-700/60 dark:bg-dark-800/40">
@@ -484,16 +484,16 @@
                     <div class="min-w-0 flex-1">
                       <div class="flex items-center gap-1.5">
                         <span class="truncate text-xs font-semibold text-gray-900 dark:text-white">{{ sub.group?.name || t('payment.groupFallback', { id: sub.group_id }) }}</span>
-                        <span :class="['shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-medium', platformBadgeLightClass(sub.group?.platform || '')]">{{ platformLabel(sub.group?.platform || '') }}</span>
+                        <span :class="['shrink-0 rounded-full px-1.5 py-0.5 text-2xs font-medium', platformBadgeLightClass(sub.group?.platform || '')]">{{ platformLabel(sub.group?.platform || '') }}</span>
                       </div>
-                      <div class="flex flex-wrap gap-x-3 text-[11px] text-gray-500 dark:text-dark-400">
+                      <div class="flex flex-wrap gap-x-3 text-2xs text-gray-500 dark:text-dark-400">
                         <span>{{ t('payment.planCard.rate') }}: ×{{ sub.group?.rate_multiplier ?? 1 }}</span>
                         <span v-if="sub.group?.daily_limit_usd == null && sub.group?.weekly_limit_usd == null && sub.group?.monthly_limit_usd == null">{{ t('payment.planCard.quota') }}: {{ t('payment.planCard.unlimited') }}</span>
                         <span v-if="sub.expires_at">{{ t('userSubscriptions.daysRemaining', { days: getDaysRemaining(sub.expires_at) }) }}</span>
                         <span v-else>{{ t('userSubscriptions.noExpiration') }}</span>
                       </div>
                     </div>
-                    <span class="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30">
+                    <span class="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-2xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30">
                       <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                       {{ t('userSubscriptions.status.active') }}
                     </span>
@@ -520,7 +520,7 @@
           <div class="relative w-full max-w-lg rounded-2xl border border-gray-200/70 bg-white p-6 shadow-2xl dark:border-dark-700/60 dark:bg-dark-800">
             <!-- Close button -->
             <button class="absolute right-4 top-4 rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-dark-700 dark:hover:text-gray-200" @click="closeRenewalModal">
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+              <Icon name="x" size="md" :stroke-width="2" />
             </button>
             <h3 class="mb-4 text-base font-semibold tracking-tight text-gray-900 dark:text-white">{{ t('payment.selectPlan') }}</h3>
             <div class="space-y-3">

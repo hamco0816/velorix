@@ -38,14 +38,21 @@
           </div>
         </div>
 
+        <!-- 会话列表：按 加载骨架 > 加载失败 > 空 > 数据 四态展示 -->
         <div class="min-h-0 flex-1 overflow-y-auto p-2">
-          <div v-if="loading && conversations.length === 0" class="py-10 text-center text-sm text-gray-500 dark:text-dark-400">
-            {{ t('common.loading') }}
-          </div>
-          <div v-else-if="conversations.length === 0" class="py-10 text-center text-sm text-gray-500 dark:text-dark-400">
-            {{ t('support.admin.noConversations') }}
-          </div>
+          <!-- 加载中：按会话条目形状渲染骨架占位 -->
+          <template v-if="loading">
+            <div v-for="i in 5" :key="`skeleton-${i}`" class="mb-1 w-full rounded-lg px-3 py-3">
+              <div class="h-4 w-3/4 animate-pulse rounded bg-gray-200 dark:bg-dark-700"></div>
+              <div class="mt-2 h-3 w-1/2 animate-pulse rounded bg-gray-200 dark:bg-dark-700"></div>
+            </div>
+          </template>
+          <!-- 加载失败：展示错误提示并支持重试 -->
+          <ErrorState v-else-if="loadFailed" @retry="loadConversations" />
+          <!-- 暂无会话 -->
+          <EmptyState v-else-if="conversations.length === 0" :title="t('support.admin.noConversations')" />
           <button
+            v-else
             v-for="item in conversations"
             :key="item.id"
             type="button"
@@ -66,7 +73,7 @@
               </div>
               <span
                 v-if="item.admin_unread_count > 0"
-                class="min-w-[20px] rounded-full bg-rose-500 px-1.5 text-center text-[11px] font-semibold leading-5 text-white"
+                class="min-w-[20px] rounded-full bg-rose-500 px-1.5 text-center text-2xs font-semibold leading-5 text-white"
               >
                 {{ item.admin_unread_count > 99 ? '99+' : item.admin_unread_count }}
               </span>
@@ -133,7 +140,7 @@
               >
                 <div class="whitespace-pre-wrap break-words leading-6">{{ message.content }}</div>
                 <div
-                  class="mt-1 text-[11px]"
+                  class="mt-1 text-2xs"
                   :class="message.sender_type === 'admin' ? 'text-primary-100' : 'text-gray-400 dark:text-dark-400'"
                 >
                   {{ formatDateTime(message.created_at) }}
@@ -182,6 +189,8 @@ import type { SupportConversation, SupportMessage, SupportRealtimeEvent, Support
 import { formatDateTime, formatRelativeTime } from '@/utils/format'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Icon from '@/components/icons/Icon.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
+import ErrorState from '@/components/common/ErrorState.vue'
 
 const { t } = useI18n()
 
@@ -189,6 +198,8 @@ const conversations = ref<SupportConversation[]>([])
 const selectedConversation = ref<SupportConversation | null>(null)
 const messages = ref<SupportMessage[]>([])
 const loading = ref(false)
+// 会话列表是否加载失败，用于展示可重试的错误态
+const loadFailed = ref(false)
 const messageLoading = ref(false)
 const sending = ref(false)
 const search = ref('')
@@ -222,6 +233,7 @@ const wsStatusLabel = computed(() => {
 
 async function loadConversations() {
   loading.value = true
+  loadFailed.value = false
   errorMessage.value = ''
   try {
     const result = await adminAPI.support.listConversations(1, 50, {
@@ -233,6 +245,7 @@ async function loadConversations() {
       selectedConversation.value = conversations.value.find((item) => item.id === selectedConversation.value?.id) || selectedConversation.value
     }
   } catch (error: any) {
+    loadFailed.value = true
     errorMessage.value = error?.message || t('support.admin.loadFailed')
   } finally {
     loading.value = false

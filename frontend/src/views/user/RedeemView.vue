@@ -137,26 +137,7 @@
                   :disabled="!redeemCode || submitting"
                   class="inline-flex w-full items-center justify-center rounded-xl bg-primary-950 px-4 py-3 text-sm font-semibold text-white shadow-card transition-colors hover:bg-primary-800 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 disabled:shadow-none dark:bg-white dark:text-primary-950 dark:hover:bg-primary-100 dark:disabled:bg-dark-700 dark:disabled:text-dark-400"
                 >
-                  <svg
-                    v-if="submitting"
-                    class="-ml-1 mr-2 h-5 w-5 animate-spin"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      class="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      stroke-width="4"
-                    ></circle>
-                    <path
-                      class="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
+                  <LoadingSpinner v-if="submitting" size="base" color="current" class="-ml-1 mr-2" />
                   <Icon v-else name="checkCircle" size="md" class="mr-2" />
                   {{ submitting ? t('redeem.redeeming') : t('redeem.redeemButton') }}
                 </button>
@@ -460,6 +441,7 @@ import { redeemAPI, type RedeemHistoryItem } from '@/api'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import ContactMethodsDisplay from '@/components/common/ContactMethodsDisplay.vue'
 import Icon from '@/components/icons/Icon.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import { formatDateTime } from '@/utils/format'
 import type { ContactMethod } from '@/types'
 

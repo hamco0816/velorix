@@ -6,7 +6,7 @@
         <Icon name="document" size="sm" :stroke-width="1.75" />
       </span>
       <div class="min-w-0 flex-1">
-        <p class="text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('usage.totalRequests') }}</p>
+        <p class="text-sm font-medium text-gray-500 dark:text-dark-400">{{ t('usage.totalRequests') }}</p>
         <p class="mt-1 text-[26px] font-semibold leading-tight tabular-nums text-gray-900 dark:text-white">
           {{ stats?.total_requests?.toLocaleString() || '0' }}
         </p>
@@ -20,7 +20,7 @@
         <Icon name="cube" size="sm" :stroke-width="1.75" />
       </span>
       <div class="min-w-0 flex-1">
-        <p class="text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('usage.totalTokens') }}</p>
+        <p class="text-sm font-medium text-gray-500 dark:text-dark-400">{{ t('usage.totalTokens') }}</p>
         <p class="mt-1 text-[26px] font-semibold leading-tight tabular-nums text-gray-900 dark:text-white">
           {{ formatTokens(stats?.total_tokens || 0) }}
         </p>
@@ -42,7 +42,7 @@
         <Icon name="dollar" size="sm" :stroke-width="1.75" />
       </span>
       <div class="min-w-0 flex-1">
-        <p class="text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('usage.totalCost') }}</p>
+        <p class="text-sm font-medium text-gray-500 dark:text-dark-400">{{ t('usage.totalCost') }}</p>
         <p class="mt-1 text-[26px] font-semibold leading-tight tabular-nums text-emerald-600 dark:text-emerald-400">
           ${{ (stats?.total_actual_cost || 0).toFixed(4) }}
         </p>
@@ -60,7 +60,7 @@
         <Icon name="clock" size="sm" :stroke-width="1.75" />
       </span>
       <div class="min-w-0 flex-1">
-        <p class="text-[13px] font-medium text-gray-500 dark:text-dark-400">{{ t('usage.avgDuration') }}</p>
+        <p class="text-sm font-medium text-gray-500 dark:text-dark-400">{{ t('usage.avgDuration') }}</p>
         <p class="mt-1 text-[26px] font-semibold leading-tight tabular-nums text-gray-900 dark:text-white">
           {{ formatDuration(stats?.average_duration_ms || 0) }}
         </p>

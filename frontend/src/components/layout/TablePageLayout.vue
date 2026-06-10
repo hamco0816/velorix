@@ -102,7 +102,7 @@ onUnmounted(() => {
 
 /* 表头：13px font-medium，去 uppercase，与全站 metric-label 同节奏 */
 .table-scroll-container :deep(th) {
-  @apply px-5 py-3.5 text-left text-[13px] font-medium text-gray-500 dark:text-dark-400 border-b border-gray-200/60 dark:border-dark-700/60;
+  @apply px-5 py-3.5 text-left text-sm font-medium text-gray-500 dark:text-dark-400 border-b border-gray-200/60 dark:border-dark-700/60;
 }
 
 .table-scroll-container :deep(td) {

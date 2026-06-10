@@ -159,9 +159,11 @@
           :columns="cols"
           :data="accounts"
           :loading="loading"
+          :error="loadFailed"
           row-key="id"
           :server-side-sort="true"
           @sort="handleSort"
+          @retry="handleManualRefresh"
           default-sort-key="name"
           default-sort-order="asc"
           :sort-storage-key="ACCOUNT_SORT_STORAGE_KEY"
@@ -187,14 +189,14 @@
                 <!-- 订阅档位角标：标过的显示档位名；OAuth 类账号未标的显示橙色提醒 -->
                 <span
                   v-if="row.subscription_tier"
-                  class="inline-flex items-center rounded bg-violet-50 px-1.5 py-0.5 text-[10px] font-medium text-violet-700 dark:bg-violet-500/15 dark:text-violet-300"
+                  class="inline-flex items-center rounded bg-violet-50 px-1.5 py-0.5 text-2xs font-medium text-violet-700 dark:bg-violet-500/15 dark:text-violet-300"
                   :title="t('admin.accounts.subscriptionTier')"
                 >
                   {{ formatSubscriptionTier(row.subscription_tier) }}
                 </span>
                 <span
                   v-else-if="needsSubscriptionTier(row)"
-                  class="inline-flex items-center rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
+                  class="inline-flex items-center rounded bg-amber-50 px-1.5 py-0.5 text-2xs font-medium text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
                   :title="t('admin.accounts.tierMissingHint')"
                 >
                   {{ t('admin.accounts.tierMissing') }}
@@ -218,14 +220,14 @@
               <PlatformTypeBadge :platform="row.platform" :type="row.type" :plan-type="row.credentials?.plan_type" :privacy-mode="row.extra?.privacy_mode" :subscription-expires-at="row.credentials?.subscription_expires_at" />
               <span
                 v-if="getOpenAICompactLabel(row)"
-                :class="['inline-block rounded px-1.5 py-0.5 text-[10px] font-medium', getOpenAICompactClass(row)]"
+                :class="['inline-block rounded px-1.5 py-0.5 text-2xs font-medium', getOpenAICompactClass(row)]"
                 :title="getOpenAICompactTitle(row)"
               >
                 {{ getOpenAICompactLabel(row) }}
               </span>
               <span
                 v-if="getAntigravityTierLabel(row)"
-                :class="['inline-block rounded px-1.5 py-0.5 text-[10px] font-medium', getAntigravityTierClass(row)]"
+                :class="['inline-block rounded px-1.5 py-0.5 text-2xs font-medium', getAntigravityTierClass(row)]"
               >
                 {{ getAntigravityTierLabel(row) }}
               </span>
@@ -723,6 +725,8 @@ const isColumnVisible = (key: string) => !hiddenColumns.has(key)
 const {
   items: accounts,
   loading,
+  // 账号列表加载失败标记，用于表格展示错误态并提供重试
+  error: loadFailed,
   params,
   pagination,
   load: baseLoad,

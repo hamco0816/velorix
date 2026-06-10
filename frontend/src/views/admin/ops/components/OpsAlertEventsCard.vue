@@ -5,6 +5,7 @@ import { useAppStore } from '@/stores/app'
 import Select from '@/components/common/Select.vue'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import Icon from '@/components/icons/Icon.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import { opsAPI, type AlertEventsQuery } from '@/api/admin/ops'
 import type { AlertEvent } from '../types'
 import { formatDateTime } from '../utils/opsFormatters'
@@ -358,7 +359,7 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
   <div class="surface-card p-6">
     <div class="mb-4 flex items-start justify-between gap-4">
       <div>
-        <h3 class="text-[15px] font-semibold text-gray-900 dark:text-white">{{ t('admin.ops.alertEvents.title') }}</h3>
+        <h3 class="text-base font-semibold text-gray-900 dark:text-white">{{ t('admin.ops.alertEvents.title') }}</h3>
         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ t('admin.ops.alertEvents.description') }}</p>
       </div>
 
@@ -372,19 +373,14 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
           :disabled="loading"
           @click="loadFirstPage"
         >
-          <svg class="h-3.5 w-3.5" :class="{ 'animate-spin': loading }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
+          <Icon name="refresh" size="xs" class="h-3.5 w-3.5" :class="{ 'animate-spin': loading }" :stroke-width="2" />
           {{ t('common.refresh') }}
         </button>
       </div>
     </div>
 
     <div v-if="loading" class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-      <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
+      <LoadingSpinner size="sm" color="current" />
       {{ t('admin.ops.alertEvents.loading') }}
     </div>
 
@@ -397,28 +393,28 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
         <table class="w-full min-w-[920px] divide-y divide-gray-200 dark:divide-dark-700">
           <thead class="sticky top-0 z-10 bg-gray-50 dark:bg-dark-900">
             <tr>
-              <th class="px-4 py-3 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">
+              <th class="px-4 py-3 text-left text-2xs font-medium text-gray-500 dark:text-dark-400">
                 {{ t('admin.ops.alertEvents.table.time') }}
               </th>
-              <th class="px-4 py-3 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">
+              <th class="px-4 py-3 text-left text-2xs font-medium text-gray-500 dark:text-dark-400">
                 {{ t('admin.ops.alertEvents.table.severity') }}
               </th>
-              <th class="px-4 py-3 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">
+              <th class="px-4 py-3 text-left text-2xs font-medium text-gray-500 dark:text-dark-400">
                 {{ t('admin.ops.alertEvents.table.platform') }}
               </th>
-              <th class="px-4 py-3 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">
+              <th class="px-4 py-3 text-left text-2xs font-medium text-gray-500 dark:text-dark-400">
                 {{ t('admin.ops.alertEvents.table.ruleId') }}
               </th>
-              <th class="px-4 py-3 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">
+              <th class="px-4 py-3 text-left text-2xs font-medium text-gray-500 dark:text-dark-400">
                 {{ t('admin.ops.alertEvents.table.title') }}
               </th>
-              <th class="px-4 py-3 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">
+              <th class="px-4 py-3 text-left text-2xs font-medium text-gray-500 dark:text-dark-400">
                 {{ t('admin.ops.alertEvents.table.duration') }}
               </th>
-              <th class="px-4 py-3 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">
+              <th class="px-4 py-3 text-left text-2xs font-medium text-gray-500 dark:text-dark-400">
                 {{ t('admin.ops.alertEvents.table.dimensions') }}
               </th>
-              <th class="px-4 py-3 text-right text-[11px] font-medium text-gray-500 dark:text-dark-400">
+              <th class="px-4 py-3 text-right text-2xs font-medium text-gray-500 dark:text-dark-400">
                 {{ t('admin.ops.alertEvents.table.email') }}
               </th>
             </tr>
@@ -436,10 +432,10 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
               </td>
               <td class="whitespace-nowrap px-4 py-3">
                 <div class="flex items-center gap-2">
-                  <span class="rounded-full px-2 py-1 text-[10px] font-semibold" :class="severityBadgeClass(String(row.severity || ''))">
+                  <span class="rounded-full px-2 py-1 text-2xs font-semibold" :class="severityBadgeClass(String(row.severity || ''))">
                     {{ row.severity || '-' }}
                   </span>
-                  <span class="inline-flex items-center rounded-full px-2 py-1 text-[10px] font-semibold ring-1 ring-inset" :class="statusBadgeClass(row.status)">
+                  <span class="inline-flex items-center rounded-full px-2 py-1 text-2xs font-semibold ring-1 ring-inset" :class="statusBadgeClass(row.status)">
                     {{ formatStatusLabel(row.status) }}
                   </span>
                 </div>
@@ -452,14 +448,14 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
               </td>
               <td class="min-w-[260px] px-4 py-3 text-xs text-gray-700 dark:text-gray-200">
                 <div class="font-semibold truncate max-w-[360px]">{{ row.title || '-' }}</div>
-                <div v-if="row.description" class="mt-0.5 line-clamp-2 text-[11px] text-gray-500 dark:text-gray-400">
+                <div v-if="row.description" class="mt-0.5 line-clamp-2 text-2xs text-gray-500 dark:text-gray-400">
                   {{ row.description }}
                 </div>
               </td>
               <td class="whitespace-nowrap px-4 py-3 text-xs text-gray-600 dark:text-gray-300">
                 {{ formatDurationLabel(row) }}
               </td>
-              <td class="whitespace-nowrap px-4 py-3 text-[11px] text-gray-500 dark:text-gray-400">
+              <td class="whitespace-nowrap px-4 py-3 text-2xs text-gray-500 dark:text-gray-400">
                 {{ formatDimensionsSummary(row) }}
               </td>
               <td class="whitespace-nowrap px-4 py-3 text-right text-xs">
@@ -479,7 +475,7 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
                     size="sm"
                     class="text-gray-400 dark:text-gray-500"
                   />
-                  <span class="text-[11px] font-medium text-gray-600 dark:text-gray-300">
+                  <span class="text-2xs font-medium text-gray-600 dark:text-gray-300">
                     {{ row.email_sent ? t('admin.ops.alertEvents.table.emailSent') : t('admin.ops.alertEvents.table.emailIgnored') }}
                   </span>
                 </span>
@@ -488,10 +484,7 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
           </tbody>
         </table>
         <div v-if="loadingMore" class="flex items-center justify-center gap-2 py-3 text-xs text-gray-500 dark:text-gray-400">
-          <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
+          <LoadingSpinner size="sm" color="current" />
           {{ t('admin.ops.alertEvents.loading') }}
         </div>
         <div v-else-if="!hasMore && events.length > 0" class="py-3 text-center text-xs text-gray-400">
@@ -520,10 +513,10 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
           <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <div class="flex flex-wrap items-center gap-2">
-                <span class="inline-flex items-center rounded-full px-2 py-1 text-[10px] font-semibold" :class="severityBadgeClass(String(selected.severity || ''))">
+                <span class="inline-flex items-center rounded-full px-2 py-1 text-2xs font-semibold" :class="severityBadgeClass(String(selected.severity || ''))">
                   {{ selected.severity || '-' }}
                 </span>
-                <span class="inline-flex items-center rounded-full px-2 py-1 text-[10px] font-semibold ring-1 ring-inset" :class="statusBadgeClass(selected.status)">
+                <span class="inline-flex items-center rounded-full px-2 py-1 text-2xs font-semibold ring-1 ring-inset" :class="statusBadgeClass(selected.status)">
                   {{ formatStatusLabel(selected.status) }}
                 </span>
               </div>
@@ -537,7 +530,7 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
 
             <div class="flex flex-wrap gap-2">
               <div class="flex items-center gap-2 rounded-lg bg-white px-2 py-1 ring-1 ring-gray-200 dark:bg-dark-800 dark:ring-dark-700">
-                <span class="text-[11px] font-medium text-gray-600 dark:text-gray-300">{{ t('admin.ops.alertEvents.detail.silence') }}</span>
+                <span class="text-2xs font-medium text-gray-600 dark:text-gray-300">{{ t('admin.ops.alertEvents.detail.silence') }}</span>
                 <Select
                   :model-value="silenceDuration"
                   :options="silenceDurationOptions"
@@ -560,26 +553,26 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
 
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-900">
-              <div class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('admin.ops.alertEvents.detail.firedAt') }}</div>
+              <div class="text-2xs font-medium text-gray-500 dark:text-dark-400">{{ t('admin.ops.alertEvents.detail.firedAt') }}</div>
               <div class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ formatDateTime(selected.fired_at || selected.created_at) }}</div>
             </div>
             <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-900">
-              <div class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('admin.ops.alertEvents.detail.resolvedAt') }}</div>
+              <div class="text-2xs font-medium text-gray-500 dark:text-dark-400">{{ t('admin.ops.alertEvents.detail.resolvedAt') }}</div>
               <div class="mt-1 text-sm font-medium text-gray-900 dark:text-white">{{ selected.resolved_at ? formatDateTime(selected.resolved_at) : '-' }}</div>
             </div>
             <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-900">
-              <div class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('admin.ops.alertEvents.detail.ruleId') }}</div>
+              <div class="text-2xs font-medium text-gray-500 dark:text-dark-400">{{ t('admin.ops.alertEvents.detail.ruleId') }}</div>
               <div class="mt-1 flex flex-wrap items-center gap-2">
-                <div class="font-mono text-[15px] font-semibold text-gray-900 dark:text-white">#{{ selected.rule_id }}</div>
+                <div class="font-mono text-base font-semibold text-gray-900 dark:text-white">#{{ selected.rule_id }}</div>
                 <a
-                  class="inline-flex items-center gap-1 rounded-md bg-white px-2 py-1 text-[11px] font-medium text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50 dark:bg-dark-800 dark:text-gray-200 dark:ring-dark-700 dark:hover:bg-dark-700"
+                  class="inline-flex items-center gap-1 rounded-md bg-white px-2 py-1 text-2xs font-medium text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50 dark:bg-dark-800 dark:text-gray-200 dark:ring-dark-700 dark:hover:bg-dark-700"
                   :href="`/admin/ops?open_alert_rules=1&alert_rule_id=${selected.rule_id}`"
                 >
                   <Icon name="externalLink" size="xs" />
                   {{ t('admin.ops.alertEvents.detail.viewRule') }}
                 </a>
                 <a
-                  class="inline-flex items-center gap-1 rounded-md bg-white px-2 py-1 text-[11px] font-medium text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50 dark:bg-dark-800 dark:text-gray-200 dark:ring-dark-700 dark:hover:bg-dark-700"
+                  class="inline-flex items-center gap-1 rounded-md bg-white px-2 py-1 text-2xs font-medium text-gray-700 ring-1 ring-gray-200 hover:bg-gray-50 dark:bg-dark-800 dark:text-gray-200 dark:ring-dark-700 dark:hover:bg-dark-700"
                   :href="`/admin/ops?platform=${encodeURIComponent(getDimensionString(selected,'platform')||'')}&group_id=${selected.dimensions?.group_id || ''}&error_type=request&open_error_details=1`"
                 >
                   <Icon name="externalLink" size="xs" />
@@ -588,7 +581,7 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
               </div>
             </div>
             <div class="rounded-xl bg-gray-50 p-4 dark:bg-dark-900">
-              <div class="text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('admin.ops.alertEvents.detail.dimensions') }}</div>
+              <div class="text-2xs font-medium text-gray-500 dark:text-dark-400">{{ t('admin.ops.alertEvents.detail.dimensions') }}</div>
               <div class="mt-1 text-sm text-gray-900 dark:text-white">
                 <div v-if="getDimensionString(selected, 'platform')">platform={{ getDimensionString(selected, 'platform') }}</div>
                 <div v-if="selected.dimensions?.group_id">group_id={{ selected.dimensions.group_id }}</div>
@@ -601,7 +594,7 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
         <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-dark-700 dark:bg-dark-800">
           <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <div class="text-[15px] font-semibold text-gray-900 dark:text-white">{{ t('admin.ops.alertEvents.detail.historyTitle') }}</div>
+              <div class="text-base font-semibold text-gray-900 dark:text-white">{{ t('admin.ops.alertEvents.detail.historyTitle') }}</div>
               <div class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{{ t('admin.ops.alertEvents.detail.historyHint') }}</div>
             </div>
             <Select :model-value="historyRange" :options="historyRangeOptions" class="min-w-[9rem]" @change="historyRange = String($event || '7d')" />
@@ -617,16 +610,16 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
             <table class="w-full min-w-[640px] divide-y divide-gray-100 dark:divide-dark-700">
               <thead class="bg-gray-50 dark:bg-dark-900">
                 <tr>
-                  <th class="px-3 py-2 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('admin.ops.alertEvents.table.time') }}</th>
-                  <th class="px-3 py-2 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('admin.ops.alertEvents.table.status') }}</th>
-                  <th class="px-3 py-2 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">{{ t('admin.ops.alertEvents.table.metric') }}</th>
+                  <th class="px-3 py-2 text-left text-2xs font-medium text-gray-500 dark:text-dark-400">{{ t('admin.ops.alertEvents.table.time') }}</th>
+                  <th class="px-3 py-2 text-left text-2xs font-medium text-gray-500 dark:text-dark-400">{{ t('admin.ops.alertEvents.table.status') }}</th>
+                  <th class="px-3 py-2 text-left text-2xs font-medium text-gray-500 dark:text-dark-400">{{ t('admin.ops.alertEvents.table.metric') }}</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100 dark:divide-dark-700">
                 <tr v-for="it in history" :key="it.id" class="hover:bg-gray-50 dark:hover:bg-dark-700/50">
                   <td class="px-3 py-2 text-xs text-gray-600 dark:text-gray-300">{{ formatDateTime(it.fired_at || it.created_at) }}</td>
                   <td class="px-3 py-2 text-xs">
-                    <span class="inline-flex items-center rounded-full px-2 py-1 text-[10px] font-semibold ring-1 ring-inset" :class="statusBadgeClass(it.status)">
+                    <span class="inline-flex items-center rounded-full px-2 py-1 text-2xs font-semibold ring-1 ring-inset" :class="statusBadgeClass(it.status)">
                       {{ formatStatusLabel(it.status) }}
                     </span>
                   </td>

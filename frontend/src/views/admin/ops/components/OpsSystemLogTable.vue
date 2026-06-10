@@ -1,12 +1,19 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { opsAPI, type OpsRuntimeLogConfig, type OpsSystemLog, type OpsSystemLogSinkHealth } from '@/api/admin/ops'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import Pagination from '@/components/common/Pagination.vue'
 import Select from '@/components/common/Select.vue'
 import Icon from '@/components/icons/Icon.vue'
+import { useConfirm } from '@/composables/useConfirm'
 import { useAppStore } from '@/stores'
 
 const appStore = useAppStore()
+const { t } = useI18n()
+
+// 通用确认弹窗（替代浏览器原生 confirm）
+const { confirmState, requestConfirm, handleConfirmAccept, handleConfirmCancel } = useConfirm()
 
 const props = withDefaults(defineProps<{
   platformFilter?: string
@@ -81,13 +88,13 @@ const timeRangeOptions = [
   { value: '30d', label: '30d' }
 ]
 
-const filterLevelOptions = [
-  { value: '', label: '全部' },
+const filterLevelOptions = computed(() => [
+  { value: '', label: t('admin.ops.systemLog.levelAll') },
   { value: 'debug', label: 'debug' },
   { value: 'info', label: 'info' },
   { value: 'warn', label: 'warn' },
   { value: 'error', label: 'error' }
-]
+])
 
 const levelBadgeClass = (level: string) => {
   const v = String(level || '').toLowerCase()
@@ -198,7 +205,7 @@ const fetchLogs = async () => {
     total.value = res.total || 0
   } catch (err: any) {
     console.error('[OpsSystemLogTable] Failed to fetch logs', err)
-    appStore.showError(err?.response?.data?.detail || '系统日志加载失败')
+    appStore.showError(err?.response?.data?.detail || t('admin.ops.systemLog.loadFailed'))
   } finally {
     loading.value = false
   }
@@ -241,17 +248,21 @@ const saveRuntimeConfig = async () => {
     runtimeConfig.caller = saved.caller
     runtimeConfig.stacktrace_level = saved.stacktrace_level
     runtimeConfig.retention_days = saved.retention_days
-    appStore.showSuccess('日志运行时配置已生效')
+    appStore.showSuccess(t('admin.ops.systemLog.runtimeConfigSaved'))
   } catch (err: any) {
     console.error('[OpsSystemLogTable] Failed to save runtime log config', err)
-    appStore.showError(err?.response?.data?.detail || '保存日志配置失败')
+    appStore.showError(err?.response?.data?.detail || t('admin.ops.systemLog.runtimeConfigSaveFailed'))
   } finally {
     runtimeSaving.value = false
   }
 }
 
 const resetRuntimeConfig = async () => {
-  const ok = window.confirm('确认回滚为启动配置（env/yaml）并立即生效？')
+  const ok = await requestConfirm({
+    title: t('common.warning'),
+    message: t('admin.ops.systemLog.resetRuntimeConfirm'),
+    danger: false
+  })
   if (!ok) return
 
   runtimeSaving.value = true
@@ -264,18 +275,22 @@ const resetRuntimeConfig = async () => {
     runtimeConfig.caller = saved.caller
     runtimeConfig.stacktrace_level = saved.stacktrace_level
     runtimeConfig.retention_days = saved.retention_days
-    appStore.showSuccess('已回滚到启动日志配置')
+    appStore.showSuccess(t('admin.ops.systemLog.runtimeConfigResetDone'))
     await fetchHealth()
   } catch (err: any) {
     console.error('[OpsSystemLogTable] Failed to reset runtime log config', err)
-    appStore.showError(err?.response?.data?.detail || '回滚日志配置失败')
+    appStore.showError(err?.response?.data?.detail || t('admin.ops.systemLog.runtimeConfigResetFailed'))
   } finally {
     runtimeSaving.value = false
   }
 }
 
 const cleanupCurrentFilter = async () => {
-  const ok = window.confirm('确认按当前筛选条件清理系统日志？该操作不可撤销。')
+  const ok = await requestConfirm({
+    title: t('common.warning'),
+    message: t('admin.ops.systemLog.cleanupConfirm'),
+    danger: true
+  })
   if (!ok) return
   try {
     const payload = {
@@ -292,12 +307,12 @@ const cleanupCurrentFilter = async () => {
       q: filters.q.trim() || undefined
     }
     const res = await opsAPI.cleanupSystemLogs(payload)
-    appStore.showSuccess(`清理完成，删除 ${res.deleted || 0} 条日志`)
+    appStore.showSuccess(t('admin.ops.systemLog.cleanupDone', { count: res.deleted || 0 }))
     page.value = 1
     await Promise.all([fetchLogs(), fetchHealth()])
   } catch (err: any) {
     console.error('[OpsSystemLogTable] Failed to cleanup logs', err)
-    appStore.showError(err?.response?.data?.detail || '清理系统日志失败')
+    appStore.showError(err?.response?.data?.detail || t('admin.ops.systemLog.cleanupFailed'))
   }
 }
 
@@ -361,14 +376,14 @@ onMounted(async () => {
   <section class="surface-card p-6">
     <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
       <div>
-        <h3 class="text-[15px] font-semibold text-gray-900 dark:text-white">系统日志</h3>
-        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">默认按最新时间倒序，支持筛选搜索与按条件清理。</p>
+        <h3 class="text-base font-semibold text-gray-900 dark:text-white">{{ t('admin.ops.systemLog.title') }}</h3>
+        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ t('admin.ops.systemLog.subtitle') }}</p>
       </div>
       <div class="flex flex-wrap items-center gap-2 text-xs">
-        <span class="rounded-md bg-gray-100 px-2 py-1 text-gray-700 dark:bg-dark-700 dark:text-gray-200">队列 {{ health.queue_depth }}/{{ health.queue_capacity }}</span>
-        <span class="rounded-md bg-gray-100 px-2 py-1 text-gray-700 dark:bg-dark-700 dark:text-gray-200">写入 {{ health.written_count }}</span>
-        <span class="rounded-md bg-amber-100 px-2 py-1 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">丢弃 {{ health.dropped_count }}</span>
-        <span class="rounded-md bg-red-100 px-2 py-1 text-red-700 dark:bg-red-900/30 dark:text-red-300">失败 {{ health.write_failed_count }}</span>
+        <span class="rounded-md bg-gray-100 px-2 py-1 text-gray-700 dark:bg-dark-700 dark:text-gray-200">{{ t('admin.ops.systemLog.healthQueue', { depth: health.queue_depth, capacity: health.queue_capacity }) }}</span>
+        <span class="rounded-md bg-gray-100 px-2 py-1 text-gray-700 dark:bg-dark-700 dark:text-gray-200">{{ t('admin.ops.systemLog.healthWritten', { count: health.written_count }) }}</span>
+        <span class="rounded-md bg-amber-100 px-2 py-1 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">{{ t('admin.ops.systemLog.healthDropped', { count: health.dropped_count }) }}</span>
+        <span class="rounded-md bg-red-100 px-2 py-1 text-red-700 dark:bg-red-900/30 dark:text-red-300">{{ t('admin.ops.systemLog.healthFailed', { count: health.write_failed_count }) }}</span>
       </div>
     </div>
 
@@ -376,33 +391,33 @@ onMounted(async () => {
       <summary class="flex cursor-pointer items-center justify-between gap-2 list-none [&::-webkit-details-marker]:hidden">
         <div class="flex items-center gap-2">
           <Icon name="cog" size="sm" class="text-gray-500 dark:text-dark-400" />
-          <span class="text-sm font-medium text-gray-700 dark:text-gray-200">运行时日志配置</span>
-          <span class="rounded-full bg-gray-200 px-2 py-0.5 text-[10px] font-medium text-gray-600 dark:bg-dark-700 dark:text-dark-300">实时生效</span>
+          <span class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ t('admin.ops.systemLog.runtimeTitle') }}</span>
+          <span class="rounded-full bg-gray-200 px-2 py-0.5 text-2xs font-medium text-gray-600 dark:bg-dark-700 dark:text-dark-300">{{ t('admin.ops.systemLog.runtimeBadge') }}</span>
         </div>
         <div class="flex items-center gap-2">
-          <span v-if="runtimeLoading" class="text-xs text-gray-500">加载中...</span>
+          <span v-if="runtimeLoading" class="text-xs text-gray-500">{{ t('admin.ops.systemLog.loading') }}</span>
           <Icon name="chevronDown" size="sm" class="text-gray-400 transition-transform group-open:rotate-180" />
         </div>
       </summary>
       <div class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-6">
         <label class="text-xs text-gray-600 dark:text-gray-300">
-          级别
+          {{ t('admin.ops.systemLog.fieldLevel') }}
           <Select v-model="runtimeConfig.level" class="mt-1" :options="runtimeLevelOptions" />
         </label>
         <label class="text-xs text-gray-600 dark:text-gray-300">
-          堆栈阈值
+          {{ t('admin.ops.systemLog.fieldStacktraceLevel') }}
           <Select v-model="runtimeConfig.stacktrace_level" class="mt-1" :options="stacktraceLevelOptions" />
         </label>
         <label class="text-xs text-gray-600 dark:text-gray-300">
-          采样初始
+          {{ t('admin.ops.systemLog.fieldSamplingInitial') }}
           <input v-model.number="runtimeConfig.sampling_initial" type="number" min="1" class="input mt-1" />
         </label>
         <label class="text-xs text-gray-600 dark:text-gray-300">
-          采样后续
+          {{ t('admin.ops.systemLog.fieldSamplingThereafter') }}
           <input v-model.number="runtimeConfig.sampling_thereafter" type="number" min="1" class="input mt-1" />
         </label>
         <label class="text-xs text-gray-600 dark:text-gray-300">
-          保留天数
+          {{ t('admin.ops.systemLog.fieldRetentionDays') }}
           <input v-model.number="runtimeConfig.retention_days" type="number" min="1" max="3650" class="input mt-1" />
         </label>
         <div class="md:col-span-2 xl:col-span-6">
@@ -419,38 +434,38 @@ onMounted(async () => {
             </div>
             <div class="flex flex-wrap items-center gap-2 lg:justify-end">
               <button type="button" class="btn btn-primary btn-sm" :disabled="runtimeSaving" @click="saveRuntimeConfig">
-                {{ runtimeSaving ? '保存中...' : '保存并生效' }}
+                {{ runtimeSaving ? t('admin.ops.systemLog.btnSaving') : t('admin.ops.systemLog.btnSaveApply') }}
               </button>
               <button type="button" class="btn btn-secondary btn-sm" :disabled="runtimeSaving" @click="resetRuntimeConfig">
-                回滚默认值
+                {{ t('admin.ops.systemLog.btnResetDefaults') }}
               </button>
             </div>
           </div>
         </div>
       </div>
-      <p v-if="health.last_error" class="mt-2 text-xs text-red-600 dark:text-red-400">最近写入错误：{{ health.last_error }}</p>
+      <p v-if="health.last_error" class="mt-2 text-xs text-red-600 dark:text-red-400">{{ t('admin.ops.systemLog.lastWriteError', { error: health.last_error }) }}</p>
     </details>
 
     <div class="mb-4 grid grid-cols-1 gap-3 md:grid-cols-3 xl:grid-cols-6">
       <label class="text-xs text-gray-600 dark:text-gray-300">
-        时间范围
+        {{ t('admin.ops.systemLog.filterTimeRange') }}
         <Select v-model="filters.time_range" class="mt-1" :options="timeRangeOptions" />
       </label>
       <label class="text-xs text-gray-600 dark:text-gray-300">
-        开始时间（可选）
+        {{ t('admin.ops.systemLog.filterStartTime') }}
         <input v-model="filters.start_time" type="datetime-local" class="input mt-1" />
       </label>
       <label class="text-xs text-gray-600 dark:text-gray-300">
-        结束时间（可选）
+        {{ t('admin.ops.systemLog.filterEndTime') }}
         <input v-model="filters.end_time" type="datetime-local" class="input mt-1" />
       </label>
       <label class="text-xs text-gray-600 dark:text-gray-300">
-        级别
+        {{ t('admin.ops.systemLog.filterLevel') }}
         <Select v-model="filters.level" class="mt-1" :options="filterLevelOptions" />
       </label>
       <label class="text-xs text-gray-600 dark:text-gray-300">
-        组件
-        <input v-model="filters.component" type="text" class="input mt-1" placeholder="如 http.access" />
+        {{ t('admin.ops.systemLog.filterComponent') }}
+        <input v-model="filters.component" type="text" class="input mt-1" :placeholder="t('admin.ops.systemLog.filterComponentPlaceholder')" />
       </label>
       <label class="text-xs text-gray-600 dark:text-gray-300">
         request_id
@@ -469,36 +484,36 @@ onMounted(async () => {
         <input v-model="filters.account_id" type="text" class="input mt-1" />
       </label>
       <label class="text-xs text-gray-600 dark:text-gray-300">
-        平台
+        {{ t('admin.ops.systemLog.filterPlatform') }}
         <input v-model="filters.platform" type="text" class="input mt-1" />
       </label>
       <label class="text-xs text-gray-600 dark:text-gray-300">
-        模型
+        {{ t('admin.ops.systemLog.filterModel') }}
         <input v-model="filters.model" type="text" class="input mt-1" />
       </label>
       <label class="text-xs text-gray-600 dark:text-gray-300">
-        关键词
-        <input v-model="filters.q" type="text" class="input mt-1" placeholder="消息/request_id" />
+        {{ t('admin.ops.systemLog.filterKeyword') }}
+        <input v-model="filters.q" type="text" class="input mt-1" :placeholder="t('admin.ops.systemLog.filterKeywordPlaceholder')" />
       </label>
     </div>
 
     <div class="mb-3 flex flex-wrap gap-2">
-      <button type="button" class="btn btn-primary btn-sm" @click="applyFilters">查询</button>
-      <button type="button" class="btn btn-secondary btn-sm" @click="resetFilters">重置</button>
-      <button type="button" class="btn btn-danger btn-sm" @click="cleanupCurrentFilter">按当前筛选清理</button>
-      <button type="button" class="btn btn-secondary btn-sm" @click="fetchHealth">刷新健康指标</button>
+      <button type="button" class="btn btn-primary btn-sm" @click="applyFilters">{{ t('admin.ops.systemLog.btnSearch') }}</button>
+      <button type="button" class="btn btn-secondary btn-sm" @click="resetFilters">{{ t('admin.ops.systemLog.btnReset') }}</button>
+      <button type="button" class="btn btn-danger btn-sm" @click="cleanupCurrentFilter">{{ t('admin.ops.systemLog.btnCleanupByFilter') }}</button>
+      <button type="button" class="btn btn-secondary btn-sm" @click="fetchHealth">{{ t('admin.ops.systemLog.btnRefreshHealth') }}</button>
     </div>
 
     <div class="overflow-hidden rounded-xl border border-gray-200 dark:border-dark-700">
-      <div v-if="loading" class="px-4 py-8 text-center text-sm text-gray-500">加载中...</div>
-      <div v-else-if="!hasData" class="px-4 py-8 text-center text-sm text-gray-500">暂无系统日志</div>
+      <div v-if="loading" class="px-4 py-8 text-center text-sm text-gray-500">{{ t('admin.ops.systemLog.loading') }}</div>
+      <div v-else-if="!hasData" class="px-4 py-8 text-center text-sm text-gray-500">{{ t('admin.ops.systemLog.empty') }}</div>
       <div v-else class="overflow-auto">
         <table class="min-w-full table-fixed divide-y divide-gray-200 dark:divide-dark-700">
           <thead class="bg-gray-50 dark:bg-dark-900">
             <tr>
-              <th class="w-[170px] px-3 py-2 text-left text-[11px] font-semibold text-gray-500">时间</th>
-              <th class="w-[80px] px-3 py-2 text-left text-[11px] font-semibold text-gray-500">级别</th>
-              <th class="px-3 py-2 text-left text-[11px] font-semibold text-gray-500">日志详细信息</th>
+              <th class="w-[170px] px-3 py-2 text-left text-2xs font-semibold text-gray-500">{{ t('admin.ops.systemLog.colTime') }}</th>
+              <th class="w-[80px] px-3 py-2 text-left text-2xs font-semibold text-gray-500">{{ t('admin.ops.systemLog.colLevel') }}</th>
+              <th class="px-3 py-2 text-left text-2xs font-semibold text-gray-500">{{ t('admin.ops.systemLog.colDetail') }}</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100 dark:divide-dark-800">
@@ -525,4 +540,16 @@ onMounted(async () => {
       />
     </div>
   </section>
+
+  <!-- 通用确认弹窗（替代浏览器原生 confirm） -->
+  <ConfirmDialog
+    :show="confirmState.show"
+    :title="confirmState.title"
+    :message="confirmState.message"
+    :confirm-text="confirmState.confirmText"
+    :cancel-text="confirmState.cancelText"
+    :danger="confirmState.danger"
+    @confirm="handleConfirmAccept"
+    @cancel="handleConfirmCancel"
+  />
 </template>

@@ -2,7 +2,7 @@
   <div class="space-y-8">
     <!-- 核心数据：余额 + 今日运营，带 sparkline -->
     <section class="space-y-4">
-      <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">
+      <h2 class="text-base font-semibold text-gray-900 dark:text-white">
         {{ t('dashboard.coreStats') }}
       </h2>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -82,7 +82,7 @@
 
     <!-- Token / 性能数据 -->
     <section class="space-y-4">
-      <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">
+      <h2 class="text-base font-semibold text-gray-900 dark:text-white">
         {{ t('dashboard.tokenStats') }}
       </h2>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -314,7 +314,7 @@ const formatDuration = (ms: number) => ms >= 1000 ? `${(ms / 1000).toFixed(2)}s`
 :root.dark .kpi-recharge-btn:hover { background: rgb(2 6 23 / 0.18); }
 
 .kpi-card-header { @apply flex items-start justify-between gap-2; }
-.kpi-card-label { @apply mt-3 text-[13px] font-medium text-gray-500 dark:text-dark-400; }
+.kpi-card-label { @apply mt-3 text-sm font-medium text-gray-500 dark:text-dark-400; }
 .kpi-card-value { @apply mt-1 flex items-baseline gap-1.5 text-[30px] font-semibold leading-tight tabular-nums text-gray-900 dark:text-white; }
 .kpi-card-hint { @apply mt-1 flex flex-wrap items-center gap-x-1 text-xs text-gray-500 dark:text-dark-400; }
 .kpi-card-spark { @apply -mx-5 -mb-5 mt-4 h-10; }
@@ -346,7 +346,7 @@ const formatDuration = (ms: number) => ms >= 1000 ? `${(ms / 1000).toFixed(2)}s`
 .metric-icon-indigo  { @apply bg-indigo-50 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300; }
 
 .metric-body { @apply min-w-0 flex-1; }
-.metric-label { @apply text-[13px] font-medium text-gray-500 dark:text-dark-400; }
+.metric-label { @apply text-sm font-medium text-gray-500 dark:text-dark-400; }
 .metric-value { @apply mt-1 flex items-baseline gap-1.5 text-[26px] font-semibold leading-tight tabular-nums text-gray-900 dark:text-white; }
 .metric-hint { @apply mt-1.5 flex flex-wrap items-center gap-x-1 text-xs text-gray-500 dark:text-dark-400; }
 </style>

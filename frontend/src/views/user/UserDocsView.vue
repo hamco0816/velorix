@@ -3,7 +3,7 @@
     <div class="space-y-6">
       <!-- 锚点目录：sticky 在顶部，方便长文档快速跳转 -->
       <nav class="sticky top-2 z-10 -mx-1 flex flex-wrap items-center gap-1.5 rounded-2xl border border-gray-200/70 bg-white/80 px-3 py-2 shadow-sm backdrop-blur-md dark:border-dark-700/60 dark:bg-dark-800/70">
-        <span class="px-1 text-[11px] font-medium uppercase tracking-wide text-gray-400 dark:text-dark-500">目录</span>
+        <span class="px-1 text-2xs font-medium uppercase tracking-wide text-gray-400 dark:text-dark-500">目录</span>
         <a
           v-for="item in tocItems"
           :key="item.id"
@@ -21,7 +21,7 @@
             <Icon name="exclamationCircle" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0">
-            <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">Base URL 速查（必看）</h2>
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white">Base URL 速查（必看）</h2>
             <p class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">不同客户端走不同协议，Base URL 后缀差一个 /v1 就会 404 或 401</p>
           </div>
         </header>
@@ -30,10 +30,10 @@
           <table class="min-w-[720px] divide-y divide-gray-200/60 dark:divide-dark-700/60">
             <thead class="bg-gray-50/60 dark:bg-dark-800/60">
               <tr>
-                <th class="px-4 py-3 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">客户端</th>
-                <th class="px-4 py-3 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">协议</th>
-                <th class="px-4 py-3 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">Base URL 填法</th>
-                <th class="px-4 py-3 text-left text-[11px] font-medium text-gray-500 dark:text-dark-400">说明</th>
+                <th class="px-4 py-3 text-left text-2xs font-medium text-gray-500 dark:text-dark-400">客户端</th>
+                <th class="px-4 py-3 text-left text-2xs font-medium text-gray-500 dark:text-dark-400">协议</th>
+                <th class="px-4 py-3 text-left text-2xs font-medium text-gray-500 dark:text-dark-400">Base URL 填法</th>
+                <th class="px-4 py-3 text-left text-2xs font-medium text-gray-500 dark:text-dark-400">说明</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 dark:divide-dark-700/60 text-sm">
@@ -59,7 +59,7 @@
               <span class="inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium" :class="row.tagClass">
                 {{ row.client }}
               </span>
-              <span class="text-[11px] text-gray-500 dark:text-dark-400">{{ row.protocol }}</span>
+              <span class="text-2xs text-gray-500 dark:text-dark-400">{{ row.protocol }}</span>
             </div>
             <code class="block overflow-x-auto rounded-md bg-gray-50 px-2 py-1.5 font-mono text-xs dark:bg-dark-800" :class="row.urlClass">{{ row.url }}</code>
             <p class="text-xs leading-5 text-gray-500 dark:text-dark-400">{{ row.note }}</p>
@@ -86,7 +86,7 @@
           <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
             <Icon name="checkCircle" size="sm" :stroke-width="1.75" />
           </span>
-          <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">快速开始</h2>
+          <h2 class="text-base font-semibold text-gray-900 dark:text-white">快速开始</h2>
         </div>
         <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
           <article
@@ -120,7 +120,7 @@
             <Icon name="link" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0">
-            <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">管理员自定义端点</h2>
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white">管理员自定义端点</h2>
             <p class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">管理员额外公开的访问入口</p>
           </div>
         </header>
@@ -155,8 +155,8 @@
           <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
             <Icon name="terminal" size="sm" :stroke-width="1.75" />
           </span>
-          <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">客户端接入示例</h2>
-          <span class="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-600 dark:bg-dark-700 dark:text-dark-300">
+          <h2 class="text-base font-semibold text-gray-900 dark:text-white">客户端接入示例</h2>
+          <span class="rounded-full bg-gray-100 px-2 py-0.5 text-2xs font-medium text-gray-600 dark:bg-dark-700 dark:text-dark-300">
             {{ snippets.length }} 种客户端
           </span>
         </div>
@@ -179,7 +179,7 @@
             <div class="px-6 pb-3 pt-4">
               <div class="flex flex-wrap items-center gap-2">
                 <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ activeSnippet.title }}</h3>
-                <span class="rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
+                <span class="rounded-md bg-emerald-50 px-2 py-0.5 text-2xs font-medium text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
                   {{ activeSnippet.tag }}
                 </span>
               </div>
@@ -187,7 +187,7 @@
             </div>
             <div class="relative">
               <!-- 顶部工具栏：左侧 language 标签 + 右侧复制按钮 -->
-              <div class="absolute left-3 top-3 z-10 inline-flex items-center gap-1 rounded-md bg-slate-800/80 px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-slate-300 backdrop-blur">
+              <div class="absolute left-3 top-3 z-10 inline-flex items-center gap-1 rounded-md bg-slate-800/80 px-2 py-1 text-2xs font-medium uppercase tracking-wider text-slate-300 backdrop-blur">
                 <span class="h-1.5 w-1.5 rounded-full" :class="langDotClass(activeSnippet.title)"></span>
                 {{ snippetLang(activeSnippet.title) }}
               </div>
@@ -212,7 +212,7 @@
             <Icon name="sparkles" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0">
-            <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">模型选择指南</h2>
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white">模型选择指南</h2>
             <p class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">按使用场景选模型；具体模型名以后台分组配置为准</p>
           </div>
         </header>
@@ -236,7 +236,7 @@
                 <code
                   v-for="m in guide.models"
                   :key="m"
-                  class="rounded-md bg-gray-100 px-2 py-0.5 font-mono text-[11px] text-gray-700 dark:bg-dark-800 dark:text-gray-300"
+                  class="rounded-md bg-gray-100 px-2 py-0.5 font-mono text-2xs text-gray-700 dark:bg-dark-800 dark:text-gray-300"
                 >{{ m }}</code>
               </div>
             </div>
@@ -251,7 +251,7 @@
             <Icon name="bolt" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0">
-            <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">高级用法</h2>
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white">高级用法</h2>
             <p class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">流式、图像、工具调用、提示词缓存</p>
           </div>
         </header>
@@ -267,7 +267,7 @@
                     <span>查看示例</span>
                     <Icon name="chevronDown" size="xs" class="transition-transform group-open:rotate-180" />
                   </summary>
-                  <pre class="snippet-pre mt-2 overflow-x-auto rounded-lg bg-slate-950 p-4 text-[11px] leading-5 text-slate-100"><code v-html="highlightCode(feature.example)"></code></pre>
+                  <pre class="snippet-pre mt-2 overflow-x-auto rounded-lg bg-slate-950 p-4 text-2xs leading-5 text-slate-100"><code v-html="highlightCode(feature.example)"></code></pre>
                 </details>
               </div>
             </div>
@@ -282,7 +282,7 @@
             <Icon name="link" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0 flex-1">
-            <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">下游对接 API</h2>
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white">下游对接 API</h2>
             <p class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">把 API 提供给客户、代理商或第三方系统时，参考此节交付配置</p>
           </div>
           <div class="flex shrink-0 gap-2">
@@ -313,7 +313,7 @@
               <Icon name="cube" size="sm" class="text-violet-600 dark:text-violet-300" />
               <span class="text-sm font-semibold text-gray-900 dark:text-white">最小交付配置（推荐 OpenAI 兼容路径）</span>
             </div>
-            <pre class="snippet-pre overflow-x-auto rounded-lg bg-slate-950 p-3 text-[11px] leading-5 text-slate-100"><code>{{ downstreamMinimalConfig }}</code></pre>
+            <pre class="snippet-pre overflow-x-auto rounded-lg bg-slate-950 p-3 text-2xs leading-5 text-slate-100"><code>{{ downstreamMinimalConfig }}</code></pre>
           </div>
 
           <!-- 关键提醒：四点高频踩坑 -->
@@ -356,7 +356,7 @@
               <Icon name="exclamationCircle" size="sm" :stroke-width="1.75" />
             </span>
             <div class="min-w-0">
-              <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">常见错误</h2>
+              <h2 class="text-base font-semibold text-gray-900 dark:text-white">常见错误</h2>
               <p class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">遇到这些状态码时的排查方向</p>
             </div>
           </header>
@@ -377,7 +377,7 @@
               <Icon name="shield" size="sm" :stroke-width="1.75" />
             </span>
             <div class="min-w-0">
-              <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">使用提醒</h2>
+              <h2 class="text-base font-semibold text-gray-900 dark:text-white">使用提醒</h2>
               <p class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">保护密钥，避免触发风控</p>
             </div>
           </header>
@@ -397,7 +397,7 @@
             <Icon name="externalLink" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0">
-            <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">官方参考</h2>
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white">官方参考</h2>
             <p class="mt-0.5 text-xs text-gray-500 dark:text-dark-400">遇到细节问题可查阅各家官方文档</p>
           </div>
         </header>

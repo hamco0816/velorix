@@ -41,13 +41,19 @@
   </Teleport>
 </template>
 
+<script lang="ts">
+// 模块级状态：计数器保证每个弹窗实例的标题 ID 全局唯一；
+// 弹窗栈记录当前打开的弹窗顺序，多层叠加时只有最顶层响应 Esc 关闭与 Tab 焦点圈定
+let dialogIdCounter = 0
+const openDialogStack: symbol[] = []
+</script>
+
 <script setup lang="ts">
 import { computed, watch, onMounted, onUnmounted, ref, nextTick } from 'vue'
 import Icon from '@/components/icons/Icon.vue'
 
-// 生成唯一ID以避免多个对话框时ID冲突
-let dialogIdCounter = 0
 const dialogId = `modal-title-${++dialogIdCounter}`
+const dialogStackKey = Symbol('dialog')
 
 // 焦点管理
 const dialogRef = ref<HTMLElement | null>(null)
@@ -102,9 +108,62 @@ const handleClose = () => {
   }
 }
 
+// 判断当前实例是否是弹窗栈顶（多层弹窗叠加时只有顶层响应键盘交互）
+const isTopmostDialog = () => openDialogStack[openDialogStack.length - 1] === dialogStackKey
+
+const FOCUSABLE_SELECTOR =
+  'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+
+// 取弹窗内当前可见的可聚焦元素（过滤掉 display:none 等不可见节点）
+const getFocusableElements = (): HTMLElement[] => {
+  if (!dialogRef.value) return []
+  return Array.from(dialogRef.value.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
+    (el) => el.getClientRects().length > 0
+  )
+}
+
 const handleEscape = (event: KeyboardEvent) => {
-  if (props.show && props.closeOnEscape && event.key === 'Escape') {
+  if (props.show && props.closeOnEscape && event.key === 'Escape' && isTopmostDialog()) {
     emit('close')
+  }
+}
+
+// Tab 焦点圈定：焦点循环保持在弹窗内，不逃逸到背景页面
+const handleFocusTrap = (event: KeyboardEvent) => {
+  if (!props.show || event.key !== 'Tab' || !isTopmostDialog() || !dialogRef.value) return
+
+  const focusables = getFocusableElements()
+  if (focusables.length === 0) {
+    event.preventDefault()
+    return
+  }
+
+  const first = focusables[0]
+  const last = focusables[focusables.length - 1]
+  const active = document.activeElement as HTMLElement | null
+  const activeInside = active ? dialogRef.value.contains(active) : false
+
+  if (event.shiftKey) {
+    if (!activeInside || active === first) {
+      event.preventDefault()
+      last.focus()
+    }
+  } else if (!activeInside || active === last) {
+    event.preventDefault()
+    first.focus()
+  }
+}
+
+const handleKeydown = (event: KeyboardEvent) => {
+  handleEscape(event)
+  handleFocusTrap(event)
+}
+
+// 出栈：从弹窗栈中移除本实例（关闭或卸载时调用）
+const removeFromDialogStack = () => {
+  const index = openDialogStack.indexOf(dialogStackKey)
+  if (index !== -1) {
+    openDialogStack.splice(index, 1)
   }
 }
 
@@ -113,6 +172,8 @@ watch(
   () => props.show,
   async (isOpen) => {
     if (isOpen) {
+      // 入栈：标记本弹窗为当前最顶层
+      openDialogStack.push(dialogStackKey)
       // 保存当前焦点元素
       previousActiveElement = document.activeElement as HTMLElement
       // 使用CSS类而不是直接操作style,更易于管理多个对话框
@@ -127,7 +188,11 @@ watch(
         firstFocusable?.focus()
       }
     } else {
-      document.body.classList.remove('modal-open')
+      removeFromDialogStack()
+      // 仍有其他弹窗打开时保留滚动锁定
+      if (openDialogStack.length === 0) {
+        document.body.classList.remove('modal-open')
+      }
       // 恢复之前的焦点
       if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
         previousActiveElement.focus()
@@ -139,12 +204,15 @@ watch(
 )
 
 onMounted(() => {
-  document.addEventListener('keydown', handleEscape)
+  document.addEventListener('keydown', handleKeydown)
 })
 
 onUnmounted(() => {
-  document.removeEventListener('keydown', handleEscape)
+  document.removeEventListener('keydown', handleKeydown)
+  removeFromDialogStack()
   // 确保组件卸载时移除滚动锁定
-  document.body.classList.remove('modal-open')
+  if (openDialogStack.length === 0) {
+    document.body.classList.remove('modal-open')
+  }
 })
 </script>

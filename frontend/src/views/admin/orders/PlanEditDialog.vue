@@ -65,7 +65,7 @@
           <span>{{ t('payment.admin.planBadgeHint') }}</span>
           <span
             v-if="planForm.badge_text"
-            :class="['inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider shadow-sm', badgeToneClass(planForm.badge_color)]"
+            :class="['inline-flex items-center rounded-full px-2 py-0.5 text-2xs font-bold tracking-wider shadow-sm', badgeToneClass(planForm.badge_color)]"
           >
             {{ planForm.badge_text }}
           </span>
@@ -121,7 +121,7 @@
           <div>
             <label class="input-label">{{ t('payment.admin.planDailyLimitUSD') }}</label>
             <input v-model.number="planForm.daily_limit_usd" type="number" step="0.01" min="0" class="input" :placeholder="t('payment.admin.limitInheritGroup')" @input="handlePeriodLimitInput" />
-            <p class="mt-1 text-[11px] leading-relaxed text-gray-400 dark:text-dark-500">
+            <p class="mt-1 text-2xs leading-relaxed text-gray-400 dark:text-dark-500">
               {{ t('payment.admin.limitHint') }}
             </p>
           </div>
@@ -130,7 +130,7 @@
             <input v-model.number="planForm.weekly_limit_usd" type="number" step="0.01" min="0" class="input"
                    :class="limitWarnings.weekly ? 'border-amber-400 focus:border-amber-500 focus:ring-amber-300/40 dark:border-amber-500/60' : ''"
                    :placeholder="t('payment.admin.limitInheritGroup')" @input="handlePeriodLimitInput" />
-            <p v-if="limitWarnings.weekly" class="mt-1 flex items-start gap-1 text-[11px] leading-relaxed text-amber-600 dark:text-amber-400">
+            <p v-if="limitWarnings.weekly" class="mt-1 flex items-start gap-1 text-2xs leading-relaxed text-amber-600 dark:text-amber-400">
               <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
               <span>{{ t('payment.admin.warnWeeklyRedundant', { max: Math.floor(limitWarnings.weekly.effectiveMax) }) }}</span>
             </p>
@@ -140,7 +140,7 @@
             <input v-model.number="planForm.monthly_limit_usd" type="number" step="0.01" min="0" class="input"
                    :class="limitWarnings.monthly ? 'border-amber-400 focus:border-amber-500 focus:ring-amber-300/40 dark:border-amber-500/60' : ''"
                    :placeholder="t('payment.admin.limitInheritGroup')" @input="handlePeriodLimitInput" />
-            <p v-if="limitWarnings.monthly" class="mt-1 flex items-start gap-1 text-[11px] leading-relaxed text-amber-600 dark:text-amber-400">
+            <p v-if="limitWarnings.monthly" class="mt-1 flex items-start gap-1 text-2xs leading-relaxed text-amber-600 dark:text-amber-400">
               <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
               <span>{{ t('payment.admin.warnMonthlyRedundant_' + limitWarnings.monthly.cappedBy, { max: Math.floor(limitWarnings.monthly.effectiveMax) }) }}</span>
             </p>
@@ -153,7 +153,7 @@
         <div class="col-span-2 mt-4 rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-xs dark:border-dark-700 dark:bg-dark-900/60">
           <div class="mb-2 flex items-center justify-between gap-3">
             <span class="font-semibold text-gray-800 dark:text-gray-100">{{ t('payment.admin.costMultiplierPreview') }}</span>
-            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500 dark:bg-dark-700 dark:text-dark-300">
+            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-2xs font-medium text-slate-500 dark:bg-dark-700 dark:text-dark-300">
               {{ t('payment.admin.adminOnly') }}
             </span>
           </div>
@@ -172,7 +172,7 @@
             </div>
           </div>
           <p v-else class="text-gray-500 dark:text-dark-400">{{ t('payment.admin.costMultiplierUnavailable') }}</p>
-          <p v-if="costEstimate.periodLimitUSD !== null" class="mt-2 text-[11px] text-gray-400 dark:text-dark-500">
+          <p v-if="costEstimate.periodLimitUSD !== null" class="mt-2 text-2xs text-gray-400 dark:text-dark-500">
             {{ t('payment.admin.periodQuotaUsed', { quota: Number(costEstimate.periodLimitUSD.toFixed(4)) }) }}
           </p>
           <div class="mt-3 grid gap-2 border-t border-slate-100 pt-3 dark:border-dark-700 sm:grid-cols-2">
@@ -200,7 +200,7 @@
                 @input="handleCostQuotaInput"
               />
             </div>
-            <p class="sm:col-span-2 text-[11px] leading-relaxed text-gray-400 dark:text-dark-500">
+            <p class="sm:col-span-2 text-2xs leading-relaxed text-gray-400 dark:text-dark-500">
               {{ calculatorStatusText }}
             </p>
           </div>

@@ -25,10 +25,12 @@
         :columns="columns"
         :data="items"
         :loading="loading"
+        :error="loadFailed"
         :server-side-sort="true"
         default-sort-key="email"
         default-sort-order="asc"
         @sort="handleSort"
+        @retry="load"
       >
         <template #cell-email="{ value }">
           <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
@@ -97,6 +99,8 @@ const emit = defineEmits<{
 }>()
 
 const loading = ref(false)
+// 已读状态列表加载是否失败，失败时表格显示错误态并提供重试
+const loadFailed = ref(false)
 const search = ref('')
 
 const pagination = reactive({
@@ -126,6 +130,7 @@ let searchDebounceTimer: number | null = null
 
 function resetDialogState() {
   loading.value = false
+  loadFailed.value = false
   search.value = ''
   items.value = []
   pagination.page = 1
@@ -157,6 +162,7 @@ async function load() {
 
   try {
     loading.value = true
+    loadFailed.value = false
     const res = await adminAPI.announcements.getReadStatus(
       props.announcementId,
       pagination.page,
@@ -185,6 +191,8 @@ async function load() {
     ) {
       return
     }
+    // 请求被取消不算失败，只有真正的加载错误才显示错误态
+    loadFailed.value = true
     console.error('Failed to load read status:', error)
     appStore.showError(error.response?.data?.detail || t('admin.announcements.failedToLoadReadStatus'))
   } finally {

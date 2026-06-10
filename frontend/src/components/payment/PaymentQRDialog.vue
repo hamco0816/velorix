@@ -29,7 +29,7 @@
         </p>
       </div>
       <div v-else class="text-center">
-        <p class="text-[12px] font-medium text-gray-500 dark:text-dark-400">{{ qrUrl ? t('payment.qr.expiresIn') : '' }}</p>
+        <p class="text-xs font-medium text-gray-500 dark:text-dark-400">{{ qrUrl ? t('payment.qr.expiresIn') : '' }}</p>
         <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">{{ countdownDisplay }}</p>
         <p class="mt-1 inline-flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
           <span class="h-1.5 w-1.5 rounded-full bg-sky-500 animate-pulse"></span>

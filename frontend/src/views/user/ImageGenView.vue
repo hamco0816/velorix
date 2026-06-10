@@ -5,10 +5,10 @@
       <aside class="hidden lg:block">
         <div class="surface-card sticky top-4 overflow-hidden">
           <header class="flex items-center justify-between border-b border-gray-100 px-3.5 py-2.5 dark:border-dark-700/60">
-            <h3 class="text-[12px] font-semibold text-gray-700 dark:text-dark-200">
+            <h3 class="text-xs font-semibold text-gray-700 dark:text-dark-200">
               {{ t('imageGen.groupRailTitle') }}
             </h3>
-            <span v-if="imageCapableGroups.length > 0" class="rounded-full bg-gray-100 px-1.5 py-px text-[11px] tabular-nums text-gray-500 dark:bg-dark-800 dark:text-dark-400">
+            <span v-if="imageCapableGroups.length > 0" class="rounded-full bg-gray-100 px-1.5 py-px text-2xs tabular-nums text-gray-500 dark:bg-dark-800 dark:text-dark-400">
               {{ imageCapableGroups.length }}
             </span>
           </header>
@@ -16,10 +16,10 @@
           <!-- 空态 -->
           <div
             v-if="imageCapableGroups.length === 0"
-            class="px-3.5 py-5 text-[12px] leading-relaxed text-gray-500 dark:text-dark-400"
+            class="px-3.5 py-5 text-xs leading-relaxed text-gray-500 dark:text-dark-400"
           >
             <p class="font-medium text-gray-600 dark:text-dark-300">{{ t('imageGen.groupEmpty') }}</p>
-            <p class="mt-1.5 text-[11px] text-gray-400 dark:text-dark-500">{{ t('imageGen.groupEmptyHint') }}</p>
+            <p class="mt-1.5 text-2xs text-gray-400 dark:text-dark-500">{{ t('imageGen.groupEmptyHint') }}</p>
           </div>
 
           <!-- 分组列表 -->
@@ -39,7 +39,7 @@
               <div class="flex items-center gap-1.5">
                 <span
                   :class="[
-                    'min-w-0 flex-1 truncate text-[13px]',
+                    'min-w-0 flex-1 truncate text-sm',
                     entry.group.id === form.groupId
                       ? 'font-semibold text-blue-700 dark:text-blue-300'
                       : 'font-medium text-gray-800 dark:text-dark-200',
@@ -49,13 +49,13 @@
                 </span>
                 <span
                   v-if="entry.group.is_exclusive"
-                  class="shrink-0 rounded bg-amber-100 px-1 py-px text-[10px] font-medium text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
+                  class="shrink-0 rounded bg-amber-100 px-1 py-px text-2xs font-medium text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
                 >
                   {{ t('imageGen.groupExclusive') }}
                 </span>
               </div>
               <!-- 二级信息：价格/倍率 -->
-              <p class="mt-1 truncate text-[11px] tabular-nums text-gray-500 dark:text-dark-500">
+              <p class="mt-1 truncate text-2xs tabular-nums text-gray-500 dark:text-dark-500">
                 <template v-if="hasImagePrice(entry.group)">{{ priceSummary(entry.group) }}</template>
                 <template v-else>{{ t('imageGen.groupRateLabel') }} ×{{ effectiveImageRate(entry.group) }}</template>
               </p>
@@ -67,7 +67,7 @@
       <!-- 右主区 -->
       <div class="space-y-4 min-w-0">
       <!-- 体验版提示：保持简洁，单行 -->
-      <p class="flex items-start gap-1.5 rounded-lg bg-amber-50/60 px-3 py-2 text-[12px] leading-relaxed text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">
+      <p class="flex items-start gap-1.5 rounded-lg bg-amber-50/60 px-3 py-2 text-xs leading-relaxed text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">
         <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
         <span>{{ t('imageGen.notSavedHint') }}</span>
       </p>
@@ -78,7 +78,7 @@
         <textarea
           v-model="form.prompt"
           rows="3"
-          class="block w-full resize-y rounded-xl border-0 bg-transparent px-2 py-1.5 text-[15px] leading-relaxed text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-0 dark:text-white dark:placeholder-dark-500"
+          class="block w-full resize-y rounded-xl border-0 bg-transparent px-2 py-1.5 text-base leading-relaxed text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-0 dark:text-white dark:placeholder-dark-500"
           :placeholder="t('imageGen.promptPlaceholder')"
           :disabled="submitting"
           @keydown="onPromptKeydown"
@@ -103,7 +103,7 @@
               </button>
             </div>
           </div>
-          <p class="mt-1.5 text-[11px] text-gray-400 dark:text-dark-500">
+          <p class="mt-1.5 text-2xs text-gray-400 dark:text-dark-500">
             {{ t('imageGen.referencePrivacyHint') }}
           </p>
         </div>
@@ -170,7 +170,7 @@
         </div>
 
         <!-- 错误 / 无 key 提示 -->
-        <div v-if="keyError || referenceError" class="mt-3 rounded-md bg-rose-50/60 px-3 py-2.5 text-[12px] text-rose-700 dark:bg-rose-500/10 dark:text-rose-300">
+        <div v-if="keyError || referenceError" class="mt-3 rounded-md bg-rose-50/60 px-3 py-2.5 text-xs text-rose-700 dark:bg-rose-500/10 dark:text-rose-300">
           <p class="flex items-start gap-1.5">
             <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
             <span>{{ keyError || referenceError }}</span>
@@ -179,7 +179,7 @@
           <button
             v-if="canCreateKeyInline"
             type="button"
-            class="mt-2 inline-flex items-center gap-1.5 rounded-md bg-rose-600 px-3 py-1.5 text-[12px] font-medium text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-rose-600 dark:hover:bg-rose-500"
+            class="mt-2 inline-flex items-center gap-1.5 rounded-md bg-rose-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-rose-600 dark:hover:bg-rose-500"
             :disabled="creatingKey"
             @click="createKeyInline"
           >
@@ -215,7 +215,7 @@
                 <div v-else class="gen-dots" aria-hidden="true"></div>
               </div>
             </div>
-            <p class="mt-2 px-1 text-[11px] leading-relaxed text-gray-400 dark:text-dark-500">
+            <p class="mt-2 px-1 text-2xs leading-relaxed text-gray-400 dark:text-dark-500">
               {{ t('imageGen.previewHint') }}
             </p>
           </div>

@@ -54,10 +54,12 @@
           :columns="columns"
           :data="apiKeys"
           :loading="loading"
+          :error="loadFailed"
           :server-side-sort="true"
           default-sort-key="created_at"
           default-sort-order="desc"
           @sort="handleSort"
+          @retry="loadApiKeys"
         >
           <template #cell-key="{ value, row }">
             <div class="flex items-center gap-2">
@@ -144,17 +146,17 @@
                 <span class="font-semibold text-gray-900 dark:text-white">
                   ${{ (usageStats[row.id]?.today_actual_cost ?? 0).toFixed(4) }}
                 </span>
-                <span class="text-[11px] text-gray-400 dark:text-dark-500">{{ t('keys.today') }}</span>
+                <span class="text-2xs text-gray-400 dark:text-dark-500">{{ t('keys.today') }}</span>
               </div>
               <div class="mt-0.5 flex items-baseline gap-1 tabular-nums text-xs">
                 <span class="font-medium text-gray-500 dark:text-dark-400">
                   ${{ (usageStats[row.id]?.total_actual_cost ?? 0).toFixed(4) }}
                 </span>
-                <span class="text-[11px] text-gray-400 dark:text-dark-500">{{ t('keys.total') }}</span>
+                <span class="text-2xs text-gray-400 dark:text-dark-500">{{ t('keys.total') }}</span>
               </div>
               <!-- Quota 进度条：< 80% emerald / 80-100% amber / >= 100% red -->
               <div v-if="row.quota > 0" class="mt-2">
-                <div class="flex items-baseline justify-between text-[11px] tabular-nums">
+                <div class="flex items-baseline justify-between text-2xs tabular-nums">
                   <span class="text-gray-400 dark:text-dark-500">{{ t('keys.quota') }}</span>
                   <span :class="[
                     'font-medium',
@@ -204,7 +206,7 @@
                     :style="{ width: Math.min((row.usage_5h / row.rate_limit_5h) * 100, 100) + '%' }"
                   />
                 </div>
-                <div v-if="row.reset_5h_at && formatResetTime(row.reset_5h_at)" class="text-[10px] text-gray-400 dark:text-gray-500 tabular-nums">
+                <div v-if="row.reset_5h_at && formatResetTime(row.reset_5h_at)" class="text-2xs text-gray-400 dark:text-gray-500 tabular-nums">
                   ⟳ {{ formatResetTime(row.reset_5h_at) }}
                 </div>
               </div>
@@ -232,7 +234,7 @@
                     :style="{ width: Math.min((row.usage_1d / row.rate_limit_1d) * 100, 100) + '%' }"
                   />
                 </div>
-                <div v-if="row.reset_1d_at && formatResetTime(row.reset_1d_at)" class="text-[10px] text-gray-400 dark:text-gray-500 tabular-nums">
+                <div v-if="row.reset_1d_at && formatResetTime(row.reset_1d_at)" class="text-2xs text-gray-400 dark:text-gray-500 tabular-nums">
                   ⟳ {{ formatResetTime(row.reset_1d_at) }}
                 </div>
               </div>
@@ -260,7 +262,7 @@
                     :style="{ width: Math.min((row.usage_7d / row.rate_limit_7d) * 100, 100) + '%' }"
                   />
                 </div>
-                <div v-if="row.reset_7d_at && formatResetTime(row.reset_7d_at)" class="text-[10px] text-gray-400 dark:text-gray-500 tabular-nums">
+                <div v-if="row.reset_7d_at && formatResetTime(row.reset_7d_at)" class="text-2xs text-gray-400 dark:text-gray-500 tabular-nums">
                   ⟳ {{ formatResetTime(row.reset_7d_at) }}
                 </div>
               </div>
@@ -877,26 +879,7 @@
             class="btn btn-primary"
             data-tour="key-form-submit"
           >
-            <svg
-              v-if="submitting"
-              class="-ml-1 mr-2 h-4 w-4 animate-spin"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
+            <LoadingSpinner v-if="submitting" size="sm" color="current" class="-ml-1 mr-2" />
             {{
               submitting
                 ? t('keys.saving')
@@ -1092,6 +1075,7 @@ import TablePageLayout from '@/components/layout/TablePageLayout.vue'
 	import Select from '@/components/common/Select.vue'
 	import SearchInput from '@/components/common/SearchInput.vue'
 	import Icon from '@/components/icons/Icon.vue'
+	import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 	import UseKeyModal from '@/components/keys/UseKeyModal.vue'
 	import EndpointPopover from '@/components/keys/EndpointPopover.vue'
 	import GroupBadge from '@/components/common/GroupBadge.vue'
@@ -1143,6 +1127,8 @@ const columns = computed<Column[]>(() => [
 const apiKeys = ref<ApiKey[]>([])
 const groups = ref<Group[]>([])
 const loading = ref(false)
+// 密钥列表是否加载失败，用于表格展示错误态
+const loadFailed = ref(false)
 const submitting = ref(false)
 const now = ref(new Date())
 let resetTimer: ReturnType<typeof setInterval> | null = null
@@ -1318,6 +1304,7 @@ const loadApiKeys = async () => {
   abortController = controller
   const { signal } = controller
   loading.value = true
+  loadFailed.value = false
   try {
     // Build filters
     const filters: {
@@ -1358,6 +1345,7 @@ const loadApiKeys = async () => {
     if (isAbortError(error)) {
       return
     }
+    loadFailed.value = true
     appStore.showError(t('keys.failedToLoad'))
   } finally {
     if (abortController === controller) {

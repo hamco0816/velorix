@@ -103,12 +103,14 @@
       <UsageTable
         :data="usageLogs"
         :loading="loading"
+        :error="logsLoadFailed"
         :columns="visibleColumns"
         :server-side-sort="true"
         :default-sort-key="'created_at'"
         :default-sort-order="'desc'"
         @sort="handleSort"
         @userClick="handleUserClick"
+        @retry="loadLogs"
       />
       <Pagination v-if="pagination.total > 0" :page="pagination.page" :total="pagination.total" :page-size="pagination.page_size" @update:page="handlePageChange" @update:pageSize="handlePageSizeChange" />
     </div>
@@ -157,6 +159,8 @@ type EndpointSource = 'inbound' | 'upstream' | 'path'
 type ModelDistributionSource = 'requested' | 'upstream' | 'mapping'
 const route = useRoute()
 const usageStats = ref<AdminUsageStatsResponse | null>(null); const usageLogs = ref<AdminUsageLog[]>([]); const loading = ref(false); const exporting = ref(false)
+// 日志列表加载是否失败，失败时表格显示错误态并提供重试
+const logsLoadFailed = ref(false)
 const trendData = ref<TrendDataPoint[]>([]); const requestedModelStats = ref<ModelStat[]>([]); const upstreamModelStats = ref<ModelStat[]>([]); const mappingModelStats = ref<ModelStat[]>([]); const groupStats = ref<GroupStat[]>([]); const chartsLoading = ref(false); const modelStatsLoading = ref(false); const granularity = ref<'day' | 'hour'>('hour')
 const modelDistributionMetric = ref<DistributionMetric>('tokens')
 const modelDistributionSource = ref<ModelDistributionSource>('requested')
@@ -298,14 +302,15 @@ const buildUsageListParams = (
 }
 
 const loadLogs = async () => {
-  abortController?.abort(); const c = new AbortController(); abortController = c; loading.value = true
+  abortController?.abort(); const c = new AbortController(); abortController = c; loading.value = true; logsLoadFailed.value = false
   try {
     const res = await adminAPI.usage.list(
       buildUsageListParams(pagination.page, pagination.page_size, true),
       { signal: c.signal }
     )
     if(!c.signal.aborted) { usageLogs.value = res.items; pagination.total = res.total }
-  } catch (error: any) { if(error?.name !== 'AbortError') console.error('Failed to load usage logs:', error) } finally { if(abortController === c) loading.value = false }
+  // 请求被取消不算失败，只有真正的加载错误才显示错误态
+  } catch (error: any) { if(error?.name !== 'AbortError') { logsLoadFailed.value = true; console.error('Failed to load usage logs:', error) } } finally { if(abortController === c) loading.value = false }
 }
 const loadStats = async () => {
   const seq = ++statsReqSeq

@@ -35,7 +35,7 @@
         <!-- 今日运营快照 -->
         <section class="space-y-4">
           <div class="flex items-baseline justify-between">
-            <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white">
               {{ t('admin.dashboard.todaySnapshot') }}
             </h2>
             <span class="text-xs text-gray-400 dark:text-dark-500">{{ todayLabel }}</span>
@@ -151,7 +151,7 @@
 
         <!-- 系统健康度 -->
         <section class="space-y-4">
-          <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">
+          <h2 class="text-base font-semibold text-gray-900 dark:text-white">
             {{ t('admin.dashboard.systemHealth') }}
           </h2>
           <!-- 移动端 2 列：4 张卡叠成 2×2 比单列长长一条更紧凑 -->
@@ -236,12 +236,12 @@
         <section class="surface-card overflow-hidden">
           <div class="grid grid-cols-1 divide-y divide-gray-200/60 dark:divide-dark-700/60 md:grid-cols-2 md:divide-x md:divide-y-0">
             <div class="p-6">
-              <p class="text-[13px] font-medium text-gray-500 dark:text-dark-400">
+              <p class="text-sm font-medium text-gray-500 dark:text-dark-400">
                 {{ t('admin.dashboard.totalCost') }}
               </p>
               <p class="mt-2 flex items-baseline gap-2 tabular-nums">
                 <span class="text-[28px] font-semibold leading-none text-gray-900 dark:text-white">${{ formatCost(stats.total_actual_cost) }}</span>
-                <span class="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
+                <span class="rounded-full bg-emerald-50 px-2 py-0.5 text-2xs font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
                   {{ t('admin.dashboard.actual') }}
                 </span>
               </p>
@@ -257,12 +257,12 @@
               </div>
             </div>
             <div class="p-6">
-              <p class="text-[13px] font-medium text-gray-500 dark:text-dark-400">
+              <p class="text-sm font-medium text-gray-500 dark:text-dark-400">
                 {{ t('admin.dashboard.totalTokens') }}
               </p>
               <p class="mt-2 flex items-baseline gap-2 tabular-nums">
                 <span class="text-[28px] font-semibold leading-none text-gray-900 dark:text-white">{{ formatTokens(stats.total_tokens) }}</span>
-                <span class="rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-medium text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">
+                <span class="rounded-full bg-brand-50 px-2 py-0.5 text-2xs font-medium text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">
                   {{ t('admin.dashboard.todayDelta') }} +{{ formatTokens(stats.today_tokens) }}
                 </span>
               </p>
@@ -295,7 +295,7 @@
 
         <!-- 图表区域 -->
         <section class="space-y-4">
-          <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">
+          <h2 class="text-base font-semibold text-gray-900 dark:text-white">
             {{ t('admin.dashboard.tokenUsageTrend') }}
           </h2>
           <div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
@@ -320,10 +320,10 @@
           <div class="surface-card overflow-hidden">
             <div class="flex items-center justify-between border-b border-gray-200/60 px-6 py-4 dark:border-dark-700/60">
               <div class="flex items-center gap-2.5">
-                <h3 class="text-[15px] font-semibold text-gray-900 dark:text-white">
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white">
                   {{ t('admin.dashboard.userTrendTitle') }}
                 </h3>
-                <span class="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-600 dark:bg-dark-700 dark:text-dark-300">
+                <span class="rounded-full bg-gray-100 px-2 py-0.5 text-2xs font-medium text-gray-600 dark:bg-dark-700 dark:text-dark-300">
                   Top 12
                 </span>
               </div>
@@ -774,7 +774,7 @@ onBeforeUnmount(() => {
 }
 
 .kpi-card-label {
-  @apply mt-3 text-[13px] font-medium text-gray-500 dark:text-dark-400;
+  @apply mt-3 text-sm font-medium text-gray-500 dark:text-dark-400;
 }
 
 .kpi-card-value {
@@ -821,13 +821,13 @@ onBeforeUnmount(() => {
 .metric-icon-indigo  { @apply bg-indigo-50 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300; }
 
 .metric-body { @apply min-w-0 flex-1; }
-.metric-label { @apply text-[13px] font-medium text-gray-500 dark:text-dark-400; }
+.metric-label { @apply text-sm font-medium text-gray-500 dark:text-dark-400; }
 .metric-value { @apply mt-1 flex items-baseline gap-1.5 text-[26px] font-semibold leading-tight tabular-nums text-gray-900 dark:text-white; }
 .metric-hint { @apply mt-1.5 flex flex-wrap items-center gap-x-1 text-xs text-gray-500 dark:text-dark-400; }
 
 /* ============ trend-chip 兜底（用户卡片直接用了类名，未走 TrendChip 组件） ============ */
 .trend-chip {
-  @apply inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-[11px] font-semibold tabular-nums;
+  @apply inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-2xs font-semibold tabular-nums;
 }
 .trend-up { @apply bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300; }
 .trend-down { @apply bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300; }

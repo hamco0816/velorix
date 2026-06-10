@@ -42,7 +42,8 @@
       </div>
     </div>
 
-    <DataTable :columns="columns" :data="orders" :loading="loading">
+    <!-- 加载失败时显示错误态；重试转发为 refresh（retry 事件已被"重试失败订单"占用） -->
+    <DataTable :columns="columns" :data="orders" :loading="loading" :error="error" @retry="emit('refresh')">
       <template #cell-id="{ value }">
         <span class="font-mono text-sm">#{{ value }}</span>
       </template>
@@ -148,13 +149,17 @@ import PaymentBrandIcon from '@/components/payment/PaymentBrandIcon.vue'
 
 const { t } = useI18n()
 
-defineProps<{
+withDefaults(defineProps<{
   orders: PaymentOrder[]
   loading: boolean
+  /** 父页面加载订单失败时为 true，表格显示错误态 */
+  error?: boolean
   page: number
   pageSize: number
   total: number
-}>()
+}>(), {
+  error: false,
+})
 
 const emit = defineEmits<{
   (e: 'detail', order: PaymentOrder): void

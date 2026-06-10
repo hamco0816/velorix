@@ -41,7 +41,7 @@
       <!-- 二维码角标：明示"这条点击会弹二维码"，避免用户以为是普通链接 -->
       <span
         v-if="method.image_data && !iconOnly"
-        class="ml-auto inline-flex shrink-0 items-center rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600 dark:bg-dark-700 dark:text-gray-300"
+        class="ml-auto inline-flex shrink-0 items-center rounded bg-gray-100 px-1.5 py-0.5 text-2xs font-medium text-gray-600 dark:bg-dark-700 dark:text-gray-300"
       >
         QR
       </span>
@@ -75,9 +75,7 @@
                 :aria-label="t('common.close')"
                 @click="qrTarget = null"
               >
-                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <Icon name="x" size="md" :stroke-width="2" />
               </button>
             </div>
             <img
@@ -103,6 +101,7 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { ContactMethod } from '@/types'
 import ContactMethodIcon from '@/components/common/ContactMethodIcon.vue'
+import Icon from '@/components/icons/Icon.vue'
 import { defaultContactMethodLabel, normalizeContactMethods } from '@/utils/contactMethods'
 
 const props = withDefaults(defineProps<{

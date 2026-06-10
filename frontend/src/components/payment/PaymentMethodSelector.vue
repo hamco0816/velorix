@@ -28,7 +28,7 @@
         </span>
         <span class="min-w-0 flex-1">
           <span class="block truncate text-sm font-semibold leading-tight">{{ t(`payment.methods.${method.type}`) }}</span>
-          <span class="mt-0.5 block truncate text-[11px] leading-tight text-gray-500 dark:text-dark-400">
+          <span class="mt-0.5 block truncate text-2xs leading-tight text-gray-500 dark:text-dark-400">
             <template v-if="method.fee_rate > 0">{{ t('payment.fee') }} {{ method.fee_rate }}%</template>
             <template v-else>{{ method.available ? t('common.available') : t('common.notAvailable') }}</template>
           </span>

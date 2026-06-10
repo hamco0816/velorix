@@ -26,17 +26,17 @@
           <div class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg ring-1 ring-gray-200 dark:ring-dark-700">
             <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
           </div>
-          <span class="text-[15px] font-semibold tracking-tight text-gray-900 dark:text-white">
+          <span class="text-base font-semibold tracking-tight text-gray-900 dark:text-white">
             {{ siteName }}
           </span>
         </div>
 
         <!-- Center menu (desktop) -->
         <div class="hidden items-center gap-7 md:flex">
-          <a href="#features" class="text-[14px] font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-dark-300 dark:hover:text-white">
+          <a href="#features" class="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-dark-300 dark:hover:text-white">
             {{ t('home.nav.product') }}
           </a>
-          <a href="#pricing" class="text-[14px] font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-dark-300 dark:hover:text-white">
+          <a href="#pricing" class="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-dark-300 dark:hover:text-white">
             {{ t('home.nav.pricing') }}
           </a>
           <a
@@ -44,14 +44,14 @@
             :href="docUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-[14px] font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-dark-300 dark:hover:text-white"
+            class="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-dark-300 dark:hover:text-white"
           >
             {{ t('home.nav.docs') }}
           </a>
-          <a href="#providers" class="text-[14px] font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-dark-300 dark:hover:text-white">
+          <a href="#providers" class="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-dark-300 dark:hover:text-white">
             {{ t('home.nav.status') }}
           </a>
-          <a href="#cta" class="text-[14px] font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-dark-300 dark:hover:text-white">
+          <a href="#cta" class="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-dark-300 dark:hover:text-white">
             {{ t('home.nav.support') }}
           </a>
         </div>
@@ -119,7 +119,7 @@
             </h1>
 
             <!-- Lead -->
-            <p class="mt-6 max-w-xl text-[15px] leading-relaxed text-gray-600 dark:text-dark-300 sm:text-base">
+            <p class="mt-6 max-w-xl text-base leading-relaxed text-gray-600 dark:text-dark-300 sm:text-base">
               {{ t('home.heroLead') }}
             </p>
 
@@ -202,10 +202,10 @@
             <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600 ring-1 ring-inset ring-brand-200/70 dark:bg-brand-500/15 dark:text-brand-300 dark:ring-brand-500/30">
               <Icon :name="item.icon" size="sm" :stroke-width="2" />
             </div>
-            <h3 class="mt-4 text-[15px] font-semibold tracking-tight text-gray-900 dark:text-white">
+            <h3 class="mt-4 text-base font-semibold tracking-tight text-gray-900 dark:text-white">
               {{ item.title }}
             </h3>
-            <p class="mt-1.5 text-[13px] leading-relaxed text-gray-600 dark:text-dark-300">
+            <p class="mt-1.5 text-sm leading-relaxed text-gray-600 dark:text-dark-300">
               {{ item.desc }}
             </p>
           </div>
@@ -240,10 +240,10 @@
                 <Icon :name="step.icon" size="sm" :stroke-width="2" />
               </div>
               <div class="min-w-0 flex-1">
-                <h3 class="text-[15px] font-semibold tracking-tight text-gray-900 dark:text-white">
+                <h3 class="text-base font-semibold tracking-tight text-gray-900 dark:text-white">
                   {{ step.title }}
                 </h3>
-                <p class="mt-1 text-[13px] leading-relaxed text-gray-600 dark:text-dark-300">
+                <p class="mt-1 text-sm leading-relaxed text-gray-600 dark:text-dark-300">
                   {{ step.desc }}
                 </p>
               </div>
@@ -256,7 +256,7 @@
               <span class="text-xs font-medium text-gray-300">
                 {{ t('home.steps.codeTitle') }}
               </span>
-              <span class="font-mono text-[11px] text-gray-500">curl</span>
+              <span class="font-mono text-2xs text-gray-500">curl</span>
             </div>
             <pre class="code-block-body"><code><span class="c-cmd">curl</span> <span class="c-flag">-X</span> POST <span class="c-url">https://api.{{ siteName.toLowerCase() }}.com/v1/chat/completions</span> \
   <span class="c-flag">-H</span> <span class="c-str">"Authorization: Bearer sk-xxxxxxxxxxxx"</span> \
@@ -286,13 +286,13 @@
             <table class="w-full text-sm">
               <thead>
                 <tr class="bg-gray-50/60 dark:bg-dark-800/40">
-                  <th class="px-4 py-3.5 text-left text-[12px] font-medium text-gray-500 dark:text-dark-400 sm:px-5">
+                  <th class="px-4 py-3.5 text-left text-xs font-medium text-gray-500 dark:text-dark-400 sm:px-5">
                     {{ t('home.comparison.headers.feature') }}
                   </th>
-                  <th class="px-4 py-3.5 text-left text-[12px] font-medium text-gray-500 dark:text-dark-400 sm:px-5">
+                  <th class="px-4 py-3.5 text-left text-xs font-medium text-gray-500 dark:text-dark-400 sm:px-5">
                     {{ t('home.comparison.headers.official') }}
                   </th>
-                  <th class="bg-brand-50/60 px-4 py-3.5 text-left text-[12px] font-medium text-brand-700 dark:bg-brand-500/10 dark:text-brand-300 sm:px-5">
+                  <th class="bg-brand-50/60 px-4 py-3.5 text-left text-xs font-medium text-brand-700 dark:bg-brand-500/10 dark:text-brand-300 sm:px-5">
                     {{ siteName }} {{ t('home.comparison.headers.us') }}
                   </th>
                 </tr>
@@ -300,13 +300,13 @@
               <tbody class="divide-y divide-gray-100 dark:divide-dark-700/60">
                 <tr v-for="row in comparisonItems" :key="row.key">
                   <td class="px-4 py-3.5 font-medium text-gray-900 dark:text-white sm:px-5">{{ row.feature }}</td>
-                  <td class="px-4 py-3.5 text-[13px] text-gray-500 dark:text-dark-400 sm:px-5">
+                  <td class="px-4 py-3.5 text-sm text-gray-500 dark:text-dark-400 sm:px-5">
                     <span class="inline-flex items-start gap-1.5">
                       <Icon name="x" size="xs" class="mt-0.5 flex-shrink-0 text-gray-400" :stroke-width="2.5" />
                       <span>{{ row.official }}</span>
                     </span>
                   </td>
-                  <td class="bg-brand-50/30 px-4 py-3.5 text-[13px] text-gray-900 dark:bg-brand-500/[0.06] dark:text-gray-100 sm:px-5">
+                  <td class="bg-brand-50/30 px-4 py-3.5 text-sm text-gray-900 dark:bg-brand-500/[0.06] dark:text-gray-100 sm:px-5">
                     <span class="inline-flex items-start gap-1.5">
                       <Icon name="check" size="xs" class="mt-0.5 flex-shrink-0 text-brand-600 dark:text-brand-400" :stroke-width="2.5" />
                       <span class="font-medium">{{ row.us }}</span>
@@ -339,8 +339,8 @@
                   <span v-else :class="['text-sm font-semibold', provider.textClass || 'text-gray-700']">{{ provider.letter }}</span>
                 </div>
                 <div class="min-w-0 flex-1">
-                  <p class="text-[13px] font-semibold tracking-tight text-gray-900 dark:text-white">{{ provider.name }}</p>
-                  <p class="mt-0.5 inline-flex items-center gap-1.5 text-[11px] font-medium" :class="provider.disabled ? 'text-gray-500 dark:text-dark-400' : 'text-emerald-600 dark:text-emerald-400'">
+                  <p class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white">{{ provider.name }}</p>
+                  <p class="mt-0.5 inline-flex items-center gap-1.5 text-2xs font-medium" :class="provider.disabled ? 'text-gray-500 dark:text-dark-400' : 'text-emerald-600 dark:text-emerald-400'">
                     <span class="h-1.5 w-1.5 rounded-full" :class="provider.disabled ? 'bg-gray-400' : 'bg-emerald-500 animate-pulse'"></span>
                     {{ provider.disabled ? t('home.providers.soon') : t('home.providers.supported') }}
                   </p>
@@ -361,7 +361,7 @@
             {{ t('home.pricing.title') }}
           </h2>
         </div>
-        <p class="mt-2 text-[14px] text-gray-600 dark:text-dark-300">{{ t('home.pricing.subtitle') }}</p>
+        <p class="mt-2 text-sm text-gray-600 dark:text-dark-300">{{ t('home.pricing.subtitle') }}</p>
 
         <div class="mt-8 grid gap-6 lg:grid-cols-2 xl:grid-cols-[2fr_1fr]">
           <!-- 套餐卡片网格 -->
@@ -376,15 +376,15 @@
             >
               <span
                 v-if="plan.recommended"
-                class="absolute -top-2.5 right-6 inline-flex items-center rounded-full bg-brand-500 px-2.5 py-0.5 text-[11px] font-semibold text-white"
+                class="absolute -top-2.5 right-6 inline-flex items-center rounded-full bg-brand-500 px-2.5 py-0.5 text-2xs font-semibold text-white"
               >
                 {{ plan.badgeText }}
               </span>
 
-              <h3 class="text-[15px] font-semibold tracking-tight" :class="plan.recommended ? 'text-white' : 'text-gray-900 dark:text-white'">
+              <h3 class="text-base font-semibold tracking-tight" :class="plan.recommended ? 'text-white' : 'text-gray-900 dark:text-white'">
                 {{ plan.name }}
               </h3>
-              <p v-if="plan.description" class="mt-1 text-[12px]" :class="plan.recommended ? 'text-gray-400' : 'text-gray-500 dark:text-dark-400'">
+              <p v-if="plan.description" class="mt-1 text-xs" :class="plan.recommended ? 'text-gray-400' : 'text-gray-500 dark:text-dark-400'">
                 {{ plan.description }}
               </p>
 
@@ -396,11 +396,11 @@
                   ¥ {{ plan.originalPrice }}
                 </span>
               </div>
-              <p v-if="plan.validityLabel" class="mt-1 text-[12px]" :class="plan.recommended ? 'text-gray-400' : 'text-gray-500 dark:text-dark-400'">
+              <p v-if="plan.validityLabel" class="mt-1 text-xs" :class="plan.recommended ? 'text-gray-400' : 'text-gray-500 dark:text-dark-400'">
                 {{ plan.validityLabel }}
               </p>
 
-              <ul v-if="plan.features.length > 0" class="mt-6 space-y-2.5 text-[13px]" :class="plan.recommended ? 'text-gray-200' : 'text-gray-700 dark:text-dark-200'">
+              <ul v-if="plan.features.length > 0" class="mt-6 space-y-2.5 text-sm" :class="plan.recommended ? 'text-gray-200' : 'text-gray-700 dark:text-dark-200'">
                 <li v-for="feat in plan.features" :key="feat" class="flex items-start gap-2">
                   <Icon name="check" size="xs" class="mt-0.5 flex-shrink-0" :class="plan.recommended ? 'text-brand-400' : 'text-emerald-500'" :stroke-width="2.5" />
                   <span>{{ feat }}</span>
@@ -427,8 +427,8 @@
                 <Icon :name="b.icon" size="sm" :stroke-width="2" />
               </div>
               <div class="min-w-0">
-                <div class="text-[14px] font-semibold tracking-tight text-gray-900 dark:text-white">{{ b.title }}</div>
-                <div class="mt-0.5 text-[12px] leading-relaxed text-gray-500 dark:text-dark-400">{{ b.desc }}</div>
+                <div class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white">{{ b.title }}</div>
+                <div class="mt-0.5 text-xs leading-relaxed text-gray-500 dark:text-dark-400">{{ b.desc }}</div>
               </div>
             </div>
           </div>
@@ -445,7 +445,7 @@
             {{ t('home.faq.title') }}
           </h2>
         </div>
-        <p class="mt-2 text-[14px] text-gray-600 dark:text-dark-300">{{ t('home.faq.subtitle') }}</p>
+        <p class="mt-2 text-sm text-gray-600 dark:text-dark-300">{{ t('home.faq.subtitle') }}</p>
 
         <div class="mt-8 grid gap-3 sm:grid-cols-2 lg:gap-4">
           <div
@@ -453,11 +453,11 @@
             :key="item.key"
             class="rounded-2xl border border-gray-200/70 bg-white p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-200/80 hover:shadow-card-hover dark:border-dark-700/60 dark:bg-dark-800/40 dark:hover:border-brand-500/30"
           >
-            <h3 class="flex items-start gap-2 text-[15px] font-semibold tracking-tight text-gray-900 dark:text-white">
+            <h3 class="flex items-start gap-2 text-base font-semibold tracking-tight text-gray-900 dark:text-white">
               <Icon name="checkCircle" size="sm" class="mt-0.5 shrink-0 text-brand-500 dark:text-brand-400" :stroke-width="2" />
               {{ item.q }}
             </h3>
-            <p class="mt-2 pl-7 text-[13px] leading-relaxed text-gray-600 dark:text-dark-300">
+            <p class="mt-2 pl-7 text-sm leading-relaxed text-gray-600 dark:text-dark-300">
               {{ item.a }}
             </p>
           </div>
@@ -481,7 +481,7 @@
             <h2 class="text-xl font-semibold tracking-tight text-white sm:text-3xl">
               {{ t('home.cta.title') }}
             </h2>
-            <p class="mt-3 text-[14px] leading-relaxed text-gray-300/85">
+            <p class="mt-3 text-sm leading-relaxed text-gray-300/85">
               {{ t('home.cta.description') }}
             </p>
           </div>
@@ -521,18 +521,18 @@
               </div>
               <span class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white">{{ siteName }}</span>
             </div>
-            <p class="mt-3 text-[12px] leading-relaxed text-gray-500 dark:text-dark-400">
+            <p class="mt-3 text-xs leading-relaxed text-gray-500 dark:text-dark-400">
               {{ t('home.heroLead') }}
             </p>
-            <p class="mt-4 text-[11px] text-gray-400 dark:text-dark-500">
+            <p class="mt-4 text-2xs text-gray-400 dark:text-dark-500">
               &copy; {{ currentYear }} {{ siteName }}. {{ t('home.footer.allRightsReserved') }}
             </p>
           </div>
 
           <!-- Links: Product -->
           <div>
-            <h4 class="text-[13px] font-semibold tracking-tight text-gray-900 dark:text-white">{{ t('home.nav.product') }}</h4>
-            <ul class="mt-3 space-y-2.5 text-[13px]">
+            <h4 class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white">{{ t('home.nav.product') }}</h4>
+            <ul class="mt-3 space-y-2.5 text-sm">
               <li><a href="#features" class="text-gray-500 transition-colors hover:text-gray-900 dark:text-dark-400 dark:hover:text-white">{{ t('home.steps.title') }}</a></li>
               <li v-if="plans.length > 0"><a href="#pricing" class="text-gray-500 transition-colors hover:text-gray-900 dark:text-dark-400 dark:hover:text-white">{{ t('home.nav.pricing') }}</a></li>
               <li><a v-if="docUrl" :href="docUrl" target="_blank" rel="noopener noreferrer" class="text-gray-500 transition-colors hover:text-gray-900 dark:text-dark-400 dark:hover:text-white">{{ t('home.nav.docs') }}</a></li>
@@ -541,8 +541,8 @@
 
           <!-- Links: Support -->
           <div>
-            <h4 class="text-[13px] font-semibold tracking-tight text-gray-900 dark:text-white">{{ t('home.nav.support') }}</h4>
-            <ul class="mt-3 space-y-2.5 text-[13px]">
+            <h4 class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white">{{ t('home.nav.support') }}</h4>
+            <ul class="mt-3 space-y-2.5 text-sm">
               <li><router-link to="/login" class="text-gray-500 transition-colors hover:text-gray-900 dark:text-dark-400 dark:hover:text-white">{{ t('home.login') }}</router-link></li>
               <li><router-link to="/login" class="text-gray-500 transition-colors hover:text-gray-900 dark:text-dark-400 dark:hover:text-white">{{ t('home.nav.register') }}</router-link></li>
               <li><a href="#cta" class="text-gray-500 transition-colors hover:text-gray-900 dark:text-dark-400 dark:hover:text-white">{{ t('home.nav.support') }}</a></li>

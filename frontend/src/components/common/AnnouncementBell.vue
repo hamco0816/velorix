@@ -77,7 +77,7 @@
                   v-for="item in announcements"
                   :key="item.id"
                   class="group relative flex items-center gap-4 border-b border-gray-100 px-6 py-4 transition-all hover:bg-gray-50 dark:border-dark-700 dark:hover:bg-dark-700/30"
-                  :class="{ 'bg-blue-50/30 dark:bg-blue-900/5': !item.read_at }"
+                  :class="{ 'bg-brand-50/40 dark:bg-brand-900/10': !item.read_at }"
                   style="min-height: 72px"
                   @click="openDetail(item)"
                 >
@@ -88,17 +88,13 @@
                       class="relative flex h-10 w-10 items-center justify-center rounded bg-primary-50 text-primary-600 dark:bg-primary-500/10 dark:text-primary-400"
                     >
                       <span class="absolute -right-0.5 -top-0.5 inline-flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-dark-800"></span>
-                      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
+                      <Icon name="infoCircle" size="md" :stroke-width="1.8" />
                     </div>
                     <div
                       v-else
                       class="flex h-10 w-10 items-center justify-center rounded bg-gray-100 text-gray-400 dark:bg-dark-700 dark:text-gray-600"
                     >
-                      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
+                      <Icon name="checkCircle" size="md" :stroke-width="2" />
                     </div>
                   </div>
 
@@ -114,11 +110,11 @@
                         </time>
                         <span
                           v-if="!item.read_at"
-                          class="inline-flex items-center gap-1 rounded-md bg-blue-100 px-1.5 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
+                          class="inline-flex items-center gap-1 rounded-md bg-brand-100 px-1.5 py-0.5 text-xs font-medium text-brand-700 dark:bg-brand-900/40 dark:text-brand-300"
                         >
                           <span class="relative flex h-1.5 w-1.5">
-                            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-500 opacity-75"></span>
-                            <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-blue-600"></span>
+                            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-500 opacity-75"></span>
+                            <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-600"></span>
                           </span>
                           {{ t('announcements.unread') }}
                         </span>
@@ -127,22 +123,19 @@
 
                     <!-- Arrow -->
                     <div class="flex-shrink-0">
-                      <svg
-                        class="h-5 w-5 text-gray-400 transition-transform group-hover:translate-x-1 dark:text-gray-600"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        stroke-width="2"
-                      >
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                      </svg>
+                      <Icon
+                        name="chevronRight"
+                        size="md"
+                        :stroke-width="2"
+                        class="text-gray-400 transition-transform group-hover:translate-x-1 dark:text-gray-600"
+                      />
                     </div>
                   </div>
 
                   <!-- Unread indicator bar -->
                   <div
                     v-if="!item.read_at"
-                    class="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-blue-500 to-indigo-600"
+                    class="absolute left-0 top-0 h-full w-1 bg-brand-500"
                   ></div>
                 </div>
               </div>
@@ -187,9 +180,7 @@
                   <!-- Icon and Category -->
                   <div class="mb-3 flex items-center gap-2">
                     <div class="flex h-9 w-9 items-center justify-center rounded bg-primary-50 text-primary-600 dark:bg-primary-500/10 dark:text-primary-400">
-                      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
+                      <Icon name="infoCircle" size="md" :stroke-width="1.8" />
                     </div>
                     <div class="flex items-center gap-2">
                       <span class="rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700 dark:bg-dark-700 dark:text-gray-300">
@@ -213,9 +204,7 @@
                   <!-- Meta Info -->
                   <div class="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
                     <div class="flex items-center gap-1.5">
-                      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
+                      <Icon name="clock" size="sm" :stroke-width="2" />
                       <time>{{ formatRelativeWithDateTime(selectedAnnouncement.created_at) }}</time>
                     </div>
                     <div class="flex items-center gap-1.5">
@@ -253,9 +242,7 @@
             <div class="border-t border-gray-100 bg-gray-50/50 px-8 py-5 dark:border-dark-700 dark:bg-dark-900/30">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                  <Icon name="infoCircle" size="sm" :stroke-width="2" />
                   <span>{{ selectedAnnouncement.read_at ? t('announcements.readStatus') : t('announcements.markReadHint') }}</span>
                 </div>
                 <div class="flex items-center gap-3">
@@ -270,9 +257,7 @@
                     @click="markAsReadAndClose(selectedAnnouncement.id)"
                     class="inline-flex items-center gap-2 rounded bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
                   >
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
+                    <Icon name="check" size="sm" :stroke-width="2" />
                     {{ t('announcements.markRead') }}
                   </button>
                 </div>
@@ -449,7 +434,7 @@ watch(
 <style>
 /* Enhanced Markdown Styles */
 .markdown-body {
-  @apply text-[15px] leading-[1.75];
+  @apply text-base leading-[1.75];
   @apply text-gray-700 dark:text-gray-300;
 }
 
@@ -509,7 +494,7 @@ watch(
 }
 
 .markdown-body code {
-  @apply rounded-lg bg-gray-100 px-2 py-1 text-[13px] font-mono text-pink-600 dark:bg-dark-700 dark:text-pink-400;
+  @apply rounded-lg bg-gray-100 px-2 py-1 text-sm font-mono text-pink-600 dark:bg-dark-700 dark:text-pink-400;
 }
 
 .markdown-body pre {
@@ -517,7 +502,7 @@ watch(
 }
 
 .markdown-body pre code {
-  @apply bg-transparent p-0 text-[13px] text-gray-800 dark:text-gray-200;
+  @apply bg-transparent p-0 text-sm text-gray-800 dark:text-gray-200;
 }
 
 .markdown-body hr {
@@ -543,7 +528,7 @@ watch(
 }
 
 .markdown-body th {
-  @apply bg-gradient-to-br from-blue-50 to-indigo-50 font-semibold text-gray-900 dark:from-blue-900/20 dark:to-indigo-900/10 dark:text-white;
+  @apply bg-gray-50 font-semibold text-gray-900 dark:bg-dark-800 dark:text-white;
 }
 
 .markdown-body tbody tr {

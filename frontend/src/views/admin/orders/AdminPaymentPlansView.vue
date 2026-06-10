@@ -68,7 +68,7 @@
       </div>
 
       <!-- Plans Table -->
-      <DataTable :columns="planColumns" :data="filteredPlans" :loading="plansLoading">
+      <DataTable :columns="planColumns" :data="filteredPlans" :loading="plansLoading" :error="plansLoadFailed" @retry="loadPlans">
         <!-- 复选框列：表头主复选 + 行内复选；indeterminate 状态表示"部分已选" -->
         <template #header-__select>
           <input
@@ -97,14 +97,14 @@
                    渐变填充 + sparkles 图标，跟用户端徽章保持视觉一致。 -->
               <span
                 v-if="planBadgeText(row)"
-                :class="['inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider shadow-sm', badgeToneClass(row.badge_color)]"
+                :class="['inline-flex items-center rounded-full px-2 py-0.5 text-2xs font-bold tracking-wider shadow-sm', badgeToneClass(row.badge_color)]"
                 :title="t('payment.admin.planBadgeHint')"
               >
                 {{ planBadgeText(row) }}
               </span>
               <span
                 v-if="row.kind === 'exclusive'"
-                class="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 text-[10px] font-semibold text-violet-700 ring-1 ring-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:ring-violet-900/50"
+                class="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 text-2xs font-semibold text-violet-700 ring-1 ring-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:ring-violet-900/50"
                 :title="t('payment.admin.planKindExclusiveHint')"
               >
                 <Icon name="badge" size="xs" :stroke-width="2.5" />
@@ -114,14 +114,14 @@
                 v-for="ct in [derivePlanCardType(row.validity_days, row.validity_unit)]"
                 :key="ct"
                 v-show="ct !== 'custom'"
-                :class="['inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold', cardTypeBadgeClass(ct)]"
+                :class="['inline-flex rounded-full px-2 py-0.5 text-2xs font-semibold', cardTypeBadgeClass(ct)]"
               >
                 {{ t(`payment.admin.cardType.${ct}`) }}
               </span>
               <!-- 独立档位徽章：plan 有自定义限额覆盖时展示，方便管理员一眼识别 -->
               <span
                 v-if="hasPlanLimitOverride(row)"
-                class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-semibold text-indigo-700 ring-1 ring-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:ring-indigo-900/50"
+                class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-2xs font-semibold text-indigo-700 ring-1 ring-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:ring-indigo-900/50"
                 :title="t('payment.admin.limitOverrideHint')"
               >
                 <Icon name="badge" size="xs" :stroke-width="2.5" />
@@ -141,14 +141,14 @@
               <span
                 v-for="(f, idx) in row.features.slice(0, 3)"
                 :key="idx"
-                class="inline-flex max-w-[16rem] truncate rounded bg-gray-50 px-1.5 py-0.5 text-[10px] text-gray-600 dark:bg-dark-800 dark:text-dark-300"
+                class="inline-flex max-w-[16rem] truncate rounded bg-gray-50 px-1.5 py-0.5 text-2xs text-gray-600 dark:bg-dark-800 dark:text-dark-300"
                 :title="f"
               >
                 {{ f }}
               </span>
               <span
                 v-if="row.features.length > 3"
-                class="inline-flex rounded bg-gray-50 px-1.5 py-0.5 text-[10px] text-gray-500 dark:bg-dark-800 dark:text-dark-400"
+                class="inline-flex rounded bg-gray-50 px-1.5 py-0.5 text-2xs text-gray-500 dark:bg-dark-800 dark:text-dark-400"
                 :title="row.features.slice(3).join('\n')"
               >
                 +{{ row.features.length - 3 }}
@@ -187,7 +187,7 @@
               {{ formatCostMultiplier(planCostEstimate(row).effectiveCostMultiplier) }}
             </span>
             <span v-else class="text-gray-400">-</span>
-            <div v-if="planCostEstimate(row).effectiveCostMultiplier !== null" class="mt-0.5 text-[11px] text-gray-400">
+            <div v-if="planCostEstimate(row).effectiveCostMultiplier !== null" class="mt-0.5 text-2xs text-gray-400">
               {{ formatCostMultiplier(planCostEstimate(row).priceQuotaMultiplier) }} × {{ formatCostMultiplier(planCostEstimate(row).rateMultiplier) }}
             </div>
           </div>
@@ -370,6 +370,8 @@ function costMultiplierTitle(plan: SubscriptionPlan): string {
 // ==================== Plans ====================
 
 const plansLoading = ref(false)
+// 套餐列表加载是否失败，失败时表格显示错误态并提供重试
+const plansLoadFailed = ref(false)
 const plans = ref<SubscriptionPlan[]>([])
 const showPlanDialog = ref(false)
 const showDeletePlanDialog = ref(false)
@@ -476,6 +478,7 @@ const planColumns = computed((): Column[] => [
 
 async function loadPlans() {
   plansLoading.value = true
+  plansLoadFailed.value = false
   try {
     const res = await adminPaymentAPI.getPlans()
     // Backend returns features as newline-separated string; parse to array
@@ -486,7 +489,7 @@ async function loadPlans() {
         : (p.features || []),
     }))
   }
-  catch (err: unknown) { appStore.showError(extractI18nErrorMessage(err, t, 'payment.errors', t('common.error'))) }
+  catch (err: unknown) { plansLoadFailed.value = true; appStore.showError(extractI18nErrorMessage(err, t, 'payment.errors', t('common.error'))) }
   finally { plansLoading.value = false }
 }
 

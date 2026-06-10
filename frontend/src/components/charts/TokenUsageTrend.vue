@@ -1,7 +1,7 @@
 <template>
   <div class="surface-card overflow-hidden">
     <div class="border-b border-gray-200/60 px-6 py-4 dark:border-dark-700/60">
-      <h3 class="text-[15px] font-semibold text-gray-900 dark:text-white">
+      <h3 class="text-base font-semibold text-gray-900 dark:text-white">
         {{ t('admin.dashboard.tokenUsageTrend') }}
       </h3>
     </div>

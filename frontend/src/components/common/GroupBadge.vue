@@ -124,7 +124,7 @@ const labelText = computed(() => {
 
 // Label style based on type and days remaining
 const labelClass = computed(() => {
-  const base = 'px-1.5 py-0.5 rounded text-[10px] font-semibold'
+  const base = 'px-1.5 py-0.5 rounded text-2xs font-semibold'
 
   // 限时活动：用 rose 强调色突出折扣（与价格页一致）
   if (showPromo.value) {

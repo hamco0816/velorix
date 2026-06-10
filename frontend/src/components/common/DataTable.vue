@@ -14,6 +14,13 @@
       </div>
     </template>
 
+    <!-- 错误态：接口失败时展示可重试的错误提示，与空态区分开 -->
+    <template v-else-if="error">
+      <div class="rounded-2xl border border-gray-200/70 bg-white p-6 dark:border-dark-700/60 dark:bg-dark-800/40">
+        <ErrorState :description="errorMessage" @retry="emit('retry')" />
+      </div>
+    </template>
+
     <template v-else-if="!data || data.length === 0">
       <div class="rounded-2xl border border-gray-200/70 bg-white p-12 text-center dark:border-dark-700/60 dark:bg-dark-800/40">
         <slot name="empty">
@@ -130,6 +137,13 @@
           </td>
         </tr>
 
+        <!-- 错误态：接口失败时展示可重试的错误提示，与空态区分开 -->
+        <tr v-else-if="error">
+          <td :colspan="columns.length" :class="['py-12', getAdaptivePaddingClass()]">
+            <ErrorState :description="errorMessage" @retry="emit('retry')" />
+          </td>
+        </tr>
+
         <!-- Empty state -->
         <tr v-else-if="!data || data.length === 0">
           <td
@@ -207,6 +221,7 @@ import { useVirtualizer } from '@tanstack/vue-virtual'
 import { useI18n } from 'vue-i18n'
 import type { Column } from './types'
 import Icon from '@/components/icons/Icon.vue'
+import ErrorState from '@/components/common/ErrorState.vue'
 
 const { t } = useI18n()
 
@@ -217,6 +232,7 @@ const isDesktopViewport = ref(
 
 const emit = defineEmits<{
   sort: [key: string, order: 'asc' | 'desc']
+  retry: []
 }>()
 
 // 表格容器引用
@@ -343,6 +359,10 @@ interface Props {
   columns: Column[]
   data: any[]
   loading?: boolean
+  /** 加载失败标记：为 true 时显示错误态（带重试按钮），优先级低于 loading、高于空态 */
+  error?: boolean
+  /** 错误态的补充描述文案，不传则用 ErrorState 默认文案 */
+  errorMessage?: string
   stickyFirstColumn?: boolean
   stickyActionsColumn?: boolean
   expandableActions?: boolean
@@ -756,11 +776,11 @@ defineExpose({
   position: sticky;
   top: 0;
   z-index: 200;
-  background-color: rgb(249 250 251);
+  background-color: rgb(250 250 250);
 }
 
 .dark .table-wrapper .table-header {
-  background-color: rgb(31 41 55);
+  background-color: rgb(39 39 42);
 }
 
 /* 表体保持在表头下方 */
@@ -774,11 +794,11 @@ defineExpose({
   position: sticky;
   top: 0;
   z-index: 210; /* 必须高于所有表体内容 */
-  background-color: rgb(249 250 251);
+  background-color: rgb(250 250 250);
 }
 
 .dark .sticky-header-cell {
-  background-color: rgb(31 41 55);
+  background-color: rgb(39 39 42);
 }
 
 /* Sticky 列基础样式 */
@@ -818,16 +838,16 @@ tbody .sticky-col {
 }
 
 .dark tbody .sticky-col {
-  background-color: rgb(17 24 39);
+  background-color: rgb(24 24 27);
 }
 
 /* hover 状态保持 */
 tbody tr:hover .sticky-col {
-  background-color: rgb(249 250 251);
+  background-color: rgb(250 250 250);
 }
 
 .dark tbody tr:hover .sticky-col {
-  background-color: rgb(31 41 55);
+  background-color: rgb(39 39 42);
 }
 
 /* 阴影只在可滚动时显示 */

@@ -20,7 +20,7 @@ defineProps<{
 <style scoped>
 /* 升降趋势小标签：emerald=上升、rose=下降，配箭头 + 百分比，Stripe / Linear 同款"指标增长指示器" */
 .trend-chip {
-  @apply inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-[11px] font-semibold tabular-nums;
+  @apply inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-2xs font-semibold tabular-nums;
 }
 .trend-up {
   @apply bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300;

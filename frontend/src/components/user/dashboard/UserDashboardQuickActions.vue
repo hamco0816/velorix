@@ -1,7 +1,7 @@
 <template>
   <div class="surface-card overflow-hidden">
     <div class="border-b border-gray-200/60 px-6 py-4 dark:border-dark-700/60">
-      <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">{{ t('dashboard.quickActions') }}</h2>
+      <h2 class="text-base font-semibold text-gray-900 dark:text-white">{{ t('dashboard.quickActions') }}</h2>
     </div>
     <div class="space-y-1.5 p-2">
       <button @click="router.push('/keys')" class="group flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:hover:bg-dark-800/60">

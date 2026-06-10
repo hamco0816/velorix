@@ -30,9 +30,7 @@
 
             <!-- Time -->
             <div class="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
-              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <Icon name="clock" size="sm" :stroke-width="1.8" />
               <time>{{ formatRelativeWithDateTime(announcementStore.currentPopup.created_at) }}</time>
             </div>
           </div>
@@ -54,9 +52,7 @@
                 @click="handleDismiss"
                 class="inline-flex items-center gap-2 rounded bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
               >
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
+                <Icon name="check" size="sm" :stroke-width="2" />
                 {{ t('announcements.markRead') }}
               </button>
             </div>
@@ -74,6 +70,7 @@ import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import { useAnnouncementStore } from '@/stores/announcements'
 import { formatRelativeWithDateTime } from '@/utils/format'
+import Icon from '@/components/icons/Icon.vue'
 
 const { t } = useI18n()
 const announcementStore = useAnnouncementStore()

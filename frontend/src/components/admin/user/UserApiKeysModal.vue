@@ -68,11 +68,13 @@
           ]"
         >
           <span class="text-gray-500 italic">{{ t('admin.users.none') }}</span>
-          <svg
+          <Icon
             v-if="!selectedKeyForGroup?.group_id"
-            class="ml-auto h-4 w-4 shrink-0 text-primary-600 dark:text-primary-400"
-            fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"
-          ><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+            name="check"
+            size="sm"
+            class="ml-auto shrink-0 text-primary-600 dark:text-primary-400"
+            :stroke-width="2"
+          />
         </button>
         <!-- Group options -->
         <button
@@ -111,6 +113,7 @@ import { adminAPI } from '@/api/admin'
 import { formatDateTime } from '@/utils/format'
 import type { AdminUser, AdminGroup, ApiKey } from '@/types'
 import BaseDialog from '@/components/common/BaseDialog.vue'
+import Icon from '@/components/icons/Icon.vue'
 import GroupBadge from '@/components/common/GroupBadge.vue'
 import GroupOptionItem from '@/components/common/GroupOptionItem.vue'
 

@@ -26,7 +26,7 @@
                 </h2>
                 <span
                   :class="[
-                    'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset',
+                    'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-2xs font-medium ring-1 ring-inset',
                     user?.role === 'admin'
                       ? 'bg-primary-50 text-primary-700 ring-primary-200/70 dark:bg-primary-500/15 dark:text-primary-300 dark:ring-primary-500/30'
                       : 'bg-gray-50 text-gray-600 ring-gray-200/70 dark:bg-dark-700/40 dark:text-dark-200 dark:ring-dark-600/60',
@@ -37,7 +37,7 @@
                 </span>
                 <span
                   :class="[
-                    'inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset',
+                    'inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-2xs font-medium ring-1 ring-inset',
                     user?.status === 'active'
                       ? 'bg-emerald-50 text-emerald-700 ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30'
                       : 'bg-rose-50 text-rose-700 ring-rose-200/70 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/30',
@@ -76,7 +76,7 @@
                 data-testid="profile-overview-metric-balance"
                 class="rounded-xl border border-gray-200/70 bg-white px-4 py-3 dark:border-dark-700/60 dark:bg-dark-800/40"
               >
-                <p class="text-[12px] font-medium text-gray-500 dark:text-dark-400">
+                <p class="text-xs font-medium text-gray-500 dark:text-dark-400">
                   {{ t('profile.accountBalance') }}
                 </p>
                 <p class="mt-1 text-lg font-semibold tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400">
@@ -87,7 +87,7 @@
                 data-testid="profile-overview-metric-concurrency"
                 class="rounded-xl border border-gray-200/70 bg-white px-4 py-3 dark:border-dark-700/60 dark:bg-dark-800/40"
               >
-                <p class="text-[12px] font-medium text-gray-500 dark:text-dark-400">
+                <p class="text-xs font-medium text-gray-500 dark:text-dark-400">
                   {{ t('profile.concurrencyLimit') }}
                 </p>
                 <p class="mt-1 text-lg font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">
@@ -98,7 +98,7 @@
                 data-testid="profile-overview-metric-member-since"
                 class="rounded-xl border border-gray-200/70 bg-white px-4 py-3 dark:border-dark-700/60 dark:bg-dark-800/40"
               >
-                <p class="text-[12px] font-medium text-gray-500 dark:text-dark-400">
+                <p class="text-xs font-medium text-gray-500 dark:text-dark-400">
                   {{ t('profile.memberSince') }}
                 </p>
                 <p class="mt-1 text-lg font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">

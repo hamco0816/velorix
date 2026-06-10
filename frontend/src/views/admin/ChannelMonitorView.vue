@@ -15,7 +15,7 @@
       </template>
 
       <template #table>
-        <DataTable :columns="columns" :data="monitors" :loading="loading">
+        <DataTable :columns="columns" :data="monitors" :loading="loading" :error="loadFailed" @retry="reload">
           <template #cell-name="{ row, value }">
             <div class="flex items-center gap-1.5">
               <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
@@ -169,6 +169,8 @@ const {
 
 const monitors = ref<ChannelMonitor[]>([])
 const loading = ref(false)
+// 监控列表加载失败标记，用于表格展示错误态并提供重试
+const loadFailed = ref(false)
 const runningId = ref<number | null>(null)
 const searchQuery = ref('')
 const providerFilter = ref<Provider | ''>('')
@@ -228,6 +230,7 @@ async function reload() {
   const ctrl = new AbortController()
   abortController = ctrl
   loading.value = true
+  loadFailed.value = false
   try {
     const params: ListParams = {
       page: pagination.page,
@@ -245,6 +248,7 @@ async function reload() {
   } catch (err: unknown) {
     const e = err as { name?: string; code?: string }
     if (e?.name === 'AbortError' || e?.code === 'ERR_CANCELED') return
+    loadFailed.value = true
     appStore.showError(extractApiErrorMessage(err, t('admin.channelMonitor.loadError')))
   } finally {
     if (abortController === ctrl) {

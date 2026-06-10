@@ -51,7 +51,7 @@
         </summary>
         <div class="mt-2 space-y-1.5 pl-7 text-xs leading-5 text-sky-900/90 dark:text-sky-100/90">
           <p>{{ t('admin.pricingAdvisor.helpBody') }}</p>
-          <p class="flex items-start gap-1 text-[11px] opacity-80">
+          <p class="flex items-start gap-1 text-2xs opacity-80">
             <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
             <span>{{ t('admin.pricingAdvisor.helpUsdNote') }}</span>
           </p>
@@ -80,22 +80,22 @@
         <section class="surface-card overflow-hidden">
           <header class="flex items-center gap-3 border-b border-gray-200/60 px-5 py-3.5 dark:border-dark-700/60">
             <Icon name="chartBar" size="sm" class="text-emerald-500" />
-            <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">{{ t('admin.pricingAdvisor.tableTitle') }}</h2>
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white">{{ t('admin.pricingAdvisor.tableTitle') }}</h2>
           </header>
           <!-- 桌面端：表格（扁平 8 列：平台/档位/样本/5h P95/7d P95/日限额/周限额/月限额）
                P50 & Max 不再单独列，hover P95 数字可见详情 -->
           <div class="hidden overflow-x-auto md:block">
-            <table class="w-full min-w-[860px] text-[14px]">
+            <table class="w-full min-w-[860px] text-sm">
               <thead class="bg-gray-50/60 dark:bg-dark-800/60">
                 <tr>
-                  <th class="px-4 py-3 text-center text-[12px] font-semibold uppercase tracking-wider text-gray-600 dark:text-dark-300">{{ t('admin.pricingAdvisor.col.platform') }}</th>
-                  <th class="px-4 py-3 text-center text-[12px] font-semibold uppercase tracking-wider text-gray-600 dark:text-dark-300">{{ t('admin.pricingAdvisor.col.tier') }}</th>
-                  <th class="cursor-help px-4 py-3 text-center text-[12px] font-semibold uppercase tracking-wider text-gray-600 dark:text-dark-300" :title="t('admin.pricingAdvisor.tip.samples')">{{ t('admin.pricingAdvisor.col.samples') }}</th>
-                  <th class="cursor-help border-l border-gray-200/60 px-4 py-3 text-center text-[12px] font-semibold uppercase tracking-wider text-gray-600 dark:border-dark-700/60 dark:text-dark-300" :title="t('admin.pricingAdvisor.tip.5hP95')">{{ t('admin.pricingAdvisor.col.5hP95') }}</th>
-                  <th class="cursor-help px-4 py-3 text-center text-[12px] font-semibold uppercase tracking-wider text-gray-600 dark:text-dark-300" :title="t('admin.pricingAdvisor.tip.7dP95')">{{ t('admin.pricingAdvisor.col.7dP95') }}</th>
-                  <th class="cursor-help border-l border-gray-200/60 px-4 py-3 text-center text-[12px] font-semibold uppercase tracking-wider text-emerald-700 dark:border-dark-700/60 dark:text-emerald-300" :title="t('admin.pricingAdvisor.tip.limits')">{{ t('admin.pricingAdvisor.subcol.daily') }}</th>
-                  <th class="px-4 py-3 text-center text-[12px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">{{ t('admin.pricingAdvisor.subcol.weekly') }}</th>
-                  <th class="px-4 py-3 text-center text-[12px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">{{ t('admin.pricingAdvisor.subcol.monthly') }}</th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-dark-300">{{ t('admin.pricingAdvisor.col.platform') }}</th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-dark-300">{{ t('admin.pricingAdvisor.col.tier') }}</th>
+                  <th class="cursor-help px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-dark-300" :title="t('admin.pricingAdvisor.tip.samples')">{{ t('admin.pricingAdvisor.col.samples') }}</th>
+                  <th class="cursor-help border-l border-gray-200/60 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-gray-600 dark:border-dark-700/60 dark:text-dark-300" :title="t('admin.pricingAdvisor.tip.5hP95')">{{ t('admin.pricingAdvisor.col.5hP95') }}</th>
+                  <th class="cursor-help px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-dark-300" :title="t('admin.pricingAdvisor.tip.7dP95')">{{ t('admin.pricingAdvisor.col.7dP95') }}</th>
+                  <th class="cursor-help border-l border-gray-200/60 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:border-dark-700/60 dark:text-emerald-300" :title="t('admin.pricingAdvisor.tip.limits')">{{ t('admin.pricingAdvisor.subcol.daily') }}</th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">{{ t('admin.pricingAdvisor.subcol.weekly') }}</th>
+                  <th class="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">{{ t('admin.pricingAdvisor.subcol.monthly') }}</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100 dark:divide-dark-700/60">
@@ -111,7 +111,7 @@
                     <span>{{ row.platform }}</span>
                   </td>
                   <td class="px-4 py-3.5 text-center">
-                    <span class="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-[12px] font-medium text-gray-700 dark:bg-dark-700 dark:text-dark-200">
+                    <span class="inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700 dark:bg-dark-700 dark:text-dark-200">
                       {{ formatTier(row.tier) }}
                     </span>
                   </td>
@@ -127,17 +127,17 @@
                       :title="t('admin.pricingAdvisor.samplesLow')"
                     />
                   </td>
-                  <td class="cursor-help border-l border-gray-100 px-4 py-3.5 text-center tabular-nums text-[15px] text-gray-900 dark:border-dark-700/60 dark:text-white"
+                  <td class="cursor-help border-l border-gray-100 px-4 py-3.5 text-center tabular-nums text-base text-gray-900 dark:border-dark-700/60 dark:text-white"
                       :title="`P50 $${row.window_5h_p50.toFixed(2)}  •  Max $${row.window_5h_max.toFixed(2)}`">
                     ${{ row.window_5h_p95.toFixed(2) }}
                   </td>
-                  <td class="cursor-help px-4 py-3.5 text-center tabular-nums text-[15px] text-gray-900 dark:text-white"
+                  <td class="cursor-help px-4 py-3.5 text-center tabular-nums text-base text-gray-900 dark:text-white"
                       :title="`P50 $${row.window_7d_p50.toFixed(2)}  •  Max $${row.window_7d_max.toFixed(2)}`">
                     ${{ row.window_7d_p95.toFixed(2) }}
                   </td>
-                  <td class="border-l border-gray-100 px-4 py-3.5 text-center tabular-nums text-[15px] text-emerald-700 dark:border-dark-700/60 dark:text-emerald-300">${{ rowLimits(row).daily.toFixed(2) }}</td>
-                  <td class="px-4 py-3.5 text-center tabular-nums text-[15px] text-emerald-700 dark:text-emerald-300">${{ rowLimits(row).weekly.toFixed(2) }}</td>
-                  <td class="px-4 py-3.5 text-center tabular-nums text-[15px] font-semibold text-emerald-700 dark:text-emerald-300">${{ rowLimits(row).monthly.toFixed(2) }}</td>
+                  <td class="border-l border-gray-100 px-4 py-3.5 text-center tabular-nums text-base text-emerald-700 dark:border-dark-700/60 dark:text-emerald-300">${{ rowLimits(row).daily.toFixed(2) }}</td>
+                  <td class="px-4 py-3.5 text-center tabular-nums text-base text-emerald-700 dark:text-emerald-300">${{ rowLimits(row).weekly.toFixed(2) }}</td>
+                  <td class="px-4 py-3.5 text-center tabular-nums text-base font-semibold text-emerald-700 dark:text-emerald-300">${{ rowLimits(row).monthly.toFixed(2) }}</td>
                 </tr>
               </tbody>
             </table>
@@ -169,28 +169,28 @@
               <!-- 历史用量分位（参考） -->
               <div class="grid grid-cols-2 gap-2 text-center">
                 <div class="rounded-lg bg-gray-50 p-2 dark:bg-dark-800/40">
-                  <p class="text-[10px] font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400">{{ t('admin.pricingAdvisor.col.5h') }}</p>
+                  <p class="text-2xs font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400">{{ t('admin.pricingAdvisor.col.5h') }}</p>
                   <p class="mt-0.5 text-sm font-semibold tabular-nums text-gray-900 dark:text-white">P50 ${{ row.window_5h_p50.toFixed(2) }}</p>
-                  <p class="mt-0.5 text-[10px] tabular-nums text-gray-500 dark:text-dark-400">P95 ${{ row.window_5h_p95.toFixed(2) }}</p>
+                  <p class="mt-0.5 text-2xs tabular-nums text-gray-500 dark:text-dark-400">P95 ${{ row.window_5h_p95.toFixed(2) }}</p>
                 </div>
                 <div class="rounded-lg bg-gray-50 p-2 dark:bg-dark-800/40">
-                  <p class="text-[10px] font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400">{{ t('admin.pricingAdvisor.col.7d') }}</p>
+                  <p class="text-2xs font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400">{{ t('admin.pricingAdvisor.col.7d') }}</p>
                   <p class="mt-0.5 text-sm font-semibold tabular-nums text-gray-900 dark:text-white">P50 ${{ row.window_7d_p50.toFixed(2) }}</p>
-                  <p class="mt-0.5 text-[10px] tabular-nums text-gray-500 dark:text-dark-400">P95 ${{ row.window_7d_p95.toFixed(2) }}</p>
+                  <p class="mt-0.5 text-2xs tabular-nums text-gray-500 dark:text-dark-400">P95 ${{ row.window_7d_p95.toFixed(2) }}</p>
                 </div>
               </div>
               <!-- 单账号档位限额（核心） -->
               <div class="grid grid-cols-3 gap-2 text-center">
                 <div class="rounded-lg bg-emerald-50/60 p-2 dark:bg-emerald-500/5">
-                  <p class="text-[10px] font-medium uppercase tracking-wider text-emerald-600 dark:text-emerald-300">{{ t('admin.pricingAdvisor.subcol.daily') }}</p>
+                  <p class="text-2xs font-medium uppercase tracking-wider text-emerald-600 dark:text-emerald-300">{{ t('admin.pricingAdvisor.subcol.daily') }}</p>
                   <p class="mt-0.5 text-sm font-semibold tabular-nums text-emerald-700 dark:text-emerald-300">${{ rowLimits(row).daily.toFixed(2) }}</p>
                 </div>
                 <div class="rounded-lg bg-emerald-50/60 p-2 dark:bg-emerald-500/5">
-                  <p class="text-[10px] font-medium uppercase tracking-wider text-emerald-600 dark:text-emerald-300">{{ t('admin.pricingAdvisor.subcol.weekly') }}</p>
+                  <p class="text-2xs font-medium uppercase tracking-wider text-emerald-600 dark:text-emerald-300">{{ t('admin.pricingAdvisor.subcol.weekly') }}</p>
                   <p class="mt-0.5 text-sm font-semibold tabular-nums text-emerald-700 dark:text-emerald-300">${{ rowLimits(row).weekly.toFixed(2) }}</p>
                 </div>
                 <div class="rounded-lg bg-emerald-50/60 p-2 dark:bg-emerald-500/5">
-                  <p class="text-[10px] font-medium uppercase tracking-wider text-emerald-600 dark:text-emerald-300">{{ t('admin.pricingAdvisor.subcol.monthly') }}</p>
+                  <p class="text-2xs font-medium uppercase tracking-wider text-emerald-600 dark:text-emerald-300">{{ t('admin.pricingAdvisor.subcol.monthly') }}</p>
                   <p class="mt-0.5 text-sm font-semibold tabular-nums text-emerald-700 dark:text-emerald-300">${{ rowLimits(row).monthly.toFixed(2) }}</p>
                 </div>
               </div>
@@ -203,7 +203,7 @@
           <section class="surface-card p-5">
             <header class="mb-3 flex items-center gap-3">
               <Icon name="calculator" size="sm" class="text-amber-500" />
-              <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">{{ t('admin.pricingAdvisor.calculator.title') }}</h2>
+              <h2 class="text-base font-semibold text-gray-900 dark:text-white">{{ t('admin.pricingAdvisor.calculator.title') }}</h2>
             </header>
             <div class="space-y-3">
               <!-- 主输入：档位 + N 横向并排，节省纵向空间 -->
@@ -225,7 +225,7 @@
               <div v-if="calcResult" class="space-y-2">
                 <div class="rounded-xl border border-emerald-200/60 bg-emerald-50/40 p-3.5 dark:border-emerald-500/20 dark:bg-emerald-500/5">
                   <!-- 标题：直接说"每人限额"（之前写"档位 CAP"和下面大字对不上） -->
-                  <p class="mb-2 cursor-help text-[12px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300"
+                  <p class="mb-2 cursor-help text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300"
                      :title="t('admin.pricingAdvisor.calculator.limitsTip')">
                     {{ t('admin.pricingAdvisor.calculator.limitsTitle') }}
                     <Icon name="infoCircle" size="xs" class="ml-0.5 inline-block opacity-60" />
@@ -233,27 +233,27 @@
                   <!-- 限额结果：4 列大字 -->
                   <div class="grid grid-cols-4 gap-2 text-center">
                     <div>
-                      <p class="text-[11px] font-medium uppercase tracking-wider text-emerald-700/70 dark:text-emerald-300/70">
+                      <p class="text-2xs font-medium uppercase tracking-wider text-emerald-700/70 dark:text-emerald-300/70">
                         {{ t('admin.pricingAdvisor.calculator.suggested5h') }}
                         <span class="text-emerald-700/50 dark:text-emerald-300/50">{{ t('admin.pricingAdvisor.calculator.suggested5hRefMark') }}</span>
                       </p>
                       <p class="mt-1 text-[20px] font-bold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.fiveHourLimitUsd.toFixed(2) }}</p>
                     </div>
                     <div>
-                      <p class="text-[11px] font-medium uppercase tracking-wider text-emerald-700/70 dark:text-emerald-300/70">{{ t('admin.pricingAdvisor.calculator.suggestedDaily') }}</p>
+                      <p class="text-2xs font-medium uppercase tracking-wider text-emerald-700/70 dark:text-emerald-300/70">{{ t('admin.pricingAdvisor.calculator.suggestedDaily') }}</p>
                       <p class="mt-1 text-[20px] font-bold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.dailyLimitUsd.toFixed(2) }}</p>
                     </div>
                     <div>
-                      <p class="text-[11px] font-medium uppercase tracking-wider text-emerald-700/70 dark:text-emerald-300/70">{{ t('admin.pricingAdvisor.calculator.suggestedWeekly') }}</p>
+                      <p class="text-2xs font-medium uppercase tracking-wider text-emerald-700/70 dark:text-emerald-300/70">{{ t('admin.pricingAdvisor.calculator.suggestedWeekly') }}</p>
                       <p class="mt-1 text-[20px] font-bold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.weeklyLimitUsd.toFixed(2) }}</p>
                     </div>
                     <div>
-                      <p class="text-[11px] font-medium uppercase tracking-wider text-emerald-700/70 dark:text-emerald-300/70">{{ t('admin.pricingAdvisor.calculator.suggestedMonthly') }}</p>
+                      <p class="text-2xs font-medium uppercase tracking-wider text-emerald-700/70 dark:text-emerald-300/70">{{ t('admin.pricingAdvisor.calculator.suggestedMonthly') }}</p>
                       <p class="mt-1 text-[20px] font-bold tabular-nums text-emerald-900 dark:text-emerald-100">${{ calcResult.monthlyLimitUsd.toFixed(2) }}</p>
                     </div>
                   </div>
                   <!-- 底部 cap 来源脚注：辅助信息，小字 -->
-                  <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-emerald-200/40 pt-2 text-[11px] tabular-nums text-emerald-700/70 dark:border-emerald-500/15 dark:text-emerald-300/60">
+                  <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-emerald-200/40 pt-2 text-2xs tabular-nums text-emerald-700/70 dark:border-emerald-500/15 dark:text-emerald-300/60">
                     <span class="font-medium uppercase tracking-wider">档位 cap</span>
                     <span>5h <span class="font-semibold text-emerald-900 dark:text-emerald-100">${{ calcResult.cap5hUsd.toFixed(0) }}</span>
                       <span class="ml-0.5 opacity-70">· {{ t('admin.pricingAdvisor.calculator.capSource_' + calcResult.cap5hSource) }}</span>
@@ -266,7 +266,7 @@
                 </div>
 
                 <!-- 警告（compact） -->
-                <p v-if="calcResult.warning" class="flex items-start gap-1.5 rounded-md bg-amber-50 px-2.5 py-1.5 text-[11px] text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
+                <p v-if="calcResult.warning" class="flex items-start gap-1.5 rounded-md bg-amber-50 px-2.5 py-1.5 text-2xs text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
                   <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
                   <span>{{ calcResult.warning }}</span>
                 </p>
@@ -280,7 +280,7 @@
                 <summary class="cursor-pointer text-xs font-medium text-gray-600 dark:text-dark-300">
                   {{ t('admin.pricingAdvisor.calculator.advancedTitle') }}
                 </summary>
-                <p class="mt-2 text-[11px] leading-relaxed text-gray-500 dark:text-dark-400">
+                <p class="mt-2 text-2xs leading-relaxed text-gray-500 dark:text-dark-400">
                   {{ t('admin.pricingAdvisor.calculator.advancedHint') }}
                 </p>
                 <div class="mt-2 grid grid-cols-2 gap-3">
@@ -313,7 +313,7 @@
                 <summary class="cursor-pointer text-xs font-medium text-gray-600 dark:text-dark-300">
                   {{ t('admin.pricingAdvisor.calculator.pricingTitle') }}
                 </summary>
-                <p class="mt-2 text-[11px] leading-relaxed text-gray-500 dark:text-dark-400">
+                <p class="mt-2 text-2xs leading-relaxed text-gray-500 dark:text-dark-400">
                   {{ t('admin.pricingAdvisor.calculator.pricingHint') }}
                 </p>
                 <div class="mt-2 grid grid-cols-2 gap-3">
@@ -334,11 +334,11 @@
                 </div>
                 <div class="mt-3 grid grid-cols-2 gap-3">
                   <div class="rounded-lg border border-emerald-200/60 bg-emerald-50/60 p-3 text-center dark:border-emerald-500/20 dark:bg-emerald-500/5">
-                    <p class="text-[10px] font-medium uppercase tracking-wider text-emerald-700 dark:text-emerald-300">{{ t('admin.pricingAdvisor.calculator.suggestedPrice') }}</p>
+                    <p class="text-2xs font-medium uppercase tracking-wider text-emerald-700 dark:text-emerald-300">{{ t('admin.pricingAdvisor.calculator.suggestedPrice') }}</p>
                     <p class="mt-1 flex items-baseline justify-center gap-0.5">
                       <span class="text-base font-semibold text-emerald-700 dark:text-emerald-300">¥</span>
                       <span class="text-2xl font-bold tabular-nums text-emerald-900 dark:text-emerald-100">{{ calcResult.priceCny.toFixed(0) }}</span>
-                      <span class="text-[10px] text-emerald-700 dark:text-emerald-300">/{{ t('admin.pricingAdvisor.calculator.perMonth') }}</span>
+                      <span class="text-2xs text-emerald-700 dark:text-emerald-300">/{{ t('admin.pricingAdvisor.calculator.perMonth') }}</span>
                     </p>
                   </div>
                   <div class="rounded-lg border p-3 text-center"
@@ -346,7 +346,7 @@
                       ? 'border-amber-200/60 bg-amber-50/60 dark:border-amber-500/20 dark:bg-amber-500/5'
                       : 'border-rose-200/60 bg-rose-50/60 dark:border-rose-500/20 dark:bg-rose-500/5'"
                   >
-                    <p class="text-[10px] font-medium uppercase tracking-wider"
+                    <p class="text-2xs font-medium uppercase tracking-wider"
                       :class="calcResult.monthlyProfitCny >= 0
                         ? 'text-amber-700 dark:text-amber-300'
                         : 'text-rose-700 dark:text-rose-300'"
@@ -362,7 +362,7 @@
                           : 'text-rose-700 dark:text-rose-300'"
                       >¥</span>
                       <span class="text-2xl font-bold tabular-nums">{{ calcResult.monthlyProfitCny.toFixed(0) }}</span>
-                      <span class="text-[10px]"
+                      <span class="text-2xs"
                         :class="calcResult.monthlyProfitCny >= 0
                           ? 'text-amber-700 dark:text-amber-300'
                           : 'text-rose-700 dark:text-rose-300'"
@@ -371,7 +371,7 @@
                   </div>
                 </div>
                 <div class="mt-2 flex items-center justify-between gap-3">
-                  <p class="flex-1 text-[10px] italic text-gray-500 dark:text-dark-400">
+                  <p class="flex-1 text-2xs italic text-gray-500 dark:text-dark-400">
                     {{ t('admin.pricingAdvisor.calculator.pricingFormula', { cost: calcCost, markup: calcMarkup, n: calcResult.n }) }}
                   </p>
                   <button
@@ -391,7 +391,7 @@
           <section class="surface-card overflow-hidden">
             <header class="flex items-center gap-3 border-b border-gray-200/60 px-5 py-3.5 dark:border-dark-700/60">
               <Icon name="trendingUp" size="sm" class="text-violet-500" />
-              <h2 class="text-[15px] font-semibold text-gray-900 dark:text-white">{{ t('admin.pricingAdvisor.trendTitle') }}</h2>
+              <h2 class="text-base font-semibold text-gray-900 dark:text-white">{{ t('admin.pricingAdvisor.trendTitle') }}</h2>
             </header>
             <div class="p-4">
               <div v-if="trendChartData" class="h-72">

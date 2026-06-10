@@ -11,34 +11,34 @@
         <table class="w-full min-w-[860px] border-separate border-spacing-0">
           <thead class="sticky top-0 z-10 bg-gray-50 dark:bg-dark-800">
             <tr>
-              <th class="border-b border-gray-200 px-4 py-2.5 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:border-dark-700 dark:text-dark-400">
+              <th class="border-b border-gray-200 px-4 py-2.5 text-left text-2xs font-bold uppercase tracking-wider text-gray-500 dark:border-dark-700 dark:text-dark-400">
                 {{ t('admin.ops.errorLog.time') }}
               </th>
-              <th class="border-b border-gray-200 px-4 py-2.5 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:border-dark-700 dark:text-dark-400">
+              <th class="border-b border-gray-200 px-4 py-2.5 text-left text-2xs font-bold uppercase tracking-wider text-gray-500 dark:border-dark-700 dark:text-dark-400">
                 {{ t('admin.ops.errorLog.type') }}
               </th>
-              <th class="border-b border-gray-200 px-4 py-2.5 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:border-dark-700 dark:text-dark-400">
+              <th class="border-b border-gray-200 px-4 py-2.5 text-left text-2xs font-bold uppercase tracking-wider text-gray-500 dark:border-dark-700 dark:text-dark-400">
                 {{ t('admin.ops.errorLog.endpoint') }}
               </th>
-              <th class="border-b border-gray-200 px-4 py-2.5 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:border-dark-700 dark:text-dark-400">
+              <th class="border-b border-gray-200 px-4 py-2.5 text-left text-2xs font-bold uppercase tracking-wider text-gray-500 dark:border-dark-700 dark:text-dark-400">
                 {{ t('admin.ops.errorLog.platform') }}
               </th>
-              <th class="border-b border-gray-200 px-4 py-2.5 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:border-dark-700 dark:text-dark-400">
+              <th class="border-b border-gray-200 px-4 py-2.5 text-left text-2xs font-bold uppercase tracking-wider text-gray-500 dark:border-dark-700 dark:text-dark-400">
                 {{ t('admin.ops.errorLog.model') }}
               </th>
-              <th class="border-b border-gray-200 px-4 py-2.5 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:border-dark-700 dark:text-dark-400">
+              <th class="border-b border-gray-200 px-4 py-2.5 text-left text-2xs font-bold uppercase tracking-wider text-gray-500 dark:border-dark-700 dark:text-dark-400">
                 {{ t('admin.ops.errorLog.group') }}
               </th>
-              <th class="border-b border-gray-200 px-4 py-2.5 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:border-dark-700 dark:text-dark-400">
+              <th class="border-b border-gray-200 px-4 py-2.5 text-left text-2xs font-bold uppercase tracking-wider text-gray-500 dark:border-dark-700 dark:text-dark-400">
                 {{ t('admin.ops.errorLog.user') }}
               </th>
-              <th class="border-b border-gray-200 px-4 py-2.5 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:border-dark-700 dark:text-dark-400">
+              <th class="border-b border-gray-200 px-4 py-2.5 text-left text-2xs font-bold uppercase tracking-wider text-gray-500 dark:border-dark-700 dark:text-dark-400">
                 {{ t('admin.ops.errorLog.status') }}
               </th>
-              <th class="border-b border-gray-200 px-4 py-2.5 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:border-dark-700 dark:text-dark-400">
+              <th class="border-b border-gray-200 px-4 py-2.5 text-left text-2xs font-bold uppercase tracking-wider text-gray-500 dark:border-dark-700 dark:text-dark-400">
                 {{ t('admin.ops.errorLog.message') }}
               </th>
-              <th class="border-b border-gray-200 px-4 py-2.5 text-right text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:border-dark-700 dark:text-dark-400">
+              <th class="border-b border-gray-200 px-4 py-2.5 text-right text-2xs font-bold uppercase tracking-wider text-gray-500 dark:border-dark-700 dark:text-dark-400">
                 {{ t('admin.ops.errorLog.action') }}
               </th>
             </tr>
@@ -69,7 +69,7 @@
               <td class="whitespace-nowrap px-4 py-2">
                 <span
                   :class="[
-                    'inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-bold ring-1 ring-inset',
+                    'inline-flex items-center rounded px-1.5 py-0.5 text-2xs font-bold ring-1 ring-inset',
                     getTypeBadge(log).className
                   ]"
                 >
@@ -81,7 +81,7 @@
               <td class="px-4 py-2">
                 <div class="max-w-[160px]">
                   <el-tooltip v-if="log.inbound_endpoint" :content="formatEndpointTooltip(log)" placement="top" :show-after="500">
-                    <span class="truncate font-mono text-[11px] text-gray-700 dark:text-gray-300">
+                    <span class="truncate font-mono text-2xs text-gray-700 dark:text-gray-300">
                       {{ log.inbound_endpoint }}
                     </span>
                   </el-tooltip>
@@ -91,7 +91,7 @@
 
               <!-- Platform -->
               <td class="whitespace-nowrap px-4 py-2">
-                <span class="inline-flex items-center rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-gray-600 dark:bg-dark-700 dark:text-gray-300">
+                <span class="inline-flex items-center rounded bg-gray-100 px-1.5 py-0.5 text-2xs font-bold uppercase text-gray-600 dark:bg-dark-700 dark:text-gray-300">
                   {{ log.platform || '-' }}
                 </span>
               </td>
@@ -101,7 +101,7 @@
                 <div class="max-w-[160px]">
                   <template v-if="hasModelMapping(log)">
                     <el-tooltip :content="modelMappingTooltip(log)" placement="top" :show-after="500">
-                      <span class="flex items-center gap-1 truncate font-mono text-[11px] text-gray-700 dark:text-gray-300">
+                      <span class="flex items-center gap-1 truncate font-mono text-2xs text-gray-700 dark:text-gray-300">
                         <span class="truncate">{{ log.requested_model }}</span>
                         <span class="flex-shrink-0 text-gray-400">→</span>
                         <span class="truncate text-primary-600 dark:text-primary-400">{{ log.upstream_model }}</span>
@@ -109,7 +109,7 @@
                     </el-tooltip>
                   </template>
                   <template v-else>
-                    <span v-if="displayModel(log)" class="truncate font-mono text-[11px] text-gray-700 dark:text-gray-300" :title="displayModel(log)">
+                    <span v-if="displayModel(log)" class="truncate font-mono text-2xs text-gray-700 dark:text-gray-300" :title="displayModel(log)">
                       {{ displayModel(log) }}
                     </span>
                     <span v-else class="text-xs text-gray-400">-</span>
@@ -152,7 +152,7 @@
                 <div class="flex items-center gap-1.5">
                   <span
                     :class="[
-                      'inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-bold ring-1 ring-inset',
+                      'inline-flex items-center rounded px-1.5 py-0.5 text-2xs font-bold ring-1 ring-inset',
                       getStatusClass(log.status_code)
                     ]"
                   >
@@ -160,13 +160,13 @@
                   </span>
                   <span
                     v-if="log.severity"
-                    :class="['rounded px-1.5 py-0.5 text-[10px] font-bold', getSeverityClass(log.severity)]"
+                    :class="['rounded px-1.5 py-0.5 text-2xs font-bold', getSeverityClass(log.severity)]"
                   >
                     {{ log.severity }}
                   </span>
                   <span
                     v-if="log.request_type != null && log.request_type > 0"
-                    class="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-600 dark:bg-dark-700 dark:text-gray-300"
+                    class="rounded bg-gray-100 px-1.5 py-0.5 text-2xs font-bold text-gray-600 dark:bg-dark-700 dark:text-gray-300"
                   >
                     {{ formatRequestType(log.request_type) }}
                   </span>
@@ -176,7 +176,7 @@
               <!-- Message (Response Content) -->
               <td class="px-4 py-2">
                 <div class="max-w-[200px]">
-                  <p class="truncate text-[11px] font-medium text-gray-600 dark:text-gray-400" :title="log.message">
+                  <p class="truncate text-2xs font-medium text-gray-600 dark:text-gray-400" :title="log.message">
                     {{ formatSmartMessage(log.message) || '-' }}
                   </p>
                 </div>

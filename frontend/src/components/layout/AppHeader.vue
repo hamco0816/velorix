@@ -72,7 +72,7 @@
                   :show-label="true"
                 />
               </div>
-              <p v-if="hasContactMethods" class="mt-2 px-1 text-[11px] text-gray-400 dark:text-gray-500">
+              <p v-if="hasContactMethods" class="mt-2 px-1 text-2xs text-gray-400 dark:text-gray-500">
                 {{ t('contactMethods.popoverHint') }}
               </p>
             </div>

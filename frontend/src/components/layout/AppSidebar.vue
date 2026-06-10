@@ -26,9 +26,12 @@
     <nav class="sidebar-nav scrollbar-hide">
       <!-- Admin View: Admin menu first, then personal menu -->
       <template v-if="isAdmin">
-        <!-- Admin Section -->
+        <!-- Admin Section：按 group 切成概览/业务/渠道/订单/运营/系统，组间分隔线 + 组标题；简单模式下隐藏标题保持紧凑 -->
         <div class="sidebar-section">
-          <template v-for="item in adminNavItems" :key="item.path">
+          <template v-for="(grp, gidx) in adminNavGroups" :key="grp.key">
+            <div v-if="gidx > 0 && !authStore.isSimpleMode" class="sidebar-group-divider" :class="{ 'sidebar-group-divider-collapsed': sidebarCollapsed }"></div>
+            <p v-if="!sidebarCollapsed && !authStore.isSimpleMode" class="sidebar-group-title">{{ grp.label }}</p>
+          <template v-for="item in grp.items" :key="item.path">
             <!-- Collapsible group (has children) -->
             <template v-if="item.children?.length">
               <button
@@ -41,7 +44,7 @@
                 :title="sidebarCollapsed ? item.label : undefined"
                 @click="handleGroupClick(item)"
               >
-                <span :class="item.iconColor" class="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center">
+                <span class="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center">
                   <component :is="item.icon" class="h-5 w-5" />
                 </span>
                 <span
@@ -66,7 +69,7 @@
                   :class="{ 'sidebar-link-active': route.path === child.path }"
                   @click="handleMenuItemClick(child.path)"
                 >
-                  <span :class="child.iconColor" class="inline-flex h-4 w-4 flex-shrink-0 items-center justify-center">
+                  <span class="inline-flex h-4 w-4 flex-shrink-0 items-center justify-center">
                     <component :is="child.icon" class="h-4 w-4" />
                   </span>
                   <span>{{ child.label }}</span>
@@ -92,15 +95,16 @@
               @click="handleMenuItemClick(item.path)"
             >
               <span v-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
-              <span v-else :class="item.iconColor" class="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center">
+              <span v-else class="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center">
                 <component :is="item.icon" class="h-5 w-5" />
               </span>
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
               <span
                 v-if="item.badge && !sidebarCollapsed"
-                class="ml-auto shrink-0 rounded px-1 text-[9px] font-medium uppercase leading-[15px] tracking-wider text-amber-600/90 ring-1 ring-inset ring-amber-300/60 dark:text-amber-300/80 dark:ring-amber-400/30"
+                class="ml-auto shrink-0 rounded px-1 text-2xs font-medium uppercase leading-[15px] tracking-wider text-amber-600/90 ring-1 ring-inset ring-amber-300/60 dark:text-amber-300/80 dark:ring-amber-400/30"
               >{{ item.badge }}</span>
             </router-link>
+          </template>
           </template>
         </div>
 
@@ -131,13 +135,13 @@
               @click="handleMenuItemClick(item.path)"
             >
               <span v-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
-              <span v-else :class="item.iconColor" class="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center">
+              <span v-else class="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center">
                 <component :is="item.icon" class="h-5 w-5" />
               </span>
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
               <span
                 v-if="item.badge && !sidebarCollapsed"
-                class="ml-auto shrink-0 rounded px-1 text-[9px] font-medium uppercase leading-[15px] tracking-wider text-amber-600/90 ring-1 ring-inset ring-amber-300/60 dark:text-amber-300/80 dark:ring-amber-400/30"
+                class="ml-auto shrink-0 rounded px-1 text-2xs font-medium uppercase leading-[15px] tracking-wider text-amber-600/90 ring-1 ring-inset ring-amber-300/60 dark:text-amber-300/80 dark:ring-amber-400/30"
               >{{ item.badge }}</span>
             </router-link>
           </template>
@@ -166,13 +170,13 @@
               @click="handleMenuItemClick(item.path)"
             >
               <span v-if="item.iconSvg" class="h-5 w-5 flex-shrink-0 sidebar-svg-icon" v-html="sanitizeSvg(item.iconSvg)"></span>
-              <span v-else :class="item.iconColor" class="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center">
+              <span v-else class="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center">
                 <component :is="item.icon" class="h-5 w-5" />
               </span>
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
               <span
                 v-if="item.badge && !sidebarCollapsed"
-                class="ml-auto shrink-0 rounded px-1 text-[9px] font-medium uppercase leading-[15px] tracking-wider text-amber-600/90 ring-1 ring-inset ring-amber-300/60 dark:text-amber-300/80 dark:ring-amber-400/30"
+                class="ml-auto shrink-0 rounded px-1 text-2xs font-medium uppercase leading-[15px] tracking-wider text-amber-600/90 ring-1 ring-inset ring-amber-300/60 dark:text-amber-300/80 dark:ring-amber-400/30"
               >{{ item.badge }}</span>
             </router-link>
           </template>
@@ -233,11 +237,6 @@ interface NavItem {
   label: string
   icon: unknown
   iconSvg?: string
-  /**
-   * 非激活态下 icon 的颜色 class（与业务对应的 Tailwind 色）。
-   * 激活态下 icon 跟随 sidebar-link-active 的统一 sky 高亮，不再使用此色。
-   */
-  iconColor?: string
   hideInSimpleMode?: boolean
   children?: NavItem[]
   /**
@@ -258,6 +257,7 @@ interface NavItem {
    * 未指定 group 的项归入 'main'，向后兼容。
    */
   group?: 'main' | 'subscription' | 'reference' | 'account'
+    | 'admin-overview' | 'admin-business' | 'admin-channel' | 'admin-order' | 'admin-operation' | 'admin-system'
   /** 强调样式：true 时菜单项加底色 + ring 高亮，用于"API 密钥"这种核心入口 */
   emphasize?: boolean
   /** 可选角标文字（如 "Beta"），显示在 label 右侧；折叠态不显示 */
@@ -794,31 +794,31 @@ const flagAdminPayment = () => adminSettingsStore.paymentEnabled
 function buildSelfNavItems(withDashboard: boolean): NavItem[] {
   const items: NavItem[] = []
   if (withDashboard) {
-    items.push({ path: '/dashboard', label: t('nav.dashboard'), icon: DashboardIcon, iconColor: 'text-sky-500 dark:text-sky-400', group: 'main' })
+    items.push({ path: '/dashboard', label: t('nav.dashboard'), icon: DashboardIcon, group: 'main' })
   }
   items.push(
     // —— 工作台：高频核心入口 ——
     // API 密钥靠组内顺序（紧跟仪表盘）和分组就能突出，不再额外加底色——会被误以为是激活态
-    { path: '/keys', label: t('nav.apiKeys'), icon: KeyIcon, iconColor: 'text-sky-500 dark:text-sky-400', group: 'main' },
-    { path: '/image-gen', label: t('nav.imageGen'), icon: ImageGenIcon, iconColor: 'text-amber-500 dark:text-amber-400', hideInSimpleMode: true, group: 'main', badge: 'Beta' },
-    { path: '/usage', label: t('nav.usage'), icon: ChartIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true, group: 'main' },
+    { path: '/keys', label: t('nav.apiKeys'), icon: KeyIcon, group: 'main' },
+    { path: '/image-gen', label: t('nav.imageGen'), icon: ImageGenIcon, hideInSimpleMode: true, group: 'main', badge: 'Beta' },
+    { path: '/usage', label: t('nav.usage'), icon: ChartIcon, hideInSimpleMode: true, group: 'main' },
 
     // —— 订阅：买 + 已购查询 ——
-    { path: '/purchase', label: t('nav.buySubscription'), icon: RechargeSubscriptionIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true, featureFlag: flagPayment, group: 'subscription' },
-    { path: '/redeem', label: t('nav.redeem'), icon: GiftIcon, iconColor: 'text-rose-500 dark:text-rose-400', hideInSimpleMode: true, group: 'subscription' },
-    { path: '/orders', label: t('nav.myOrders'), icon: OrderListIcon, iconColor: 'text-amber-500 dark:text-amber-400', hideInSimpleMode: true, featureFlag: flagPayment, group: 'subscription' },
-    { path: '/invoices', label: t('nav.myInvoices'), icon: OrderListIcon, iconColor: 'text-teal-500 dark:text-teal-400', hideInSimpleMode: true, featureFlag: flagInvoice, group: 'subscription' },
-    { path: '/subscriptions', label: t('nav.mySubscriptions'), icon: CreditCardIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true, group: 'subscription' },
-    { path: '/seats', label: t('nav.mySeats'), icon: BadgeIcon, iconColor: 'text-violet-500 dark:text-violet-400', hideInSimpleMode: true, featureFlag: flagPayment, group: 'subscription' },
+    { path: '/purchase', label: t('nav.buySubscription'), icon: RechargeSubscriptionIcon, hideInSimpleMode: true, featureFlag: flagPayment, group: 'subscription' },
+    { path: '/redeem', label: t('nav.redeem'), icon: GiftIcon, hideInSimpleMode: true, group: 'subscription' },
+    { path: '/orders', label: t('nav.myOrders'), icon: OrderListIcon, hideInSimpleMode: true, featureFlag: flagPayment, group: 'subscription' },
+    { path: '/invoices', label: t('nav.myInvoices'), icon: OrderListIcon, hideInSimpleMode: true, featureFlag: flagInvoice, group: 'subscription' },
+    { path: '/subscriptions', label: t('nav.mySubscriptions'), icon: CreditCardIcon, hideInSimpleMode: true, group: 'subscription' },
+    { path: '/seats', label: t('nav.mySeats'), icon: BadgeIcon, hideInSimpleMode: true, featureFlag: flagPayment, group: 'subscription' },
 
     // —— 参考：用前 / 用中查询的信息 ——
-    { path: '/pricing', label: t('nav.pricing'), icon: ChannelIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true, featureFlag: flagAvailableChannels, group: 'reference' },
-    { path: '/monitor', label: t('nav.channelStatus'), icon: SignalIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', featureFlag: flagChannelMonitor, group: 'reference' },
-    { path: '/docs', label: t('nav.docs'), icon: BookIcon, iconColor: 'text-indigo-500 dark:text-indigo-400', hideInSimpleMode: true, group: 'reference' },
+    { path: '/pricing', label: t('nav.pricing'), icon: ChannelIcon, hideInSimpleMode: true, featureFlag: flagAvailableChannels, group: 'reference' },
+    { path: '/monitor', label: t('nav.channelStatus'), icon: SignalIcon, featureFlag: flagChannelMonitor, group: 'reference' },
+    { path: '/docs', label: t('nav.docs'), icon: BookIcon, hideInSimpleMode: true, group: 'reference' },
 
     // —— 账户：低频 ——
-    { path: '/affiliate', label: t('nav.affiliate'), icon: UsersIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true, featureFlag: flagAffiliate, group: 'account' },
-    { path: '/profile', label: t('nav.profile'), icon: UserIcon, iconColor: 'text-sky-500 dark:text-sky-400', group: 'account' },
+    { path: '/affiliate', label: t('nav.affiliate'), icon: UsersIcon, hideInSimpleMode: true, featureFlag: flagAffiliate, group: 'account' },
+    { path: '/profile', label: t('nav.profile'), icon: UserIcon, group: 'account' },
 
     // 自定义菜单：默认归到 account 末尾，跟现有 nav 风格保持一致
     ...customMenuItemsForUser.value.map((item): NavItem => ({
@@ -860,6 +860,12 @@ function groupNavItems(items: NavItem[]): NavGroup[] {
     subscription: t('nav.sectionTitles.subscription'),
     reference: t('nav.sectionTitles.reference'),
     account: t('nav.sectionTitles.account'),
+    'admin-overview': t('nav.sectionTitles.overview'),
+    'admin-business': t('nav.sectionTitles.business'),
+    'admin-channel': t('nav.sectionTitles.channel'),
+    'admin-order': t('nav.sectionTitles.order'),
+    'admin-operation': t('nav.sectionTitles.operation'),
+    'admin-system': t('nav.sectionTitles.system'),
   }
   for (const item of items) {
     const key = item.group ?? 'main'
@@ -874,6 +880,8 @@ function groupNavItems(items: NavItem[]): NavGroup[] {
 }
 const userNavGroups = computed<NavGroup[]>(() => groupNavItems(userNavItems.value))
 const personalNavGroups = computed<NavGroup[]>(() => groupNavItems(personalNavItems.value))
+// 管理端导航分组：与用户端同一套 groupNavItems 机制，按 group 键切成概览/业务/渠道/订单/运营/系统
+const adminNavGroups = computed<NavGroup[]>(() => groupNavItems(adminNavItems.value))
 
 // Custom menu items filtered by visibility
 const customMenuItemsForUser = computed(() => {
@@ -901,56 +909,56 @@ const customMenuItemsForAdmin = computed(() => {
 const adminNavItems = computed((): NavItem[] => {
   const baseItems: NavItem[] = [
     // —— 概览 / 监控 / 安全 / 文档 ——
-    { path: '/admin/dashboard', label: t('nav.dashboard'), icon: DashboardIcon, iconColor: 'text-sky-500 dark:text-sky-400' },
-    { path: '/admin/ops', label: t('nav.ops'), icon: ChartIcon, iconColor: 'text-violet-500 dark:text-violet-400', featureFlag: flagOpsMonitoring },
-    { path: '/admin/safety-risk', label: t('nav.safetyRisk'), icon: ShieldIcon, iconColor: 'text-amber-500 dark:text-amber-400' },
-    { path: '/admin/docs', label: t('nav.adminDocs'), icon: BookIcon, iconColor: 'text-indigo-500 dark:text-indigo-400', hideInSimpleMode: true },
+    { path: '/admin/dashboard', label: t('nav.dashboard'), icon: DashboardIcon, group: 'admin-overview' },
+    { path: '/admin/ops', label: t('nav.ops'), icon: ChartIcon, featureFlag: flagOpsMonitoring, group: 'admin-overview' },
+    { path: '/admin/safety-risk', label: t('nav.safetyRisk'), icon: ShieldIcon, group: 'admin-overview' },
+    { path: '/admin/docs', label: t('nav.adminDocs'), icon: BookIcon, hideInSimpleMode: true, group: 'admin-overview' },
     // —— 主体业务：用户 / 分组 / 账号 ——
-    { path: '/admin/users', label: t('nav.users'), icon: UsersIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true },
-    { path: '/admin/groups', label: t('nav.groups'), icon: FolderIcon, iconColor: 'text-indigo-500 dark:text-indigo-400', hideInSimpleMode: true },
-    { path: '/admin/accounts', label: t('nav.accounts'), icon: GlobeIcon, iconColor: 'text-violet-500 dark:text-violet-400' },
+    { path: '/admin/users', label: t('nav.users'), icon: UsersIcon, hideInSimpleMode: true, group: 'admin-business' },
+    { path: '/admin/groups', label: t('nav.groups'), icon: FolderIcon, hideInSimpleMode: true, group: 'admin-business' },
+    { path: '/admin/accounts', label: t('nav.accounts'), icon: GlobeIcon, group: 'admin-business' },
     // —— 渠道 / IP ——
     {
       path: '/admin/channels',
       label: t('nav.channelManagement'),
       icon: ChannelIcon,
-      iconColor: 'text-teal-500 dark:text-teal-400',
       hideInSimpleMode: true,
       expandOnly: true,
+      group: 'admin-channel',
       children: [
-        { path: '/admin/channels/pricing', label: t('nav.channelPricing'), icon: PriceTagIcon, iconColor: 'text-teal-500 dark:text-teal-400' },
-        { path: '/admin/channels/monitor', label: t('nav.channelMonitor'), icon: SignalIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', featureFlag: flagChannelMonitor },
+        { path: '/admin/channels/pricing', label: t('nav.channelPricing'), icon: PriceTagIcon },
+        { path: '/admin/channels/monitor', label: t('nav.channelMonitor'), icon: SignalIcon, featureFlag: flagChannelMonitor },
       ],
     },
-    { path: '/admin/proxies', label: t('nav.proxies'), icon: ServerIcon, iconColor: 'text-rose-500 dark:text-rose-400' },
+    { path: '/admin/proxies', label: t('nav.proxies'), icon: ServerIcon, group: 'admin-channel' },
     // —— 订单 / 订阅 / 定价 ——
     {
       path: '/admin/orders',
       label: t('nav.orderManagement'),
       icon: OrderIcon,
-      iconColor: 'text-amber-500 dark:text-amber-400',
       hideInSimpleMode: true,
       expandOnly: true,
       featureFlag: flagAdminPayment,
+      group: 'admin-order',
       children: [
-        { path: '/admin/orders/dashboard', label: t('nav.paymentDashboard'), icon: ChartIcon, iconColor: 'text-violet-500 dark:text-violet-400' },
-        { path: '/admin/orders', label: t('nav.orderManagement'), icon: OrderIcon, iconColor: 'text-amber-500 dark:text-amber-400' },
-        { path: '/admin/orders/plans', label: t('nav.paymentPlans'), icon: CreditCardIcon, iconColor: 'text-teal-500 dark:text-teal-400' },
-        { path: '/admin/orders/exclusive-pools', label: t('nav.exclusivePools'), icon: BadgeIcon, iconColor: 'text-violet-500 dark:text-violet-400' },
-        { path: '/admin/orders/invoices', label: t('nav.invoiceManagement'), icon: OrderListIcon, iconColor: 'text-teal-500 dark:text-teal-400', featureFlag: flagInvoice },
+        { path: '/admin/orders/dashboard', label: t('nav.paymentDashboard'), icon: ChartIcon },
+        { path: '/admin/orders', label: t('nav.orderManagement'), icon: OrderIcon },
+        { path: '/admin/orders/plans', label: t('nav.paymentPlans'), icon: CreditCardIcon },
+        { path: '/admin/orders/exclusive-pools', label: t('nav.exclusivePools'), icon: BadgeIcon },
+        { path: '/admin/orders/invoices', label: t('nav.invoiceManagement'), icon: OrderListIcon, featureFlag: flagInvoice },
       ],
     },
-    { path: '/admin/subscriptions', label: t('nav.subscriptions'), icon: CreditCardIcon, iconColor: 'text-teal-500 dark:text-teal-400', hideInSimpleMode: true },
+    { path: '/admin/subscriptions', label: t('nav.subscriptions'), icon: CreditCardIcon, hideInSimpleMode: true, group: 'admin-order' },
     // 模型定价总览：admin 没有自定义渠道定价时也能看到 GitHub 拉的默认价格 + 倍率换算
-    { path: '/admin/pricing/models', label: t('nav.modelPricing'), icon: PriceTagIcon, iconColor: 'text-amber-500 dark:text-amber-400', hideInSimpleMode: true },
+    { path: '/admin/pricing/models', label: t('nav.modelPricing'), icon: PriceTagIcon, hideInSimpleMode: true, group: 'admin-order' },
     // 订阅定价助手：按账号档位聚合用量统计 + ROI 计算器，辅助设置订阅限额
-    { path: '/admin/pricing/advisor', label: t('nav.pricingAdvisor'), icon: ChartIcon, iconColor: 'text-emerald-500 dark:text-emerald-400', hideInSimpleMode: true },
+    { path: '/admin/pricing/advisor', label: t('nav.pricingAdvisor'), icon: ChartIcon, hideInSimpleMode: true, group: 'admin-order' },
     // —— 运营：使用记录 / 兑换码 / 优惠码 / 公告 / 邀请 ——
-    { path: '/admin/usage', label: t('nav.usage'), icon: ChartIcon, iconColor: 'text-violet-500 dark:text-violet-400' },
-    { path: '/admin/redeem', label: t('nav.redeemCodes'), icon: TicketIcon, iconColor: 'text-sky-500 dark:text-sky-400', hideInSimpleMode: true },
-    { path: '/admin/promo-codes', label: t('nav.promoCodes'), icon: GiftIcon, iconColor: 'text-rose-500 dark:text-rose-400', hideInSimpleMode: true },
-    { path: '/admin/announcements', label: t('nav.announcements'), icon: BellIcon, iconColor: 'text-rose-500 dark:text-rose-400' },
-    { path: '/admin/support', label: t('nav.onlineSupport'), icon: SupportIcon, iconColor: 'text-sky-500 dark:text-sky-400' },
+    { path: '/admin/usage', label: t('nav.usage'), icon: ChartIcon, group: 'admin-operation' },
+    { path: '/admin/redeem', label: t('nav.redeemCodes'), icon: TicketIcon, hideInSimpleMode: true, group: 'admin-operation' },
+    { path: '/admin/promo-codes', label: t('nav.promoCodes'), icon: GiftIcon, hideInSimpleMode: true, group: 'admin-operation' },
+    { path: '/admin/announcements', label: t('nav.announcements'), icon: BellIcon, group: 'admin-operation' },
+    { path: '/admin/support', label: t('nav.onlineSupport'), icon: SupportIcon, group: 'admin-operation' },
     {
       path: '/admin/affiliates',
       label: t('nav.affiliateManagement'),
@@ -958,6 +966,7 @@ const adminNavItems = computed((): NavItem[] => {
       hideInSimpleMode: true,
       expandOnly: true,
       featureFlag: flagAffiliate,
+      group: 'admin-operation',
       children: [
         { path: '/admin/affiliates/invites', label: t('nav.affiliateInviteRecords'), icon: UsersIcon },
         { path: '/admin/affiliates/rebates', label: t('nav.affiliateRebateRecords'), icon: OrderIcon },
@@ -971,17 +980,17 @@ const adminNavItems = computed((): NavItem[] => {
   // 简单模式下，在系统设置前插入 API密钥
   if (authStore.isSimpleMode) {
     const filtered = visible.filter(item => !item.hideInSimpleMode)
-    filtered.push({ path: '/keys', label: t('nav.apiKeys'), icon: KeyIcon })
-    filtered.push({ path: '/admin/settings', label: t('nav.settings'), icon: CogIcon })
+    filtered.push({ path: '/keys', label: t('nav.apiKeys'), icon: KeyIcon, group: 'admin-overview' })
+    filtered.push({ path: '/admin/settings', label: t('nav.settings'), icon: CogIcon, group: 'admin-system' })
     for (const cm of customMenuItemsForAdmin.value) {
-      filtered.push({ path: `/custom/${cm.id}`, label: cm.label, icon: null, iconSvg: cm.icon_svg })
+      filtered.push({ path: `/custom/${cm.id}`, label: cm.label, icon: null, iconSvg: cm.icon_svg, group: 'admin-system' })
     }
     return filtered
   }
 
-  visible.push({ path: '/admin/settings', label: t('nav.settings'), icon: CogIcon })
+  visible.push({ path: '/admin/settings', label: t('nav.settings'), icon: CogIcon, group: 'admin-system' })
   for (const cm of customMenuItemsForAdmin.value) {
-    visible.push({ path: `/custom/${cm.id}`, label: cm.label, icon: null, iconSvg: cm.icon_svg })
+    visible.push({ path: `/custom/${cm.id}`, label: cm.label, icon: null, iconSvg: cm.icon_svg, group: 'admin-system' })
   }
   return visible
 })
