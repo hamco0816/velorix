@@ -14,6 +14,9 @@
         :wechat-mp-enabled="wechatOAuthMPEnabled"
       />
 
+      <!-- API 概要：余额 / 密钥数量入口，直达充值与密钥管理 -->
+      <ProfileApiSummaryCard :user="user" />
+
       <section data-testid="profile-security-panel" class="space-y-4">
         <!-- Section header：克制的水平 divider 风，与 AppHeader 标题不重复 -->
         <div class="flex items-center gap-3">
@@ -40,7 +43,10 @@
         </div>
       </section>
 
-      <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <!-- 偏好与通知：语言 / 主题偏好、余额提醒、联系客服 -->
+      <div class="grid items-start gap-5 lg:grid-cols-2">
+        <ProfilePreferencesCard />
+
         <ProfileBalanceNotifyCard
           v-if="user && balanceLowNotifyEnabled"
           :enabled="user.balance_notify_enabled ?? true"
@@ -79,8 +85,10 @@ import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Icon } from '@/components/icons'
 import AppLayout from '@/components/layout/AppLayout.vue'
+import ProfileApiSummaryCard from '@/components/user/profile/ProfileApiSummaryCard.vue'
 import ProfileBalanceNotifyCard from '@/components/user/profile/ProfileBalanceNotifyCard.vue'
 import ProfileInfoCard from '@/components/user/profile/ProfileInfoCard.vue'
+import ProfilePreferencesCard from '@/components/user/profile/ProfilePreferencesCard.vue'
 import ProfilePasswordForm from '@/components/user/profile/ProfilePasswordForm.vue'
 import ProfileTotpCard from '@/components/user/profile/ProfileTotpCard.vue'
 import ContactMethodsDisplay from '@/components/common/ContactMethodsDisplay.vue'

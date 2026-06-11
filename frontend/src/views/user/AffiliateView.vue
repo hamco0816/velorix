@@ -1,11 +1,36 @@
 <template>
   <AppLayout wide>
     <div class="affiliate-page space-y-5">
-      <div v-if="loading" class="flex justify-center py-12">
-        <LoadingSpinner size="md" />
+      <!-- 统一页面头：标题 + 副标题 + 刷新 -->
+      <PageHeader :title="t('affiliate.title')" :subtitle="t('affiliate.description')">
+        <template #actions>
+          <button
+            type="button"
+            class="btn btn-secondary btn-sm"
+            :disabled="loading"
+            :title="t('common.refresh')"
+            :aria-label="t('common.refresh')"
+            @click="loadAffiliateDetail()"
+          >
+            <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
+          </button>
+        </template>
+      </PageHeader>
+
+      <!-- Loading State：骨架卡片占位 -->
+      <div v-if="loading" class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" aria-hidden="true">
+        <div v-for="i in 4" :key="i" class="card space-y-3 p-3 sm:p-5">
+          <div class="skeleton h-4 w-2/3"></div>
+          <div class="skeleton h-7 w-1/2"></div>
+        </div>
       </div>
 
-      <template v-else-if="detail">
+      <!-- Error State：加载失败可重试 -->
+      <div v-else-if="!detail" class="card">
+        <ErrorState :description="t('affiliate.loadFailed')" @retry="loadAffiliateDetail()" />
+      </div>
+
+      <template v-else>
         <!-- 移动端 2 列防止 4 张卡纵向堆成长长一条 -->
         <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           <div class="card card-hover p-3 sm:p-5">
@@ -13,7 +38,7 @@
               <Icon name="dollar" size="sm" class="shrink-0 text-primary-500" />
               <span class="truncate">{{ t('affiliate.stats.rebateRate') }}</span>
             </p>
-            <p class="mt-2 text-xl font-semibold text-primary-600 sm:text-2xl dark:text-primary-400">
+            <p class="mt-2 text-xl font-semibold tabular-nums text-primary-600 sm:text-2xl dark:text-primary-400">
               {{ formattedRebateRate }}<span class="ml-0.5 text-sm font-medium sm:text-base">%</span>
             </p>
             <p class="mt-1 hidden text-xs text-gray-400 sm:block dark:text-dark-500">
@@ -22,7 +47,7 @@
           </div>
           <div class="card card-hover p-3 sm:p-5">
             <p class="text-xs sm:text-sm text-gray-500 dark:text-dark-400">{{ t('affiliate.stats.invitedUsers') }}</p>
-            <p class="mt-2 text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">
+            <p class="mt-2 text-xl font-semibold tabular-nums text-gray-900 sm:text-2xl dark:text-white">
               {{ formatCount(detail.aff_count) }}
             </p>
           </div>
@@ -37,7 +62,7 @@
             <p class="mt-2 text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white tabular-nums">
               ¥{{ detail.aff_history_quota.toFixed(2) }}
             </p>
-            <p v-if="detail.aff_frozen_quota > 0" class="mt-1 text-xs text-amber-600 dark:text-amber-400">
+            <p v-if="detail.aff_frozen_quota > 0" class="mt-1 text-xs tabular-nums text-amber-600 dark:text-amber-400">
               {{ t('affiliate.stats.frozenQuota') }}: ¥{{ detail.aff_frozen_quota.toFixed(2) }}
             </p>
           </div>
@@ -106,9 +131,16 @@
 
         <div class="card p-6">
           <h3 class="text-base font-semibold text-gray-900 dark:text-white">{{ t('affiliate.invitees.title') }}</h3>
-          <div v-if="detail.invitees.length === 0" class="mt-4 rounded-xl border border-dashed border-gray-300 p-6 text-center text-sm text-gray-500 dark:border-dark-700 dark:text-dark-400">
-            {{ t('affiliate.invitees.empty') }}
-          </div>
+          <EmptyState
+            v-if="detail.invitees.length === 0"
+            variant="emerald"
+            :title="t('affiliate.invitees.empty')"
+            :description="t('affiliate.tips.line1')"
+          >
+            <template #icon>
+              <Icon name="users" class="empty-state-icon" />
+            </template>
+          </EmptyState>
           <div v-else class="mt-4 overflow-x-auto">
             <table class="w-full min-w-[560px] text-left text-sm">
               <thead>
@@ -127,7 +159,7 @@
                 >
                   <td class="px-3 py-3 text-gray-900 dark:text-white">{{ item.email || '-' }}</td>
                   <td class="px-3 py-3 text-gray-700 dark:text-gray-300">{{ item.username || '-' }}</td>
-                  <td class="px-3 py-3 text-right font-medium text-emerald-600 dark:text-emerald-400">¥{{ item.total_rebate.toFixed(2) }}</td>
+                  <td class="px-3 py-3 text-right font-medium tabular-nums text-emerald-600 dark:text-emerald-400">¥{{ item.total_rebate.toFixed(2) }}</td>
                   <td class="px-3 py-3 text-gray-700 dark:text-gray-300">{{ formatDateTime(item.created_at) || '-' }}</td>
                 </tr>
               </tbody>
@@ -143,8 +175,10 @@
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppLayout from '@/components/layout/AppLayout.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
+import ErrorState from '@/components/common/ErrorState.vue'
 import Icon from '@/components/icons/Icon.vue'
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import PageHeader from '@/components/common/PageHeader.vue'
 import userAPI from '@/api/user'
 import type { UserAffiliateDetail } from '@/types'
 import { useAppStore } from '@/stores/app'

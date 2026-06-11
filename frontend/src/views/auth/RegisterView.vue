@@ -1,24 +1,9 @@
 <template>
-  <AuthLayout>
-    <!-- 品牌区：logo + 合并标题居中直接展示，不再包渐变容器 -->
-    <template #brand>
-      <div class="mb-10 flex flex-col items-center text-center">
-        <div class="mb-5 h-16 w-16 overflow-hidden">
-          <img
-            :src="siteLogo || '/logo.png'"
-            alt="Logo"
-            class="h-full w-full object-contain"
-          />
-        </div>
-        <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-          <template v-if="siteName">
-            {{ siteName }}<span class="auth-brand-dot-emerald">·</span>
-          </template>
-          {{ t('auth.createAccount') }}
-        </h1>
-      </div>
-    </template>
-
+  <!-- 分屏布局：左品牌叙事面板（lg+）+ 右表单列，窄屏单列 -->
+  <AuthSplitShell
+    :title="t('auth.createAccount')"
+    :subtitle="siteName ? t('auth.signUpToStart', { siteName }) : ''"
+  >
     <!-- 设置未加载占位 -->
     <div
       v-if="!settingsLoaded"
@@ -264,14 +249,14 @@
         </router-link>
       </p>
     </template>
-  </AuthLayout>
+  </AuthSplitShell>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, onUnmounted, watch, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { AuthLayout } from '@/components/layout'
+import AuthSplitShell from '@/components/auth/AuthSplitShell.vue'
 import LinuxDoOAuthSection from '@/components/auth/LinuxDoOAuthSection.vue'
 import OidcOAuthSection from '@/components/auth/OidcOAuthSection.vue'
 import WechatOAuthSection from '@/components/auth/WechatOAuthSection.vue'
@@ -295,7 +280,6 @@ import {
   loadAffiliateReferralCode,
   resolveAffiliateReferralCode
 } from '@/utils/oauthAffiliate'
-import { sanitizeUrl } from '@/utils/url'
 
 const { t, locale } = useI18n()
 
@@ -305,9 +289,6 @@ const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 const appStore = useAppStore()
-
-// 站点 logo（用于品牌区图标盒），随后端配置自动同步
-const siteLogo = computed(() => sanitizeUrl(appStore.siteLogo || '', { allowRelative: true, allowDataUrl: true }))
 
 // ==================== State ====================
 

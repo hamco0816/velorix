@@ -37,6 +37,7 @@ export default {
     },
     dashPreview: {
       title: 'Console',
+      topupToast: 'Top-up successful',
       overview: 'Overview',
       tokenManage: 'Tokens',
       usageStats: 'Usage',
@@ -120,6 +121,7 @@ export default {
     // Pain points section
     painPoints: {
       title: 'Sound Familiar?',
+      subtitle: 'Common pains of calling official APIs directly — solved, one by one.',
       items: {
         expensive: {
           title: 'High Subscription Costs',
@@ -155,6 +157,7 @@ export default {
     // Comparison section
     comparison: {
       title: 'Why Choose Us?',
+      subtitle: 'Same models as going direct — with far less hassle.',
       headers: {
         feature: 'Comparison',
         official: 'Official Subscriptions',
@@ -426,6 +429,13 @@ export default {
   common: {
     loading: 'Loading...',
     submitting: 'Submitting...',
+    login: 'Login',
+    remainingQuota: 'Remaining quota',
+    apply: 'Apply',
+    creating: 'Creating...',
+    required: 'is required',
+    sending: 'Sending...',
+    tryAgain: 'Something went wrong. Please try again.',
     justNow: 'just now',
     save: 'Save',
     saved: 'Saved successfully',
@@ -525,6 +535,30 @@ export default {
     }
   },
 
+  // Global command palette (Ctrl/Cmd+K quick navigation & actions)
+  commandPalette: {
+    trigger: 'Search',
+    placeholder: 'Search pages or actions…',
+    empty: 'No results for "{query}"',
+    groups: {
+      recent: 'Recent',
+      navigation: 'Navigation',
+      admin: 'Admin',
+      actions: 'Quick actions'
+    },
+    actions: {
+      recharge: 'Top up balance',
+      createKey: 'Create API key',
+      toggleTheme: 'Toggle light/dark theme',
+      switchLanguage: '切换到中文'
+    },
+    hints: {
+      navigate: 'Select',
+      open: 'Open',
+      close: 'Close'
+    }
+  },
+
   // Navigation
   nav: {
     sectionTitles: {
@@ -610,13 +644,14 @@ export default {
         payTitle: 'Pay-as-you-go',
         payDesc: 'Only pay for what you use'
       },
+      // Bottom capability points: factual product properties only, no fabricated metrics
       stats: {
-        uptime: '99.9%',
-        uptimeLabel: 'Uptime',
-        requests: '1000M+',
-        requestsLabel: 'Daily requests',
-        models: '3+',
-        modelsLabel: 'Major models'
+        uptime: 'OpenAI',
+        uptimeLabel: 'API compatible',
+        requests: 'Token-level',
+        requestsLabel: 'Precise billing',
+        models: '4+',
+        modelsLabel: 'Model providers'
       }
     },
     welcomeSubtitle: 'Sign in to your {siteName} account',
@@ -812,6 +847,11 @@ export default {
     title: 'Dashboard',
     welcomeMessage: "Welcome back! Here's an overview of your account.",
     welcomeTitle: 'Hi, {name}',
+    // Account hero card + branded trend chart
+    subscriptionQuota: 'Subscription Quota',
+    cacheCreation: 'Cache Creation',
+    cacheRead: 'Cache Read',
+    cacheHitRate: 'Cache Hit Rate',
     // Trust ribbon: signals a legitimate, transparent, here-to-stay service
     trust: {
       realtimeUsage: 'Real-time usage',
@@ -906,6 +946,10 @@ export default {
     selectStatus: 'Select status',
     saving: 'Saving...',
     noKeysYet: 'No API keys yet',
+    // Teaching empty state + filtered-empty hint
+    emptyIntro: 'API keys are your credentials for calling the platform. Create your first key and drop it into your client to get started.',
+    noMatchingKeys: 'No matching keys',
+    adjustFilters: 'Try adjusting the filters, or clear them to see all keys.',
     createFirstKey: 'Create your first API key to get started with the API.',
     keyCreatedSuccess: 'API key created successfully',
     keyUpdatedSuccess: 'API key updated successfully',
@@ -1441,6 +1485,19 @@ export default {
   profile: {
     title: 'Profile Settings',
     description: 'Manage your account information and settings',
+    // Account center: API summary card + preferences card
+    apiSummary: {
+      title: 'API Summary',
+      description: 'Quick access to balance and keys',
+      topUpAction: 'Top up',
+      manageKeysAction: 'Manage keys'
+    },
+    preferences: {
+      title: 'Preferences',
+      description: 'Interface language and theme',
+      language: 'Language',
+      theme: 'Appearance'
+    },
     accountBalance: 'Account Balance',
     concurrencyLimit: 'Concurrency Limit',
     rpmLimit: 'RPM Limit',
@@ -1685,6 +1742,8 @@ export default {
     dashboard: {
       title: 'Admin Dashboard',
       description: 'System overview and real-time statistics',
+      todayCost: "Today's Cost",
+      totalCost: 'Total Cost',
       coreStats: 'Core Stats',
       tokenStats: 'Token & Performance',
       apiKeys: 'API Keys',
@@ -2099,6 +2158,7 @@ export default {
     users: {
       title: 'User Management',
       description: 'Manage users and their permissions',
+      passwordCopied: 'Password copied',
       createUser: 'Create User',
       editUser: 'Edit User',
       deleteUser: 'Delete User',
@@ -2328,6 +2388,7 @@ export default {
     groups: {
       title: 'Group Management',
       description: 'Manage API key groups and rate multipliers',
+      failedToSave: 'Failed to save group',
       searchGroups: 'Search groups...',
       createGroup: 'Create Group',
       editGroup: 'Edit Group',
@@ -2625,6 +2686,9 @@ export default {
     channels: {
       title: 'Channel Management',
       description: 'Manage channels and custom model pricing',
+      // Form validation messages before saving a channel
+      noGroupsSelected: 'No group selected for {platform}. Select at least one group or disable the platform.',
+      emptyModelsInPricing: 'A pricing entry under {platform} has no models. Add models or remove the entry.',
       searchChannels: 'Search channels...',
       createChannel: 'Create Channel',
       editChannel: 'Edit Channel',
@@ -3101,6 +3165,9 @@ export default {
     accounts: {
       title: 'Account Management',
       description: 'Manage AI platform accounts and credentials',
+      // Model mapping input placeholders
+      fromModel: 'Source model',
+      toModel: 'Mapped model',
       createAccount: 'Create Account',
       autoRefresh: 'Auto Refresh',
       enableAutoRefresh: 'Enable auto refresh',
@@ -3789,6 +3856,9 @@ export default {
         batchFailed: 'Batch creation failed',
         // OpenAI specific
         openai: {
+          // Manual credential entry options
+          accessTokenAuth: 'Enter Access Token manually',
+          mobileRefreshTokenAuth: 'Enter Mobile RT manually',
           title: 'OpenAI Account Authorization',
           followSteps: 'Follow these steps to complete OpenAI account authorization:',
           step1GenerateUrl: 'Click the button below to generate the authorization URL',
@@ -4657,6 +4727,7 @@ export default {
       lastRun: 'last_run:',
       lastSuccess: 'last_success:',
       lastError: 'last_error:',
+      result: 'Result',
       noData: 'No data.',
       loadingText: 'loading',
       ready: 'ready',
@@ -4723,6 +4794,7 @@ export default {
       riskyStatus: 'At Risk',
       idleStatus: 'Idle',
       timeRange: {
+        custom: 'Custom',
         '5m': 'Last 5 minutes',
         '30m': 'Last 30 minutes',
         '1h': 'Last 1 hour',
@@ -4752,6 +4824,10 @@ export default {
           avgDurationMs: 'Avg Duration (ms)',
           requestsWithFirstToken: 'Requests With First Token'
         }
+      },
+      customTimeRange: {
+        startTime: 'Start time',
+        endTime: 'End time'
       },
       fullscreen: {
         enter: 'Enter Fullscreen'
@@ -5223,6 +5299,17 @@ export default {
       runtime: {
         title: 'Ops Runtime Settings',
         description: 'Stored in database; changes take effect without editing config files.',
+        // Metric alert threshold form
+        metricThresholds: 'Metric Alert Thresholds',
+        metricThresholdsHint: 'An alert fires when any metric crosses its threshold. Leave blank to disable.',
+        slaMinPercent: 'SLA floor (%)',
+        slaMinPercentHint: 'Alert when success rate drops below this value, e.g. 99.5.',
+        ttftP99MaxMs: 'TTFT P99 ceiling (ms)',
+        ttftP99MaxMsHint: 'Alert when first-token latency P99 exceeds this value.',
+        requestErrorRateMaxPercent: 'Request error rate ceiling (%)',
+        requestErrorRateMaxPercentHint: 'Alert when the request error rate exceeds this value.',
+        upstreamErrorRateMaxPercent: 'Upstream error rate ceiling (%)',
+        upstreamErrorRateMaxPercentHint: 'Alert when the upstream error rate exceeds this value.',
         loading: 'Loading...',
         noData: 'No runtime settings available',
         loadFailed: 'Failed to load runtime settings',
@@ -6937,6 +7024,7 @@ export default {
   payment: {
     title: 'Recharge / Subscription',
     heroDescription: 'Top up your balance or buy a subscription. Multiple payment methods, instant credit.',
+    secureNote: 'Payments are processed by licensed providers. We never store your card details.',
     amountLabel: 'Amount',
     paymentAmount: 'Payment Amount',
     purchaseNotice: {
@@ -7007,6 +7095,7 @@ export default {
     },
     orders: {
       title: 'My Orders',
+      refundReason: 'Refund reason',
       heroTitle: 'Orders & Payment Records',
       heroDescription: 'Review your orders, payment status, refund progress, and crediting details.',
       empty: 'No orders yet',

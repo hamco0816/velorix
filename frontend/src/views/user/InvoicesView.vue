@@ -1,8 +1,21 @@
 <template>
   <AppLayout wide>
     <div class="space-y-5">
-      <!-- 可开票额度概览：页面加载即展示真实可开金额与明细，强化透明（标题由全局 AppHeader 提供） -->
-      <div class="surface-card flex flex-wrap items-end justify-between gap-4 p-5">
+      <!-- 统一页面头：标题 + 副标题 + 刷新 / 申请开票入口 -->
+      <PageHeader :title="t('invoice.title')" :subtitle="t('invoice.subtitle')">
+        <template #actions>
+          <button @click="refreshAll" :disabled="loading || summaryLoading" class="btn btn-secondary btn-sm" :title="t('common.refresh')">
+            <Icon name="refresh" size="sm" :class="(loading || summaryLoading) ? 'animate-spin' : ''" />
+          </button>
+          <button class="btn btn-primary btn-sm shrink-0 whitespace-nowrap" @click="openApplyDialog">
+            <Icon name="plus" size="sm" class="mr-1.5" />
+            <span>{{ t('invoice.apply.button') }}</span>
+          </button>
+        </template>
+      </PageHeader>
+
+      <!-- 可开票额度概览：页面加载即展示真实可开金额与明细，强化透明 -->
+      <div class="surface-card p-5">
         <div class="min-w-0">
           <p class="text-sm font-medium text-gray-500 dark:text-dark-400">{{ t('invoice.summary.title') }}</p>
           <p class="mt-1 text-[1.75rem] font-bold leading-tight tracking-tight tabular-nums text-gray-900 dark:text-white">
@@ -22,15 +35,6 @@
             </span>
           </div>
           <p class="mt-2 max-w-2xl text-xs text-gray-400 dark:text-dark-500">{{ t('invoice.apply.availableHint') }}</p>
-        </div>
-        <div class="flex shrink-0 items-center gap-2">
-          <button @click="refreshAll" :disabled="loading || summaryLoading" class="btn btn-secondary btn-sm" :title="t('common.refresh')">
-            <Icon name="refresh" size="sm" :class="(loading || summaryLoading) ? 'animate-spin' : ''" />
-          </button>
-          <button class="btn btn-primary btn-sm shrink-0 whitespace-nowrap" @click="openApplyDialog">
-            <Icon name="plus" size="sm" class="mr-1.5" />
-            <span>{{ t('invoice.apply.button') }}</span>
-          </button>
         </div>
       </div>
 

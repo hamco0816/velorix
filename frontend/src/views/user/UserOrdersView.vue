@@ -1,22 +1,23 @@
 <template>
   <AppLayout wide>
     <div class="space-y-5">
-      <!-- Filters：emerald 主题（订单 / 完成氛围），用全局 .surface-card + .card-emerald 组合 -->
-      <div class="surface-card card-emerald p-4">
-        <div class="flex flex-wrap items-center gap-3">
+      <!-- 统一页面头：标题 + 副标题 + 状态筛选 / 刷新 / 充值入口 -->
+      <PageHeader
+        :title="t('payment.orders.heroTitle')"
+        :subtitle="t('payment.orders.heroDescription')"
+      >
+        <template #actions>
           <Select v-model="currentFilter" :options="statusFilters" class="min-w-[10rem]" @change="fetchOrders" />
-          <div class="flex flex-1 items-center justify-end gap-2">
-            <button @click="fetchOrders" :disabled="loading" class="btn btn-secondary btn-sm" :title="t('common.refresh')">
-              <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
-            </button>
-            <button class="btn btn-primary btn-sm shrink-0 whitespace-nowrap" @click="router.push('/purchase')">
-              <Icon name="plus" size="sm" class="mr-1.5" />
-              <span class="hidden sm:inline">{{ t('payment.result.backToRecharge') }}</span>
-              <span class="sm:hidden">{{ t('payment.result.backToRechargeShort') }}</span>
-            </button>
-          </div>
-        </div>
-      </div>
+          <button @click="fetchOrders" :disabled="loading" class="btn btn-secondary btn-sm" :title="t('common.refresh')">
+            <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
+          </button>
+          <button class="btn btn-primary btn-sm shrink-0 whitespace-nowrap" @click="router.push('/purchase')">
+            <Icon name="plus" size="sm" class="mr-1.5" />
+            <span class="hidden sm:inline">{{ t('payment.result.backToRecharge') }}</span>
+            <span class="sm:hidden">{{ t('payment.result.backToRechargeShort') }}</span>
+          </button>
+        </template>
+      </PageHeader>
 
       <!-- Table -->
       <OrderTable :orders="orders" :loading="loading" :error="loadFailed" @inspect-refund="openRefundDetails" @retry="fetchOrders">
@@ -26,11 +27,11 @@
               <Icon name="creditCard" size="sm" />
               <span>{{ t('payment.orders.resume') }}</span>
             </button>
-            <button v-if="row.status === 'PENDING'" @click="handleCancel(row.id)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-yellow-600 hover:bg-yellow-50 dark:text-yellow-400 dark:hover:bg-yellow-900/20">
+            <button v-if="row.status === 'PENDING'" @click="handleCancel(row.id)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20">
               <Icon name="x" size="sm" />
               <span>{{ t('payment.orders.cancel') }}</span>
             </button>
-            <button v-if="canRequestRefund(row)" @click="openRefundDialog(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-purple-600 hover:bg-purple-50 dark:text-purple-400 dark:hover:bg-purple-900/20">
+            <button v-if="canRequestRefund(row)" @click="openRefundDialog(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/20">
               <Icon name="dollar" size="sm" />
               <span>{{ t('payment.orders.requestRefund') }}</span>
             </button>
@@ -91,7 +92,7 @@
           </div>
           <div class="mt-2 flex justify-between text-sm">
             <span class="text-gray-500 dark:text-gray-400">{{ t('payment.orders.amount') }}</span>
-            <span class="text-gray-900 dark:text-white">¥{{ refundTarget.pay_amount.toFixed(2) }}</span>
+            <span class="tabular-nums text-gray-900 dark:text-white">¥{{ refundTarget.pay_amount.toFixed(2) }}</span>
           </div>
         </div>
         <div>
@@ -118,6 +119,7 @@ import { paymentAPI } from '@/api/payment'
 import { extractI18nErrorMessage } from '@/utils/apiError'
 import type { PaymentOrder } from '@/types/payment'
 import AppLayout from '@/components/layout/AppLayout.vue'
+import PageHeader from '@/components/common/PageHeader.vue'
 import Pagination from '@/components/common/Pagination.vue'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import Select from '@/components/common/Select.vue'

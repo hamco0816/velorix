@@ -16,7 +16,7 @@
 
       <!-- Main Content：默认 1760px 版心；wide=true 时上限 2200px（超 2K/4K 屏不让内容铺散，保持可读）-->
       <main class="px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
-        <div :class="['mx-auto w-full', wide ? 'max-w-[2200px]' : 'max-w-[1760px]']">
+        <div :class="['page-enter-anim mx-auto w-full', wide ? 'max-w-[2200px]' : 'max-w-[1760px]']">
           <slot />
         </div>
       </main>

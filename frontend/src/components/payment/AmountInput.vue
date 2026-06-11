@@ -6,37 +6,38 @@
         <label class="block text-sm font-semibold text-gray-800 dark:text-gray-100">
           {{ t('payment.quickAmounts') }}
         </label>
-        <span v-if="limitText" class="rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30">
+        <span v-if="limitText" class="rounded-full bg-gray-50 px-2.5 py-0.5 text-xs font-medium tabular-nums text-gray-500 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/60 dark:text-dark-300 dark:ring-dark-700/60">
           {{ limitText }}
         </span>
       </div>
-      <!-- 3 列布局（9 个数据正好 3×3 对齐），sm 起改 5 列让大屏也紧凑 -->
+      <!-- 3 列布局（9 个数据正好 3×3 对齐）；选中态用品牌橙描边，与支付方式选中态同语言 -->
       <div class="grid grid-cols-3 gap-2">
         <button
           v-for="amt in filteredAmounts"
           :key="amt"
           type="button"
           :class="[
-            'relative flex flex-col items-center justify-center rounded-xl border px-3 py-2.5 text-center font-semibold transition-all',
+            'relative flex flex-col items-center justify-center rounded-xl border px-3 py-2.5 text-center font-semibold transition-colors duration-150 ease-out',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:focus-visible:ring-brand-400/40',
             modelValue === amt
-              ? 'border-gray-900 bg-white text-gray-900 ring-1 ring-gray-900 dark:border-white dark:bg-dark-800 dark:text-white dark:ring-white'
+              ? 'border-brand-500 bg-brand-50 text-gray-900 ring-1 ring-inset ring-brand-500/40 dark:border-brand-400 dark:bg-brand-500/10 dark:text-white dark:ring-brand-400/30'
               : 'border-gray-200 bg-white text-gray-700 hover:border-gray-400 hover:text-gray-900 dark:border-dark-700/60 dark:bg-dark-800/60 dark:text-gray-200 dark:hover:border-dark-500 dark:hover:text-white',
           ]"
           @click="selectAmount(amt)"
         >
-          <span :class="['text-2xs font-medium tracking-wide', modelValue === amt ? 'text-gray-500' : 'text-gray-400 dark:text-dark-400']">¥</span>
+          <span :class="['text-2xs font-medium tracking-wide', modelValue === amt ? 'text-brand-600 dark:text-brand-400' : 'text-gray-400 dark:text-dark-400']">¥</span>
           <span class="text-base tabular-nums leading-tight">{{ amt }}</span>
         </button>
       </div>
     </div>
 
-    <!-- 自定义金额：单行输入，不再嵌套卡片 -->
+    <!-- 自定义金额：大号等宽数字输入，focus 用品牌橙描边 -->
     <div>
       <label class="mb-2 block text-sm font-semibold text-gray-800 dark:text-gray-100">
         {{ t('payment.customAmount') }}
       </label>
-      <div class="relative rounded-xl border border-gray-200 bg-white transition-colors focus-within:border-gray-900 focus-within:ring-2 focus-within:ring-gray-900/10 dark:border-dark-700/60 dark:bg-dark-800/60 dark:focus-within:border-white">
-        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-400 dark:text-dark-400">
+      <div class="relative rounded-xl border border-gray-200 bg-white transition-colors duration-150 ease-out focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-500/20 dark:border-dark-700/60 dark:bg-dark-800/60 dark:focus-within:border-brand-400 dark:focus-within:ring-brand-400/20">
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-base font-semibold text-gray-400 dark:text-dark-400">
           ¥
         </span>
         <input
@@ -44,7 +45,7 @@
           inputmode="decimal"
           :value="customText"
           :placeholder="placeholderText"
-          class="w-full rounded-xl border-0 bg-transparent py-3 pl-9 pr-4 text-lg font-semibold tabular-nums text-gray-900 outline-none placeholder:text-gray-300 focus:ring-0 dark:text-white dark:placeholder:text-dark-500"
+          class="w-full rounded-xl border-0 bg-transparent py-3 pl-10 pr-4 text-2xl font-semibold tabular-nums tracking-tight text-gray-900 outline-none placeholder:text-base placeholder:font-normal placeholder:text-gray-300 focus:ring-0 dark:text-white dark:placeholder:text-dark-500"
           @input="handleInput"
         />
       </div>

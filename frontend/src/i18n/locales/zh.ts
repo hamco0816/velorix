@@ -38,6 +38,7 @@ export default {
     // Dashboard 预览卡片（Hero 右侧）
     dashPreview: {
       title: '控制台',
+      topupToast: '充值成功',
       overview: '概览',
       tokenManage: '令牌管理',
       usageStats: '使用统计',
@@ -125,6 +126,7 @@ export default {
     // 用户痛点区块
     painPoints: {
       title: '你是否也遇到这些问题？',
+      subtitle: '直连官方 API 的常见痛点，我们逐个解决。',
       items: {
         expensive: {
           title: '订阅费用高',
@@ -160,6 +162,7 @@ export default {
     // 优势对比
     comparison: {
       title: '为什么选择我们？',
+      subtitle: '与直连官方相比，同样的模型，更省心的用法。',
       headers: {
         feature: '对比项',
         official: '官方订阅',
@@ -431,6 +434,13 @@ export default {
   common: {
     loading: '加载中...',
     submitting: '提交中...',
+    login: '登录',
+    remainingQuota: '剩余额度',
+    apply: '应用',
+    creating: '创建中...',
+    required: '为必填项',
+    sending: '发送中...',
+    tryAgain: '操作失败，请重试',
     justNow: '刚刚',
     save: '保存',
     saved: '保存成功',
@@ -530,6 +540,30 @@ export default {
     }
   },
 
+  // 全局命令面板（Ctrl/Cmd+K 唤起的快速导航与操作）
+  commandPalette: {
+    trigger: '搜索',
+    placeholder: '搜索页面或操作…',
+    empty: '没有找到与「{query}」相关的结果',
+    groups: {
+      recent: '最近使用',
+      navigation: '页面导航',
+      admin: '管理后台',
+      actions: '快捷操作'
+    },
+    actions: {
+      recharge: '余额充值',
+      createKey: '新建 API 密钥',
+      toggleTheme: '切换明暗主题',
+      switchLanguage: 'Switch to English'
+    },
+    hints: {
+      navigate: '选择',
+      open: '打开',
+      close: '关闭'
+    }
+  },
+
   // Navigation
   nav: {
     // 侧栏组标题（按语义切分扁平菜单：工作台 / 订阅 / 参考 / 其它）
@@ -617,13 +651,14 @@ export default {
         payTitle: '按量计费',
         payDesc: '用多少付多少'
       },
+      // 底部能力点：只陈述产品事实，不编造运营数据
       stats: {
-        uptime: '99.9%',
-        uptimeLabel: '服务可用性',
-        requests: '1000M+',
-        requestsLabel: '每日请求量',
-        models: '3+',
-        modelsLabel: '支持主流模型'
+        uptime: 'OpenAI',
+        uptimeLabel: '接口完全兼容',
+        requests: 'Token 级',
+        requestsLabel: '用量精确计费',
+        models: '4+',
+        modelsLabel: '主流模型平台'
       }
     },
     welcomeSubtitle: '登录你的 {siteName} 账户',
@@ -818,6 +853,11 @@ export default {
     title: '仪表盘',
     welcomeMessage: '欢迎回来！这是您账户的概览。',
     welcomeTitle: '你好，{name}',
+    // 账户英雄卡 + 品牌化趋势图
+    subscriptionQuota: '订阅配额',
+    cacheCreation: '缓存创建',
+    cacheRead: '缓存读取',
+    cacheHitRate: '缓存命中率',
     // 信任条：让用户一眼觉得"正规、可查、不会跑路"
     trust: {
       realtimeUsage: '用量实时可查',
@@ -912,6 +952,10 @@ export default {
     selectStatus: '选择状态',
     saving: '保存中...',
     noKeysYet: '暂无 API 密钥',
+    // 教学式空态与筛选无结果提示
+    emptyIntro: 'API 密钥是调用平台服务的唯一凭证。创建第一个密钥，把它填进你的客户端即可开始使用。',
+    noMatchingKeys: '没有匹配的密钥',
+    adjustFilters: '换个筛选条件试试，或清空筛选查看全部密钥。',
     createFirstKey: '创建您的第一个 API 密钥以开始使用 API。',
     keyCreatedSuccess: 'API 密钥创建成功',
     keyUpdatedSuccess: 'API 密钥更新成功',
@@ -1453,6 +1497,19 @@ export default {
   profile: {
     title: '个人设置',
     description: '管理您的账户信息和设置',
+    // 账户中心：API 概要卡 + 偏好设置卡
+    apiSummary: {
+      title: 'API 概要',
+      description: '余额与密钥的快捷入口',
+      topUpAction: '去充值',
+      manageKeysAction: '管理密钥'
+    },
+    preferences: {
+      title: '偏好设置',
+      description: '界面语言与明暗主题',
+      language: '界面语言',
+      theme: '主题外观'
+    },
     accountBalance: '账户余额',
     concurrencyLimit: '并发限制',
     rpmLimit: 'RPM 限制',
@@ -2128,6 +2185,7 @@ export default {
     users: {
       title: '用户管理',
       description: '管理用户账户和权限',
+      passwordCopied: '密码已复制',
       createUser: '创建用户',
       editUser: '编辑用户',
       deleteUser: '删除用户',
@@ -2710,6 +2768,9 @@ export default {
     channels: {
       title: '渠道管理',
       description: '管理渠道和自定义模型定价',
+      // 保存渠道前的表单校验提示
+      noGroupsSelected: '{platform} 平台未选择分组，请至少选择一个分组或禁用该平台',
+      emptyModelsInPricing: '{platform} 平台下有定价条目未添加模型，请添加模型或删除该条目',
       searchChannels: '搜索渠道...',
       createChannel: '创建渠道',
       editChannel: '编辑渠道',
@@ -3185,6 +3246,9 @@ export default {
     accounts: {
       title: '账号管理',
       description: '管理 AI 平台账号和 Cookie',
+      // 模型映射输入框占位符
+      fromModel: '原模型',
+      toModel: '映射后模型',
       createAccount: '添加账号',
       autoRefresh: '自动刷新',
       enableAutoRefresh: '启用自动刷新',
@@ -3934,6 +3998,9 @@ export default {
         batchFailed: '批量创建失败',
         // OpenAI specific
         openai: {
+          // 手动凭证录入方式
+          accessTokenAuth: '手动输入 AT',
+          mobileRefreshTokenAuth: '手动输入 Mobile RT',
           title: 'OpenAI 账户授权',
           followSteps: '请按照以下步骤完成 OpenAI 账户的授权：',
           step1GenerateUrl: '点击下方按钮生成授权链接',
@@ -5393,6 +5460,17 @@ export default {
       runtime: {
         title: '运维监控运行设置',
         description: '配置存储在数据库中，无需修改 config 文件即可生效。',
+        // 指标告警阈值表单
+        metricThresholds: '指标告警阈值',
+        metricThresholdsHint: '任一指标越过阈值即触发告警，留空表示不启用该项。',
+        slaMinPercent: 'SLA 下限（%）',
+        slaMinPercentHint: '成功率低于该值时触发告警，如 99.5。',
+        ttftP99MaxMs: '首 Token P99 上限（ms）',
+        ttftP99MaxMsHint: '首 Token 延迟 P99 超过该值时触发告警。',
+        requestErrorRateMaxPercent: '请求错误率上限（%）',
+        requestErrorRateMaxPercentHint: '请求错误率超过该值时触发告警。',
+        upstreamErrorRateMaxPercent: '上游错误率上限（%）',
+        upstreamErrorRateMaxPercentHint: '上游错误率超过该值时触发告警。',
         loading: '加载中...',
         noData: '暂无运行设置',
         loadFailed: '加载运行设置失败',
@@ -7130,6 +7208,7 @@ export default {
   payment: {
     title: '充值/订阅',
     heroDescription: '为账户充值或选购订阅套餐，多种支付渠道，到账即时生效。',
+    secureNote: '支付由持牌支付机构处理，本平台不存储任何银行卡信息。',
     amountLabel: '充值金额',
     paymentAmount: '支付金额',
     purchaseNotice: {
@@ -7200,6 +7279,7 @@ export default {
     },
     orders: {
       title: '我的订单',
+      refundReason: '退款原因',
       heroTitle: '订单与支付记录',
       heroDescription: '查看您的所有订单记录、支付状态、退款进度与到账详情。',
       empty: '暂无订单',

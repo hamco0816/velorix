@@ -21,8 +21,28 @@
         </div>
       </div>
 
-      <!-- Right: Announcements + Docs + Language + Subscriptions + Balance + User Dropdown -->
+      <!-- Right: Search + Announcements + Docs + Language + Subscriptions + Balance + User Dropdown -->
       <div class="flex items-center gap-3">
+        <!-- 命令面板入口：桌面端带 Ctrl/⌘K 键位提示，移动端纯图标 -->
+        <button
+          type="button"
+          class="hidden items-center gap-2 rounded-md border border-gray-200 py-1.5 pl-2.5 pr-2 text-sm text-gray-500 transition-colors hover:border-gray-300 hover:text-gray-800 dark:border-dark-700 dark:text-dark-400 dark:hover:border-dark-500 dark:hover:text-dark-200 sm:flex"
+          :aria-label="t('commandPalette.trigger')"
+          @click="openPalette"
+        >
+          <Icon name="search" size="sm" />
+          <span class="hidden md:inline">{{ t('commandPalette.trigger') }}</span>
+          <span class="kbd hidden md:inline-flex">{{ isMacPlatform ? '⌘K' : 'Ctrl K' }}</span>
+        </button>
+        <button
+          type="button"
+          class="btn-ghost btn-icon sm:hidden"
+          :aria-label="t('commandPalette.trigger')"
+          @click="openPalette"
+        >
+          <Icon name="search" size="sm" />
+        </button>
+
         <!-- Announcement Bell -->
         <AnnouncementBell v-if="user" />
 
@@ -178,11 +198,7 @@
 
               <div v-if="showOnboardingButton" class="border-t border-gray-100 py-1 dark:border-dark-700">
                 <button @click="handleReplayGuide" class="dropdown-item w-full">
-                  <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                      d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 14a1 1 0 110 2 1 1 0 010-2zm1.07-7.75c0-.6-.49-1.25-1.32-1.25-.7 0-1.22.4-1.43 1.02a1 1 0 11-1.9-.62A3.41 3.41 0 0111.8 5c2.02 0 3.25 1.4 3.25 2.9 0 2-1.83 2.55-2.43 3.12-.43.4-.47.75-.47 1.23a1 1 0 01-2 0c0-1 .16-1.82 1.1-2.7.69-.64 1.82-1.05 1.82-2.06z"
-                    />
-                  </svg>
+                  <Icon name="questionCircle" size="sm" />
                   {{ $t('onboarding.restartTour') }}
                 </button>
               </div>
@@ -192,19 +208,7 @@
                   @click="handleLogout"
                   class="dropdown-item w-full text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
                 >
-                  <svg
-                    class="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
-                    />
-                  </svg>
+                  <Icon name="login" size="sm" />
                   {{ t('nav.logout') }}
                 </button>
               </div>
@@ -228,6 +232,7 @@ import AnnouncementBell from '@/components/common/AnnouncementBell.vue'
 import ContactMethodsDisplay from '@/components/common/ContactMethodsDisplay.vue'
 import SupportChatPopup from '@/components/support/SupportChatPopup.vue'
 import Icon from '@/components/icons/Icon.vue'
+import { useCommandPalette } from '@/composables/useCommandPalette'
 
 const router = useRouter()
 const route = useRoute()
@@ -238,6 +243,11 @@ const adminSettingsStore = useAdminSettingsStore()
 const onboardingStore = useOnboardingStore()
 
 const user = computed(() => authStore.user)
+
+// 命令面板入口：与全局 Ctrl/Cmd+K 快捷键共享同一份开闭状态
+const { open: openPalette } = useCommandPalette()
+const isMacPlatform = /mac|iphone|ipad/i.test(navigator.platform || navigator.userAgent)
+
 const dropdownOpen = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
 const contactDropdownOpen = ref(false)

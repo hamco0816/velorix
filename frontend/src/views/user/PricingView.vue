@@ -13,11 +13,11 @@
           </span>
           <span
             v-if="availableGroups.length > 0"
-            class="inline-flex items-center gap-1.5 rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 ring-1 ring-inset ring-violet-200/70 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30"
+            class="inline-flex items-center gap-1.5 rounded-full bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60"
           >
-            <Icon name="shield" size="xs" />
+            <Icon name="shield" size="xs" class="text-gray-400" />
             <span class="tabular-nums">{{ availableGroups.length }}</span>
-            <span class="opacity-70">{{ t('pricing.statGroups') }}</span>
+            <span class="text-gray-400 dark:text-dark-400">{{ t('pricing.statGroups') }}</span>
           </span>
           <span
             v-if="selectedGroup"

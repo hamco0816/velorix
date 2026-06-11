@@ -7,7 +7,7 @@
       soldOut
         ? 'border-gray-200 opacity-65 grayscale dark:border-dark-700'
         : hasBadge
-          ? 'border-amber-400/80 shadow-amber-100 hover:border-amber-500 dark:border-amber-500/60 dark:hover:border-amber-400/80'
+          ? 'border-brand-500/70 hover:border-brand-500 dark:border-brand-400/60 dark:hover:border-brand-400'
           : 'border-gray-200 hover:border-gray-300 dark:border-dark-700 dark:hover:border-dark-500',
     ]"
   >
@@ -39,7 +39,7 @@
               <h3 class="truncate text-lg font-bold text-gray-900 dark:text-white">{{ plan.name }}</h3>
               <div class="mt-1 flex flex-wrap items-center gap-1.5">
                 <span v-if="hasBadge && !soldOut"
-                  :class="['inline-flex max-w-full items-center rounded-full px-2.5 py-1 text-2xs font-bold shadow-sm dark:shadow-none', badgeToneClasses]">
+                  class="inline-flex max-w-full items-center rounded-full bg-brand-500 px-2.5 py-1 text-2xs font-semibold text-white">
                   <span class="truncate">{{ badgeText }}</span>
                 </span>
                 <span :class="['inline-flex rounded-full px-2 py-0.5 text-2xs font-medium', badgeLightClass]">
@@ -84,7 +84,7 @@
           <div class="plan-price-body flex flex-col items-end">
             <div class="plan-price-amount flex items-end justify-end gap-1.5 whitespace-nowrap">
               <span :class="['mb-1 text-xl font-black leading-none', textClass]">¥</span>
-              <span :class="['text-4xl font-black leading-none tracking-tight', textClass]">{{ plan.price }}</span>
+              <span :class="['text-4xl font-black tabular-nums leading-none tracking-tight', textClass]">{{ plan.price }}</span>
             </div>
             <div class="plan-price-discount mt-2 flex flex-wrap items-center justify-end gap-2">
               <span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-600 ring-1 ring-slate-200 dark:bg-dark-900 dark:text-dark-200 dark:ring-dark-600">
@@ -193,7 +193,6 @@ import {
 } from '@/utils/platformColors'
 import { derivePlanCardType, cardTypeBadgeClass, normalizeToDays } from '@/utils/planCardType'
 import { getEffectiveLimitVisibility } from '@/utils/planLimits'
-import { badgeToneClass } from '@/utils/badgeTone'
 
 const props = defineProps<{ plan: SubscriptionPlan; activeSubscriptions?: UserSubscription[] }>()
 const emit = defineEmits<{ select: [plan: SubscriptionPlan] }>()
@@ -284,8 +283,6 @@ const rateDisplay = computed(() => {
 
 const badgeText = computed(() => (props.plan.badge_text || '').trim() || (props.plan.is_popular ? t('payment.planCard.popularBadge') : ''))
 const hasBadge = computed(() => badgeText.value !== '')
-// 角标按所选尊贵色调渲染（plan.badge_color 为空/非法时回落到鎏金）
-const badgeToneClasses = computed(() => badgeToneClass(props.plan.badge_color))
 
 // 限额可视性：废限额自动隐藏（被更紧的限额覆盖时不展示，避免用户困惑）
 const limitVisibility = computed(() =>

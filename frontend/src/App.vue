@@ -2,6 +2,7 @@
 import { RouterView, useRouter, useRoute } from 'vue-router'
 import { onMounted, onBeforeUnmount, watch } from 'vue'
 import Toast from '@/components/common/Toast.vue'
+import CommandPalette from '@/components/common/CommandPalette.vue'
 import NavigationProgress from '@/components/common/NavigationProgress.vue'
 import { resolveDocumentTitle } from '@/router/title'
 import AnnouncementPopup from '@/components/common/AnnouncementPopup.vue'
@@ -116,6 +117,8 @@ onMounted(async () => {
   <NavigationProgress />
   <RouterView />
   <Toast />
+  <!-- 全局命令面板：登录后任意页面 Ctrl/Cmd+K 唤起 -->
+  <CommandPalette v-if="authStore.isAuthenticated && !route.meta.standalone" />
   <AnnouncementPopup v-if="!route.meta.standalone" />
   <AdminSupportNotifier v-if="authStore.isAdmin && !route.meta.standalone && route.name !== 'AdminSupport'" />
 </template>

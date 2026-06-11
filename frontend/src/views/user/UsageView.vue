@@ -1,6 +1,39 @@
 <template>
   <AppLayout wide>
     <TablePageLayout>
+      <!-- 页头：标题 + 副标题 + 右侧动作（刷新 / 导出），与全站 PageHeader 节奏统一 -->
+      <template #hero>
+        <PageHeader :title="t('usage.title')" :subtitle="t('usage.description')">
+          <template #actions>
+            <button
+              type="button"
+              @click="applyFilters"
+              :disabled="loading"
+              class="btn btn-secondary btn-icon"
+              :title="t('common.refresh')"
+              :aria-label="t('common.refresh')"
+            >
+              <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
+            </button>
+            <button
+              type="button"
+              @click="exportToCSV"
+              :disabled="exporting"
+              class="btn btn-primary shrink-0 whitespace-nowrap"
+            >
+              <Icon
+                name="download"
+                size="sm"
+                class="mr-1.5"
+                :class="exporting ? 'animate-pulse' : ''"
+              />
+              <span class="hidden sm:inline">{{ exporting ? t('usage.exporting') : t('usage.exportCsv') }}</span>
+              <span class="sm:hidden">{{ exporting ? '...' : t('usage.exportCsvShort') }}</span>
+            </button>
+          </template>
+        </PageHeader>
+      </template>
+
       <template #actions>
         <!-- 首次加载：统计卡骨架，避免闪 '0'（与表格骨架一致） -->
         <div v-if="loading && !usageStats" class="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -81,9 +114,10 @@
       </template>
 
       <template #filters>
-        <div class="flex flex-wrap items-end gap-3 sm:gap-4">
-          <!-- API Key Filter -->
-          <div class="w-full min-w-0 sm:w-auto sm:min-w-[200px]">
+        <!-- 筛选区：控件统一 36px 高度、底部对齐；重置按钮右对齐 -->
+        <div class="flex flex-wrap items-end gap-3">
+          <!-- API Key 筛选 -->
+          <div class="w-full min-w-0 sm:w-56">
             <label class="input-label">{{ t('usage.apiKeyFilter') }}</label>
             <Select
               v-model="filters.api_key_id"
@@ -93,7 +127,7 @@
             />
           </div>
 
-          <!-- Date Range Filter -->
+          <!-- 时间范围筛选 -->
           <div class="w-full sm:w-auto">
             <label class="input-label">{{ t('usage.timeRange') }}</label>
             <DateRangePicker
@@ -103,43 +137,15 @@
             />
           </div>
 
-          <!-- Actions：移动端独占一行，桌面端右对齐 -->
-          <div class="flex w-full items-center gap-2 sm:ml-auto sm:w-auto">
-            <button
-              type="button"
-              @click="applyFilters"
-              :disabled="loading"
-              class="btn btn-secondary btn-sm shrink-0"
-              :title="t('common.refresh')"
-              :aria-label="t('common.refresh')"
-            >
-              <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
-            </button>
-            <button
-              type="button"
-              @click="resetFilters"
-              class="btn btn-secondary btn-sm shrink-0"
-              :title="t('common.reset')"
-              :aria-label="t('common.reset')"
-            >
-              <Icon name="x" size="sm" />
-            </button>
-            <button
-              type="button"
-              @click="exportToCSV"
-              :disabled="exporting"
-              class="btn btn-primary shrink-0 whitespace-nowrap"
-            >
-              <Icon
-                name="download"
-                size="sm"
-                class="mr-1.5"
-                :class="exporting ? 'animate-pulse' : ''"
-              />
-              <span class="hidden sm:inline">{{ exporting ? t('usage.exporting') : t('usage.exportCsv') }}</span>
-              <span class="sm:hidden">{{ exporting ? '...' : t('usage.exportCsvShort') }}</span>
-            </button>
-          </div>
+          <!-- 重置筛选：移动端独占一行，桌面端右对齐 -->
+          <button
+            type="button"
+            @click="resetFilters"
+            class="btn btn-ghost shrink-0 sm:ml-auto"
+          >
+            <Icon name="x" size="sm" class="mr-1.5" />
+            {{ t('common.reset') }}
+          </button>
         </div>
       </template>
 
@@ -960,26 +966,16 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* KPI 卡：白底 + 仅顶部细 indigo accent bar，色彩克制不抢戏 */
+/* KPI 卡：白底柔边卡片，色彩克制不抢戏（图标筐做唯一的彩色锚点） */
 .kpi-card {
   @apply relative flex items-start gap-2.5 overflow-hidden rounded-2xl border border-gray-200/70 bg-white p-3 transition-shadow sm:gap-3 sm:p-4 dark:border-dark-700/60 dark:bg-dark-800/40;
   box-shadow: 0 1px 1px rgb(16 24 40 / 0.03), 0 2px 5px -1px rgb(16 24 40 / 0.05);
-}
-.kpi-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, rgb(99 102 241), rgb(168 85 247));
-  opacity: 0.5;
 }
 .kpi-card:hover {
   box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -18px rgb(15 23 42 / 0.22);
 }
 
-/* KPI 图标筐：圆角方块 + 主题色背景 */
+/* KPI 图标筐：圆角方块 + 语义色背景 */
 .kpi-icon {
   @apply inline-flex h-8 w-8 flex-none items-center justify-center rounded-xl sm:h-10 sm:w-10;
 }
@@ -992,8 +988,8 @@ onMounted(() => {
 .kpi-icon-emerald {
   @apply bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300;
 }
-.kpi-icon-violet {
-  @apply bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300;
+.kpi-icon-gray {
+  @apply bg-gray-100 text-gray-500 dark:bg-dark-700/70 dark:text-dark-300;
 }
 
 .kpi-label {

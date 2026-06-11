@@ -1,28 +1,33 @@
 <template>
   <AppLayout wide>
     <div class="space-y-5">
-      <!-- 顶部操作栏 + 概览 chip 行：标题由全局 AppHeader 提供，这里只放操作按钮 -->
-      <div class="flex flex-wrap items-center justify-end gap-2">
-        <button
-          type="button"
-          class="btn btn-secondary btn-sm"
-          :title="t('common.refresh')"
-          :aria-label="t('common.refresh')"
-          @click="loadSubscriptions"
-        >
-          <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
-        </button>
-        <button
-          type="button"
-          class="btn btn-primary btn-sm"
-          @click="router.push({ path: '/purchase', query: { tab: 'subscription' } })"
-        >
-          <Icon name="plus" size="sm" class="mr-1.5" />
-          {{ t('payment.subscribeNow') }}
-        </button>
-      </div>
+      <!-- 统一页面头：标题 + 副标题 + 刷新 / 订购入口 -->
+      <PageHeader
+        :title="t('userSubscriptions.title')"
+        :subtitle="t('userSubscriptions.description')"
+      >
+        <template #actions>
+          <button
+            type="button"
+            class="btn btn-secondary btn-sm"
+            :title="t('common.refresh')"
+            :aria-label="t('common.refresh')"
+            @click="loadSubscriptions"
+          >
+            <Icon name="refresh" size="sm" :class="loading ? 'animate-spin' : ''" />
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary btn-sm"
+            @click="router.push({ path: '/purchase', query: { tab: 'subscription' } })"
+          >
+            <Icon name="plus" size="sm" class="mr-1.5" />
+            {{ t('payment.subscribeNow') }}
+          </button>
+        </template>
+      </PageHeader>
 
-      <div v-if="!loading" class="flex flex-wrap items-center gap-2">
+      <div v-if="!loading && !loadFailed" class="flex flex-wrap items-center gap-2">
         <span
           class="inline-flex items-center gap-1.5 rounded-full bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60"
         >
@@ -48,9 +53,22 @@
         </span>
       </div>
 
-      <!-- Loading State -->
-      <div v-if="loading" class="flex justify-center py-12">
-        <LoadingSpinner size="md" />
+      <!-- Loading State：骨架卡片占位 -->
+      <div v-if="loading" class="grid gap-5 lg:grid-cols-2" aria-hidden="true">
+        <div v-for="i in 2" :key="i" class="surface-card space-y-4 p-5">
+          <div class="flex items-center justify-between">
+            <div class="skeleton h-5 w-1/3"></div>
+            <div class="skeleton h-5 w-16 rounded-full"></div>
+          </div>
+          <div class="skeleton h-4 w-2/3"></div>
+          <div class="skeleton h-2 w-full rounded-full"></div>
+          <div class="skeleton h-2 w-full rounded-full"></div>
+        </div>
+      </div>
+
+      <!-- Error State：加载失败可重试 -->
+      <div v-else-if="loadFailed" class="surface-card">
+        <ErrorState @retry="loadSubscriptions" />
       </div>
 
       <!-- Empty State -->
@@ -289,7 +307,8 @@ import type { UserSubscription } from '@/types'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Icon from '@/components/icons/Icon.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import ErrorState from '@/components/common/ErrorState.vue'
+import PageHeader from '@/components/common/PageHeader.vue'
 import { formatDateOnly } from '@/utils/format'
 import { platformBadgeClass, platformButtonClass, platformLabel } from '@/utils/platformColors'
 
@@ -309,13 +328,17 @@ const appStore = useAppStore()
 
 const subscriptions = ref<UserSubscription[]>([])
 const loading = ref(true)
+// 订阅列表是否加载失败，失败时展示可重试错误态
+const loadFailed = ref(false)
 
 async function loadSubscriptions() {
   try {
     loading.value = true
+    loadFailed.value = false
     subscriptions.value = await subscriptionsAPI.getMySubscriptions()
   } catch (error) {
     console.error('Failed to load subscriptions:', error)
+    loadFailed.value = true
     appStore.showError(t('userSubscriptions.failedToLoad'))
   } finally {
     loading.value = false

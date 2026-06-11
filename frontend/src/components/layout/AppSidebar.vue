@@ -184,33 +184,30 @@
       </template>
     </nav>
 
-    <!-- Bottom Section -->
+    <!-- Bottom Section：主题切换 + 收纳并排成一行图标按钮，纵向省出一行空间 -->
     <div class="mt-auto border-t border-gray-100 p-3 dark:border-dark-800">
-      <!-- Theme Toggle -->
-      <button
-        @click="toggleTheme"
-        class="sidebar-link mb-2 w-full"
-        :class="{ 'sidebar-link-collapsed': sidebarCollapsed }"
-        :title="sidebarCollapsed ? (isDark ? t('nav.lightMode') : t('nav.darkMode')) : undefined"
-      >
-        <SunIcon v-if="isDark" class="h-5 w-5 flex-shrink-0 text-amber-500" />
-        <MoonIcon v-else class="h-5 w-5 flex-shrink-0" />
-        <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{
-          isDark ? t('nav.lightMode') : t('nav.darkMode')
-        }}</span>
-      </button>
-
-      <!-- Collapse Button -->
-      <button
-        @click="toggleSidebar"
-        class="sidebar-link w-full"
-        :class="{ 'sidebar-link-collapsed': sidebarCollapsed }"
-        :title="sidebarCollapsed ? t('nav.expand') : t('nav.collapse')"
-      >
-        <ChevronDoubleLeftIcon v-if="!sidebarCollapsed" class="h-5 w-5 flex-shrink-0" />
-        <ChevronDoubleRightIcon v-else class="h-5 w-5 flex-shrink-0" />
-        <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ t('nav.collapse') }}</span>
-      </button>
+      <div class="flex gap-1.5" :class="sidebarCollapsed ? 'flex-col' : 'items-center'">
+        <button
+          @click="toggleTheme"
+          class="sidebar-footer-btn"
+          :class="{ 'flex-1': !sidebarCollapsed }"
+          :title="isDark ? t('nav.lightMode') : t('nav.darkMode')"
+          :aria-label="isDark ? t('nav.lightMode') : t('nav.darkMode')"
+        >
+          <SunIcon v-if="isDark" class="h-5 w-5 flex-shrink-0 text-amber-500" />
+          <MoonIcon v-else class="h-5 w-5 flex-shrink-0" />
+        </button>
+        <button
+          @click="toggleSidebar"
+          class="sidebar-footer-btn"
+          :class="{ 'flex-1': !sidebarCollapsed }"
+          :title="sidebarCollapsed ? t('nav.expand') : t('nav.collapse')"
+          :aria-label="sidebarCollapsed ? t('nav.expand') : t('nav.collapse')"
+        >
+          <ChevronDoubleLeftIcon v-if="!sidebarCollapsed" class="h-5 w-5 flex-shrink-0" />
+          <ChevronDoubleRightIcon v-else class="h-5 w-5 flex-shrink-0" />
+        </button>
+      </div>
     </div>
   </aside>
 
@@ -231,6 +228,7 @@ import { useI18n } from 'vue-i18n'
 import { useAdminSettingsStore, useAppStore, useAuthStore, useOnboardingStore } from '@/stores'
 import { sanitizeSvg } from '@/utils/sanitize'
 import { FeatureFlags, makeSidebarFlag } from '@/utils/featureFlags'
+import { useTheme } from '@/composables/useTheme'
 
 interface NavItem {
   path: string
@@ -291,7 +289,8 @@ const adminSettingsStore = useAdminSettingsStore()
 const sidebarCollapsed = computed(() => appStore.sidebarCollapsed)
 const mobileOpen = computed(() => appStore.mobileOpen)
 const isAdmin = computed(() => authStore.isAdmin)
-const isDark = ref(document.documentElement.classList.contains('dark'))
+// 主题状态走全局单例：命令面板等其他入口切主题时，侧栏图标同步更新
+const { isDark, toggleTheme, initTheme } = useTheme()
 
 // Track which parent nav groups are expanded
 const expandedGroups = ref<Set<string>>(new Set())
@@ -999,12 +998,6 @@ function toggleSidebar() {
   appStore.toggleSidebar()
 }
 
-function toggleTheme() {
-  isDark.value = !isDark.value
-  document.documentElement.classList.toggle('dark', isDark.value)
-  localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
-}
-
 function closeMobile() {
   appStore.setMobileOpen(false)
 }
@@ -1073,14 +1066,7 @@ function handleGroupClick(item: NavItem) {
 }
 
 // Initialize theme
-const savedTheme = localStorage.getItem('theme')
-if (
-  savedTheme === 'dark' ||
-  (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)
-) {
-  isDark.value = true
-  document.documentElement.classList.add('dark')
-}
+initTheme()
 
 // Fetch admin settings (for feature-gated nav items like Ops).
 watch(
@@ -1144,30 +1130,52 @@ onMounted(() => {
   padding-right: 0.875rem;
 }
 
-/* 分组标题：小号灰字 + uppercase，跟主流 SaaS 侧栏风格一致 */
+/* 分组标题：小号灰字 + uppercase，跟主流 SaaS 侧栏风格一致（中性灰统一 zinc 色温） */
 .sidebar-group-title {
   margin: 0.75rem 0.5rem 0.375rem;
-  font-size: 11px;
+  font-size: 0.6875rem; /* 与 text-2xs 档位一致 */
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgb(148 163 184); /* slate-400 */
+  color: rgb(161 161 170); /* zinc-400 */
 }
 :root.dark .sidebar-group-title {
-  color: rgb(100 116 139); /* slate-500 */
+  color: rgb(113 113 122); /* zinc-500 */
 }
 
-/* 组间分隔线：折叠态用短中线，展开态用全宽 */
+/* 组间分隔线：折叠态用短中线，展开态用全宽（中性灰统一 zinc 色温） */
 .sidebar-group-divider {
   margin: 0.5rem 0.5rem;
   height: 1px;
-  background: rgba(226, 232, 240, 0.7); /* slate-200/70 */
+  background: rgb(228 228 231 / 0.7); /* zinc-200/70 */
 }
 :root.dark .sidebar-group-divider {
-  background: rgba(51, 65, 85, 0.6); /* slate-700/60 */
+  background: rgb(63 63 70 / 0.6); /* zinc-700/60 */
 }
 .sidebar-group-divider-collapsed {
   margin: 0.375rem 0.75rem;
+}
+
+/* 底部工具按钮：图标居中的 ghost 按钮，主题切换与收纳并排 */
+.sidebar-footer-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0;
+  color: rgb(113 113 122); /* zinc-500 */
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.sidebar-footer-btn:hover {
+  background-color: rgb(244 244 245); /* zinc-100 */
+  color: rgb(24 24 27); /* zinc-900 */
+}
+:root.dark .sidebar-footer-btn {
+  color: rgb(161 161 170); /* zinc-400 */
+}
+:root.dark .sidebar-footer-btn:hover {
+  background-color: rgb(39 39 42); /* zinc-800 */
+  color: #ffffff;
 }
 
 /* 强调样式：核心入口（API 密钥）非激活时也带浅底色 + 主色 ring，比同组其它项跳出来一点 */

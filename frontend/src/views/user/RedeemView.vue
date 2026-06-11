@@ -1,27 +1,29 @@
 <template>
   <AppLayout wide>
     <div class="space-y-5">
+      <!-- 统一页面头：标题 + 副标题 -->
+      <PageHeader :title="t('redeem.title')" :subtitle="t('redeem.description')" />
+
       <!-- 移动端 2 列防止 4 张卡纵向堆成长长一条；md+ 仍可 2 列；xl 起 4 列 -->
       <section class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
-            <div class="redeem-stat-card">
+            <div class="surface-card p-4 sm:p-6">
               <div class="mb-4 flex items-start justify-between gap-3 sm:mb-6 sm:gap-4">
                 <div class="flex h-10 w-10 items-center justify-center sm:h-12 sm:w-12 rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-900/25 dark:text-sky-300">
                   <Icon name="creditCard" size="lg" />
                 </div>
                 <span class="inline-flex items-center rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-900/25 dark:text-emerald-300">
-                  <Icon name="shield" size="xs" class="mr-1" />
-                  Velorix
+                  USD
                 </span>
               </div>
               <p class="text-sm font-medium text-gray-500 dark:text-dark-400">
                 {{ t('redeem.currentBalance') }}
               </p>
-              <p class="mt-2 text-2xl font-semibold text-gray-950 sm:text-3xl dark:text-white">
+              <p class="mt-2 text-2xl font-semibold tabular-nums tracking-tight text-gray-950 sm:text-3xl dark:text-white">
                 ${{ user?.balance?.toFixed(2) || '0.00' }}
               </p>
             </div>
 
-            <div class="redeem-stat-card">
+            <div class="surface-card p-4 sm:p-6">
               <div class="mb-4 flex items-start justify-between gap-3 sm:mb-6 sm:gap-4">
                 <div class="flex h-10 w-10 items-center justify-center sm:h-12 sm:w-12 rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-900/25 dark:text-emerald-300">
                   <Icon name="bolt" size="lg" />
@@ -33,12 +35,12 @@
               <p class="text-sm font-medium text-gray-500 dark:text-dark-400">
                 {{ t('redeem.concurrency') }}
               </p>
-              <p class="mt-2 text-2xl font-semibold text-gray-950 sm:text-3xl dark:text-white">
+              <p class="mt-2 text-2xl font-semibold tabular-nums tracking-tight text-gray-950 sm:text-3xl dark:text-white">
                 {{ user?.concurrency || 0 }}
               </p>
             </div>
 
-            <div class="redeem-stat-card">
+            <div class="surface-card p-4 sm:p-6">
               <div class="mb-4 flex items-start justify-between gap-3 sm:mb-6 sm:gap-4">
                 <div class="flex h-10 w-10 items-center justify-center sm:h-12 sm:w-12 rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-900/25 dark:text-amber-300">
                   <Icon name="badge" size="lg" />
@@ -50,7 +52,7 @@
               <p class="text-sm font-medium text-gray-500 dark:text-dark-400">
                 {{ t('redeem.currentPlan') }}
               </p>
-              <p class="mt-2 truncate text-4xl font-semibold text-gray-950 dark:text-white">
+              <p class="mt-2 truncate text-2xl font-semibold tracking-tight text-gray-950 sm:text-3xl dark:text-white">
                 {{ activePlanLabel }}
               </p>
               <p class="mt-2 truncate text-xs text-gray-400 dark:text-dark-500">
@@ -58,7 +60,7 @@
               </p>
             </div>
 
-            <div class="redeem-stat-card">
+            <div class="surface-card p-4 sm:p-6">
               <div class="mb-4 flex items-start justify-between gap-3 sm:mb-6 sm:gap-4">
                 <div class="flex h-10 w-10 items-center justify-center sm:h-12 sm:w-12 rounded-lg bg-teal-50 text-teal-600 dark:bg-teal-900/25 dark:text-teal-300">
                   <Icon name="shield" size="lg" />
@@ -70,7 +72,7 @@
               <p class="text-sm font-medium text-gray-500 dark:text-dark-400">
                 {{ t('redeem.accountStatus') }}
               </p>
-              <p class="mt-2 text-2xl font-semibold text-gray-950 sm:text-3xl dark:text-white">
+              <p class="mt-2 text-2xl font-semibold tracking-tight text-gray-950 sm:text-3xl dark:text-white">
                 {{ accountStatusLabel }}
               </p>
               <p :class="['mt-2 text-xs font-medium', accountStatusClass]">
@@ -83,7 +85,7 @@
         <main class="space-y-5">
 
           <!-- Redeem Form -->
-          <section class="redeem-panel overflow-hidden">
+          <section class="surface-card overflow-hidden">
             <div class="border-b border-sky-100 bg-sky-50/70 px-6 py-5 dark:border-dark-700 dark:bg-sky-900/10">
               <div class="flex items-center gap-3">
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-sky-600 shadow-sm dark:bg-dark-700 dark:text-sky-300">
@@ -135,7 +137,7 @@
                 <button
                   type="submit"
                   :disabled="!redeemCode || submitting"
-                  class="inline-flex w-full items-center justify-center rounded-xl bg-primary-950 px-4 py-3 text-sm font-semibold text-white shadow-card transition-colors hover:bg-primary-800 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 disabled:shadow-none dark:bg-white dark:text-primary-950 dark:hover:bg-primary-100 dark:disabled:bg-dark-700 dark:disabled:text-dark-400"
+                  class="btn btn-primary btn-lg w-full"
                 >
                   <LoadingSpinner v-if="submitting" size="base" color="current" class="-ml-1 mr-2" />
                   <Icon v-else name="checkCircle" size="md" class="mr-2" />
@@ -149,7 +151,7 @@
       <transition name="fade">
         <div
           v-if="redeemResult"
-          class="redeem-panel border-emerald-200 bg-emerald-50 dark:border-emerald-800/50 dark:bg-emerald-900/20"
+          class="rounded-2xl border border-emerald-200 bg-emerald-50 shadow-card dark:border-emerald-800/50 dark:bg-emerald-900/20"
         >
           <div class="p-6">
             <div class="flex items-start gap-4">
@@ -203,7 +205,7 @@
       <transition name="fade">
         <div
           v-if="errorMessage"
-          class="redeem-panel border-red-200 bg-red-50 dark:border-red-800/50 dark:bg-red-900/20"
+          class="rounded-2xl border border-red-200 bg-red-50 shadow-card dark:border-red-800/50 dark:bg-red-900/20"
         >
           <div class="p-6">
             <div class="flex items-start gap-4">
@@ -230,7 +232,7 @@
       </transition>
 
       <!-- Recent Activity -->
-      <section class="redeem-panel overflow-hidden">
+      <section class="surface-card overflow-hidden">
         <div class="border-b border-gray-100 bg-gray-50/70 px-6 py-4 dark:border-dark-700 dark:bg-dark-800/60">
           <div class="flex items-center gap-3">
             <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-900/25 dark:text-amber-300">
@@ -242,23 +244,22 @@
           </div>
         </div>
         <div class="p-6">
-          <!-- Loading State -->
-          <div v-if="loadingHistory" class="flex items-center justify-center py-8">
-            <svg class="h-6 w-6 animate-spin text-primary-500" fill="none" viewBox="0 0 24 24">
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
+          <!-- Loading State：骨架行占位 -->
+          <div v-if="loadingHistory" class="space-y-3" aria-hidden="true">
+            <div
+              v-for="i in 3"
+              :key="i"
+              class="flex items-center justify-between gap-4 rounded-lg border border-gray-100 bg-gray-50/70 p-4 dark:border-dark-700 dark:bg-dark-800"
+            >
+              <div class="flex items-center gap-4">
+                <div class="skeleton h-10 w-10 rounded-xl"></div>
+                <div class="space-y-2">
+                  <div class="skeleton h-4 w-32"></div>
+                  <div class="skeleton h-3 w-24"></div>
+                </div>
+              </div>
+              <div class="skeleton h-4 w-16"></div>
+            </div>
           </div>
 
           <!-- History List -->
@@ -277,10 +278,10 @@
                         ? 'bg-emerald-100 dark:bg-emerald-900/30'
                         : 'bg-red-100 dark:bg-red-900/30'
                       : isSubscriptionType(item.type)
-                        ? 'bg-purple-100 dark:bg-purple-900/30'
+                        ? 'bg-violet-100 dark:bg-violet-900/30'
                         : item.value >= 0
-                          ? 'bg-blue-100 dark:bg-blue-900/30'
-                          : 'bg-orange-100 dark:bg-orange-900/30'
+                          ? 'bg-sky-100 dark:bg-sky-900/30'
+                          : 'bg-amber-100 dark:bg-amber-900/30'
                   ]"
                 >
                   <!-- 余额类型图标 -->
@@ -299,7 +300,7 @@
                     v-else-if="isSubscriptionType(item.type)"
                     name="badge"
                     size="md"
-                    class="text-purple-600 dark:text-purple-400"
+                    class="text-violet-600 dark:text-violet-400"
                   />
                   <!-- 并发类型图标 -->
                   <Icon
@@ -308,8 +309,8 @@
                     size="md"
                     :class="
                       item.value >= 0
-                        ? 'text-blue-600 dark:text-blue-400'
-                        : 'text-orange-600 dark:text-orange-400'
+                        ? 'text-sky-600 dark:text-sky-400'
+                        : 'text-amber-600 dark:text-amber-400'
                     "
                   />
                 </div>
@@ -325,16 +326,16 @@
               <div class="text-right">
                 <p
                   :class="[
-                    'text-sm font-semibold',
+                    'text-sm font-semibold tabular-nums',
                     isBalanceType(item.type)
                       ? item.value >= 0
                         ? 'text-emerald-600 dark:text-emerald-400'
                         : 'text-red-600 dark:text-red-400'
                       : isSubscriptionType(item.type)
-                        ? 'text-purple-600 dark:text-purple-400'
+                        ? 'text-violet-600 dark:text-violet-400'
                         : item.value >= 0
-                          ? 'text-blue-600 dark:text-blue-400'
-                          : 'text-orange-600 dark:text-orange-400'
+                          ? 'text-sky-600 dark:text-sky-400'
+                          : 'text-amber-600 dark:text-amber-400'
                   ]"
                 >
                   {{ formatHistoryValue(item) }}
@@ -361,23 +362,23 @@
           </div>
 
           <!-- Empty State -->
-          <div v-else class="empty-state py-8">
-            <div
-              class="mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-900/20"
-            >
-              <Icon name="clock" size="xl" class="text-amber-500 dark:text-amber-300" />
-            </div>
-            <p class="text-sm text-gray-500 dark:text-dark-400">
-              {{ t('redeem.historyWillAppear') }}
-            </p>
-          </div>
+          <EmptyState
+            v-else
+            variant="amber"
+            :title="t('redeem.recentActivity')"
+            :description="t('redeem.historyWillAppear')"
+          >
+            <template #icon>
+              <Icon name="clock" class="empty-state-icon" />
+            </template>
+          </EmptyState>
         </div>
       </section>
         </main>
 
         <!-- Information Card -->
         <aside class="space-y-5 xl:sticky xl:top-6 xl:self-start">
-          <section class="redeem-panel p-6">
+          <section class="surface-card p-6">
             <div class="mb-5 flex items-center gap-3">
               <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-900/25 dark:text-sky-300">
                 <Icon name="infoCircle" size="md" />
@@ -393,7 +394,7 @@
             </div>
             <ul class="space-y-3 text-sm text-gray-700 dark:text-dark-200">
               <li class="flex gap-2">
-                <Icon name="check" size="sm" class="mt-0.5 flex-shrink-0 text-sky-500" />
+                <Icon name="check" size="sm" class="mt-0.5 flex-shrink-0 text-emerald-500" />
                 <span>{{ t('redeem.codeRule1') }}</span>
               </li>
               <li class="flex gap-2">
@@ -401,11 +402,11 @@
                 <span>{{ t('redeem.codeRule2') }}</span>
               </li>
               <li class="flex gap-2">
-                <Icon name="check" size="sm" class="mt-0.5 flex-shrink-0 text-amber-500" />
+                <Icon name="check" size="sm" class="mt-0.5 flex-shrink-0 text-emerald-500" />
                 <span>{{ t('redeem.codeRule3') }}</span>
               </li>
               <li class="flex gap-2">
-                <Icon name="check" size="sm" class="mt-0.5 flex-shrink-0 text-violet-500" />
+                <Icon name="check" size="sm" class="mt-0.5 flex-shrink-0 text-emerald-500" />
                 <span>{{ t('redeem.codeRule4') }}</span>
               </li>
             </ul>
@@ -440,8 +441,10 @@ import { useSubscriptionStore } from '@/stores/subscriptions'
 import { redeemAPI, type RedeemHistoryItem } from '@/api'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import ContactMethodsDisplay from '@/components/common/ContactMethodsDisplay.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
 import Icon from '@/components/icons/Icon.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import PageHeader from '@/components/common/PageHeader.vue'
 import { formatDateTime } from '@/utils/format'
 import type { ContactMethod } from '@/types'
 
@@ -627,39 +630,27 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* redeem 统计卡 + 主面板：白底（4 张卡 / 多个面板，染色会让整页同色） */
-.redeem-panel,
-.redeem-stat-card {
-  border-radius: 1rem;
-  border: 1px solid rgb(229 231 235);
-  background: rgb(255 255 255);
-  box-shadow: 0 1px 1px rgb(16 24 40 / 0.03), 0 2px 5px -1px rgb(16 24 40 / 0.05);
-}
-
-.redeem-stat-card {
-  padding: 1rem;
-}
-@media (min-width: 640px) {
-  .redeem-stat-card {
-    padding: 1.5rem;
-  }
-}
-
-.dark .redeem-panel,
-.dark .redeem-stat-card {
-  border-color: rgb(55 65 81 / 0.6);
-  background: rgb(31 41 55 / 0.4);
-  box-shadow: none;
-}
-
+/* 兑换结果提示块的淡入淡出过渡 */
 .fade-enter-active,
 .fade-leave-active {
-  transition: all 0.3s ease;
+  transition: all 0.2s ease-out;
 }
 
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
   transform: translateY(-8px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: none;
+  }
+
+  .fade-enter-from,
+  .fade-leave-to {
+    transform: none;
+  }
 }
 </style>

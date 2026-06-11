@@ -1,6 +1,6 @@
 <template>
   <AppLayout wide>
-    <div class="payment-page space-y-5">
+    <div class="payment-page space-y-8">
       <div v-if="loading" class="flex items-center justify-center py-20">
         <LoadingSpinner size="md" />
       </div>
@@ -49,20 +49,21 @@
               </template>
             </EmptyState>
             <template v-else>
-              <div v-if="showSubscriptionUpsell" class="rounded-2xl border border-emerald-200/70 bg-emerald-50/80 p-4 shadow-[0_1px_2px_rgba(16,185,129,0.08)] dark:border-emerald-500/25 dark:bg-emerald-500/10">
+              <!-- 订阅引导横幅：白底 + 品牌橙点睛（营销强调统一走品牌色，不再用绿色） -->
+              <div v-if="showSubscriptionUpsell" class="rounded-2xl border border-brand-200/70 bg-brand-50/60 p-4 dark:border-brand-500/25 dark:bg-brand-500/[0.07]">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div class="flex min-w-0 items-start gap-3">
-                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-emerald-600 ring-1 ring-inset ring-emerald-200/80 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30">
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-brand-600 ring-1 ring-inset ring-brand-200/80 dark:bg-brand-500/15 dark:text-brand-300 dark:ring-brand-500/30">
                       <Icon name="sparkles" size="md" :stroke-width="2" />
                     </div>
                     <div class="min-w-0">
-                      <p class="text-sm font-semibold text-emerald-900 dark:text-emerald-100">{{ t('payment.subscriptionGuide.title') }}</p>
-                      <p class="mt-1 text-xs leading-relaxed text-emerald-800/80 dark:text-emerald-200/80">{{ subscriptionGuideSubtitle }}</p>
+                      <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ t('payment.subscriptionGuide.title') }}</p>
+                      <p class="mt-1 text-xs leading-relaxed text-gray-600 dark:text-dark-300">{{ subscriptionGuideSubtitle }}</p>
                     </div>
                   </div>
                   <button
                     type="button"
-                    class="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 dark:bg-emerald-500 dark:text-emerald-950 dark:hover:bg-emerald-400"
+                    class="btn btn-primary btn-md shrink-0"
                     @click="switchToSubscriptionTab"
                   >
                     {{ t('payment.subscriptionGuide.action') }}
@@ -70,16 +71,16 @@
                   </button>
                 </div>
               </div>
-            <!-- 充值主卡：白底简洁 + 右侧 amber 结算栏（视觉聚焦） -->
-            <section class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-18px_rgba(15,23,42,0.18)] dark:border-dark-700/60 dark:bg-dark-800/40">
+            <!-- 充值主卡：左侧表单 + 右侧结算栏，财务级中性呈现 -->
+            <section class="overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-card dark:border-dark-700/60 dark:bg-dark-800/40">
               <!-- md 起就用左右两栏（之前 lg 才触发，平板上单列拉伸过宽）-->
               <div class="grid md:grid-cols-[minmax(0,1fr)_300px] lg:grid-cols-[minmax(0,1fr)_340px]">
                 <!-- 左：表单区（白底） -->
-                <div class="space-y-5 p-5 sm:p-6">
-                  <!-- 顶部：充值账户信息 + 钱包图标 -->
+                <div class="space-y-6 p-5 sm:p-6">
+                  <!-- 顶部：充值账户信息 + 当前余额 -->
                   <div class="flex items-center justify-between gap-4">
                     <div class="flex items-center gap-3">
-                      <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-50 text-amber-600 ring-1 ring-inset ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30">
+                      <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-600 ring-1 ring-inset ring-brand-200/70 dark:bg-brand-500/15 dark:text-brand-300 dark:ring-brand-500/30">
                         <Icon name="creditCard" size="md" />
                       </div>
                       <div>
@@ -87,10 +88,10 @@
                         <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ user?.username || '' }}</p>
                       </div>
                     </div>
-                    <!-- 当前余额：右上紧凑 chip -->
-                    <div class="rounded-xl bg-emerald-50 px-3 py-2 ring-1 ring-inset ring-emerald-200/70 dark:bg-emerald-500/15 dark:ring-emerald-500/30">
-                      <p class="text-2xs font-medium text-emerald-700/70 dark:text-emerald-300/70">{{ t('payment.currentBalance') }}</p>
-                      <p class="text-lg font-semibold tabular-nums leading-tight text-emerald-700 dark:text-emerald-300">${{ user?.balance?.toFixed(2) || '0.00' }}</p>
+                    <!-- 当前余额：中性 chip + 等宽数字，可核对 -->
+                    <div class="rounded-xl bg-gray-50 px-3 py-2 text-right ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/60 dark:ring-dark-700/60">
+                      <p class="text-2xs font-medium text-gray-500 dark:text-dark-400">{{ t('payment.currentBalance') }}</p>
+                      <p class="text-lg font-semibold tabular-nums tracking-tight leading-tight text-gray-900 dark:text-white">${{ user?.balance?.toFixed(2) || '0.00' }}</p>
                     </div>
                   </div>
 
@@ -100,7 +101,7 @@
                     :min="globalMinAmount"
                     :max="globalMaxAmount"
                   />
-                  <p v-if="amountError" class="flex items-start gap-2 rounded-xl border border-rose-200/70 bg-rose-50/60 px-3 py-2 text-xs text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
+                  <p v-if="amountError" class="flex items-start gap-2 rounded-xl border border-red-200/70 bg-red-50/60 px-3 py-2 text-xs text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
                     <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
                     <span>{{ amountError }}</span>
                   </p>
@@ -112,11 +113,9 @@
                   />
                 </div>
 
-                <!-- 右：结算栏（白底为主 + 极淡 amber 装饰 + amber 按钮强调） -->
+                <!-- 右：结算栏（中性浅灰底，超大等宽金额作为唯一视觉锚点） -->
                 <aside class="relative border-t border-gray-100 bg-gray-50/40 p-6 dark:border-dark-700/60 dark:bg-dark-800/30 md:border-l md:border-t-0">
-                  <!-- 实付金额：左侧 amber 强调条 + 金额放大到 5xl，建立明确视觉锚点 -->
-                  <div class="relative pl-4">
-                    <span class="absolute left-0 top-1 h-[calc(100%-0.5rem)] w-[3px] rounded-full bg-gradient-to-b from-amber-400 to-amber-500" aria-hidden="true"></span>
+                  <div>
                     <p class="text-2xs font-medium uppercase tracking-wider text-gray-500 dark:text-dark-400">
                       {{ t('payment.actualPay') }}
                     </p>
@@ -152,21 +151,27 @@
                     <p class="text-2xs leading-relaxed text-gray-500 dark:text-dark-400">{{ t('payment.invoiceNotice') }}</p>
                   </div>
 
-                  <!-- 确认支付按钮：gray-900 实色（专业稳重）+ hover amber 提示 -->
+                  <!-- 确认支付按钮：统一黑色主 CTA -->
                   <button
-                    class="mt-6 w-full rounded-xl bg-gray-900 px-4 py-3 text-sm font-semibold text-white shadow-[0_4px_12px_-2px_rgba(15,23,42,0.25)] transition-all hover:bg-gray-800 hover:shadow-[0_8px_20px_-4px_rgba(15,23,42,0.35)] disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100 dark:disabled:bg-dark-700 dark:disabled:text-dark-400"
+                    class="btn btn-primary btn-lg mt-6 w-full font-semibold"
                     :disabled="!canSubmit || submitting"
                     @click="handleSubmitRecharge"
                   >
-                    <span v-if="submitting" class="flex items-center justify-center gap-2">
-                      <span class="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent opacity-60"></span>
+                    <template v-if="submitting">
+                      <LoadingSpinner size="sm" color="current" />
                       {{ t('common.processing') }}
-                    </span>
-                    <span v-else class="flex items-center justify-center gap-2">
+                    </template>
+                    <template v-else>
                       {{ t('payment.createOrder') }}
                       <Icon name="arrowRight" size="sm" :stroke-width="2.5" />
-                    </span>
+                    </template>
                   </button>
+
+                  <!-- 安全支付提示：财务信任背书 -->
+                  <p class="mt-3 flex items-start justify-center gap-1.5 text-2xs leading-relaxed text-gray-400 dark:text-dark-500">
+                    <Icon name="lock" size="xs" class="mt-0.5 shrink-0" :stroke-width="2" />
+                    <span>{{ t('payment.secureNote') }}</span>
+                  </p>
                 </aside>
               </div>
             </section>
@@ -223,18 +228,12 @@
                       ¥{{ renewLastPaidPrice.toFixed(2) }}
                     </div>
 
-                    <!-- 中央趋势锚点：实色 + ring 光晕 -->
+                    <!-- 中央趋势锚点：实色 + ring 光晕（涨↑ / 降↓ / 持平✓） -->
                     <div class="flex h-11 w-11 items-center justify-center rounded-full"
                       :class="renewTrendDotClass">
-                      <svg v-if="renewPriceTrend === 'up'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
-                        <path fill-rule="evenodd" d="M10 17a.75.75 0 01-.75-.75V5.612L5.29 9.77a.75.75 0 11-1.08-1.04l5.25-5.5a.75.75 0 011.08 0l5.25 5.5a.75.75 0 11-1.08 1.04L10.75 5.612V16.25A.75.75 0 0110 17z" clip-rule="evenodd" />
-                      </svg>
-                      <svg v-else-if="renewPriceTrend === 'down'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
-                        <path fill-rule="evenodd" d="M10 3a.75.75 0 01.75.75v10.638l3.96-4.158a.75.75 0 111.08 1.04l-5.25 5.5a.75.75 0 01-1.08 0l-5.25-5.5a.75.75 0 111.08-1.04l3.96 4.158V3.75A.75.75 0 0110 3z" clip-rule="evenodd" />
-                      </svg>
-                      <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
-                        <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h12.5a.75.75 0 010 1.5H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
-                      </svg>
+                      <Icon v-if="renewPriceTrend === 'up'" name="arrowUp" size="md" :stroke-width="2.5" />
+                      <Icon v-else-if="renewPriceTrend === 'down'" name="arrowDown" size="md" :stroke-width="2.5" />
+                      <Icon v-else name="check" size="md" :stroke-width="2.5" />
                     </div>
 
                     <!-- 新价：大字号 + 紧邻 delta chip 做视觉锚点群 -->
@@ -261,8 +260,7 @@
               <!-- 重设计后：单列居中布局，max-w-2xl 收窄宽度，
                    消除左右大空白。从上到下：套餐头 → 限额 stats → 模型 → 支付方式 → 摘要 → CTA。
                    续费场景在 stats 下方加一条琥珀警告（用量不重置）。 -->
-              <section :class="['mx-auto max-w-2xl overflow-hidden rounded-2xl border bg-white shadow-card dark:bg-dark-800/40 dark:shadow-none', planBorderClass]">
-                <div :class="['h-1.5', planAccentClass]" />
+              <section class="mx-auto max-w-2xl overflow-hidden rounded-2xl border border-gray-200/70 bg-white shadow-card dark:border-dark-700/60 dark:bg-dark-800/40 dark:shadow-none">
                 <div class="space-y-5 p-5 sm:p-6">
 
                   <!-- 1. 头部：套餐信息 (左) · 价格 (右) -->
@@ -282,8 +280,8 @@
                     </div>
                     <div class="shrink-0 sm:text-right">
                       <div class="flex items-end gap-0.5 whitespace-nowrap sm:justify-end">
-                        <span :class="['mb-1 text-xl font-semibold leading-none', planTextClass]">¥</span>
-                        <span :class="['text-4xl font-bold leading-none tracking-tight tabular-nums', planTextClass]">{{ selectedPlan.price }}</span>
+                        <span class="mb-1 text-xl font-semibold leading-none text-gray-500 dark:text-dark-400">¥</span>
+                        <span class="text-4xl font-bold leading-none tracking-tight tabular-nums text-gray-900 dark:text-white">{{ selectedPlan.price }}</span>
                       </div>
                       <div class="mt-2 flex flex-wrap items-center gap-2 sm:justify-end">
                         <span class="inline-flex items-center gap-1 rounded-full bg-gray-50 px-2.5 py-1 text-2xs font-medium text-gray-600 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60">
@@ -291,8 +289,8 @@
                           {{ planValiditySuffix }}
                         </span>
                         <span v-if="selectedPlan.original_price" class="inline-flex items-center gap-1.5">
-                          <span class="text-xs text-gray-400 line-through dark:text-gray-500">¥{{ selectedPlan.original_price }}</span>
-                          <span v-if="selectedPlanDiscountText" :class="['inline-flex rounded-full px-2 py-0.5 text-2xs font-semibold', selectedPlanDiscountClass]">{{ selectedPlanDiscountText }}</span>
+                          <span class="text-xs tabular-nums text-gray-400 line-through dark:text-gray-500">¥{{ selectedPlan.original_price }}</span>
+                          <span v-if="selectedPlanDiscountText" class="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-2xs font-semibold tabular-nums text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400">{{ selectedPlanDiscountText }}</span>
                         </span>
                       </div>
                     </div>
@@ -302,7 +300,7 @@
                   <div class="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
                     <div class="rounded-xl bg-gray-50/70 px-4 py-3 dark:bg-dark-800/40">
                       <span class="block text-xs font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.rate') }}</span>
-                      <span :class="['mt-1 block text-lg font-semibold tabular-nums tracking-tight', planTextClass]">{{ selectedPlanRateDisplay }}</span>
+                      <span class="mt-1 block text-lg font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">{{ selectedPlanRateDisplay }}</span>
                     </div>
                     <div v-if="selectedPlanLimitVisibility.showDaily" class="rounded-xl bg-gray-50/70 px-4 py-3 dark:bg-dark-800/40">
                       <span class="block text-xs font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.dailyLimit') }}</span>
@@ -348,7 +346,7 @@
                   <!-- 5. 套餐特性 chips（admin 在 features 数组里填了才显示）-->
                   <div v-if="selectedPlan.features.length > 0" class="grid gap-2 sm:grid-cols-2">
                     <div v-for="feature in selectedPlan.features" :key="feature" class="flex items-start gap-2 rounded-xl bg-white px-3 py-2 text-sm text-gray-600 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/40 dark:text-gray-300 dark:ring-dark-700/60">
-                      <Icon name="check" size="sm" :class="planIconClass" />
+                      <Icon name="check" size="sm" class="mt-0.5 shrink-0 text-emerald-500" :stroke-width="2.5" />
                       <span>{{ feature }}</span>
                     </div>
                   </div>
@@ -372,7 +370,7 @@
                       </div>
                       <div class="flex justify-between gap-4 border-t border-gray-200/60 pt-2 dark:border-dark-700/60">
                         <span class="font-semibold text-gray-700 dark:text-gray-200">{{ t('payment.actualPay') }}</span>
-                        <span :class="['text-lg font-bold tabular-nums', planTextClass]">¥{{ subTotalAmount.toFixed(2) }}</span>
+                        <span class="text-lg font-bold tabular-nums text-gray-900 dark:text-white">¥{{ subTotalAmount.toFixed(2) }}</span>
                       </div>
                     </template>
                   </div>
@@ -392,12 +390,17 @@
                   <!-- 8. 确认 + 取消 -->
                   <div class="space-y-2">
                     <button :class="['btn w-full py-3.5 text-base font-semibold', paymentButtonClass]" :disabled="!canSubmitSubscription || submitting" @click="confirmSubscribe">
-                      <span v-if="submitting" class="flex items-center justify-center gap-2">
-                        <span class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                      <template v-if="submitting">
+                        <LoadingSpinner size="sm" color="current" />
                         {{ t('common.processing') }}
-                      </span>
-                      <span v-else>{{ pendingRenewSeatId > 0 ? t('payment.confirmRenewal') : t('payment.createOrder') }} ¥{{ (feeRate > 0 ? subTotalAmount : selectedPlan.price).toFixed(2) }}</span>
+                      </template>
+                      <span v-else class="tabular-nums">{{ pendingRenewSeatId > 0 ? t('payment.confirmRenewal') : t('payment.createOrder') }} ¥{{ (feeRate > 0 ? subTotalAmount : selectedPlan.price).toFixed(2) }}</span>
                     </button>
+                    <!-- 安全支付提示：财务信任背书 -->
+                    <p class="flex items-start justify-center gap-1.5 pt-1 text-2xs leading-relaxed text-gray-400 dark:text-dark-500">
+                      <Icon name="lock" size="xs" class="mt-0.5 shrink-0" :stroke-width="2" />
+                      <span>{{ t('payment.secureNote') }}</span>
+                    </p>
                     <button class="block w-full py-2 text-center text-sm text-gray-500 transition-colors hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200" @click="cancelSubscriptionFlow">
                       {{ t('common.cancel') }}
                     </button>
@@ -574,10 +577,6 @@ import { getEffectiveLimitVisibility } from '@/utils/planLimits'
 import {
   platformAccentBarClass,
   platformBadgeLightClass,
-  platformBorderClass,
-  platformDiscountClass,
-  platformIconClass,
-  platformTextClass,
   platformLabel,
   platformProductLabel,
   platformBrandKey,
@@ -1142,13 +1141,8 @@ const paymentButtonClass = computed(() => {
   return 'btn-primary'
 })
 
-// Subscription confirm: platform accent colors (clean card, no gradient)
-const planAccentClass = computed(() => platformAccentBarClass(selectedPlan.value?.group_platform || ''))
+// 订阅确认卡：平台色只保留在平台徽章上（价格/限额一律中性色保证可核对）
 const planBadgeLightClass = computed(() => platformBadgeLightClass(selectedPlan.value?.group_platform || ''))
-const planBorderClass = computed(() => platformBorderClass(selectedPlan.value?.group_platform || ''))
-const planIconClass = computed(() => platformIconClass(selectedPlan.value?.group_platform || ''))
-const planTextClass = computed(() => platformTextClass(selectedPlan.value?.group_platform || ''))
-const selectedPlanDiscountClass = computed(() => platformDiscountClass(selectedPlan.value?.group_platform || ''))
 const selectedPlanPlatformBrand = computed<'claude' | 'openai' | 'gemini' | null>(() => {
   const platform = selectedPlan.value?.group_platform || ''
   if (platform === 'anthropic') return 'claude'
@@ -1676,21 +1670,3 @@ onMounted(async () => {
   subscriptionStore.fetchActiveSubscriptions().catch(() => {})
 })
 </script>
-
-<style scoped>
-/* 充值结算栏：amber 渐变背景 + 顶部白色高光 — 视觉锚点，让"实付金额"立刻吸引视线 */
-.recharge-summary {
-  background:
-    radial-gradient(circle at 50% 0%, rgb(255 255 255 / 0.6), transparent 50%),
-    radial-gradient(circle at 100% 100%, rgb(249 115 22 / 0.18), transparent 50%),
-    linear-gradient(135deg, rgb(254 243 199), rgb(253 230 138) 60%, rgb(252 211 77));
-  position: relative;
-}
-
-:root.dark .recharge-summary {
-  background:
-    radial-gradient(circle at 50% 0%, rgb(245 158 11 / 0.10), transparent 50%),
-    radial-gradient(circle at 100% 100%, rgb(249 115 22 / 0.14), transparent 50%),
-    linear-gradient(135deg, rgb(15 23 42 / 0.85), rgb(17 24 39 / 0.9));
-}
-</style>

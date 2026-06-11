@@ -55,7 +55,7 @@
           <button
             type="button"
             @click="emit('edit')"
-            class="inline-flex h-9 w-9 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
+            class="inline-flex h-9 w-9 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-dark-700 dark:hover:text-white"
             :title="t('common.edit')"
           >
             <Icon name="edit" size="sm" />
@@ -121,17 +121,12 @@ function isSelected(type: string): boolean {
   return props.provider.supported_types.includes(type)
 }
 
+// 支付类型 chip：选中态统一品牌橙描边 + 浅橙底（品牌色只出现在 chip 内的品牌图标上）
 function typeBadgeClass(type: string): string {
-  const base = 'inline-flex h-6 items-center gap-1 rounded-full border px-2 text-xs font-semibold transition-all'
+  const base = 'inline-flex h-6 items-center gap-1 rounded-full border px-2 text-xs font-semibold transition-colors duration-150 ease-out'
   if (!isSelected(type)) {
     return `${base} border-gray-200 bg-gray-50 text-gray-400 hover:border-gray-300 hover:bg-white dark:border-dark-700 dark:bg-dark-800 dark:text-gray-500 dark:hover:border-dark-600`
   }
-  if (type.includes('alipay')) {
-    return `${base} border-[#02A9F1]/30 bg-[#02A9F1]/10 text-[#0479ad] shadow-sm dark:border-[#02A9F1]/40 dark:bg-[#02A9F1]/15 dark:text-[#5ecbff]`
-  }
-  if (type.includes('wxpay')) {
-    return `${base} border-[#09BB07]/30 bg-[#09BB07]/10 text-[#078a05] shadow-sm dark:border-[#09BB07]/40 dark:bg-[#09BB07]/15 dark:text-[#5ee45c]`
-  }
-  return `${base} border-gray-950 bg-gray-950 text-white shadow-sm dark:border-white dark:bg-white dark:text-gray-950`
+  return `${base} border-brand-500 bg-brand-50 text-brand-800 dark:border-brand-400 dark:bg-brand-500/10 dark:text-brand-300`
 }
 </script>
