@@ -30,6 +30,7 @@ export default {
     nav: {
       product: 'Product',
       pricing: 'Pricing',
+      download: 'Download',
       docs: 'Docs',
       status: 'Status',
       support: 'Support',
@@ -436,6 +437,42 @@ export default {
       closeFailed: 'Failed to close conversation',
       reopenFailed: 'Failed to reopen conversation',
     },
+  },
+
+  // Desktop client download landing page
+  download: {
+    backHome: 'Home',
+    login: 'Sign in',
+    badge: 'Official desktop client',
+    heroTitle: '{name} Desktop',
+    heroSubtitle: 'Sign in and launch Claude Code / Codex with your own API keys in one click. Built-in multi-terminal workspace, AI chat and image generation, self-service usage and billing — keys and relay config are injected automatically, no setup needed.',
+    downloadWin: 'Download for Windows',
+    loading: 'Loading…',
+    comingSoon: 'Coming soon',
+    comingSoonDesc: 'The client will be released soon. Stay tuned.',
+    smartScreenHint: 'On first install, if Windows shows "Unknown publisher", click "More info → Run anyway".',
+    cardSubtitle: 'Windows desktop client',
+    versionLabel: 'Version',
+    sizeLabel: 'Size',
+    dateLabel: 'Released',
+    notesLabel: "What's new",
+    featuresTitle: 'One client, everything covered',
+    featuresSubtitle: 'From launching the CLI to chat, image generation, usage and billing — all in one app.',
+    features: {
+      cli: { title: 'One-click CLI launch', desc: 'Pick a key to start Claude Code / Codex; relay URL and key are injected automatically — no config changes.' },
+      workspace: { title: 'Multi-terminal workspace', desc: 'Manage terminals by group with a tiled grid and drag-to-reorder; run many sessions at once.' },
+      chat: { title: 'Built-in AI chat', desc: 'Streaming chat directly with your key, paste images to vision models, and view model reasoning.' },
+      image: { title: 'AI image studio', desc: 'Text-to-image and image-to-image with concurrent tasks, reference images, resolution and quality controls.' },
+      billing: { title: 'Transparent billing', desc: 'Usage details, pricing, top-up and subscriptions in one place; Fast mode available anytime.' },
+      update: { title: 'Auto updates', desc: 'New versions are detected and downloaded automatically; critical updates can be enforced.' }
+    },
+    requirements: {
+      os: { title: 'System', desc: 'Windows 10 / 11 (64-bit)' },
+      network: { title: 'Network', desc: 'A network that can reach the relay service' },
+      account: { title: 'Account', desc: 'Sign in with your site account and use your own API keys' }
+    },
+    ctaTitle: 'Get started now',
+    ctaSubtitle: 'Download the client and launch Claude Code and Codex with your own keys.'
   },
 
   // Common

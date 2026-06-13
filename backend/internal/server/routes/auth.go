@@ -205,6 +205,12 @@ func RegisterAuthRoutes(
 		settings.GET("/public", h.Setting.GetPublicSettings)
 	}
 
+	// 公开：桌面客户端最新版本（下载页用，无需认证）
+	desktop := v1.Group("/desktop")
+	{
+		desktop.GET("/latest", h.Desktop.GetLatest)
+	}
+
 	// 需要认证的当前用户信息
 	authenticated := v1.Group("")
 	authenticated.Use(gin.HandlerFunc(jwtAuth))

@@ -30,6 +30,7 @@ export default {
     nav: {
       product: '产品',
       pricing: '价格',
+      download: '下载客户端',
       docs: '文档',
       status: '状态',
       support: '支持',
@@ -441,6 +442,42 @@ export default {
       closeFailed: '关闭会话失败',
       reopenFailed: '重新打开会话失败',
     },
+  },
+
+  // 桌面客户端下载落地页
+  download: {
+    backHome: '返回首页',
+    login: '登录',
+    badge: '官方桌面客户端',
+    heroTitle: '{name} 桌面客户端',
+    heroSubtitle: '登录后用你自己的密钥一键拉起 Claude Code / Codex，内置多终端工作区、AI 对话与生图、用量与计费自助，密钥与加速配置自动注入，无需手动设置。',
+    downloadWin: '下载 Windows 版',
+    loading: '加载中…',
+    comingSoon: '敬请期待',
+    comingSoonDesc: '客户端即将发布，敬请期待。',
+    smartScreenHint: '首次安装若 Windows 提示「未知发布者」，点击「更多信息 → 仍要运行」即可。',
+    cardSubtitle: 'Windows 桌面客户端',
+    versionLabel: '版本',
+    sizeLabel: '安装包大小',
+    dateLabel: '发布日期',
+    notesLabel: '更新说明',
+    featuresTitle: '一个客户端，搞定全部',
+    featuresSubtitle: '从拉起 CLI 到对话生图，再到用量计费，全部在一个应用里完成。',
+    features: {
+      cli: { title: '一键拉起 CLI', desc: '选择密钥即可启动 Claude Code / Codex，中转地址与密钥自动注入，无需改任何配置。' },
+      workspace: { title: '多终端工作区', desc: '按分组管理终端，并列网格、拖拽排序，多个会话同时运行互不干扰。' },
+      chat: { title: '内置 AI 对话', desc: '用你的密钥直连流式对话，支持粘贴图片给视觉模型、查看模型思考过程。' },
+      image: { title: 'AI 生图工坊', desc: '文生图 / 图生图，多任务并发，支持参考图与分辨率、质量参数。' },
+      billing: { title: '计费透明可控', desc: '用量明细、计费标准、充值与订阅一站式自助，Fast 加速模式随时可选。' },
+      update: { title: '自动更新', desc: '新版本自动检测下载，重启即完成更新，重要更新可强制升级。' }
+    },
+    requirements: {
+      os: { title: '系统要求', desc: 'Windows 10 / 11（64 位）' },
+      network: { title: '网络环境', desc: '需要可访问中转服务的网络环境' },
+      account: { title: '账号', desc: '使用本站账号登录，用自己的 API 密钥' }
+    },
+    ctaTitle: '现在就开始',
+    ctaSubtitle: '下载客户端，用自己的密钥拉起 Claude Code 与 Codex。'
   },
 
   // Common

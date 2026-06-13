@@ -23,6 +23,9 @@
         <a href="#pricing" class="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-dark-300 dark:hover:text-white">
           {{ t('home.nav.pricing') }}
         </a>
+        <router-link to="/download" class="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-dark-300 dark:hover:text-white">
+          {{ t('home.nav.download') }}
+        </router-link>
         <a
           v-if="docUrl"
           :href="docUrl"

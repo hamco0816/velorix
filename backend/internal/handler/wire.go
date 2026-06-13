@@ -106,6 +106,7 @@ func ProvideHandlers(
 	seatHandler *SeatHandler,
 	availableChannelHandler *AvailableChannelHandler,
 	invoiceHandler *InvoiceHandler,
+	desktopHandler *DesktopHandler,
 	_ *service.IdempotencyCoordinator,
 	_ *service.IdempotencyCleanupService,
 ) *Handlers {
@@ -129,6 +130,7 @@ func ProvideHandlers(
 		Seat:             seatHandler,
 		AvailableChannel: availableChannelHandler,
 		Invoice:          invoiceHandler,
+		Desktop:          desktopHandler,
 	}
 }
 
@@ -136,6 +138,7 @@ func ProvideHandlers(
 var ProviderSet = wire.NewSet(
 	// Top-level handlers
 	NewAuthHandler,
+	NewDesktopHandler,
 	NewUserHandler,
 	NewAPIKeyHandler,
 	NewUsageHandler,

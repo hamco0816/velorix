@@ -62,6 +62,7 @@ type Handlers struct {
 	Seat             *SeatHandler
 	AvailableChannel *AvailableChannelHandler
 	Invoice          *InvoiceHandler
+	Desktop          *DesktopHandler
 }
 
 // BuildInfo contains build-time information

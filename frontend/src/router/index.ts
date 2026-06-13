@@ -37,6 +37,15 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/download',
+    name: 'Download',
+    component: () => import('@/views/DownloadView.vue'),
+    meta: {
+      requiresAuth: false,
+      title: 'Download'
+    }
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/auth/LoginView.vue'),

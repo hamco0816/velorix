@@ -55,6 +55,14 @@ func (s *DesktopReleaseService) List(
 	return s.repo.List(ctx, params, filters)
 }
 
+// GetLatest 返回指定通道当前对外的版本（供公开下载页用）。
+func (s *DesktopReleaseService) GetLatest(ctx context.Context, channel string) (*DesktopRelease, error) {
+	if strings.TrimSpace(channel) == "" {
+		channel = DesktopChannelStable
+	}
+	return s.repo.GetActiveByChannel(ctx, channel)
+}
+
 // Create 上传并发布一个新版本：落盘 → 入库(active) → 旧 active 归档 → 同步 latest.yml/release.json。
 func (s *DesktopReleaseService) Create(ctx context.Context, input *CreateDesktopReleaseInput) (*DesktopRelease, error) {
 	if input == nil {
