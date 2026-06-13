@@ -574,6 +574,18 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/admin/desktop-releases',
+    name: 'AdminDesktopReleases',
+    component: () => import('@/views/admin/DesktopReleasesView.vue'),
+    meta: {
+      requiresAuth: true,
+      requiresAdmin: true,
+      title: 'Desktop Releases',
+      titleKey: 'admin.desktopReleases.title',
+      descriptionKey: 'admin.desktopReleases.description'
+    }
+  },
+  {
     path: '/admin/support',
     name: 'AdminSupport',
     component: () => import('@/views/admin/SupportView.vue'),

@@ -395,6 +395,19 @@ export default {
     send: 'Send',
     loadFailed: 'Failed to load support chat',
     sendFailed: 'Failed to send message, please try again later',
+    // Ticket-style feedback submission (same shape as the desktop client)
+    tabChat: 'Live chat',
+    tabFeedback: 'Feedback',
+    feedbackTypes: {
+      problem: 'Bug report',
+      suggestion: 'Feature request',
+      other: 'Other',
+    },
+    feedbackPlaceholder: 'Describe the issue or suggestion. The more specific, the faster it gets handled (steps, error messages, etc.)',
+    feedbackSubmit: 'Submit feedback',
+    feedbackSubmitting: 'Submitting...',
+    feedbackOk: 'Submitted. Replies will appear in the Live chat tab.',
+    feedbackHint: 'Feedback is sent to the admins as a ticket. Check the Live chat tab for replies and progress.',
     status: {
       connecting: 'Connecting',
       connected: 'Online',
@@ -575,6 +588,7 @@ export default {
     },
     dashboard: 'Dashboard',
     announcements: 'Announcements',
+    desktopReleases: 'Desktop Releases',
     onlineSupport: 'Online Support',
     apiKeys: 'API Keys',
     imageGen: 'Image Studio',
@@ -1162,6 +1176,7 @@ export default {
     exportExcelFailed: 'Failed to export usage data',
     imageUnit: ' images',
     userAgent: 'User-Agent',
+    fastTierHint: 'Fast request (service_tier=priority): 1.5x speed, billed at 2x standard pricing',
     tokenIconHint: {
       input: 'Input tokens: prompt tokens you sent to the model',
       output: 'Output tokens: tokens the model returned to you',
@@ -4493,6 +4508,62 @@ export default {
       }
     },
 
+    // Desktop client releases
+    desktopReleases: {
+      title: 'Desktop Releases',
+      description: 'Upload desktop client update packages, set mandatory updates and release notes, manage version history and rollback',
+      searchPlaceholder: 'Search version or notes',
+      uploadPackage: 'Upload package',
+      publish: 'Publish',
+      uploading: 'Uploading…',
+      rollback: 'Roll back to this version',
+      currentTag: 'Current',
+      allStatus: 'All statuses',
+      channelStable: 'Stable',
+      channelBeta: 'Beta',
+      mandatoryYes: 'Mandatory',
+      mandatoryNo: 'Optional',
+      emptyTitle: 'No releases yet',
+      emptyDesc: 'Upload the electron-builder output to publish your first release',
+      statusLabels: {
+        active: 'Live',
+        archived: 'Archived',
+        rolledback: 'Rolled back'
+      },
+      columns: {
+        version: 'Version',
+        status: 'Status',
+        mandatory: 'Mandatory',
+        notes: 'Release notes',
+        createdAt: 'Published',
+        actions: 'Actions'
+      },
+      form: {
+        version: 'Version',
+        channel: 'Channel',
+        mandatory: 'Mandatory update',
+        mandatoryHint: 'When mandatory, clients show a non-skippable update prompt and must update before continuing',
+        notes: 'Release notes',
+        notesHint: 'What changed in this release, shown to client users',
+        setupFile: 'Installer (.exe)',
+        setupHint: 'The Velorix-x.x.x-setup.exe produced by electron-builder',
+        latestYml: 'Update manifest (latest.yml)',
+        latestHint: 'The latest.yml from the build output; clients use it to detect updates',
+        blockmap: 'Delta map (.blockmap, optional)',
+        blockmapHint: 'The setup.exe.blockmap from the build output, used for delta updates',
+        sourceHint: 'All files come from the client dist/ directory after npm run dist:win'
+      },
+      rollbackTitle: 'Roll back release',
+      rollbackConfirm: 'Set v{version} as the current live version again? Clients will update to this version.',
+      deleteTitle: 'Delete release',
+      deleteConfirm: 'Delete v{version}? The installer file on disk will also be removed. This cannot be undone.',
+      versionRequired: 'Please enter a version',
+      filesRequired: 'Please select the installer and latest.yml files',
+      failedToLoad: 'Failed to load releases',
+      failedToUpload: 'Failed to upload release',
+      failedToRollback: 'Failed to roll back',
+      failedToDelete: 'Failed to delete'
+    },
     // Announcements
     announcements: {
       title: 'Announcements',

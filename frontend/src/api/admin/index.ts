@@ -32,6 +32,7 @@ import affiliatesAPI from './affiliates'
 import pricingAPI from './pricing'
 import adminInvoiceAPI from './invoice'
 import supportAdminAPI from './support'
+import desktopReleasesAPI from './desktopReleases'
 
 /**
  * Unified admin API object for convenient access
@@ -45,6 +46,7 @@ export const adminAPI = {
   redeem: redeemAPI,
   promo: promoAPI,
   announcements: announcementsAPI,
+  desktopReleases: desktopReleasesAPI,
   settings: settingsAPI,
   subscriptions: subscriptionsAPI,
   usage: usageAPI,

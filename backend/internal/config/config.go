@@ -89,6 +89,14 @@ type Config struct {
 	Gemini                  GeminiConfig                  `mapstructure:"gemini"`
 	Update                  UpdateConfig                  `mapstructure:"update"`
 	Idempotency             IdempotencyConfig             `mapstructure:"idempotency"`
+	Desktop                 DesktopConfig                 `mapstructure:"desktop"`
+}
+
+// DesktopConfig 桌面客户端更新分发配置。
+type DesktopConfig struct {
+	// 更新包存储目录（管理员上传的 setup.exe / latest.yml / blockmap 落盘于此，
+	// 并通过 /desktop/updates/ 静态 URL 公开给客户端自动更新器）。
+	UpdatesDir string `mapstructure:"updates_dir"`
 }
 
 type LogConfig struct {
@@ -1587,6 +1595,7 @@ func setDefaults() {
 	viper.SetDefault("pricing.fallback_file", "./resources/model-pricing/model_prices_and_context_window.json")
 	viper.SetDefault("pricing.update_interval_hours", 24)
 	viper.SetDefault("pricing.hash_check_interval_minutes", 10)
+	viper.SetDefault("desktop.updates_dir", "./data/desktop/updates")
 
 	// Timezone (default to Asia/Shanghai for Chinese users)
 	viper.SetDefault("timezone", "Asia/Shanghai")

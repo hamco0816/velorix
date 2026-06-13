@@ -322,7 +322,7 @@
                     platformIconBg(model.platform),
                   ]"
                 >
-                  <PlatformIcon :platform="model.platform as GroupPlatform" size="md" />
+                  <ModelIcon :model="model.name" size="22px" />
                 </div>
                 <div class="min-w-0 flex-1">
                   <p class="truncate text-base font-semibold tracking-tight text-gray-900 dark:text-white" :title="model.name">
@@ -521,6 +521,7 @@ import Icon from '@/components/icons/Icon.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import PlatformIcon from '@/components/common/PlatformIcon.vue'
+import ModelIcon from '@/components/common/ModelIcon.vue'
 import userChannelsAPI, {
   type UserAvailableChannel,
   type UserAvailableGroup,

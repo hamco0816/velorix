@@ -591,6 +591,45 @@ var (
 			},
 		},
 	}
+	// DesktopReleasesColumns holds the columns for the "desktop_releases" table.
+	DesktopReleasesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true},
+		{Name: "version", Type: field.TypeString, Size: 50},
+		{Name: "channel", Type: field.TypeString, Size: 20, Default: "stable"},
+		{Name: "mandatory", Type: field.TypeBool, Default: false},
+		{Name: "notes", Type: field.TypeString, Default: "", SchemaType: map[string]string{"postgres": "text"}},
+		{Name: "setup_file", Type: field.TypeString, Size: 255},
+		{Name: "blockmap_file", Type: field.TypeString, Size: 255, Default: ""},
+		{Name: "latest_yml", Type: field.TypeString, Default: "", SchemaType: map[string]string{"postgres": "text"}},
+		{Name: "file_size", Type: field.TypeInt64, Default: 0},
+		{Name: "status", Type: field.TypeString, Size: 20, Default: "active"},
+		{Name: "created_by", Type: field.TypeInt64, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "timestamptz"}},
+	}
+	// DesktopReleasesTable holds the schema information for the "desktop_releases" table.
+	DesktopReleasesTable = &schema.Table{
+		Name:       "desktop_releases",
+		Columns:    DesktopReleasesColumns,
+		PrimaryKey: []*schema.Column{DesktopReleasesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "desktoprelease_version_channel",
+				Unique:  true,
+				Columns: []*schema.Column{DesktopReleasesColumns[1], DesktopReleasesColumns[2]},
+			},
+			{
+				Name:    "desktoprelease_status",
+				Unique:  false,
+				Columns: []*schema.Column{DesktopReleasesColumns[9]},
+			},
+			{
+				Name:    "desktoprelease_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{DesktopReleasesColumns[11]},
+			},
+		},
+	}
 	// ErrorPassthroughRulesColumns holds the columns for the "error_passthrough_rules" table.
 	ErrorPassthroughRulesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true},
@@ -1859,6 +1898,7 @@ var (
 		ChannelMonitorDailyRollupsTable,
 		ChannelMonitorHistoriesTable,
 		ChannelMonitorRequestTemplatesTable,
+		DesktopReleasesTable,
 		ErrorPassthroughRulesTable,
 		ExclusiveSubscriptionsTable,
 		GroupsTable,
@@ -1932,6 +1972,9 @@ func init() {
 	}
 	ChannelMonitorRequestTemplatesTable.Annotation = &entsql.Annotation{
 		Table: "channel_monitor_request_templates",
+	}
+	DesktopReleasesTable.Annotation = &entsql.Annotation{
+		Table: "desktop_releases",
 	}
 	ErrorPassthroughRulesTable.Annotation = &entsql.Annotation{
 		Table: "error_passthrough_rules",

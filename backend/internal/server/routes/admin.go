@@ -33,6 +33,9 @@ func RegisterAdminRoutes(
 		registerAnnouncementRoutes(admin, h)
 		registerSupportRoutes(admin, h)
 
+		// 桌面客户端版本发布
+		registerDesktopReleaseRoutes(admin, h)
+
 		// OpenAI OAuth
 		registerOpenAIOAuthRoutes(admin, h)
 
@@ -355,6 +358,16 @@ func registerSupportRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 		support.POST("/conversations/:id/reopen", h.Admin.Support.ReopenConversation)
 		support.GET("/unread", h.Admin.Support.Unread)
 		support.GET("/ws", h.Admin.Support.WebSocket)
+	}
+}
+
+func registerDesktopReleaseRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
+	releases := admin.Group("/desktop-releases")
+	{
+		releases.GET("", h.Admin.DesktopRelease.List)
+		releases.POST("", h.Admin.DesktopRelease.Create)
+		releases.POST("/:id/rollback", h.Admin.DesktopRelease.Rollback)
+		releases.DELETE("/:id", h.Admin.DesktopRelease.Delete)
 	}
 }
 

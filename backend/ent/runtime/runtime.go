@@ -16,6 +16,7 @@ import (
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitordailyrollup"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitorhistory"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitorrequesttemplate"
+	"github.com/Wei-Shaw/sub2api/ent/desktoprelease"
 	"github.com/Wei-Shaw/sub2api/ent/errorpassthroughrule"
 	"github.com/Wei-Shaw/sub2api/ent/exclusivesubscription"
 	"github.com/Wei-Shaw/sub2api/ent/group"
@@ -685,6 +686,88 @@ func init() {
 	channelmonitorrequesttemplate.DefaultBodyOverrideMode = channelmonitorrequesttemplateDescBodyOverrideMode.Default.(string)
 	// channelmonitorrequesttemplate.BodyOverrideModeValidator is a validator for the "body_override_mode" field. It is called by the builders before save.
 	channelmonitorrequesttemplate.BodyOverrideModeValidator = channelmonitorrequesttemplateDescBodyOverrideMode.Validators[0].(func(string) error)
+	desktopreleaseFields := schema.DesktopRelease{}.Fields()
+	_ = desktopreleaseFields
+	// desktopreleaseDescVersion is the schema descriptor for version field.
+	desktopreleaseDescVersion := desktopreleaseFields[0].Descriptor()
+	// desktoprelease.VersionValidator is a validator for the "version" field. It is called by the builders before save.
+	desktoprelease.VersionValidator = func() func(string) error {
+		validators := desktopreleaseDescVersion.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(version string) error {
+			for _, fn := range fns {
+				if err := fn(version); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// desktopreleaseDescChannel is the schema descriptor for channel field.
+	desktopreleaseDescChannel := desktopreleaseFields[1].Descriptor()
+	// desktoprelease.DefaultChannel holds the default value on creation for the channel field.
+	desktoprelease.DefaultChannel = desktopreleaseDescChannel.Default.(string)
+	// desktoprelease.ChannelValidator is a validator for the "channel" field. It is called by the builders before save.
+	desktoprelease.ChannelValidator = desktopreleaseDescChannel.Validators[0].(func(string) error)
+	// desktopreleaseDescMandatory is the schema descriptor for mandatory field.
+	desktopreleaseDescMandatory := desktopreleaseFields[2].Descriptor()
+	// desktoprelease.DefaultMandatory holds the default value on creation for the mandatory field.
+	desktoprelease.DefaultMandatory = desktopreleaseDescMandatory.Default.(bool)
+	// desktopreleaseDescNotes is the schema descriptor for notes field.
+	desktopreleaseDescNotes := desktopreleaseFields[3].Descriptor()
+	// desktoprelease.DefaultNotes holds the default value on creation for the notes field.
+	desktoprelease.DefaultNotes = desktopreleaseDescNotes.Default.(string)
+	// desktopreleaseDescSetupFile is the schema descriptor for setup_file field.
+	desktopreleaseDescSetupFile := desktopreleaseFields[4].Descriptor()
+	// desktoprelease.SetupFileValidator is a validator for the "setup_file" field. It is called by the builders before save.
+	desktoprelease.SetupFileValidator = func() func(string) error {
+		validators := desktopreleaseDescSetupFile.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(setup_file string) error {
+			for _, fn := range fns {
+				if err := fn(setup_file); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// desktopreleaseDescBlockmapFile is the schema descriptor for blockmap_file field.
+	desktopreleaseDescBlockmapFile := desktopreleaseFields[5].Descriptor()
+	// desktoprelease.DefaultBlockmapFile holds the default value on creation for the blockmap_file field.
+	desktoprelease.DefaultBlockmapFile = desktopreleaseDescBlockmapFile.Default.(string)
+	// desktoprelease.BlockmapFileValidator is a validator for the "blockmap_file" field. It is called by the builders before save.
+	desktoprelease.BlockmapFileValidator = desktopreleaseDescBlockmapFile.Validators[0].(func(string) error)
+	// desktopreleaseDescLatestYml is the schema descriptor for latest_yml field.
+	desktopreleaseDescLatestYml := desktopreleaseFields[6].Descriptor()
+	// desktoprelease.DefaultLatestYml holds the default value on creation for the latest_yml field.
+	desktoprelease.DefaultLatestYml = desktopreleaseDescLatestYml.Default.(string)
+	// desktopreleaseDescFileSize is the schema descriptor for file_size field.
+	desktopreleaseDescFileSize := desktopreleaseFields[7].Descriptor()
+	// desktoprelease.DefaultFileSize holds the default value on creation for the file_size field.
+	desktoprelease.DefaultFileSize = desktopreleaseDescFileSize.Default.(int64)
+	// desktopreleaseDescStatus is the schema descriptor for status field.
+	desktopreleaseDescStatus := desktopreleaseFields[8].Descriptor()
+	// desktoprelease.DefaultStatus holds the default value on creation for the status field.
+	desktoprelease.DefaultStatus = desktopreleaseDescStatus.Default.(string)
+	// desktoprelease.StatusValidator is a validator for the "status" field. It is called by the builders before save.
+	desktoprelease.StatusValidator = desktopreleaseDescStatus.Validators[0].(func(string) error)
+	// desktopreleaseDescCreatedAt is the schema descriptor for created_at field.
+	desktopreleaseDescCreatedAt := desktopreleaseFields[10].Descriptor()
+	// desktoprelease.DefaultCreatedAt holds the default value on creation for the created_at field.
+	desktoprelease.DefaultCreatedAt = desktopreleaseDescCreatedAt.Default.(func() time.Time)
+	// desktopreleaseDescUpdatedAt is the schema descriptor for updated_at field.
+	desktopreleaseDescUpdatedAt := desktopreleaseFields[11].Descriptor()
+	// desktoprelease.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	desktoprelease.DefaultUpdatedAt = desktopreleaseDescUpdatedAt.Default.(func() time.Time)
+	// desktoprelease.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	desktoprelease.UpdateDefaultUpdatedAt = desktopreleaseDescUpdatedAt.UpdateDefault.(func() time.Time)
 	errorpassthroughruleMixin := schema.ErrorPassthroughRule{}.Mixin()
 	errorpassthroughruleMixinFields0 := errorpassthroughruleMixin[0].Fields()
 	_ = errorpassthroughruleMixinFields0

@@ -400,6 +400,19 @@ export default {
     send: '发送',
     loadFailed: '客服会话加载失败',
     sendFailed: '消息发送失败，请稍后重试',
+    // 工单式反馈提交（与桌面客户端一致：类型+描述发给管理员）
+    tabChat: '在线客服',
+    tabFeedback: '反馈',
+    feedbackTypes: {
+      problem: '问题反馈',
+      suggestion: '功能建议',
+      other: '其他',
+    },
+    feedbackPlaceholder: '描述你遇到的问题或建议，越具体处理越快（如：操作步骤、出现的提示）',
+    feedbackSubmit: '提交反馈',
+    feedbackSubmitting: '提交中...',
+    feedbackOk: '已提交给管理员，回复会显示在「在线客服」中。',
+    feedbackHint: '反馈会以工单形式发送给管理员，处理进度与回复请在「在线客服」查看。',
     status: {
       connecting: '正在连接',
       connected: '在线',
@@ -582,6 +595,7 @@ export default {
     },
     dashboard: '仪表盘',
     announcements: '公告',
+    desktopReleases: '客户端版本',
     onlineSupport: '在线客服',
     apiKeys: 'API 密钥',
     imageGen: '生图工坊',
@@ -1173,6 +1187,7 @@ export default {
     exportExcelFailed: '使用数据导出失败',
     imageUnit: '张',
     userAgent: 'User-Agent',
+    fastTierHint: 'Fast 加速请求（service_tier=priority）：1.5x 速度，价格为标准的 2 倍',
     tokenIconHint: {
       input: '输入 Token：你发给模型的提示词字数',
       output: '输出 Token：模型回复给你的内容字数',
@@ -4655,6 +4670,61 @@ export default {
     },
 
     // Announcements
+    desktopReleases: {
+      title: '客户端版本发布',
+      description: '上传桌面客户端更新包、设置强制更新与更新说明、管理版本历史与回滚',
+      searchPlaceholder: '搜索版本号或更新说明',
+      uploadPackage: '上传更新包',
+      publish: '发布',
+      uploading: '上传中…',
+      rollback: '回滚到此版本',
+      currentTag: '当前',
+      allStatus: '全部状态',
+      channelStable: '稳定版',
+      channelBeta: '测试版',
+      mandatoryYes: '强制',
+      mandatoryNo: '可选',
+      emptyTitle: '还没有发布任何版本',
+      emptyDesc: '上传 electron-builder 打包产物即可发布第一个版本',
+      statusLabels: {
+        active: '当前对外',
+        archived: '历史版本',
+        rolledback: '已回滚'
+      },
+      columns: {
+        version: '版本',
+        status: '状态',
+        mandatory: '强制更新',
+        notes: '更新说明',
+        createdAt: '发布时间',
+        actions: '操作'
+      },
+      form: {
+        version: '版本号',
+        channel: '发布通道',
+        mandatory: '是否强制更新',
+        mandatoryHint: '强制更新时，客户端会弹出不可跳过的更新提示，必须更新后才能继续使用',
+        notes: '更新说明',
+        notesHint: '本次更新内容，会展示给客户端用户',
+        setupFile: '安装包（.exe）',
+        setupHint: 'electron-builder 打包出的 Velorix-x.x.x-setup.exe',
+        latestYml: '更新清单（latest.yml）',
+        latestHint: '打包产物中的 latest.yml，客户端据此检测更新',
+        blockmap: '增量包（.blockmap，可选）',
+        blockmapHint: '打包产物中的 setup.exe.blockmap，用于增量更新',
+        sourceHint: '以上文件均来自客户端 npm run dist:win 后的 dist/ 目录'
+      },
+      rollbackTitle: '回滚版本',
+      rollbackConfirm: '确定把 v{version} 重新设为当前对外版本吗？客户端将更新到该版本。',
+      deleteTitle: '删除版本',
+      deleteConfirm: '确定删除 v{version} 吗？将同时删除磁盘上的安装包文件，不可恢复。',
+      versionRequired: '请填写版本号',
+      filesRequired: '请选择安装包和 latest.yml 文件',
+      failedToLoad: '加载版本列表失败',
+      failedToUpload: '上传发布失败',
+      failedToRollback: '回滚失败',
+      failedToDelete: '删除失败'
+    },
     announcements: {
       title: '公告管理',
       description: '创建公告并按条件投放',

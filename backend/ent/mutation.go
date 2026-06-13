@@ -23,6 +23,7 @@ import (
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitordailyrollup"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitorhistory"
 	"github.com/Wei-Shaw/sub2api/ent/channelmonitorrequesttemplate"
+	"github.com/Wei-Shaw/sub2api/ent/desktoprelease"
 	"github.com/Wei-Shaw/sub2api/ent/errorpassthroughrule"
 	"github.com/Wei-Shaw/sub2api/ent/exclusivesubscription"
 	"github.com/Wei-Shaw/sub2api/ent/group"
@@ -72,6 +73,7 @@ const (
 	TypeChannelMonitorDailyRollup     = "ChannelMonitorDailyRollup"
 	TypeChannelMonitorHistory         = "ChannelMonitorHistory"
 	TypeChannelMonitorRequestTemplate = "ChannelMonitorRequestTemplate"
+	TypeDesktopRelease                = "DesktopRelease"
 	TypeErrorPassthroughRule          = "ErrorPassthroughRule"
 	TypeExclusiveSubscription         = "ExclusiveSubscription"
 	TypeGroup                         = "Group"
@@ -13601,6 +13603,1018 @@ func (m *ChannelMonitorRequestTemplateMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown ChannelMonitorRequestTemplate edge %s", name)
+}
+
+// DesktopReleaseMutation represents an operation that mutates the DesktopRelease nodes in the graph.
+type DesktopReleaseMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *int64
+	version       *string
+	channel       *string
+	mandatory     *bool
+	notes         *string
+	setup_file    *string
+	blockmap_file *string
+	latest_yml    *string
+	file_size     *int64
+	addfile_size  *int64
+	status        *string
+	created_by    *int64
+	addcreated_by *int64
+	created_at    *time.Time
+	updated_at    *time.Time
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*DesktopRelease, error)
+	predicates    []predicate.DesktopRelease
+}
+
+var _ ent.Mutation = (*DesktopReleaseMutation)(nil)
+
+// desktopreleaseOption allows management of the mutation configuration using functional options.
+type desktopreleaseOption func(*DesktopReleaseMutation)
+
+// newDesktopReleaseMutation creates new mutation for the DesktopRelease entity.
+func newDesktopReleaseMutation(c config, op Op, opts ...desktopreleaseOption) *DesktopReleaseMutation {
+	m := &DesktopReleaseMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeDesktopRelease,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withDesktopReleaseID sets the ID field of the mutation.
+func withDesktopReleaseID(id int64) desktopreleaseOption {
+	return func(m *DesktopReleaseMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *DesktopRelease
+		)
+		m.oldValue = func(ctx context.Context) (*DesktopRelease, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().DesktopRelease.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withDesktopRelease sets the old DesktopRelease of the mutation.
+func withDesktopRelease(node *DesktopRelease) desktopreleaseOption {
+	return func(m *DesktopReleaseMutation) {
+		m.oldValue = func(context.Context) (*DesktopRelease, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m DesktopReleaseMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m DesktopReleaseMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *DesktopReleaseMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *DesktopReleaseMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().DesktopRelease.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetVersion sets the "version" field.
+func (m *DesktopReleaseMutation) SetVersion(s string) {
+	m.version = &s
+}
+
+// Version returns the value of the "version" field in the mutation.
+func (m *DesktopReleaseMutation) Version() (r string, exists bool) {
+	v := m.version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVersion returns the old "version" field's value of the DesktopRelease entity.
+// If the DesktopRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DesktopReleaseMutation) OldVersion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVersion: %w", err)
+	}
+	return oldValue.Version, nil
+}
+
+// ResetVersion resets all changes to the "version" field.
+func (m *DesktopReleaseMutation) ResetVersion() {
+	m.version = nil
+}
+
+// SetChannel sets the "channel" field.
+func (m *DesktopReleaseMutation) SetChannel(s string) {
+	m.channel = &s
+}
+
+// Channel returns the value of the "channel" field in the mutation.
+func (m *DesktopReleaseMutation) Channel() (r string, exists bool) {
+	v := m.channel
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChannel returns the old "channel" field's value of the DesktopRelease entity.
+// If the DesktopRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DesktopReleaseMutation) OldChannel(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChannel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChannel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChannel: %w", err)
+	}
+	return oldValue.Channel, nil
+}
+
+// ResetChannel resets all changes to the "channel" field.
+func (m *DesktopReleaseMutation) ResetChannel() {
+	m.channel = nil
+}
+
+// SetMandatory sets the "mandatory" field.
+func (m *DesktopReleaseMutation) SetMandatory(b bool) {
+	m.mandatory = &b
+}
+
+// Mandatory returns the value of the "mandatory" field in the mutation.
+func (m *DesktopReleaseMutation) Mandatory() (r bool, exists bool) {
+	v := m.mandatory
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMandatory returns the old "mandatory" field's value of the DesktopRelease entity.
+// If the DesktopRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DesktopReleaseMutation) OldMandatory(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMandatory is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMandatory requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMandatory: %w", err)
+	}
+	return oldValue.Mandatory, nil
+}
+
+// ResetMandatory resets all changes to the "mandatory" field.
+func (m *DesktopReleaseMutation) ResetMandatory() {
+	m.mandatory = nil
+}
+
+// SetNotes sets the "notes" field.
+func (m *DesktopReleaseMutation) SetNotes(s string) {
+	m.notes = &s
+}
+
+// Notes returns the value of the "notes" field in the mutation.
+func (m *DesktopReleaseMutation) Notes() (r string, exists bool) {
+	v := m.notes
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNotes returns the old "notes" field's value of the DesktopRelease entity.
+// If the DesktopRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DesktopReleaseMutation) OldNotes(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNotes is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNotes requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNotes: %w", err)
+	}
+	return oldValue.Notes, nil
+}
+
+// ResetNotes resets all changes to the "notes" field.
+func (m *DesktopReleaseMutation) ResetNotes() {
+	m.notes = nil
+}
+
+// SetSetupFile sets the "setup_file" field.
+func (m *DesktopReleaseMutation) SetSetupFile(s string) {
+	m.setup_file = &s
+}
+
+// SetupFile returns the value of the "setup_file" field in the mutation.
+func (m *DesktopReleaseMutation) SetupFile() (r string, exists bool) {
+	v := m.setup_file
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSetupFile returns the old "setup_file" field's value of the DesktopRelease entity.
+// If the DesktopRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DesktopReleaseMutation) OldSetupFile(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSetupFile is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSetupFile requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSetupFile: %w", err)
+	}
+	return oldValue.SetupFile, nil
+}
+
+// ResetSetupFile resets all changes to the "setup_file" field.
+func (m *DesktopReleaseMutation) ResetSetupFile() {
+	m.setup_file = nil
+}
+
+// SetBlockmapFile sets the "blockmap_file" field.
+func (m *DesktopReleaseMutation) SetBlockmapFile(s string) {
+	m.blockmap_file = &s
+}
+
+// BlockmapFile returns the value of the "blockmap_file" field in the mutation.
+func (m *DesktopReleaseMutation) BlockmapFile() (r string, exists bool) {
+	v := m.blockmap_file
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBlockmapFile returns the old "blockmap_file" field's value of the DesktopRelease entity.
+// If the DesktopRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DesktopReleaseMutation) OldBlockmapFile(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBlockmapFile is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBlockmapFile requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBlockmapFile: %w", err)
+	}
+	return oldValue.BlockmapFile, nil
+}
+
+// ResetBlockmapFile resets all changes to the "blockmap_file" field.
+func (m *DesktopReleaseMutation) ResetBlockmapFile() {
+	m.blockmap_file = nil
+}
+
+// SetLatestYml sets the "latest_yml" field.
+func (m *DesktopReleaseMutation) SetLatestYml(s string) {
+	m.latest_yml = &s
+}
+
+// LatestYml returns the value of the "latest_yml" field in the mutation.
+func (m *DesktopReleaseMutation) LatestYml() (r string, exists bool) {
+	v := m.latest_yml
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLatestYml returns the old "latest_yml" field's value of the DesktopRelease entity.
+// If the DesktopRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DesktopReleaseMutation) OldLatestYml(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLatestYml is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLatestYml requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLatestYml: %w", err)
+	}
+	return oldValue.LatestYml, nil
+}
+
+// ResetLatestYml resets all changes to the "latest_yml" field.
+func (m *DesktopReleaseMutation) ResetLatestYml() {
+	m.latest_yml = nil
+}
+
+// SetFileSize sets the "file_size" field.
+func (m *DesktopReleaseMutation) SetFileSize(i int64) {
+	m.file_size = &i
+	m.addfile_size = nil
+}
+
+// FileSize returns the value of the "file_size" field in the mutation.
+func (m *DesktopReleaseMutation) FileSize() (r int64, exists bool) {
+	v := m.file_size
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFileSize returns the old "file_size" field's value of the DesktopRelease entity.
+// If the DesktopRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DesktopReleaseMutation) OldFileSize(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFileSize is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFileSize requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFileSize: %w", err)
+	}
+	return oldValue.FileSize, nil
+}
+
+// AddFileSize adds i to the "file_size" field.
+func (m *DesktopReleaseMutation) AddFileSize(i int64) {
+	if m.addfile_size != nil {
+		*m.addfile_size += i
+	} else {
+		m.addfile_size = &i
+	}
+}
+
+// AddedFileSize returns the value that was added to the "file_size" field in this mutation.
+func (m *DesktopReleaseMutation) AddedFileSize() (r int64, exists bool) {
+	v := m.addfile_size
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFileSize resets all changes to the "file_size" field.
+func (m *DesktopReleaseMutation) ResetFileSize() {
+	m.file_size = nil
+	m.addfile_size = nil
+}
+
+// SetStatus sets the "status" field.
+func (m *DesktopReleaseMutation) SetStatus(s string) {
+	m.status = &s
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *DesktopReleaseMutation) Status() (r string, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the DesktopRelease entity.
+// If the DesktopRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DesktopReleaseMutation) OldStatus(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *DesktopReleaseMutation) ResetStatus() {
+	m.status = nil
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (m *DesktopReleaseMutation) SetCreatedBy(i int64) {
+	m.created_by = &i
+	m.addcreated_by = nil
+}
+
+// CreatedBy returns the value of the "created_by" field in the mutation.
+func (m *DesktopReleaseMutation) CreatedBy() (r int64, exists bool) {
+	v := m.created_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedBy returns the old "created_by" field's value of the DesktopRelease entity.
+// If the DesktopRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DesktopReleaseMutation) OldCreatedBy(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
+	}
+	return oldValue.CreatedBy, nil
+}
+
+// AddCreatedBy adds i to the "created_by" field.
+func (m *DesktopReleaseMutation) AddCreatedBy(i int64) {
+	if m.addcreated_by != nil {
+		*m.addcreated_by += i
+	} else {
+		m.addcreated_by = &i
+	}
+}
+
+// AddedCreatedBy returns the value that was added to the "created_by" field in this mutation.
+func (m *DesktopReleaseMutation) AddedCreatedBy() (r int64, exists bool) {
+	v := m.addcreated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (m *DesktopReleaseMutation) ClearCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	m.clearedFields[desktoprelease.FieldCreatedBy] = struct{}{}
+}
+
+// CreatedByCleared returns if the "created_by" field was cleared in this mutation.
+func (m *DesktopReleaseMutation) CreatedByCleared() bool {
+	_, ok := m.clearedFields[desktoprelease.FieldCreatedBy]
+	return ok
+}
+
+// ResetCreatedBy resets all changes to the "created_by" field.
+func (m *DesktopReleaseMutation) ResetCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	delete(m.clearedFields, desktoprelease.FieldCreatedBy)
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *DesktopReleaseMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *DesktopReleaseMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the DesktopRelease entity.
+// If the DesktopRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DesktopReleaseMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *DesktopReleaseMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *DesktopReleaseMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *DesktopReleaseMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the DesktopRelease entity.
+// If the DesktopRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DesktopReleaseMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *DesktopReleaseMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the DesktopReleaseMutation builder.
+func (m *DesktopReleaseMutation) Where(ps ...predicate.DesktopRelease) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the DesktopReleaseMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *DesktopReleaseMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.DesktopRelease, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *DesktopReleaseMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *DesktopReleaseMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (DesktopRelease).
+func (m *DesktopReleaseMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *DesktopReleaseMutation) Fields() []string {
+	fields := make([]string, 0, 12)
+	if m.version != nil {
+		fields = append(fields, desktoprelease.FieldVersion)
+	}
+	if m.channel != nil {
+		fields = append(fields, desktoprelease.FieldChannel)
+	}
+	if m.mandatory != nil {
+		fields = append(fields, desktoprelease.FieldMandatory)
+	}
+	if m.notes != nil {
+		fields = append(fields, desktoprelease.FieldNotes)
+	}
+	if m.setup_file != nil {
+		fields = append(fields, desktoprelease.FieldSetupFile)
+	}
+	if m.blockmap_file != nil {
+		fields = append(fields, desktoprelease.FieldBlockmapFile)
+	}
+	if m.latest_yml != nil {
+		fields = append(fields, desktoprelease.FieldLatestYml)
+	}
+	if m.file_size != nil {
+		fields = append(fields, desktoprelease.FieldFileSize)
+	}
+	if m.status != nil {
+		fields = append(fields, desktoprelease.FieldStatus)
+	}
+	if m.created_by != nil {
+		fields = append(fields, desktoprelease.FieldCreatedBy)
+	}
+	if m.created_at != nil {
+		fields = append(fields, desktoprelease.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, desktoprelease.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *DesktopReleaseMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case desktoprelease.FieldVersion:
+		return m.Version()
+	case desktoprelease.FieldChannel:
+		return m.Channel()
+	case desktoprelease.FieldMandatory:
+		return m.Mandatory()
+	case desktoprelease.FieldNotes:
+		return m.Notes()
+	case desktoprelease.FieldSetupFile:
+		return m.SetupFile()
+	case desktoprelease.FieldBlockmapFile:
+		return m.BlockmapFile()
+	case desktoprelease.FieldLatestYml:
+		return m.LatestYml()
+	case desktoprelease.FieldFileSize:
+		return m.FileSize()
+	case desktoprelease.FieldStatus:
+		return m.Status()
+	case desktoprelease.FieldCreatedBy:
+		return m.CreatedBy()
+	case desktoprelease.FieldCreatedAt:
+		return m.CreatedAt()
+	case desktoprelease.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *DesktopReleaseMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case desktoprelease.FieldVersion:
+		return m.OldVersion(ctx)
+	case desktoprelease.FieldChannel:
+		return m.OldChannel(ctx)
+	case desktoprelease.FieldMandatory:
+		return m.OldMandatory(ctx)
+	case desktoprelease.FieldNotes:
+		return m.OldNotes(ctx)
+	case desktoprelease.FieldSetupFile:
+		return m.OldSetupFile(ctx)
+	case desktoprelease.FieldBlockmapFile:
+		return m.OldBlockmapFile(ctx)
+	case desktoprelease.FieldLatestYml:
+		return m.OldLatestYml(ctx)
+	case desktoprelease.FieldFileSize:
+		return m.OldFileSize(ctx)
+	case desktoprelease.FieldStatus:
+		return m.OldStatus(ctx)
+	case desktoprelease.FieldCreatedBy:
+		return m.OldCreatedBy(ctx)
+	case desktoprelease.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case desktoprelease.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown DesktopRelease field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DesktopReleaseMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case desktoprelease.FieldVersion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVersion(v)
+		return nil
+	case desktoprelease.FieldChannel:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChannel(v)
+		return nil
+	case desktoprelease.FieldMandatory:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMandatory(v)
+		return nil
+	case desktoprelease.FieldNotes:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNotes(v)
+		return nil
+	case desktoprelease.FieldSetupFile:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSetupFile(v)
+		return nil
+	case desktoprelease.FieldBlockmapFile:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBlockmapFile(v)
+		return nil
+	case desktoprelease.FieldLatestYml:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLatestYml(v)
+		return nil
+	case desktoprelease.FieldFileSize:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFileSize(v)
+		return nil
+	case desktoprelease.FieldStatus:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case desktoprelease.FieldCreatedBy:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedBy(v)
+		return nil
+	case desktoprelease.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case desktoprelease.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown DesktopRelease field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *DesktopReleaseMutation) AddedFields() []string {
+	var fields []string
+	if m.addfile_size != nil {
+		fields = append(fields, desktoprelease.FieldFileSize)
+	}
+	if m.addcreated_by != nil {
+		fields = append(fields, desktoprelease.FieldCreatedBy)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *DesktopReleaseMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case desktoprelease.FieldFileSize:
+		return m.AddedFileSize()
+	case desktoprelease.FieldCreatedBy:
+		return m.AddedCreatedBy()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DesktopReleaseMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case desktoprelease.FieldFileSize:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFileSize(v)
+		return nil
+	case desktoprelease.FieldCreatedBy:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreatedBy(v)
+		return nil
+	}
+	return fmt.Errorf("unknown DesktopRelease numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *DesktopReleaseMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(desktoprelease.FieldCreatedBy) {
+		fields = append(fields, desktoprelease.FieldCreatedBy)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *DesktopReleaseMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *DesktopReleaseMutation) ClearField(name string) error {
+	switch name {
+	case desktoprelease.FieldCreatedBy:
+		m.ClearCreatedBy()
+		return nil
+	}
+	return fmt.Errorf("unknown DesktopRelease nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *DesktopReleaseMutation) ResetField(name string) error {
+	switch name {
+	case desktoprelease.FieldVersion:
+		m.ResetVersion()
+		return nil
+	case desktoprelease.FieldChannel:
+		m.ResetChannel()
+		return nil
+	case desktoprelease.FieldMandatory:
+		m.ResetMandatory()
+		return nil
+	case desktoprelease.FieldNotes:
+		m.ResetNotes()
+		return nil
+	case desktoprelease.FieldSetupFile:
+		m.ResetSetupFile()
+		return nil
+	case desktoprelease.FieldBlockmapFile:
+		m.ResetBlockmapFile()
+		return nil
+	case desktoprelease.FieldLatestYml:
+		m.ResetLatestYml()
+		return nil
+	case desktoprelease.FieldFileSize:
+		m.ResetFileSize()
+		return nil
+	case desktoprelease.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case desktoprelease.FieldCreatedBy:
+		m.ResetCreatedBy()
+		return nil
+	case desktoprelease.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case desktoprelease.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown DesktopRelease field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *DesktopReleaseMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *DesktopReleaseMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *DesktopReleaseMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *DesktopReleaseMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *DesktopReleaseMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *DesktopReleaseMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *DesktopReleaseMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown DesktopRelease unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *DesktopReleaseMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown DesktopRelease edge %s", name)
 }
 
 // ErrorPassthroughRuleMutation represents an operation that mutates the ErrorPassthroughRule nodes in the graph.

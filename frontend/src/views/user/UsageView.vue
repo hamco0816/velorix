@@ -168,7 +168,14 @@
           </template>
 
           <template #cell-model="{ value }">
-            <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
+            <!-- 品牌色模型胶囊：彩色图标 + 同品牌浅色底（NewAPI 风格） -->
+            <span
+              class="inline-flex max-w-[240px] items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-semibold ring-1 ring-inset"
+              :class="modelPillClass(value)"
+            >
+              <ModelIcon :model="value" size="14px" />
+              <span class="truncate">{{ value }}</span>
+            </span>
           </template>
 
           <template #cell-reasoning_effort="{ row }">
@@ -184,12 +191,22 @@
           </template>
 
           <template #cell-stream="{ row }">
-            <span
-              class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset"
-              :class="getRequestTypeBadgeClass(row)"
-            >
-              <span class="h-1.5 w-1.5 rounded-full" :class="getRequestTypeDotClass(row)"></span>
-              {{ getRequestTypeLabel(row) }}
+            <span class="inline-flex flex-wrap items-center gap-1">
+              <span
+                class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset"
+                :class="getRequestTypeBadgeClass(row)"
+              >
+                <span class="h-1.5 w-1.5 rounded-full" :class="getRequestTypeDotClass(row)"></span>
+                {{ getRequestTypeLabel(row) }}
+              </span>
+              <!-- Fast（priority）加速请求：与标准请求计费不同，单独标出 -->
+              <span
+                v-if="row.service_tier === 'priority'"
+                class="inline-flex items-center rounded-full bg-orange-50 px-2 py-0.5 text-xs font-semibold text-orange-700 ring-1 ring-inset ring-orange-200/70 dark:bg-orange-500/10 dark:text-orange-300 dark:ring-orange-500/30"
+                :title="t('usage.fastTierHint')"
+              >
+                Fast
+              </span>
             </span>
           </template>
 
@@ -536,6 +553,7 @@ import EmptyState from '@/components/common/EmptyState.vue'
 import Select from '@/components/common/Select.vue'
 import DateRangePicker from '@/components/common/DateRangePicker.vue'
 import Icon from '@/components/icons/Icon.vue'
+import ModelIcon from '@/components/common/ModelIcon.vue'
 import type { UsageLog, ApiKey, UsageQueryParams, UsageStatsResponse } from '@/types'
 import type { Column } from '@/components/common/types'
 import { formatDateTime, formatReasoningEffort, formatCompactNumber } from '@/utils/format'
@@ -563,6 +581,24 @@ const tokenTooltipData = ref<UsageLog | null>(null)
 
 // Usage stats from API
 const usageStats = ref<UsageStatsResponse | null>(null)
+
+// 模型胶囊按品牌着色（与桌面端同口径：Claude 橙 / GPT 青 / Gemini 蓝 / DeepSeek 靛 / 其余灰）
+function modelPillClass(model: string): string {
+  const m = (model || '').toLowerCase()
+  if (m.includes('claude') || m.includes('anthropic'))
+    return 'bg-orange-50 text-orange-700 ring-orange-200/70 dark:bg-orange-500/10 dark:text-orange-300 dark:ring-orange-500/30'
+  if (m.startsWith('gpt') || m.startsWith('o1') || m.startsWith('o3') || m.startsWith('o4') || m.includes('chatgpt') || m.includes('dall-e') || m.includes('openai'))
+    return 'bg-teal-50 text-teal-700 ring-teal-200/70 dark:bg-teal-500/10 dark:text-teal-300 dark:ring-teal-500/30'
+  if (m.includes('gemini') || m.includes('gemma') || m.includes('imagen'))
+    return 'bg-blue-50 text-blue-700 ring-blue-200/70 dark:bg-blue-500/10 dark:text-blue-300 dark:ring-blue-500/30'
+  if (m.includes('deepseek'))
+    return 'bg-indigo-50 text-indigo-700 ring-indigo-200/70 dark:bg-indigo-500/10 dark:text-indigo-300 dark:ring-indigo-500/30'
+  if (m.includes('grok'))
+    return 'bg-gray-100 text-gray-800 ring-gray-200/70 dark:bg-gray-500/15 dark:text-gray-200 dark:ring-gray-500/30'
+  if (m.includes('qwen') || m.includes('qwq'))
+    return 'bg-violet-50 text-violet-700 ring-violet-200/70 dark:bg-violet-500/10 dark:text-violet-300 dark:ring-violet-500/30'
+  return 'bg-gray-50 text-gray-700 ring-gray-200/70 dark:bg-dark-800/60 dark:text-dark-200 dark:ring-dark-700/60'
+}
 
 const columns = computed<Column[]>(() => [
   { key: 'api_key', label: t('usage.apiKeyFilter'), sortable: false },

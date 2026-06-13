@@ -81,6 +81,10 @@ func SetupRouter(
 		settingService.SetOnUpdateCallback(refreshFrameOrigins)
 	}
 
+	// 桌面客户端更新包静态托管：latest.yml / release.json / 安装包，无鉴权裸 GET
+	// （/desktop/ 已在前端 embed 中间件的 bypass 列表里，不会被 SPA fallback 吞掉）
+	r.Static("/desktop/updates", cfg.Desktop.UpdatesDir)
+
 	// 注册路由
 	registerRoutes(r, handlers, jwtAuth, adminAuth, apiKeyAuth, apiKeyService, subscriptionService, opsService, settingService, systemOverloadMonitor, cfg, redisClient)
 

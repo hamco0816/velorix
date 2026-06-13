@@ -20,23 +20,30 @@
             </button>
           </div>
         </div>
-        <!-- Payment in progress (shared by recharge and subscription) -->
-        <template v-if="paymentPhase === 'paying'">
-          <PaymentStatusPanel
-            :order-id="paymentState.orderId"
-            :qr-code="paymentState.qrCode"
-            :qr-code-image="paymentState.qrCodeImage"
-            :expires-at="paymentState.expiresAt"
-            :payment-type="paymentState.paymentType"
-            :pay-url="paymentState.payUrl"
-            :order-type="paymentState.orderType"
-            @done="onPaymentDone"
-            @success="onPaymentSuccess"
-            @settled="onPaymentSettled"
-          />
-        </template>
-        <!-- Tab content (select phase) -->
-        <template v-else>
+        <!-- Payment in progress：居中弹窗（不再整页铺满，扫码以对话框形式呈现） -->
+        <Teleport to="body">
+          <div
+            v-if="paymentPhase === 'paying'"
+            class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/45 p-4 backdrop-blur-sm"
+          >
+            <div class="w-full max-w-md animate-scale-in">
+              <PaymentStatusPanel
+                :order-id="paymentState.orderId"
+                :qr-code="paymentState.qrCode"
+                :qr-code-image="paymentState.qrCodeImage"
+                :expires-at="paymentState.expiresAt"
+                :payment-type="paymentState.paymentType"
+                :pay-url="paymentState.payUrl"
+                :order-type="paymentState.orderType"
+                @done="onPaymentDone"
+                @success="onPaymentSuccess"
+                @settled="onPaymentSettled"
+              />
+            </div>
+          </div>
+        </Teleport>
+        <!-- Tab content (select phase 始终渲染，弹窗浮于其上) -->
+        <template>
           <!-- Top-up Tab -->
           <template v-if="activeTab === 'recharge'">
             <EmptyState

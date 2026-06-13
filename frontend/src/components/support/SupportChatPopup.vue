@@ -49,7 +49,60 @@
         </button>
       </header>
 
-      <div ref="messageListRef" class="min-h-0 flex-1 space-y-3 overflow-y-auto bg-gray-50 px-4 py-4 dark:bg-dark-950">
+      <!-- 页签：在线客服聊天 / 工单式反馈提交 -->
+      <div class="flex gap-1 border-b border-gray-100 bg-white px-3 py-2 dark:border-dark-800 dark:bg-dark-900">
+        <button
+          v-for="m in (['chat', 'feedback'] as const)"
+          :key="m"
+          type="button"
+          class="rounded-md px-3 py-1.5 text-xs font-semibold transition-colors"
+          :class="mode === m
+            ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
+            : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-white'"
+          @click="mode = m"
+        >
+          {{ m === 'chat' ? t('support.tabChat') : t('support.tabFeedback') }}
+        </button>
+      </div>
+
+      <!-- 反馈：类型 + 描述 → 发给管理员（写入同一客服会话，回复在聊天页签可见） -->
+      <div v-if="mode === 'feedback'" class="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto bg-gray-50 p-4 dark:bg-dark-950">
+        <div class="flex gap-2">
+          <button
+            v-for="ft in FEEDBACK_TYPES"
+            :key="ft"
+            type="button"
+            class="rounded-full border px-3 py-1 text-xs font-semibold transition-colors"
+            :class="feedbackType === ft
+              ? 'border-gray-900 bg-gray-900 text-white dark:border-white dark:bg-white dark:text-gray-900'
+              : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 dark:border-dark-700 dark:bg-dark-900 dark:text-dark-300'"
+            @click="feedbackType = ft"
+          >
+            {{ t(`support.feedbackTypes.${ft}`) }}
+          </button>
+        </div>
+        <textarea
+          v-model="feedbackDraft"
+          rows="7"
+          maxlength="1900"
+          class="input resize-none"
+          :placeholder="t('support.feedbackPlaceholder')"
+          :disabled="sending"
+        ></textarea>
+        <button
+          type="button"
+          class="btn btn-primary"
+          :disabled="sending || !feedbackDraft.trim()"
+          @click="submitFeedback"
+        >
+          {{ sending ? t('support.feedbackSubmitting') : t('support.feedbackSubmit') }}
+        </button>
+        <p v-if="feedbackOk" class="text-xs text-emerald-600 dark:text-emerald-400">{{ t('support.feedbackOk') }}</p>
+        <p v-else-if="errorMessage" class="text-xs text-rose-600 dark:text-rose-400">{{ errorMessage }}</p>
+        <p class="mt-auto text-2xs leading-relaxed text-gray-400 dark:text-dark-500">{{ t('support.feedbackHint') }}</p>
+      </div>
+
+      <div v-show="mode === 'chat'" ref="messageListRef" class="min-h-0 flex-1 space-y-3 overflow-y-auto bg-gray-50 px-4 py-4 dark:bg-dark-950">
         <div v-if="loading" class="py-8 text-center text-sm text-gray-500 dark:text-dark-400">
           {{ t('common.loading') }}
         </div>
@@ -85,7 +138,7 @@
         </div>
       </div>
 
-      <footer class="border-t border-gray-100 bg-white p-3 dark:border-dark-800 dark:bg-dark-900">
+      <footer v-show="mode === 'chat'" class="border-t border-gray-100 bg-white p-3 dark:border-dark-800 dark:bg-dark-900">
         <form class="flex items-end gap-2" @submit.prevent="handleSend">
           <textarea
             v-model="draft"
@@ -139,6 +192,12 @@ const messageListRef = ref<HTMLElement | null>(null)
 const loading = ref(false)
 const sending = ref(false)
 const draft = ref('')
+// 页签：chat=在线客服聊天 feedback=工单式反馈提交
+const FEEDBACK_TYPES = ['problem', 'suggestion', 'other'] as const
+const mode = ref<'chat' | 'feedback'>('chat')
+const feedbackType = ref<(typeof FEEDBACK_TYPES)[number]>('problem')
+const feedbackDraft = ref('')
+const feedbackOk = ref(false)
 const messages = ref<SupportMessage[]>([])
 const conversation = ref<SupportConversation | null>(null)
 const unreadCount = ref(0)
@@ -228,6 +287,31 @@ async function handleSend() {
     scrollToBottom()
   } catch (error: any) {
     draft.value = content
+    errorMessage.value = error?.message || t('support.sendFailed')
+  } finally {
+    sending.value = false
+  }
+}
+
+// 提交反馈：类型+描述合成「【类型】内容」写入客服会话，管理端客服工作台可见可回
+async function submitFeedback() {
+  const content = feedbackDraft.value.trim()
+  if (!content || sending.value) return
+
+  sending.value = true
+  errorMessage.value = ''
+  feedbackOk.value = false
+  try {
+    const label = t(`support.feedbackTypes.${feedbackType.value}`)
+    const result = await supportAPI.sendMessage(`【${label}】${content}`)
+    conversation.value = result.conversation
+    mergeMessage(result.message)
+    feedbackDraft.value = ''
+    feedbackOk.value = true
+    setTimeout(() => {
+      feedbackOk.value = false
+    }, 5000)
+  } catch (error: any) {
     errorMessage.value = error?.message || t('support.sendFailed')
   } finally {
     sending.value = false

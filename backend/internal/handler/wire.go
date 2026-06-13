@@ -41,6 +41,7 @@ func ProvideAdminHandlers(
 	affiliateHandler *admin.AffiliateHandler,
 	pricingAdvisorHandler *admin.PricingAdvisorHandler,
 	invoiceHandler *admin.InvoiceHandler,
+	desktopReleaseHandler *admin.DesktopReleaseHandler,
 ) *AdminHandlers {
 	return &AdminHandlers{
 		Dashboard:              dashboardHandler,
@@ -75,6 +76,7 @@ func ProvideAdminHandlers(
 		Affiliate:              affiliateHandler,
 		PricingAdvisor:         pricingAdvisorHandler,
 		Invoice:                invoiceHandler,
+		DesktopRelease:         desktopReleaseHandler,
 	}
 }
 
@@ -158,6 +160,7 @@ var ProviderSet = wire.NewSet(
 	admin.NewGroupHandler,
 	admin.NewAccountHandler,
 	admin.NewAnnouncementHandler,
+	admin.NewDesktopReleaseHandler,
 	admin.NewSupportHandler,
 	admin.NewDataManagementHandler,
 	admin.NewBackupHandler,
