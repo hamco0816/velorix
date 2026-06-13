@@ -101,7 +101,9 @@
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
               <span
                 v-if="item.badge && !sidebarCollapsed"
-                class="ml-auto shrink-0 rounded px-1 text-2xs font-medium uppercase leading-[15px] tracking-wider text-amber-600/90 ring-1 ring-inset ring-amber-300/60 dark:text-amber-300/80 dark:ring-amber-400/30"
+                :class="item.badge === 'New'
+                  ? 'nav-badge-new'
+                  : 'ml-auto shrink-0 rounded px-1 text-2xs font-medium uppercase leading-[15px] tracking-wider text-amber-600/90 ring-1 ring-inset ring-amber-300/60 dark:text-amber-300/80 dark:ring-amber-400/30'"
               >{{ item.badge }}</span>
             </router-link>
           </template>
@@ -141,7 +143,9 @@
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
               <span
                 v-if="item.badge && !sidebarCollapsed"
-                class="ml-auto shrink-0 rounded px-1 text-2xs font-medium uppercase leading-[15px] tracking-wider text-amber-600/90 ring-1 ring-inset ring-amber-300/60 dark:text-amber-300/80 dark:ring-amber-400/30"
+                :class="item.badge === 'New'
+                  ? 'nav-badge-new'
+                  : 'ml-auto shrink-0 rounded px-1 text-2xs font-medium uppercase leading-[15px] tracking-wider text-amber-600/90 ring-1 ring-inset ring-amber-300/60 dark:text-amber-300/80 dark:ring-amber-400/30'"
               >{{ item.badge }}</span>
             </router-link>
           </template>
@@ -176,7 +180,9 @@
               <span class="sidebar-label" :class="{ 'sidebar-label-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">{{ item.label }}</span>
               <span
                 v-if="item.badge && !sidebarCollapsed"
-                class="ml-auto shrink-0 rounded px-1 text-2xs font-medium uppercase leading-[15px] tracking-wider text-amber-600/90 ring-1 ring-inset ring-amber-300/60 dark:text-amber-300/80 dark:ring-amber-400/30"
+                :class="item.badge === 'New'
+                  ? 'nav-badge-new'
+                  : 'ml-auto shrink-0 rounded px-1 text-2xs font-medium uppercase leading-[15px] tracking-wider text-amber-600/90 ring-1 ring-inset ring-amber-300/60 dark:text-amber-300/80 dark:ring-amber-400/30'"
               >{{ item.badge }}</span>
             </router-link>
           </template>
@@ -528,6 +534,21 @@ const GlobeIcon = {
     )
 }
 
+const DownloadIcon = {
+  render: () =>
+    h(
+      'svg',
+      { fill: 'none', viewBox: '0 0 24 24', stroke: 'currentColor', 'stroke-width': '1.5' },
+      [
+        h('path', {
+          'stroke-linecap': 'round',
+          'stroke-linejoin': 'round',
+          d: 'M12 3v11m0 0l-4-4m4 4l4-4M5 17v2a2 2 0 002 2h10a2 2 0 002-2v-2',
+        }),
+      ],
+    ),
+}
+
 const ServerIcon = {
   render: () =>
     h(
@@ -814,6 +835,7 @@ function buildSelfNavItems(withDashboard: boolean): NavItem[] {
     { path: '/pricing', label: t('nav.pricing'), icon: ChannelIcon, hideInSimpleMode: true, featureFlag: flagAvailableChannels, group: 'reference' },
     { path: '/monitor', label: t('nav.channelStatus'), icon: SignalIcon, featureFlag: flagChannelMonitor, group: 'reference' },
     { path: '/docs', label: t('nav.docs'), icon: BookIcon, hideInSimpleMode: true, group: 'reference' },
+    { path: '/download', label: t('nav.download'), icon: DownloadIcon, hideInSimpleMode: true, group: 'reference', badge: 'New' },
 
     // —— 账户：低频 ——
     { path: '/affiliate', label: t('nav.affiliate'), icon: UsersIcon, hideInSimpleMode: true, featureFlag: flagAffiliate, group: 'account' },
@@ -1274,5 +1296,44 @@ onMounted(() => {
   display: block;
   width: 1.25rem;
   height: 1.25rem;
+}
+/* New 角标：品牌橙渐变胶囊 + 一道周期性微光斜扫（克制的「艺术字」光泽，不碰紫渐变） */
+.nav-badge-new {
+  margin-left: auto;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  padding: 1px 7px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 15px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(120deg, #fb923c 0%, #f97316 55%, #f59e0b 100%);
+  box-shadow: 0 1px 2px rgba(234, 88, 12, 0.3);
+}
+.nav-badge-new::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 25%, rgba(255, 255, 255, 0.6) 50%, transparent 75%);
+  transform: translateX(-130%);
+  animation: nav-badge-shimmer 2.8s ease-in-out infinite;
+}
+@keyframes nav-badge-shimmer {
+  0%,
+  55% {
+    transform: translateX(-130%);
+  }
+  100% {
+    transform: translateX(130%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-badge-new::after {
+    animation: none;
+  }
 }
 </style>

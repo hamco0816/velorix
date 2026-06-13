@@ -633,6 +633,7 @@ export default {
     dashboard: '仪表盘',
     announcements: '公告',
     desktopReleases: '客户端版本',
+    download: '下载客户端',
     onlineSupport: '在线客服',
     apiKeys: 'API 密钥',
     imageGen: '生图工坊',

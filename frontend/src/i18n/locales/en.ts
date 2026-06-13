@@ -626,6 +626,7 @@ export default {
     dashboard: 'Dashboard',
     announcements: 'Announcements',
     desktopReleases: 'Desktop Releases',
+    download: 'Download client',
     onlineSupport: 'Online Support',
     apiKeys: 'API Keys',
     imageGen: 'Image Studio',
