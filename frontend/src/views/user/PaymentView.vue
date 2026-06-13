@@ -43,7 +43,7 @@
           </div>
         </Teleport>
         <!-- Tab content (select phase 始终渲染，弹窗浮于其上) -->
-        <template>
+        <template v-if="paymentPhase === 'select' || paymentPhase === 'paying'">
           <!-- Top-up Tab -->
           <template v-if="activeTab === 'recharge'">
             <EmptyState
@@ -183,7 +183,7 @@
               </div>
             </section>
             </template>
-          </template>
+        </template>
           <!-- Subscribe Tab -->
           <template v-else-if="activeTab === 'subscription'">
             <!-- Subscription confirm (inline, replaces plan list) -->
