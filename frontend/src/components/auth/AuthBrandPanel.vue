@@ -7,7 +7,7 @@
         class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:44px_44px] [mask-image:radial-gradient(ellipse_at_top_left,black_10%,transparent_70%)]"
       ></div>
       <div class="absolute -left-28 -top-28 h-[380px] w-[380px] rounded-full bg-brand-500/20 blur-[100px]"></div>
-      <div class="absolute -bottom-32 -right-10 h-[320px] w-[320px] rounded-full bg-amber-400/10 blur-[90px]"></div>
+      <div class="absolute -bottom-32 -right-10 h-[320px] w-[320px] rounded-full bg-brand-400/10 blur-[90px]"></div>
     </div>
 
     <div class="relative flex flex-1 flex-col p-10 xl:p-12">
@@ -16,7 +16,7 @@
         <div class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-white/10 ring-1 ring-white/15">
           <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
         </div>
-        <span class="text-base font-semibold tracking-tight text-white">{{ siteName }}</span>
+        <span class="font-display text-base font-semibold italic tracking-tight text-white">{{ siteName }}</span>
       </router-link>
 
       <!-- 中部：价值主张 + 信任点 -->

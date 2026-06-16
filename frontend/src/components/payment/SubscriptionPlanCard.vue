@@ -27,7 +27,7 @@
       <div class="plan-head mb-4 flex flex-col gap-4">
         <div class="min-w-0 flex-1 space-y-3">
           <div class="flex items-center gap-2">
-            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 ring-1 ring-gray-200 dark:bg-dark-800 dark:ring-dark-600">
+            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gray-50 ring-1 ring-gray-200 dark:bg-dark-800 dark:ring-dark-600">
               <BrandIcon
                 v-if="platformBrand"
                 :brand="platformBrand"
@@ -79,7 +79,7 @@
           </p>
         </div>
 
-        <div class="plan-price flex shrink-0 items-center justify-between gap-4 rounded-xl bg-slate-50 px-4 py-3 text-right ring-1 ring-gray-100 dark:bg-dark-800/70 dark:ring-dark-700">
+        <div class="plan-price flex shrink-0 items-center justify-between gap-4 rounded-xl bg-gray-50 px-4 py-3 text-right ring-1 ring-gray-100 dark:bg-dark-800/70 dark:ring-dark-700">
           <span class="plan-price-label text-xs font-medium text-gray-400 dark:text-dark-500">{{ t('payment.admin.price') }}</span>
           <div class="plan-price-body flex flex-col items-end">
             <div class="plan-price-amount flex items-end justify-end gap-1.5 whitespace-nowrap">
@@ -87,7 +87,7 @@
               <span :class="['text-4xl font-black tabular-nums leading-none tracking-tight', textClass]">{{ plan.price }}</span>
             </div>
             <div class="plan-price-discount mt-2 flex flex-wrap items-center justify-end gap-2">
-              <span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-600 ring-1 ring-slate-200 dark:bg-dark-900 dark:text-dark-200 dark:ring-dark-600">
+              <span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-600 ring-1 ring-gray-200 dark:bg-dark-900 dark:text-dark-200 dark:ring-dark-600">
                 <Icon name="calendar" size="xs" :stroke-width="2" />
                 {{ validitySuffix }}
               </span>
@@ -100,7 +100,7 @@
         </div>
       </div>
 
-      <div class="mb-4 space-y-3 rounded-xl border border-gray-100 bg-slate-50/70 p-3 dark:border-dark-700 dark:bg-dark-800/45">
+      <div class="mb-4 space-y-3 rounded-xl border border-gray-100 bg-gray-50/70 p-3 dark:border-dark-700 dark:bg-dark-800/45">
         <div class="plan-limits grid grid-cols-2 gap-2">
         <div class="rounded-lg bg-white px-3 py-2.5 dark:bg-dark-900/70">
           <span class="block text-2xs font-medium text-gray-400 dark:text-dark-500">{{ t('payment.planCard.rate') }}</span>
@@ -132,7 +132,7 @@
         <div v-if="modelScopeItems.length > 0" class="rounded-lg bg-white px-3 py-3 dark:bg-dark-900/70">
           <div class="mb-2 flex items-center justify-between gap-3">
             <span class="text-2xs font-medium text-gray-400 dark:text-dark-500">{{ t('payment.planCard.models') }}</span>
-            <span class="h-px flex-1 bg-slate-200 dark:bg-dark-600" />
+            <span class="h-px flex-1 bg-gray-200 dark:bg-dark-600" />
           </div>
           <div class="flex flex-wrap gap-2">
             <span

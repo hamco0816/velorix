@@ -180,7 +180,7 @@
               <!-- Auto Recover Badge -->
               <span
                 v-if="plan.auto_recover"
-                class="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400"
+                class="inline-flex items-center rounded-full bg-success-soft px-2 py-0.5 text-xs font-medium text-success dark:bg-success/20 dark:text-tea-300"
               >
                 {{ t('admin.scheduledTests.autoRecover') }}
               </span>
@@ -203,14 +203,14 @@
               <div class="flex items-center gap-1" @click.stop>
                 <button
                   @click="startEdit(plan)"
-                  class="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-500 dark:hover:bg-blue-900/20"
+                  class="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-info-soft hover:text-info dark:hover:bg-info/20 dark:hover:text-info"
                   :title="t('admin.scheduledTests.editPlan')"
                 >
                   <Icon name="edit" size="sm" :stroke-width="2" />
                 </button>
                 <button
                   @click="confirmDeletePlan(plan)"
-                  class="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20"
+                  class="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-danger-soft hover:text-danger dark:hover:bg-danger/20 dark:hover:text-danger"
                   :title="t('admin.scheduledTests.deletePlan')"
                 >
                   <Icon name="trash" size="sm" :stroke-width="2" />
@@ -232,7 +232,7 @@
           <!-- Edit Form -->
           <div
             v-if="editingPlanId === plan.id"
-            class="border-t border-blue-100 bg-blue-50/50 px-4 py-3 dark:border-blue-900 dark:bg-blue-900/10"
+            class="border-t border-info/20 bg-info-soft/50 px-4 py-3 dark:border-info/40 dark:bg-info/10"
             @click.stop
           >
             <div class="mb-2 text-xs font-medium text-gray-600 dark:text-gray-400">
@@ -373,10 +373,10 @@
                       :class="[
                         'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
                         result.status === 'success'
-                          ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400'
+                          ? 'bg-success-soft text-success dark:bg-success/20 dark:text-tea-300'
                           : result.status === 'running'
-                            ? 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400'
-                            : 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400'
+                            ? 'bg-info-soft text-info dark:bg-info/20 dark:text-info'
+                            : 'bg-danger-soft text-danger dark:bg-danger/20 dark:text-danger'
                       ]"
                     >
                       {{
@@ -403,7 +403,7 @@
                 <!-- Response / Error (collapsible) -->
                 <div v-if="result.error_message" class="mt-2">
                   <div
-                    class="cursor-pointer text-xs font-medium text-red-600 dark:text-red-400"
+                    class="cursor-pointer text-xs font-medium text-danger dark:text-danger"
                     @click="toggleResultDetail(result.id)"
                   >
                     {{ t('admin.scheduledTests.errorMessage') }}
@@ -418,7 +418,7 @@
                   </div>
                   <pre
                     v-if="expandedResultIds.has(result.id)"
-                    class="mt-1 max-h-32 overflow-auto whitespace-pre-wrap rounded bg-red-50 p-2 text-xs text-red-700 dark:bg-red-900/20 dark:text-red-300"
+                    class="mt-1 max-h-32 overflow-auto whitespace-pre-wrap rounded bg-danger-soft p-2 text-xs text-danger-deep dark:bg-danger/20 dark:text-danger-soft"
                   >{{ result.error_message }}</pre>
                 </div>
                 <div v-else-if="result.response_text" class="mt-2">

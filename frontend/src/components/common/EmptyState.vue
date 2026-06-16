@@ -103,23 +103,29 @@ defineEmits(['action'])
 .empty-state-icon-frame--brand {
   @apply bg-brand-50 text-brand-500 ring-brand-200/70 dark:bg-brand-500/15 dark:text-brand-300 dark:ring-brand-500/30;
 }
+/* emerald → success（竹青·正向） */
 .empty-state-icon-frame--emerald {
-  @apply bg-emerald-50 text-emerald-500 ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30;
+  @apply bg-success-soft text-success ring-success/20 dark:bg-success/15 dark:text-tea-300 dark:ring-success/30;
 }
+/* sky → info（黛蓝·信息/同步） */
 .empty-state-icon-frame--sky {
-  @apply bg-sky-50 text-sky-500 ring-sky-200/70 dark:bg-sky-500/15 dark:text-sky-300 dark:ring-sky-500/30;
+  @apply bg-info-soft text-info ring-info/20 dark:bg-info/15 dark:text-info dark:ring-info/30;
 }
+/* violet → info（装饰无明确语义，归最接近的信息态） */
 .empty-state-icon-frame--violet {
-  @apply bg-violet-50 text-violet-500 ring-violet-200/70 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30;
+  @apply bg-info-soft text-info ring-info/20 dark:bg-info/15 dark:text-info dark:ring-info/30;
 }
+/* rose → danger（印章红·错误/危险） */
 .empty-state-icon-frame--rose {
-  @apply bg-rose-50 text-rose-500 ring-rose-200/70 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/30;
+  @apply bg-danger-soft text-danger ring-danger/20 dark:bg-danger/15 dark:text-danger dark:ring-danger/30;
 }
+/* amber → warning（茶橘·警告/告警） */
 .empty-state-icon-frame--amber {
-  @apply bg-amber-50 text-amber-500 ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30;
+  @apply bg-warning-soft text-warning ring-warning/20 dark:bg-warning/15 dark:text-warning dark:ring-warning/30;
 }
+/* indigo → info（信息装饰，归最接近的信息态） */
 .empty-state-icon-frame--indigo {
-  @apply bg-indigo-50 text-indigo-500 ring-indigo-200/70 dark:bg-indigo-500/15 dark:text-indigo-300 dark:ring-indigo-500/30;
+  @apply bg-info-soft text-info ring-info/20 dark:bg-info/15 dark:text-info dark:ring-info/30;
 }
 
 .empty-state-icon,

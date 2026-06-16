@@ -73,7 +73,7 @@
               </div>
               <span
                 v-if="item.admin_unread_count > 0"
-                class="min-w-[20px] rounded-full bg-rose-500 px-1.5 text-center text-2xs font-semibold leading-5 text-white"
+                class="min-w-[20px] rounded-full bg-danger px-1.5 text-center text-2xs font-semibold leading-5 text-white"
               >
                 {{ item.admin_unread_count > 99 ? '99+' : item.admin_unread_count }}
               </span>
@@ -94,7 +94,7 @@
                 <span
                   class="rounded-full px-2 py-0.5 text-xs font-medium"
                   :class="selectedConversation.status === 'open'
-                    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                    ? 'bg-success-soft text-success dark:bg-success/15 dark:text-tea-300'
                     : 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-dark-300'"
                 >
                   {{ selectedConversation.status === 'open' ? t('support.statuses.open') : t('support.statuses.closed') }}
@@ -169,7 +169,7 @@
                 <Icon name="arrowRight" size="sm" />
               </button>
             </form>
-            <p v-if="errorMessage" class="mt-2 text-xs text-rose-600 dark:text-rose-400">{{ errorMessage }}</p>
+            <p v-if="errorMessage" class="mt-2 text-xs text-danger dark:text-danger">{{ errorMessage }}</p>
           </footer>
         </template>
 

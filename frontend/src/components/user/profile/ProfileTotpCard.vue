@@ -69,7 +69,7 @@
       </div>
 
       <!-- 2FA Not Enabled -->
-      <div v-else class="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-slate-50 p-4 dark:border-dark-700 dark:bg-dark-800/70 sm:flex-row sm:items-center sm:justify-between">
+      <div v-else class="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-dark-700 dark:bg-dark-800/70 sm:flex-row sm:items-center sm:justify-between">
         <div class="flex items-center gap-4">
           <div class="flex-shrink-0 rounded-2xl bg-white p-3 shadow-sm dark:bg-dark-900">
             <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">

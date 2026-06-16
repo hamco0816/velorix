@@ -194,7 +194,7 @@ function onNextPage() {
       </div>
     </div>
 
-    <div v-if="errorMessage" class="mb-4 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-600 dark:bg-red-900/20 dark:text-red-400">
+    <div v-if="errorMessage" class="mb-4 rounded-lg bg-danger-soft px-3 py-2 text-xs text-danger dark:bg-danger-soft dark:text-danger">
       {{ errorMessage }}
     </div>
 

@@ -20,7 +20,7 @@
                   ? 'bg-blue-500'
                   : isAntigravity
                     ? 'bg-indigo-500'
-                    : 'bg-orange-500'
+                    : 'bg-brand-500'
             ]"
           >
             <Icon name="sparkles" size="md" class="text-white" />
@@ -83,10 +83,10 @@
             :class="[
               'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
               geminiOAuthType === 'google_one'
-                ? 'bg-purple-500 text-white'
+                ? 'bg-info text-white'
                 : geminiOAuthType === 'code_assist'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-amber-500 text-white'
+                  ? 'bg-brand-500 text-white'
+                  : 'bg-warning text-white'
             ]"
           >
             <Icon v-if="geminiOAuthType === 'google_one'" name="user" size="sm" />

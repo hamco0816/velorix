@@ -267,16 +267,16 @@ function getTypeBadge(log: OpsErrorLog): { label: string; className: string } {
   const owner = String(log.error_owner || '').toLowerCase()
 
   if (isUpstreamRow(log)) {
-    return { label: t('admin.ops.errorLog.typeUpstream'), className: 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-900/30 dark:text-red-400 dark:ring-red-500/30' }
+    return { label: t('admin.ops.errorLog.typeUpstream'), className: 'bg-danger-soft text-danger ring-danger/30 dark:bg-danger/15 dark:text-danger dark:ring-danger/30' }
   }
   if (phase === 'request' && owner === 'client') {
-    return { label: t('admin.ops.errorLog.typeRequest'), className: 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-400 dark:ring-amber-500/30' }
+    return { label: t('admin.ops.errorLog.typeRequest'), className: 'bg-warning-soft text-warning ring-warning/30 dark:bg-warning/15 dark:text-brand-300 dark:ring-warning/30' }
   }
   if (phase === 'auth' && owner === 'client') {
-    return { label: t('admin.ops.errorLog.typeAuth'), className: 'bg-blue-50 text-blue-700 ring-blue-600/20 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-500/30' }
+    return { label: t('admin.ops.errorLog.typeAuth'), className: 'bg-info-soft text-info ring-info/30 dark:bg-info/15 dark:text-info dark:ring-info/30' }
   }
   if (phase === 'routing' && owner === 'platform') {
-    return { label: t('admin.ops.errorLog.typeRouting'), className: 'bg-purple-50 text-purple-700 ring-purple-600/20 dark:bg-purple-900/30 dark:text-purple-400 dark:ring-purple-500/30' }
+    return { label: t('admin.ops.errorLog.typeRouting'), className: 'bg-info-soft text-info ring-info/30 dark:bg-info/15 dark:text-info dark:ring-info/30' }
   }
   if (phase === 'internal' && owner === 'platform') {
     return { label: t('admin.ops.errorLog.typeInternal'), className: 'bg-gray-100 text-gray-800 ring-gray-600/20 dark:bg-dark-700 dark:text-gray-200 dark:ring-dark-500/40' }
@@ -304,10 +304,10 @@ defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 function getStatusClass(code: number): string {
-  if (code >= 500) return 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-900/30 dark:text-red-400 dark:ring-red-500/30'
-  if (code === 429) return 'bg-purple-50 text-purple-700 ring-purple-600/20 dark:bg-purple-900/30 dark:text-purple-400 dark:ring-purple-500/30'
-  if (code >= 400) return 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-400 dark:ring-amber-500/30'
-  return 'bg-gray-50 text-gray-700 ring-gray-600/20 dark:bg-gray-900/30 dark:text-gray-400 dark:ring-gray-500/30'
+  if (code >= 500) return 'bg-danger-soft text-danger ring-danger/30 dark:bg-danger/15 dark:text-danger dark:ring-danger/30'
+  if (code === 429) return 'bg-info-soft text-info ring-info/30 dark:bg-info/15 dark:text-info dark:ring-info/30'
+  if (code >= 400) return 'bg-warning-soft text-warning ring-warning/30 dark:bg-warning/15 dark:text-brand-300 dark:ring-warning/30'
+  return 'bg-gray-50 text-gray-700 ring-gray-600/20 dark:bg-dark-800 dark:text-gray-400 dark:ring-dark-600'
 }
 
 function formatSmartMessage(msg: string): string {

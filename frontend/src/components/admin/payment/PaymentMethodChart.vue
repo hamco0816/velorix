@@ -49,12 +49,13 @@ const props = defineProps<{
   methods: { type: string; amount: number; count: number }[]
 }>()
 
+// 进度条按支付渠道使用各品牌识别真彩（支付宝蓝 / 微信绿 / Stripe 紫），与全站收银台保持一致
 const barColorMap: Record<string, string> = {
-  alipay: 'bg-blue-500',
-  wxpay: 'bg-green-500',
-  alipay_direct: 'bg-blue-400',
-  wxpay_direct: 'bg-green-400',
-  stripe: 'bg-purple-500',
+  alipay: 'bg-[#00AEEF]',
+  wxpay: 'bg-[#2BB741]',
+  alipay_direct: 'bg-[#00AEEF]/70',
+  wxpay_direct: 'bg-[#2BB741]/70',
+  stripe: 'bg-[#635bff]',
 }
 
 const maxAmount = computed(() => {

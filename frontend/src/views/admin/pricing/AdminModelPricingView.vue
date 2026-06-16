@@ -136,8 +136,8 @@
                 <td class="px-4 py-2.5 text-right font-mono tabular-nums text-gray-700 dark:text-gray-300">{{ formatPriceMTok(row.cache_read_input_token_cost) }}</td>
                 <td class="px-4 py-2.5 text-right font-mono tabular-nums text-gray-700 dark:text-gray-300">{{ formatPriceMTok(row.cache_creation_input_token_cost) }}</td>
                 <td class="px-4 py-2.5 text-center text-xs">
-                  <span v-if="row.supports_prompt_caching" class="mr-1 inline-block rounded bg-emerald-100 px-1.5 py-0.5 text-2xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300" :title="t('admin.pricing.flagCachingTip')">cache</span>
-                  <span v-if="row.supports_service_tier" class="mr-1 inline-block rounded bg-violet-100 px-1.5 py-0.5 text-2xs font-medium text-violet-700 dark:bg-violet-900/30 dark:text-violet-300" :title="t('admin.pricing.flagPriorityTip')">priority</span>
+                  <span v-if="row.supports_prompt_caching" class="mr-1 inline-block rounded bg-success-soft px-1.5 py-0.5 text-2xs font-medium text-success dark:bg-success/15 dark:text-tea-300" :title="t('admin.pricing.flagCachingTip')">cache</span>
+                  <span v-if="row.supports_service_tier" class="mr-1 inline-block rounded bg-info-soft px-1.5 py-0.5 text-2xs font-medium text-info dark:bg-info/15 dark:text-info" :title="t('admin.pricing.flagPriorityTip')">priority</span>
                   <span v-if="row.mode" class="inline-block rounded bg-gray-100 px-1.5 py-0.5 text-2xs font-medium text-gray-600 dark:bg-dark-700 dark:text-gray-300">{{ row.mode }}</span>
                 </td>
               </tr>
@@ -286,8 +286,8 @@ const effectiveMultiplier = computed(() => {
 
 const multiplierColor = computed(() => {
   const m = effectiveMultiplier.value
-  if (m > 1.001) return 'text-red-600 dark:text-red-400'
-  if (m < 0.999) return 'text-emerald-600 dark:text-emerald-400'
+  if (m > 1.001) return 'text-danger dark:text-danger'
+  if (m < 0.999) return 'text-success dark:text-tea-300'
   return 'text-gray-700 dark:text-gray-300'
 })
 

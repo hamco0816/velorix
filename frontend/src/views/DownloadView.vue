@@ -7,7 +7,7 @@
           <div class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg ring-1 ring-gray-200 dark:ring-dark-700">
             <img :src="siteLogo" alt="Logo" class="h-full w-full object-contain" />
           </div>
-          <span class="text-base font-semibold tracking-tight text-gray-900 dark:text-white">{{ siteName }}</span>
+          <span class="font-display text-base font-semibold italic tracking-tight text-gray-900 dark:text-white">{{ siteName }}</span>
         </router-link>
         <div class="flex items-center gap-2">
           <router-link to="/" class="btn btn-ghost btn-sm hidden sm:inline-flex">{{ t('download.backHome') }}</router-link>
@@ -19,8 +19,8 @@
     <!-- ============== Hero ============== -->
     <section class="relative overflow-hidden">
       <div class="pointer-events-none absolute inset-0">
-        <div class="absolute inset-x-0 top-0 h-[560px] bg-gradient-to-b from-amber-50/70 via-orange-50/30 to-transparent dark:from-brand-500/[0.04] dark:via-amber-500/[0.02]"></div>
-        <div class="absolute inset-0 bg-[linear-gradient(rgba(120,113,108,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(120,113,108,0.05)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_top,black_5%,transparent_70%)]"></div>
+        <div class="absolute inset-x-0 top-0 h-[560px] bg-gradient-to-b from-brand-50/70 via-brand-100/30 to-transparent dark:from-brand-500/[0.04] dark:via-brand-500/[0.02]"></div>
+        <div class="absolute inset-0 bg-[linear-gradient(theme(colors.primary.500/0.05)_1px,transparent_1px),linear-gradient(90deg,theme(colors.primary.500/0.05)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_top,black_5%,transparent_70%)]"></div>
         <div class="absolute -right-32 top-24 h-[440px] w-[440px] rounded-full bg-brand-300/25 blur-[100px] dark:bg-brand-500/10"></div>
       </div>
 
@@ -184,11 +184,11 @@ const downloadHref = computed(() => latest.value?.setup_url || '')
 
 const features = [
   { key: 'cli', icon: 'terminal', iconBg: 'bg-brand-50 dark:bg-brand-500/15', iconColor: 'text-brand-600 dark:text-brand-400' },
-  { key: 'workspace', icon: 'grid', iconBg: 'bg-blue-50 dark:bg-blue-500/15', iconColor: 'text-blue-600 dark:text-blue-400' },
-  { key: 'chat', icon: 'chat', iconBg: 'bg-emerald-50 dark:bg-emerald-500/15', iconColor: 'text-emerald-600 dark:text-emerald-400' },
-  { key: 'image', icon: 'sparkles', iconBg: 'bg-violet-50 dark:bg-violet-500/15', iconColor: 'text-violet-600 dark:text-violet-400' },
-  { key: 'billing', icon: 'creditCard', iconBg: 'bg-amber-50 dark:bg-amber-500/15', iconColor: 'text-amber-600 dark:text-amber-400' },
-  { key: 'update', icon: 'refresh', iconBg: 'bg-sky-50 dark:bg-sky-500/15', iconColor: 'text-sky-600 dark:text-sky-400' },
+  { key: 'workspace', icon: 'grid', iconBg: 'bg-info-soft dark:bg-info/15', iconColor: 'text-info dark:text-info' },
+  { key: 'chat', icon: 'chat', iconBg: 'bg-success-soft dark:bg-success/15', iconColor: 'text-success dark:text-success' },
+  { key: 'image', icon: 'sparkles', iconBg: 'bg-tea-50 dark:bg-tea-500/15', iconColor: 'text-tea-600 dark:text-tea-400' },
+  { key: 'billing', icon: 'creditCard', iconBg: 'bg-warning-soft dark:bg-warning/15', iconColor: 'text-warning dark:text-warning' },
+  { key: 'update', icon: 'refresh', iconBg: 'bg-info-soft dark:bg-info/15', iconColor: 'text-info dark:text-info' },
 ] as const
 
 const requirements = [

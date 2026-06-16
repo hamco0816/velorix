@@ -99,10 +99,10 @@ watch(
 // Label background colors
 const labelClass = computed(() => {
   const colors = {
-    indigo: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300',
-    emerald: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
-    purple: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
-    amber: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
+    indigo: 'bg-info-soft text-info dark:bg-info-deep/30 dark:text-info',
+    emerald: 'bg-success-soft text-success dark:bg-success-deep/30 dark:text-tea-300',
+    purple: 'bg-brand-50 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300',
+    amber: 'bg-warning-soft text-warning dark:bg-warning-deep/30 dark:text-brand-300'
   }
   return colors[props.color]
 })
@@ -110,20 +110,20 @@ const labelClass = computed(() => {
 // Progress bar color based on utilization
 const barClass = computed(() => {
   if (props.utilization >= 100) {
-    return 'bg-red-500'
+    return 'bg-danger'
   } else if (props.utilization >= 80) {
-    return 'bg-amber-500'
+    return 'bg-warning'
   } else {
-    return 'bg-green-500'
+    return 'bg-success'
   }
 })
 
 // Text color based on utilization
 const textClass = computed(() => {
   if (props.utilization >= 100) {
-    return 'text-red-600 dark:text-red-400'
+    return 'text-danger dark:text-danger'
   } else if (props.utilization >= 80) {
-    return 'text-amber-600 dark:text-amber-400'
+    return 'text-warning dark:text-warning'
   } else {
     return 'text-gray-600 dark:text-gray-400'
   }

@@ -326,8 +326,8 @@
                 class="group/ex relative inline-flex cursor-pointer items-center gap-1 whitespace-nowrap text-xs"
                 @click.stop="toggleExpandedGroup(row.id)"
               >
-                <Icon name="shield" size="xs" class="h-3.5 w-3.5 text-purple-500 dark:text-purple-400" />
-                <span class="font-medium text-purple-600 dark:text-purple-400">{{ getUserGroups(row).exclusive.length }}</span>
+                <Icon name="shield" size="xs" class="h-3.5 w-3.5 text-info dark:text-info" />
+                <span class="font-medium text-info dark:text-info">{{ getUserGroups(row).exclusive.length }}</span>
                 <span class="text-gray-500 dark:text-dark-400">{{ t('admin.users.exclusiveLabel') }}</span>
                 <!-- Hover tooltip（操作菜单未打开时显示） -->
                 <div
@@ -425,7 +425,7 @@
               </div>
               <button
                 @click.stop="handleDeposit(row)"
-                class="rounded-md px-2 py-0.5 text-xs font-medium text-emerald-600 transition-colors hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/20"
+                class="rounded-md px-2 py-0.5 text-xs font-medium text-success transition-colors hover:bg-success-soft dark:text-success dark:hover:bg-success-deep/30"
                 :title="t('admin.users.deposit')"
               >
                 {{ t('admin.users.deposit') }}
@@ -461,7 +461,7 @@
             <span
               class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium"
               :class="value === 'active'
-                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                ? 'bg-success-soft text-success dark:bg-success/15 dark:text-tea-300'
                 : 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-dark-300'"
             >
               <span
@@ -470,11 +470,11 @@
               >
                 <span
                   v-if="value === 'active'"
-                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70"
+                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-70"
                 ></span>
                 <span
                   class="relative inline-flex h-1.5 w-1.5 rounded-full"
-                  :class="value === 'active' ? 'bg-emerald-500' : 'bg-gray-400'"
+                  :class="value === 'active' ? 'bg-success' : 'bg-gray-400'"
                 ></span>
               </span>
               {{ value === 'active' ? t('common.active') : t('admin.users.disabled') }}
@@ -515,8 +515,8 @@
                 :class="[
                   'flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors',
                   row.status === 'active'
-                    ? 'hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-orange-900/20 dark:hover:text-orange-400'
-                    : 'hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/20 dark:hover:text-green-400'
+                    ? 'hover:bg-warning-soft hover:text-warning dark:hover:bg-warning-deep/30 dark:hover:text-warning'
+                    : 'hover:bg-success-soft hover:text-success dark:hover:bg-success-deep/30 dark:hover:text-success'
                 ]"
               >
                 <Icon v-if="row.status === 'active'" name="ban" size="sm" />
@@ -595,7 +595,7 @@
                 @click="handleDeposit(user); closeActionMenu()"
                 class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
               >
-                <Icon name="plus" size="sm" class="text-emerald-500" :stroke-width="2" />
+                <Icon name="plus" size="sm" class="text-success" :stroke-width="2" />
                 {{ t('admin.users.deposit') }}
               </button>
 
@@ -604,7 +604,7 @@
                 @click="handleWithdraw(user); closeActionMenu()"
                 class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-dark-700"
               >
-                <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg class="h-4 w-4 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
                 </svg>
                 {{ t('admin.users.withdraw') }}
@@ -625,7 +625,7 @@
               <button
                 v-if="user.role !== 'admin'"
                 @click="handleDelete(user); closeActionMenu()"
-                class="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+                class="flex w-full items-center gap-2 px-4 py-2 text-sm text-danger hover:bg-danger-soft dark:text-danger dark:hover:bg-danger-deep/30"
               >
                 <Icon name="trash" size="sm" :stroke-width="2" />
                 {{ t('common.delete') }}
@@ -682,15 +682,16 @@ import GroupReplaceModal from '@/components/admin/user/GroupReplaceModal.vue'
 const appStore = useAppStore()
 
 // 头像背景色：根据邮箱/用户名首字符 hash 到 8 种柔和的 colored bg，让用户列表有"丰富但克制"的视觉
+// 全部取自宣纸墨色令牌色板（茶橘 brand / 竹青 tea / 暖墨 primary）的不同档位，保持品牌一致
 const AVATAR_PALETTES = [
   'bg-brand-100 text-brand-700 dark:bg-brand-500/20 dark:text-brand-300',
-  'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300',
-  'bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300',
-  'bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300',
-  'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300',
-  'bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300',
-  'bg-teal-100 text-teal-700 dark:bg-teal-500/20 dark:text-teal-300',
-  'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300'
+  'bg-tea-100 text-tea-700 dark:bg-tea-500/20 dark:text-tea-300',
+  'bg-primary-100 text-primary-700 dark:bg-primary-500/20 dark:text-primary-300',
+  'bg-brand-200 text-brand-800 dark:bg-brand-600/20 dark:text-brand-200',
+  'bg-tea-200 text-tea-800 dark:bg-tea-600/20 dark:text-tea-200',
+  'bg-primary-200 text-primary-800 dark:bg-primary-600/20 dark:text-primary-200',
+  'bg-brand-50 text-brand-600 dark:bg-brand-400/20 dark:text-brand-300',
+  'bg-tea-50 text-tea-600 dark:bg-tea-400/20 dark:text-tea-300'
 ]
 const avatarBgClass = (key: string): string => {
   if (!key) return AVATAR_PALETTES[0]
@@ -699,11 +700,11 @@ const avatarBgClass = (key: string): string => {
   return AVATAR_PALETTES[Math.abs(hash) % AVATAR_PALETTES.length]
 }
 
-// 余额色编码：负数红警示、低余额（<1）amber、正常 emerald
+// 余额色编码：负数印章红警示、低余额（<1）茶橘警告、正常竹青
 const balanceColorClass = (v: number): string => {
-  if (v < 0) return 'text-red-600 dark:text-red-400'
-  if (v < 1) return 'text-amber-600 dark:text-amber-400'
-  return 'text-emerald-600 dark:text-emerald-400'
+  if (v < 0) return 'text-danger dark:text-danger'
+  if (v < 1) return 'text-warning dark:text-warning'
+  return 'text-success dark:text-success'
 }
 
 // Generate dynamic attribute columns from enabled definitions

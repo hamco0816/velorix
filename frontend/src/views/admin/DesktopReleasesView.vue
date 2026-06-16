@@ -48,14 +48,14 @@
             <span
               class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium"
               :class="value === 'active'
-                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                ? 'bg-success-soft text-success dark:bg-success/15 dark:text-tea-300'
                 : value === 'rolledback'
-                  ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+                  ? 'bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning'
                   : 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'"
             >
               <span class="relative flex h-1.5 w-1.5">
-                <span v-if="value === 'active'" class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70"></span>
-                <span class="relative inline-flex h-1.5 w-1.5 rounded-full" :class="value === 'active' ? 'bg-emerald-500' : value === 'rolledback' ? 'bg-amber-500' : 'bg-gray-400'"></span>
+                <span v-if="value === 'active'" class="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-70"></span>
+                <span class="relative inline-flex h-1.5 w-1.5 rounded-full" :class="value === 'active' ? 'bg-success' : value === 'rolledback' ? 'bg-warning' : 'bg-gray-400'"></span>
               </span>
               {{ statusLabel(value) }}
             </span>
@@ -64,7 +64,7 @@
           <template #cell-mandatory="{ value }">
             <span
               v-if="value"
-              class="inline-flex items-center gap-1 rounded-md bg-red-50 px-2 py-0.5 text-xs font-medium text-red-600 dark:bg-red-900/20 dark:text-red-400"
+              class="inline-flex items-center gap-1 rounded-md bg-danger-soft px-2 py-0.5 text-xs font-medium text-danger dark:bg-danger/15 dark:text-danger"
             >
               <Icon name="exclamationTriangle" size="xs" />
               {{ t('admin.desktopReleases.mandatoryYes') }}
@@ -85,7 +85,7 @@
               <button
                 v-if="row.status !== 'active'"
                 @click="handleRollback(row)"
-                class="rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
+                class="rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-info-soft hover:text-info dark:hover:bg-info/15 dark:hover:text-info"
                 :title="t('admin.desktopReleases.rollback')"
               >
                 <Icon name="refresh" size="sm" />
@@ -93,12 +93,12 @@
               <button
                 v-if="row.status !== 'active'"
                 @click="handleDelete(row)"
-                class="rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                class="rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-danger-soft hover:text-danger dark:hover:bg-danger/15 dark:hover:text-danger"
                 :title="t('common.delete')"
               >
                 <Icon name="trash" size="sm" />
               </button>
-              <span v-if="row.status === 'active'" class="text-2xs text-emerald-600 dark:text-emerald-400">{{ t('admin.desktopReleases.currentTag') }}</span>
+              <span v-if="row.status === 'active'" class="text-2xs text-success dark:text-tea-300">{{ t('admin.desktopReleases.currentTag') }}</span>
             </div>
           </template>
 
@@ -152,12 +152,12 @@
 
         <div class="space-y-3 rounded-lg border border-gray-200 bg-gray-50/60 p-3 dark:border-dark-700 dark:bg-dark-800/40">
           <div>
-            <label class="input-label">{{ t('admin.desktopReleases.form.setupFile') }} <span class="text-red-500">*</span></label>
+            <label class="input-label">{{ t('admin.desktopReleases.form.setupFile') }} <span class="text-danger">*</span></label>
             <input type="file" accept=".exe" class="input" @change="onFileChange($event, 'setup')" />
             <p class="input-hint">{{ t('admin.desktopReleases.form.setupHint') }}</p>
           </div>
           <div>
-            <label class="input-label">{{ t('admin.desktopReleases.form.latestYml') }} <span class="text-red-500">*</span></label>
+            <label class="input-label">{{ t('admin.desktopReleases.form.latestYml') }} <span class="text-danger">*</span></label>
             <input type="file" accept=".yml,.yaml" class="input" @change="onFileChange($event, 'latestYml')" />
             <p class="input-hint">{{ t('admin.desktopReleases.form.latestHint') }}</p>
           </div>

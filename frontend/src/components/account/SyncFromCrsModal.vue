@@ -22,7 +22,7 @@
         {{ t('admin.accounts.crsUpdateBehaviorNote') }}
       </div>
       <div
-        class="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-600 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400"
+        class="rounded-lg border border-warning/30 bg-warning-soft p-3 text-xs text-warning-deep dark:border-warning/20 dark:bg-warning/15 dark:text-warning"
       >
         {{ t('admin.accounts.crsVersionRequirement') }}
       </div>
@@ -87,7 +87,7 @@
             class="flex items-center gap-2 py-0.5"
           >
             <span
-              class="inline-block rounded bg-blue-100 px-1.5 py-0.5 text-2xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+              class="inline-block rounded bg-info-soft px-1.5 py-0.5 text-2xs font-medium text-info dark:bg-info/15 dark:text-info-soft"
             >{{ acc.platform }} / {{ acc.type }}</span>
             <span class="truncate">{{ acc.name }}</span>
           </div>
@@ -104,7 +104,7 @@
           <div class="flex gap-2">
             <button
               type="button"
-              class="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400"
+              class="text-xs text-info hover:text-info-deep dark:text-info-soft"
               @click="selectAll"
             >{{ t('admin.accounts.crsSelectAll') }}</button>
             <button
@@ -129,7 +129,7 @@
               @change="toggleSelect(acc.crs_account_id)"
             />
             <span
-              class="inline-block rounded bg-green-100 px-1.5 py-0.5 text-2xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400"
+              class="inline-block rounded bg-success-soft px-1.5 py-0.5 text-2xs font-medium text-success dark:bg-success/15 dark:text-success-soft"
             >{{ acc.platform }} / {{ acc.type }}</span>
             <span class="truncate text-sm text-gray-700 dark:text-dark-300">{{ acc.name }}</span>
           </label>
@@ -142,7 +142,7 @@
       <!-- Sync options summary -->
       <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-dark-400">
         <span>{{ t('admin.accounts.syncProxies') }}:</span>
-        <span :class="form.sync_proxies ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-dark-500'">
+        <span :class="form.sync_proxies ? 'text-success dark:text-success-soft' : 'text-gray-400 dark:text-dark-500'">
           {{ form.sync_proxies ? t('common.yes') : t('common.no') }}
         </span>
       </div>
@@ -172,7 +172,7 @@
         </div>
 
         <div v-if="errorItems.length" class="mt-2">
-          <div class="text-sm font-medium text-red-600 dark:text-red-400">
+          <div class="text-sm font-medium text-danger dark:text-danger-soft">
             {{ t('admin.accounts.syncErrors') }}
           </div>
           <div

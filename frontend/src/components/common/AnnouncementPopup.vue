@@ -12,13 +12,13 @@
           <!-- Header（保持公告语义的暖色但去除装饰渐变球） -->
           <div class="border-b border-gray-200 bg-white px-8 py-5 dark:border-dark-700 dark:bg-dark-800">
             <div class="mb-3 flex items-center gap-2">
-              <div class="flex h-9 w-9 items-center justify-center rounded bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400">
+              <div class="flex h-9 w-9 items-center justify-center rounded bg-warning-soft text-warning dark:bg-warning/10 dark:text-warning">
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
               </div>
-              <span class="inline-flex items-center gap-1.5 rounded bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
-                <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+              <span class="inline-flex items-center gap-1.5 rounded bg-warning-soft px-2 py-0.5 text-xs font-medium text-warning dark:bg-warning/10 dark:text-warning">
+                <span class="h-1.5 w-1.5 rounded-full bg-warning"></span>
                 {{ t('announcements.unread') }}
               </span>
             </div>
@@ -37,7 +37,7 @@
 
           <!-- Body -->
           <div class="max-h-[50vh] overflow-y-auto bg-white px-8 py-8 dark:bg-dark-800">
-            <div class="border-l-2 border-amber-500 pl-6">
+            <div class="border-l-2 border-warning pl-6">
               <div
                 class="markdown-body prose prose-sm max-w-none dark:prose-invert"
                 v-html="renderedContent"
@@ -136,11 +136,11 @@ watch(
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #cbd5e1, #94a3b8);
+  background: linear-gradient(to bottom, #c8bfa9, #b4ab98);
   border-radius: 4px;
 }
 
 .dark .overflow-y-auto::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #4b5563, #374151);
+  background: linear-gradient(to bottom, #5c5649, #46413a);
 }
 </style>

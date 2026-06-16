@@ -8,7 +8,7 @@
 <template>
   <div class="empty-state">
     <div
-      class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-500 ring-1 ring-inset ring-red-200/70 dark:bg-red-500/15 dark:text-red-300 dark:ring-red-500/30"
+      class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-danger-soft text-danger ring-1 ring-inset ring-danger/20 dark:bg-danger/15 dark:text-danger dark:ring-danger/30"
     >
       <slot name="icon">
         <Icon name="xCircle" class="h-7 w-7" :stroke-width="1.75" />

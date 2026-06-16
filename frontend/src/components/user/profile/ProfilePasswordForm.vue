@@ -35,7 +35,7 @@
             type="password"
             required
             autocomplete="current-password"
-            class="input bg-slate-50/70 dark:bg-dark-800"
+            class="input bg-gray-50/70 dark:bg-dark-800"
           />
         </div>
 
@@ -49,7 +49,7 @@
             type="password"
             required
             autocomplete="new-password"
-            class="input bg-slate-50/70 dark:bg-dark-800"
+            class="input bg-gray-50/70 dark:bg-dark-800"
           />
           <p v-if="!props.embedded" class="input-hint">
             {{ t('profile.passwordHint') }}
@@ -66,7 +66,7 @@
             type="password"
             required
             autocomplete="new-password"
-            class="input bg-slate-50/70 dark:bg-dark-800"
+            class="input bg-gray-50/70 dark:bg-dark-800"
           />
         </div>
 

@@ -45,11 +45,11 @@ export function useChannelMonitorFormat() {
   function statusBadgeClass(s: MonitorStatus | ''): string {
     switch (s) {
       case STATUS_OPERATIONAL:
-        return 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30'
+        return 'bg-success-soft text-success ring-1 ring-inset ring-success/30 dark:bg-success/15 dark:text-tea-300 dark:ring-success/30'
       case STATUS_DEGRADED:
-        return 'bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30'
+        return 'bg-warning-soft text-warning ring-1 ring-inset ring-warning/30 dark:bg-warning/15 dark:text-brand-300 dark:ring-warning/30'
       case STATUS_FAILED:
-        return 'bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-200/70 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/30'
+        return 'bg-danger-soft text-danger ring-1 ring-inset ring-danger/30 dark:bg-danger/15 dark:text-danger dark:ring-danger/30'
       case STATUS_ERROR:
       default:
         return NEUTRAL_BADGE
@@ -59,11 +59,11 @@ export function useChannelMonitorFormat() {
   function statusDotClass(s: MonitorStatus | ''): string {
     switch (s) {
       case STATUS_OPERATIONAL:
-        return 'bg-emerald-500 animate-pulse'
+        return 'bg-success animate-pulse'
       case STATUS_DEGRADED:
-        return 'bg-amber-500 animate-pulse'
+        return 'bg-warning animate-pulse'
       case STATUS_FAILED:
-        return 'bg-rose-500 animate-pulse'
+        return 'bg-danger animate-pulse'
       case STATUS_ERROR:
       default:
         return 'bg-gray-400'
@@ -84,7 +84,7 @@ export function useChannelMonitorFormat() {
       case PROVIDER_ANTHROPIC:
         return 'bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300'
       case PROVIDER_GEMINI:
-        return 'bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300'
+        return 'bg-info-soft text-info-deep dark:bg-info/15 dark:text-info'
       default:
         return NEUTRAL_BADGE
     }
@@ -92,7 +92,7 @@ export function useChannelMonitorFormat() {
 
   /**
    * Tailwind class for a provider radio-button-style picker (active/inactive state).
-   * Reuses the same emerald/orange/sky palette as providerBadgeClass to keep
+   * Reuses the same emerald/orange/info palette as providerBadgeClass to keep
    * visual semantics consistent across badges and pickers.
    */
   function providerPickerClass(p: Provider | string, active: boolean): string {
@@ -107,8 +107,8 @@ export function useChannelMonitorFormat() {
           : 'border-gray-200 bg-white text-gray-600 hover:border-orange-300 hover:text-orange-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-orange-500/50'
       case PROVIDER_GEMINI:
         return active
-          ? 'border-sky-500 bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300 dark:border-sky-400'
-          : 'border-gray-200 bg-white text-gray-600 hover:border-sky-300 hover:text-sky-700 dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-sky-500/50'
+          ? 'border-info bg-info-soft text-info-deep dark:bg-info/15 dark:text-info dark:border-info'
+          : 'border-gray-200 bg-white text-gray-600 hover:border-info/60 hover:text-info-deep dark:border-dark-700 dark:bg-dark-800 dark:text-gray-400 dark:hover:border-info/50'
       default:
         return active
           ? 'border-gray-400 bg-gray-50 text-gray-700 dark:border-dark-500 dark:bg-dark-700 dark:text-gray-200'
@@ -180,7 +180,7 @@ export function providerGradient(provider: string): string {
     case PROVIDER_ANTHROPIC:
       return 'bg-gradient-to-br from-orange-50 to-amber-100 dark:from-orange-500/10 dark:to-amber-500/20'
     case PROVIDER_GEMINI:
-      return 'bg-gradient-to-br from-sky-50 to-indigo-100 dark:from-sky-500/10 dark:to-indigo-500/20'
+      return 'bg-gradient-to-br from-info-soft to-info-soft dark:from-info/10 dark:to-info/20'
     default:
       return 'bg-gradient-to-br from-gray-100 to-gray-200 dark:from-dark-700 dark:to-dark-600'
   }

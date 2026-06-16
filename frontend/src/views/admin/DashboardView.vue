@@ -3,8 +3,8 @@
     <div class="space-y-8">
       <!-- 工具栏：sm 起两端对齐，小屏 stack 避免溢出 -->
       <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-        <span class="inline-flex w-fit items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
-          <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+        <span class="inline-flex w-fit items-center gap-1.5 rounded-full bg-success-soft px-2.5 py-1 text-xs font-medium text-success dark:bg-success/15 dark:text-tea-300">
+          <span class="h-1.5 w-1.5 rounded-full bg-success"></span>
           {{ t('admin.dashboard.liveUpdated') }} {{ lastUpdatedLabel }}
         </span>
         <div class="flex flex-wrap items-center gap-2">
@@ -57,7 +57,7 @@
                 <span class="font-medium text-gray-700 dark:text-gray-300">{{ formatNumber(stats.total_requests) }}</span>
               </p>
               <div v-if="hasSparkData(requestsSeries)" class="kpi-card-spark">
-                <SparklineMini :data="requestsSeries" color="#f97316" :height="40" />
+                <SparklineMini :data="requestsSeries" color="#c56b3e" :height="40" />
               </div>
             </div>
 
@@ -74,29 +74,29 @@
               <div class="kpi-card-hint space-y-0.5 tabular-nums">
                 <p>
                   <span :title="t('usage.tokenIconHint.input')" class="cursor-help">
-                    <Icon name="arrowDown" size="xs" class="mr-0.5 inline-block text-emerald-500" />
+                    <Icon name="arrowDown" size="xs" class="mr-0.5 inline-block text-success" />
                     <span>{{ formatTokens(stats.today_input_tokens) }}</span>
                   </span>
                   <span class="mx-1 text-gray-300 dark:text-dark-600">·</span>
                   <span :title="t('usage.tokenIconHint.output')" class="cursor-help">
-                    <Icon name="arrowUp" size="xs" class="mr-0.5 inline-block text-violet-500" />
+                    <Icon name="arrowUp" size="xs" class="mr-0.5 inline-block text-info" />
                     <span>{{ formatTokens(stats.today_output_tokens) }}</span>
                   </span>
                 </p>
                 <p v-if="hasTodayCache">
                   <span :title="t('usage.tokenIconHint.cacheRead')" class="cursor-help">
-                    <Icon name="inbox" size="xs" class="mr-0.5 inline-block text-sky-500" />
+                    <Icon name="inbox" size="xs" class="mr-0.5 inline-block text-info" />
                     <span>{{ formatTokens(stats.today_cache_read_tokens) }}</span>
                   </span>
                   <span class="mx-1 text-gray-300 dark:text-dark-600">·</span>
                   <span :title="t('usage.tokenIconHint.cacheWrite')" class="cursor-help">
-                    <Icon name="edit" size="xs" class="mr-0.5 inline-block text-amber-500" />
+                    <Icon name="edit" size="xs" class="mr-0.5 inline-block text-warning" />
                     <span>{{ formatTokens(stats.today_cache_creation_tokens) }}</span>
                   </span>
                 </p>
               </div>
               <div v-if="hasSparkData(tokensSeries)" class="kpi-card-spark">
-                <SparklineMini :data="tokensSeries" color="#8b5cf6" :height="40" />
+                <SparklineMini :data="tokensSeries" color="#3a5570" :height="40" />
               </div>
             </div>
 
@@ -116,7 +116,7 @@
                 <span :title="t('admin.dashboard.standard')">${{ formatCost(stats.today_cost) }}</span>
               </p>
               <div v-if="hasSparkData(costSeries)" class="kpi-card-spark">
-                <SparklineMini :data="costSeries" color="#10b981" :height="40" />
+                <SparklineMini :data="costSeries" color="#3d5a45" :height="40" />
               </div>
             </div>
 
@@ -138,9 +138,9 @@
                 <span class="font-medium text-gray-700 dark:text-gray-300">{{ formatNumber(stats.total_users) }}</span>
               </p>
               <div v-if="stats.today_new_users > 0" class="kpi-card-spark flex items-end pb-2">
-                <div class="h-1.5 w-full overflow-hidden rounded-full bg-sky-100 dark:bg-sky-500/15">
+                <div class="h-1.5 w-full overflow-hidden rounded-full bg-info-soft dark:bg-info/15">
                   <div
-                    class="h-full rounded-full bg-sky-500 transition-all"
+                    class="h-full rounded-full bg-info transition-all"
                     :style="{ width: `${userGrowthPercent}%` }"
                   ></div>
                 </div>
@@ -166,15 +166,15 @@
                 <p class="metric-value">{{ stats.total_accounts }}</p>
                 <p class="metric-hint">
                   <span class="inline-flex items-center gap-1">
-                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                    <span class="font-medium text-emerald-600 dark:text-emerald-400">{{ stats.normal_accounts }}</span>
+                    <span class="h-1.5 w-1.5 rounded-full bg-success"></span>
+                    <span class="font-medium text-success dark:text-tea-300">{{ stats.normal_accounts }}</span>
                     {{ t('common.active') }}
                   </span>
                   <template v-if="stats.error_accounts > 0">
                     <span class="mx-1.5 text-gray-300 dark:text-dark-600">·</span>
                     <span class="inline-flex items-center gap-1">
-                      <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
-                      <span class="font-medium text-red-600 dark:text-red-400">{{ stats.error_accounts }}</span>
+                      <span class="h-1.5 w-1.5 rounded-full bg-danger"></span>
+                      <span class="font-medium text-danger dark:text-danger">{{ stats.error_accounts }}</span>
                       {{ t('common.error') }}
                     </span>
                   </template>
@@ -191,7 +191,7 @@
                 <p class="metric-label">{{ t('admin.dashboard.apiKeys') }}</p>
                 <p class="metric-value">{{ stats.total_api_keys }}</p>
                 <p class="metric-hint">
-                  <span class="font-medium text-emerald-600 dark:text-emerald-400">{{ stats.active_api_keys }}</span>
+                  <span class="font-medium text-success dark:text-tea-300">{{ stats.active_api_keys }}</span>
                   {{ t('common.active') }}
                 </p>
               </div>
@@ -241,7 +241,7 @@
               </p>
               <p class="mt-2 flex items-baseline gap-2 tabular-nums">
                 <span class="text-[28px] font-semibold leading-none text-gray-900 dark:text-white">${{ formatCost(stats.total_actual_cost) }}</span>
-                <span class="rounded-full bg-emerald-50 px-2 py-0.5 text-2xs font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
+                <span class="rounded-full bg-success-soft px-2 py-0.5 text-2xs font-medium text-success dark:bg-success/15 dark:text-tea-300">
                   {{ t('admin.dashboard.actual') }}
                 </span>
               </p>
@@ -269,22 +269,22 @@
               <!-- 累计 Token 分解：input + output + cache 加起来等于总数 -->
               <div class="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-xs tabular-nums text-gray-500 dark:text-dark-400">
                 <span class="inline-flex items-center gap-1">
-                  <Icon name="arrowDown" size="xs" class="text-emerald-500" />
+                  <Icon name="arrowDown" size="xs" class="text-success" />
                   <span>{{ formatTokens(stats.total_input_tokens) }}</span>
                   <span class="opacity-70">{{ t('dashboard.input') }}</span>
                 </span>
                 <span class="inline-flex items-center gap-1">
-                  <Icon name="arrowUp" size="xs" class="text-violet-500" />
+                  <Icon name="arrowUp" size="xs" class="text-info" />
                   <span>{{ formatTokens(stats.total_output_tokens) }}</span>
                   <span class="opacity-70">{{ t('dashboard.output') }}</span>
                 </span>
                 <span v-if="hasTotalCache" class="inline-flex items-center gap-1">
-                  <Icon name="inbox" size="xs" class="text-sky-500" />
+                  <Icon name="inbox" size="xs" class="text-info" />
                   <span>{{ formatTokens(stats.total_cache_read_tokens) }}</span>
                   <span class="opacity-70">{{ t('pricing.cacheRead') }}</span>
                 </span>
                 <span v-if="hasTotalCache" class="inline-flex items-center gap-1">
-                  <Icon name="edit" size="xs" class="text-amber-500" />
+                  <Icon name="edit" size="xs" class="text-warning" />
                   <span>{{ formatTokens(stats.total_cache_creation_tokens) }}</span>
                   <span class="opacity-70">{{ t('pricing.cacheWrite') }}</span>
                 </span>
@@ -519,8 +519,8 @@ const isDarkMode = computed(() => {
 })
 
 const chartColors = computed(() => ({
-  text: isDarkMode.value ? '#e5e7eb' : '#374151',
-  grid: isDarkMode.value ? '#374151' : '#e5e7eb'
+  text: isDarkMode.value ? '#e3dccb' : '#4a453d',
+  grid: isDarkMode.value ? '#46413a' : '#ddd5c4'
 }))
 
 const lineOptions = computed(() => ({
@@ -762,11 +762,11 @@ onBeforeUnmount(() => {
   @apply dark:border-dark-700/60 dark:bg-dark-800/40;
 }
 .kpi-card:hover {
-  border-color: rgb(209 213 219);
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -12px rgb(15 23 42 / 0.18);
+  border-color: rgb(200 191 169);
+  box-shadow: 0 1px 2px rgb(42 39 34 / 0.04), 0 8px 24px -12px rgb(42 39 34 / 0.18);
 }
 :root.dark .kpi-card:hover {
-  border-color: rgb(75 85 99);
+  border-color: rgb(92 86 73);
 }
 
 .kpi-card-header {
@@ -799,26 +799,26 @@ onBeforeUnmount(() => {
   @apply dark:border-dark-700/60 dark:bg-dark-800/40;
 }
 .metric-card:hover {
-  border-color: rgb(209 213 219);
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 4px 16px -8px rgb(15 23 42 / 0.12);
+  border-color: rgb(200 191 169);
+  box-shadow: 0 1px 2px rgb(42 39 34 / 0.04), 0 4px 16px -8px rgb(42 39 34 / 0.12);
 }
 :root.dark .metric-card:hover {
-  border-color: rgb(75 85 99);
+  border-color: rgb(92 86 73);
 }
 
 .metric-icon {
   @apply flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl;
 }
 
-/* colored icon backgrounds：柔和的 50 浅底 + 600 描边图标 */
+/* colored icon backgrounds：柔和的浅底 + 主色描边图标，按宣纸墨色令牌区分各指标 */
 .metric-icon-brand   { @apply bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300; }
-.metric-icon-emerald { @apply bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300; }
-.metric-icon-sky     { @apply bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300; }
-.metric-icon-violet  { @apply bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300; }
-.metric-icon-amber   { @apply bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300; }
-.metric-icon-rose    { @apply bg-rose-50 text-rose-600 dark:bg-rose-500/15 dark:text-rose-300; }
-.metric-icon-teal    { @apply bg-teal-50 text-teal-600 dark:bg-teal-500/15 dark:text-teal-300; }
-.metric-icon-indigo  { @apply bg-indigo-50 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300; }
+.metric-icon-emerald { @apply bg-success-soft text-success dark:bg-success/15 dark:text-tea-300; }
+.metric-icon-sky     { @apply bg-info-soft text-info dark:bg-info/15 dark:text-info; }
+.metric-icon-violet  { @apply bg-info-soft text-info dark:bg-info/15 dark:text-info; }
+.metric-icon-amber   { @apply bg-warning-soft text-warning dark:bg-warning/15 dark:text-brand-300; }
+.metric-icon-rose    { @apply bg-danger-soft text-danger dark:bg-danger/15 dark:text-danger; }
+.metric-icon-teal    { @apply bg-success-soft text-success dark:bg-success/15 dark:text-tea-300; }
+.metric-icon-indigo  { @apply bg-info-soft text-info dark:bg-info/15 dark:text-info; }
 
 .metric-body { @apply min-w-0 flex-1; }
 .metric-label { @apply text-sm font-medium text-gray-500 dark:text-dark-400; }
@@ -829,6 +829,6 @@ onBeforeUnmount(() => {
 .trend-chip {
   @apply inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-2xs font-semibold tabular-nums;
 }
-.trend-up { @apply bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300; }
-.trend-down { @apply bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300; }
+.trend-up { @apply bg-success-soft text-success dark:bg-success/15 dark:text-tea-300; }
+.trend-down { @apply bg-danger-soft text-danger dark:bg-danger/15 dark:text-danger; }
 </style>

@@ -14,10 +14,10 @@
       v-else
       type="button"
       :disabled="disabled"
-      class="btn w-full border-amber-100 bg-amber-50/80 text-slate-900 shadow-sm shadow-amber-100/70 hover:border-amber-200 hover:bg-amber-100 dark:border-amber-900/40 dark:bg-amber-950/25 dark:text-amber-100 dark:shadow-none"
+      class="btn w-full border-brand-100 bg-brand-50/80 text-gray-900 shadow-sm shadow-brand-100/70 hover:border-brand-200 hover:bg-brand-100 dark:border-brand-900/40 dark:bg-brand-950/25 dark:text-brand-100 dark:shadow-none"
       @click="startLogin"
     >
-      <span class="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-amber-100 dark:bg-slate-900 dark:ring-amber-900/50">
+      <span class="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-brand-100 dark:bg-gray-900 dark:ring-brand-900/50">
         <BrandIcon brand="linuxdo" size="18px" />
       </span>
       {{ t('auth.linuxdo.signIn') }}

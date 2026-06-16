@@ -10,7 +10,7 @@
         <div class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg ring-1 ring-gray-200 dark:ring-dark-700">
           <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
         </div>
-        <span class="text-base font-semibold tracking-tight text-gray-900 dark:text-white">
+        <span class="font-display text-base font-semibold italic tracking-tight text-gray-900 dark:text-white">
           {{ siteName }}
         </span>
       </div>

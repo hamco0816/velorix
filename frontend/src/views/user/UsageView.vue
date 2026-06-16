@@ -88,7 +88,7 @@
             </div>
             <div class="min-w-0 flex-1">
               <p class="kpi-label">{{ t('usage.totalCost') }}</p>
-              <p class="kpi-value text-emerald-600 dark:text-emerald-400">
+              <p class="kpi-value text-success dark:text-tea-300">
                 ${{ (usageStats?.total_actual_cost || 0).toFixed(4) }}
               </p>
               <p class="kpi-hint">
@@ -101,7 +101,7 @@
 
           <!-- Average Duration -->
           <div class="kpi-card group">
-            <div class="kpi-icon kpi-icon-violet">
+            <div class="kpi-icon kpi-icon-tea">
               <Icon name="clock" size="md" />
             </div>
             <div class="min-w-0 flex-1">
@@ -202,7 +202,7 @@
               <!-- Fast（priority）加速请求：与标准请求计费不同，单独标出 -->
               <span
                 v-if="row.service_tier === 'priority'"
-                class="inline-flex items-center rounded-full bg-orange-50 px-2 py-0.5 text-xs font-semibold text-orange-700 ring-1 ring-inset ring-orange-200/70 dark:bg-orange-500/10 dark:text-orange-300 dark:ring-orange-500/30"
+                class="inline-flex items-center rounded-full bg-brand-50 px-2 py-0.5 text-xs font-semibold text-brand-700 ring-1 ring-inset ring-brand-200/70 dark:bg-brand-500/10 dark:text-brand-300 dark:ring-brand-500/30"
                 :title="t('usage.fastTierHint')"
               >
                 Fast
@@ -223,7 +223,7 @@
             <!-- 图片生成请求（仅按次计费时显示图片格式） -->
             <div v-if="row.image_count > 0 && row.billing_mode === 'image'" class="flex items-center gap-1.5">
               <svg
-                class="h-4 w-4 text-indigo-500"
+                class="h-4 w-4 text-info"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -245,14 +245,14 @@
                 <div class="flex items-center gap-2">
                   <!-- Input -->
                   <div class="inline-flex items-center gap-1 cursor-help" :title="t('usage.tokenIconHint.input')">
-                    <Icon name="arrowDown" size="sm" class="text-emerald-500" />
+                    <Icon name="arrowDown" size="sm" class="text-success" />
                     <span class="font-medium text-gray-900 dark:text-white">{{
                       row.input_tokens.toLocaleString()
                     }}</span>
                   </div>
                   <!-- Output -->
                   <div class="inline-flex items-center gap-1 cursor-help" :title="t('usage.tokenIconHint.output')">
-                    <Icon name="arrowUp" size="sm" class="text-violet-500" />
+                    <Icon name="arrowUp" size="sm" class="text-brand-500" />
                     <span class="font-medium text-gray-900 dark:text-white">{{
                       row.output_tokens.toLocaleString()
                     }}</span>
@@ -265,19 +265,19 @@
                 >
                   <!-- Cache Read -->
                   <div v-if="row.cache_read_tokens > 0" class="inline-flex items-center gap-1 cursor-help" :title="t('usage.tokenIconHint.cacheRead')">
-                    <Icon name="inbox" size="sm" class="text-sky-500" />
-                    <span class="font-medium text-sky-600 dark:text-sky-400">{{
+                    <Icon name="inbox" size="sm" class="text-info" />
+                    <span class="font-medium text-info dark:text-info">{{
                       formatCacheTokens(row.cache_read_tokens)
                     }}</span>
                   </div>
                   <!-- Cache Write -->
                   <div v-if="row.cache_creation_tokens > 0" class="inline-flex items-center gap-1 cursor-help" :title="t('usage.tokenIconHint.cacheWrite')">
-                    <Icon name="edit" size="sm" class="text-amber-500" />
-                    <span class="font-medium text-amber-600 dark:text-amber-400">{{
+                    <Icon name="edit" size="sm" class="text-warning" />
+                    <span class="font-medium text-warning dark:text-brand-300">{{
                       formatCacheTokens(row.cache_creation_tokens)
                     }}</span>
-                    <span v-if="row.cache_creation_1h_tokens > 0" :title="t('usage.tokenIconHint.cacheTtl1h')" class="inline-flex items-center rounded px-1 py-px text-2xs font-medium leading-tight bg-orange-100 text-orange-600 ring-1 ring-inset ring-orange-200 dark:bg-orange-500/20 dark:text-orange-400 dark:ring-orange-500/30 cursor-help">1h</span>
-                    <span v-if="row.cache_ttl_overridden" :title="t('usage.cacheTtlOverriddenHint')" class="inline-flex items-center rounded px-1 py-px text-2xs font-medium leading-tight bg-rose-100 text-rose-600 ring-1 ring-inset ring-rose-200 dark:bg-rose-500/20 dark:text-rose-400 dark:ring-rose-500/30 cursor-help">R</span>
+                    <span v-if="row.cache_creation_1h_tokens > 0" :title="t('usage.tokenIconHint.cacheTtl1h')" class="inline-flex items-center rounded px-1 py-px text-2xs font-medium leading-tight bg-brand-100 text-brand-600 ring-1 ring-inset ring-brand-200 dark:bg-brand-500/20 dark:text-brand-400 dark:ring-brand-500/30 cursor-help">1h</span>
+                    <span v-if="row.cache_ttl_overridden" :title="t('usage.cacheTtlOverriddenHint')" class="inline-flex items-center rounded px-1 py-px text-2xs font-medium leading-tight bg-danger-soft text-danger ring-1 ring-inset ring-danger/20 dark:bg-danger-deep/30 dark:text-danger dark:ring-danger/30 cursor-help">R</span>
                   </div>
                 </div>
               </div>
@@ -288,12 +288,12 @@
                 @mouseleave="hideTokenTooltip"
               >
                 <div
-                  class="flex h-4 w-4 cursor-help items-center justify-center rounded-full bg-gray-100 transition-colors group-hover:bg-blue-100 dark:bg-gray-700 dark:group-hover:bg-blue-900/50"
+                  class="flex h-4 w-4 cursor-help items-center justify-center rounded-full bg-gray-100 transition-colors group-hover:bg-info-soft dark:bg-gray-700 dark:group-hover:bg-info-deep/50"
                 >
                   <Icon
                     name="infoCircle"
                     size="xs"
-                    class="text-gray-400 group-hover:text-blue-500 dark:text-gray-500 dark:group-hover:text-blue-400"
+                    class="text-gray-400 group-hover:text-info dark:text-gray-500 dark:group-hover:text-info"
                   />
                 </div>
               </div>
@@ -302,7 +302,7 @@
 
           <template #cell-cost="{ row }">
             <div class="flex items-center gap-1.5 text-sm">
-              <span class="font-medium text-green-600 dark:text-green-400">
+              <span class="font-medium text-success dark:text-tea-300">
                 ${{ row.actual_cost.toFixed(6) }}
               </span>
               <!-- Cost Detail Tooltip -->
@@ -312,12 +312,12 @@
                 @mouseleave="hideTooltip"
               >
                 <div
-                  class="flex h-4 w-4 cursor-help items-center justify-center rounded-full bg-gray-100 transition-colors group-hover:bg-blue-100 dark:bg-gray-700 dark:group-hover:bg-blue-900/50"
+                  class="flex h-4 w-4 cursor-help items-center justify-center rounded-full bg-gray-100 transition-colors group-hover:bg-info-soft dark:bg-gray-700 dark:group-hover:bg-info-deep/50"
                 >
                   <Icon
                     name="infoCircle"
                     size="xs"
-                    class="text-gray-400 group-hover:text-blue-500 dark:text-gray-500 dark:group-hover:text-blue-400"
+                    class="text-gray-400 group-hover:text-info dark:text-gray-500 dark:group-hover:text-info"
                   />
                 </div>
               </div>
@@ -401,14 +401,14 @@
                 <div v-if="tokenTooltipData.cache_creation_5m_tokens > 0" class="flex items-center justify-between gap-4">
                   <span class="text-gray-400 flex items-center gap-1.5">
                     {{ t('admin.usage.cacheCreation5mTokens') }}
-                    <span class="inline-flex items-center rounded px-1 py-px text-2xs font-medium leading-tight bg-amber-500/20 text-amber-400 ring-1 ring-inset ring-amber-500/30">5m</span>
+                    <span class="inline-flex items-center rounded px-1 py-px text-2xs font-medium leading-tight bg-warning/20 text-warning ring-1 ring-inset ring-warning/30">5m</span>
                   </span>
                   <span class="font-medium text-white">{{ tokenTooltipData.cache_creation_5m_tokens.toLocaleString() }}</span>
                 </div>
                 <div v-if="tokenTooltipData.cache_creation_1h_tokens > 0" class="flex items-center justify-between gap-4">
                   <span class="text-gray-400 flex items-center gap-1.5">
                     {{ t('admin.usage.cacheCreation1hTokens') }}
-                    <span class="inline-flex items-center rounded px-1 py-px text-2xs font-medium leading-tight bg-orange-500/20 text-orange-400 ring-1 ring-inset ring-orange-500/30">1h</span>
+                    <span class="inline-flex items-center rounded px-1 py-px text-2xs font-medium leading-tight bg-brand-500/20 text-brand-300 ring-1 ring-inset ring-brand-500/30">1h</span>
                   </span>
                   <span class="font-medium text-white">{{ tokenTooltipData.cache_creation_1h_tokens.toLocaleString() }}</span>
                 </div>
@@ -422,9 +422,9 @@
             <div v-if="tokenTooltipData && tokenTooltipData.cache_ttl_overridden" class="flex items-center justify-between gap-4">
               <span class="text-gray-400 flex items-center gap-1.5">
                 {{ t('usage.cacheTtlOverriddenLabel') }}
-                <span class="inline-flex items-center rounded px-1 py-px text-2xs font-medium leading-tight bg-rose-500/20 text-rose-400 ring-1 ring-inset ring-rose-500/30">R-{{ tokenTooltipData.cache_creation_1h_tokens > 0 ? '5m' : '1H' }}</span>
+                <span class="inline-flex items-center rounded px-1 py-px text-2xs font-medium leading-tight bg-danger/20 text-danger-soft ring-1 ring-inset ring-danger/30">R-{{ tokenTooltipData.cache_creation_1h_tokens > 0 ? '5m' : '1H' }}</span>
               </span>
-              <span class="font-medium text-rose-400">{{ tokenTooltipData.cache_creation_1h_tokens > 0 ? t('usage.cacheTtlOverridden1h') : t('usage.cacheTtlOverridden5m') }}</span>
+              <span class="font-medium text-danger-soft">{{ tokenTooltipData.cache_creation_1h_tokens > 0 ? t('usage.cacheTtlOverridden1h') : t('usage.cacheTtlOverridden5m') }}</span>
             </div>
             <div v-if="tokenTooltipData && tokenTooltipData.cache_read_tokens > 0" class="flex items-center justify-between gap-4">
               <span class="text-gray-400">{{ t('admin.usage.cacheReadTokens') }}</span>
@@ -434,7 +434,7 @@
           <!-- Total -->
           <div class="flex items-center justify-between gap-6 border-t border-gray-700 pt-1.5">
             <span class="text-gray-400">{{ t('usage.totalTokens') }}</span>
-            <span class="font-semibold text-blue-400">{{ ((tokenTooltipData?.input_tokens || 0) + (tokenTooltipData?.output_tokens || 0) + (tokenTooltipData?.cache_creation_tokens || 0) + (tokenTooltipData?.cache_read_tokens || 0)).toLocaleString() }}</span>
+            <span class="font-semibold text-info-soft">{{ ((tokenTooltipData?.input_tokens || 0) + (tokenTooltipData?.output_tokens || 0) + (tokenTooltipData?.cache_creation_tokens || 0) + (tokenTooltipData?.cache_read_tokens || 0)).toLocaleString() }}</span>
           </div>
         </div>
         <!-- Tooltip Arrow (left side) -->
@@ -474,11 +474,11 @@
             <template v-if="!tooltipData?.billing_mode || tooltipData.billing_mode === 'token'">
               <div v-if="tooltipData && tooltipData.input_tokens > 0" class="flex items-center justify-between gap-4">
                 <span class="text-gray-400">{{ t('usage.inputTokenPrice') }}</span>
-                <span class="font-medium text-sky-300">{{ formatTokenPricePerMillion(tooltipData.input_cost, tooltipData.input_tokens) }} {{ t('usage.perMillionTokens') }}</span>
+                <span class="font-medium text-info-soft">{{ formatTokenPricePerMillion(tooltipData.input_cost, tooltipData.input_tokens) }} {{ t('usage.perMillionTokens') }}</span>
               </div>
               <div v-if="tooltipData && tooltipData.output_tokens > 0" class="flex items-center justify-between gap-4">
                 <span class="text-gray-400">{{ t('usage.outputTokenPrice') }}</span>
-                <span class="font-medium text-violet-300">{{ formatTokenPricePerMillion(tooltipData.output_cost, tooltipData.output_tokens) }} {{ t('usage.perMillionTokens') }}</span>
+                <span class="font-medium text-brand-300">{{ formatTokenPricePerMillion(tooltipData.output_cost, tooltipData.output_tokens) }} {{ t('usage.perMillionTokens') }}</span>
               </div>
             </template>
             <!-- Per-request / image billing: show unit price -->
@@ -489,7 +489,7 @@
               </div>
               <div class="flex items-center justify-between gap-4">
                 <span class="text-gray-400">{{ t('usage.imageUnitPrice') }}</span>
-                <span class="font-medium text-sky-300">${{ imageUnitPrice(tooltipData).toFixed(6) }}</span>
+                <span class="font-medium text-info-soft">${{ imageUnitPrice(tooltipData).toFixed(6) }}</span>
               </div>
               <div class="flex items-center justify-between gap-4">
                 <span class="text-gray-400">{{ t('usage.imageTotalPrice') }}</span>
@@ -498,7 +498,7 @@
             </template>
             <div v-else class="flex items-center justify-between gap-4">
               <span class="text-gray-400">{{ t('usage.unitPrice') }}</span>
-              <span class="font-medium text-sky-300">${{ tooltipData?.total_cost?.toFixed(6) || '0.000000' }}</span>
+              <span class="font-medium text-info-soft">${{ tooltipData?.total_cost?.toFixed(6) || '0.000000' }}</span>
             </div>
             <div v-if="tooltipData && tooltipData.cache_creation_cost > 0" class="flex items-center justify-between gap-4">
               <span class="text-gray-400">{{ t('admin.usage.cacheCreationCost') }}</span>
@@ -512,11 +512,11 @@
           <!-- Rate and Summary -->
           <div class="flex items-center justify-between gap-6">
             <span class="text-gray-400">{{ t('usage.serviceTier') }}</span>
-            <span class="font-semibold text-cyan-300">{{ getUsageServiceTierLabel(tooltipData?.service_tier, t) }}</span>
+            <span class="font-semibold text-info-soft">{{ getUsageServiceTierLabel(tooltipData?.service_tier, t) }}</span>
           </div>
           <div class="flex items-center justify-between gap-6">
             <span class="text-gray-400">{{ t('usage.rate') }}</span>
-            <span class="font-semibold text-blue-400"
+            <span class="font-semibold text-info-soft"
               >{{ formatMultiplier(tooltipData?.rate_multiplier || 1) }}x</span
             >
           </div>
@@ -526,7 +526,7 @@
           </div>
           <div class="flex items-center justify-between gap-6 border-t border-gray-700 pt-1.5">
             <span class="text-gray-400">{{ t('usage.billed') }}</span>
-            <span class="font-semibold text-green-400"
+            <span class="font-semibold text-tea-300"
               >${{ tooltipData?.actual_cost.toFixed(6) }}</span
             >
           </div>
@@ -705,20 +705,20 @@ const getRequestTypeLabel = (log: UsageLog): string => {
 const getRequestTypeBadgeClass = (log: UsageLog): string => {
   const requestType = resolveUsageRequestType(log)
   if (requestType === 'ws_v2')
-    return 'bg-violet-50 text-violet-700 ring-violet-200/70 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30'
+    return 'bg-success-soft text-success ring-tea-200/70 dark:bg-success-deep/30 dark:text-tea-300 dark:ring-tea-500/30'
   if (requestType === 'stream')
-    return 'bg-sky-50 text-sky-700 ring-sky-200/70 dark:bg-sky-500/15 dark:text-sky-300 dark:ring-sky-500/30'
+    return 'bg-info-soft text-info ring-info/20 dark:bg-info-deep/30 dark:text-info dark:ring-info/30'
   if (requestType === 'sync')
-    return 'bg-gray-50 text-gray-600 ring-gray-200/70 dark:bg-gray-500/15 dark:text-gray-300 dark:ring-gray-500/30'
-  return 'bg-amber-50 text-amber-700 ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30'
+    return 'bg-gray-50 text-gray-600 ring-gray-200/70 dark:bg-dark-700/40 dark:text-dark-300 dark:ring-dark-600/40'
+  return 'bg-warning-soft text-warning ring-brand-200/70 dark:bg-warning-deep/30 dark:text-brand-300 dark:ring-brand-500/30'
 }
 
 const getRequestTypeDotClass = (log: UsageLog): string => {
   const requestType = resolveUsageRequestType(log)
-  if (requestType === 'ws_v2') return 'bg-violet-500'
-  if (requestType === 'stream') return 'bg-sky-500 animate-pulse'
+  if (requestType === 'ws_v2') return 'bg-success'
+  if (requestType === 'stream') return 'bg-info animate-pulse'
   if (requestType === 'sync') return 'bg-gray-400'
-  return 'bg-amber-500'
+  return 'bg-warning'
 }
 
 
@@ -1005,10 +1005,10 @@ onMounted(() => {
 /* KPI 卡：白底柔边卡片，色彩克制不抢戏（图标筐做唯一的彩色锚点） */
 .kpi-card {
   @apply relative flex items-start gap-2.5 overflow-hidden rounded-2xl border border-gray-200/70 bg-white p-3 transition-shadow sm:gap-3 sm:p-4 dark:border-dark-700/60 dark:bg-dark-800/40;
-  box-shadow: 0 1px 1px rgb(16 24 40 / 0.03), 0 2px 5px -1px rgb(16 24 40 / 0.05);
+  box-shadow: 0 1px 1px rgb(34 32 28 / 0.04), 0 2px 6px -1px rgb(34 32 28 / 0.06);
 }
 .kpi-card:hover {
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -18px rgb(15 23 42 / 0.22);
+  box-shadow: 0 14px 30px -16px rgb(34 32 28 / 0.22), 0 4px 10px -4px rgb(34 32 28 / 0.10);
 }
 
 /* KPI 图标筐：圆角方块 + 语义色背景 */
@@ -1016,13 +1016,16 @@ onMounted(() => {
   @apply inline-flex h-8 w-8 flex-none items-center justify-center rounded-xl sm:h-10 sm:w-10;
 }
 .kpi-icon-sky {
-  @apply bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300;
+  @apply bg-info-soft text-info dark:bg-info-deep/30 dark:text-info;
 }
 .kpi-icon-amber {
-  @apply bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300;
+  @apply bg-warning-soft text-warning dark:bg-warning-deep/30 dark:text-brand-300;
 }
 .kpi-icon-emerald {
-  @apply bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300;
+  @apply bg-success-soft text-success dark:bg-success-deep/30 dark:text-tea-300;
+}
+.kpi-icon-tea {
+  @apply bg-tea-100 text-tea-600 dark:bg-tea-500/15 dark:text-tea-300;
 }
 .kpi-icon-gray {
   @apply bg-gray-100 text-gray-500 dark:bg-dark-700/70 dark:text-dark-300;

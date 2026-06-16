@@ -84,7 +84,7 @@
                 class="rounded-md p-1 transition-all duration-200 ease-out"
                 :class="
                   copiedKeyId === row.id
-                    ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400'
+                    ? 'bg-success-soft text-success dark:bg-success/15 dark:text-tea-300'
                     : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-dark-700 dark:hover:text-gray-300'
                 "
                 :title="copiedKeyId === row.id ? t('keys.copied') : t('keys.copyToClipboard')"
@@ -108,7 +108,7 @@
                 v-if="row.ip_whitelist?.length > 0 || row.ip_blacklist?.length > 0"
                 name="shield"
                 size="sm"
-                class="text-sky-500"
+                class="text-info"
                 :title="t('keys.ipRestrictionEnabled')"
               />
             </div>
@@ -160,9 +160,9 @@
               <span class="text-sm tabular-nums text-gray-500 dark:text-dark-400">{{ formatDateTime(value) }}</span>
               <span
                 v-if="new Date(value) < new Date()"
-                class="inline-flex items-center gap-1 rounded-md bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-500/15 dark:text-red-300"
+                class="inline-flex items-center gap-1 rounded-md bg-danger-soft px-2 py-0.5 text-xs font-medium text-danger dark:bg-danger/15 dark:text-danger"
               >
-                <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                <span class="h-1.5 w-1.5 rounded-full bg-danger"></span>
                 {{ t('keys.expired') }}
               </span>
             </div>
@@ -189,7 +189,7 @@
               <!-- 使用密钥 -->
               <button
                 @click="openUseKeyModal(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors duration-150 hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-900/20 dark:hover:text-emerald-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors duration-150 hover:bg-success-soft hover:text-success dark:hover:bg-success/15 dark:hover:text-tea-300"
               >
                 <Icon name="terminal" size="sm" />
                 <span class="text-xs">{{ t('keys.useKey') }}</span>
@@ -198,7 +198,7 @@
               <button
                 v-if="!publicSettings?.hide_ccs_import_button"
                 @click="importToCcswitch(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors duration-150 hover:bg-sky-50 hover:text-sky-600 dark:hover:bg-sky-900/20 dark:hover:text-sky-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors duration-150 hover:bg-info-soft hover:text-info dark:hover:bg-info/15 dark:hover:text-info"
               >
                 <Icon name="upload" size="sm" />
                 <span class="text-xs">{{ t('keys.importToCcSwitch') }}</span>
@@ -209,8 +209,8 @@
                 :class="[
                   'flex flex-col items-center gap-0.5 rounded-lg p-1.5 transition-colors duration-150',
                   row.status === 'active'
-                    ? 'text-gray-500 hover:bg-amber-50 hover:text-amber-600 dark:hover:bg-amber-900/20 dark:hover:text-amber-400'
-                    : 'text-gray-500 hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-900/20 dark:hover:text-emerald-400'
+                    ? 'text-gray-500 hover:bg-warning-soft hover:text-warning dark:hover:bg-warning/15 dark:hover:text-brand-300'
+                    : 'text-gray-500 hover:bg-success-soft hover:text-success dark:hover:bg-success/15 dark:hover:text-tea-300'
                 ]"
               >
                 <Icon v-if="row.status === 'active'" name="ban" size="sm" />
@@ -228,7 +228,7 @@
               <!-- 删除 -->
               <button
                 @click="confirmDelete(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors duration-150 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors duration-150 hover:bg-danger-soft hover:text-danger dark:hover:bg-danger/15 dark:hover:text-danger"
               >
                 <Icon name="trash" size="sm" />
                 <span class="text-xs">{{ t('common.delete') }}</span>
@@ -356,9 +356,9 @@
                   type="text"
                   class="input font-mono"
                   :placeholder="t('keys.customKeyPlaceholder')"
-                  :class="{ 'border-red-500 dark:border-red-500': customKeyError }"
+                  :class="{ 'border-danger dark:border-danger': customKeyError }"
                 />
-                <p v-if="customKeyError" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ customKeyError }}</p>
+                <p v-if="customKeyError" class="mt-1 text-sm text-danger dark:text-danger">{{ customKeyError }}</p>
                 <p v-else class="input-hint">{{ t('keys.customKeyHint') }}</p>
               </div>
             </div>

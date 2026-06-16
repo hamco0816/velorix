@@ -255,7 +255,7 @@ onMounted(() => {
     <div v-if="draft" class="space-y-6">
       <div
         v-if="!editorValidation.valid"
-        class="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-200"
+        class="rounded-lg border border-warning/30 bg-warning-soft p-3 text-xs text-warning dark:border-warning/40 dark:bg-warning/20 dark:text-warning-soft"
       >
         <div class="font-bold">{{ t('admin.ops.email.validation.title') }}</div>
         <ul class="mt-1 list-disc space-y-1 pl-4">
@@ -292,17 +292,17 @@ onMounted(() => {
                 {{ t('common.add') }}
               </button>
             </div>
-            <p v-if="alertRecipientError" class="mt-1 text-xs text-red-600 dark:text-red-400">{{ alertRecipientError }}</p>
+            <p v-if="alertRecipientError" class="mt-1 text-xs text-danger dark:text-danger-soft">{{ alertRecipientError }}</p>
             <div class="mt-2 flex flex-wrap gap-2">
               <span
                 v-for="email in draft.alert.recipients"
                 :key="email"
-                class="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                class="inline-flex items-center gap-2 rounded-full bg-info-soft px-3 py-1 text-xs font-medium text-info-deep dark:bg-info/20 dark:text-info-soft"
               >
                 {{ email }}
                 <button
                   type="button"
-                  class="text-blue-700/80 hover:text-blue-900 dark:text-blue-300"
+                  class="text-info-deep/80 hover:text-info-deep dark:text-info-soft"
                   @click="removeRecipient('alert', email)"
                 >
                   ×
@@ -357,17 +357,17 @@ onMounted(() => {
                 {{ t('common.add') }}
               </button>
             </div>
-            <p v-if="reportRecipientError" class="mt-1 text-xs text-red-600 dark:text-red-400">{{ reportRecipientError }}</p>
+            <p v-if="reportRecipientError" class="mt-1 text-xs text-danger dark:text-danger-soft">{{ reportRecipientError }}</p>
             <div class="mt-2 flex flex-wrap gap-2">
               <span
                 v-for="email in draft.report.recipients"
                 :key="email"
-                class="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                class="inline-flex items-center gap-2 rounded-full bg-info-soft px-3 py-1 text-xs font-medium text-info-deep dark:bg-info/20 dark:text-info-soft"
               >
                 {{ email }}
                 <button
                   type="button"
-                  class="text-blue-700/80 hover:text-blue-900 dark:text-blue-300"
+                  class="text-info-deep/80 hover:text-info-deep dark:text-info-soft"
                   @click="removeRecipient('report', email)"
                 >
                   ×

@@ -20,7 +20,7 @@
             <div class="flex items-center gap-1.5">
               <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
               <HelpTooltip v-if="row.api_key_decrypt_failed" :content="t('admin.channelMonitor.apiKeyDecryptFailed')">
-                <Icon name="exclamationTriangle" size="sm" class="text-red-500" />
+                <Icon name="exclamationTriangle" size="sm" class="text-danger" />
               </HelpTooltip>
             </div>
           </template>
@@ -207,22 +207,22 @@ const deleteConfirmMessage = computed(() => {
 function availabilityChipClass(row: ChannelMonitor): string {
   const v = row.availability_7d
   if (v == null) return 'bg-gray-100 text-gray-500 dark:bg-dark-700 dark:text-dark-400'
-  if (v >= 99) return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
-  if (v >= 95) return 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
-  return 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'
+  if (v >= 99) return 'bg-success-soft text-success dark:bg-success/15 dark:text-tea-300'
+  if (v >= 95) return 'bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning'
+  return 'bg-danger-soft text-danger dark:bg-danger/15 dark:text-danger'
 }
 
 function availabilityDotClass(v: number): string {
-  if (v >= 99) return 'bg-emerald-500'
-  if (v >= 95) return 'bg-amber-500'
-  return 'bg-rose-500'
+  if (v >= 99) return 'bg-success'
+  if (v >= 95) return 'bg-warning'
+  return 'bg-danger'
 }
 
 function latencyChipClass(ms: number | null | undefined): string {
   if (ms == null) return 'bg-gray-100 text-gray-500 dark:bg-dark-700 dark:text-dark-400'
-  if (ms < 500) return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
-  if (ms < 2000) return 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
-  return 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'
+  if (ms < 500) return 'bg-success-soft text-success dark:bg-success/15 dark:text-tea-300'
+  if (ms < 2000) return 'bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning'
+  return 'bg-danger-soft text-danger dark:bg-danger/15 dark:text-danger'
 }
 
 async function reload() {

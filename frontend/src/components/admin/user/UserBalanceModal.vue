@@ -13,11 +13,11 @@
         </div>
       </div>
       <div><label class="input-label">{{ t('admin.users.notes') }}</label><textarea v-model="form.notes" rows="3" class="input"></textarea></div>
-      <div v-if="form.amount > 0" class="rounded-xl border border-sky-200/70 bg-sky-50/60 p-3.5 dark:border-sky-500/30 dark:bg-sky-500/10"><div class="flex items-center justify-between text-sm"><span class="text-sky-800 dark:text-sky-200">{{ t('admin.users.newBalance') }}:</span><span class="font-semibold tabular-nums text-sky-900 dark:text-sky-100">${{ formatBalance(calculateNewBalance()) }}</span></div></div>
+      <div v-if="form.amount > 0" class="rounded-xl border border-info/30 bg-info-soft/60 p-3.5 dark:border-info/40 dark:bg-info/10"><div class="flex items-center justify-between text-sm"><span class="text-info dark:text-info">{{ t('admin.users.newBalance') }}:</span><span class="font-semibold tabular-nums text-info-deep dark:text-info">${{ formatBalance(calculateNewBalance()) }}</span></div></div>
     </form>
     <template #footer>
       <button @click="$emit('close')" class="btn btn-secondary">{{ t('common.cancel') }}</button>
-      <button type="submit" form="balance-form" :disabled="submitting || !form.amount" class="btn" :class="operation === 'add' ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'btn-danger'">{{ submitting ? t('common.saving') : t('common.confirm') }}</button>
+      <button type="submit" form="balance-form" :disabled="submitting || !form.amount" class="btn" :class="operation === 'add' ? 'bg-success text-white hover:bg-success-deep' : 'btn-danger'">{{ submitting ? t('common.saving') : t('common.confirm') }}</button>
     </template>
   </BaseDialog>
 </template>

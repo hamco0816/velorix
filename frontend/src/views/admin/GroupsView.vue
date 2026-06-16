@@ -105,12 +105,12 @@
               :class="[
                 'inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs font-medium',
                 value === 'anthropic'
-                  ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+                  ? 'bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning'
                   : value === 'openai'
-                    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                    ? 'bg-success-soft text-success dark:bg-success/15 dark:text-tea-300'
                     : value === 'antigravity'
-                      ? 'bg-violet-50 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300'
-                      : 'bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300',
+                      ? 'bg-info-soft text-info dark:bg-info/15 dark:text-info'
+                      : 'bg-info-soft text-info dark:bg-info/15 dark:text-info',
               ]"
             >
               <PlatformIcon :platform="value" size="xs" />
@@ -187,9 +187,9 @@
             <span
               class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium tabular-nums"
               :class="value > 1
-                ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+                ? 'bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning'
                 : value < 1
-                  ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                  ? 'bg-success-soft text-success dark:bg-success/15 dark:text-tea-300'
                   : 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'"
             >{{ value }}x</span>
           </template>
@@ -197,7 +197,7 @@
           <template #cell-is_exclusive="{ value }">
             <span
               v-if="value"
-              class="inline-flex items-center gap-1 rounded-md bg-violet-50 px-2 py-0.5 text-xs font-medium text-violet-700 dark:bg-violet-500/15 dark:text-violet-300"
+              class="inline-flex items-center gap-1 rounded-md bg-info-soft px-2 py-0.5 text-xs font-medium text-info dark:bg-info/15 dark:text-info"
             >
               <Icon name="shield" size="xs" />
               {{ t("admin.groups.exclusive") }}
@@ -225,7 +225,7 @@
                   :class="[
                     'text-base font-bold',
                     ((row.active_account_count || 0) - (row.rate_limited_account_count || 0)) > 0
-                      ? 'text-emerald-600 dark:text-emerald-400'
+                      ? 'text-success dark:text-tea-300'
                       : 'text-gray-400 dark:text-dark-500',
                   ]"
                 >
@@ -236,7 +236,7 @@
               </span>
               <span
                 v-if="row.rate_limited_account_count"
-                class="inline-flex items-center gap-0.5 rounded-md bg-amber-50 px-1.5 py-0.5 text-2xs font-semibold text-amber-700 ring-1 ring-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:ring-amber-900/50"
+                class="inline-flex items-center gap-0.5 rounded-md bg-warning-soft px-1.5 py-0.5 text-2xs font-semibold text-warning ring-1 ring-warning/30 dark:bg-warning/15 dark:text-warning dark:ring-warning/30"
                 :title="t('admin.groups.accountsRateLimitedHint')"
               >
                 <Icon name="exclamationTriangle" size="xs" :stroke-width="2.5" />
@@ -312,17 +312,17 @@
             <span
               class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium"
               :class="value === 'active'
-                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
-                : 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'"
+                ? 'bg-success-soft text-success dark:bg-success/15 dark:text-tea-300'
+                : 'bg-danger-soft text-danger dark:bg-danger/15 dark:text-danger'"
             >
               <span class="relative flex h-1.5 w-1.5">
                 <span
                   v-if="value === 'active'"
-                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70"
+                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-70"
                 ></span>
                 <span
                   class="relative inline-flex h-1.5 w-1.5 rounded-full"
-                  :class="value === 'active' ? 'bg-emerald-500' : 'bg-rose-500'"
+                  :class="value === 'active' ? 'bg-success' : 'bg-danger'"
                 ></span>
               </span>
               {{ t("admin.accounts.status." + value) }}
@@ -345,8 +345,8 @@
                 :class="[
                   'flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors',
                   row.status === 'active'
-                    ? 'hover:bg-amber-50 hover:text-amber-600 dark:hover:bg-amber-900/20 dark:hover:text-amber-400'
-                    : 'hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-900/20 dark:hover:text-emerald-400'
+                    ? 'hover:bg-warning-soft hover:text-warning dark:hover:bg-warning/15 dark:hover:text-warning'
+                    : 'hover:bg-success-soft hover:text-success dark:hover:bg-success/15 dark:hover:text-tea-300'
                 ]"
                 :title="row.status === 'active' ? t('admin.groups.disable') : t('admin.groups.enable')"
               >
@@ -356,7 +356,7 @@
               <!-- 复制分组：常见需求"基于现有配置创建相似分组" -->
               <button
                 @click.stop="handleDuplicate(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-sky-600 dark:hover:bg-dark-700 dark:hover:text-sky-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-info dark:hover:bg-dark-700 dark:hover:text-info"
                 :title="t('admin.groups.duplicate')"
               >
                 <Icon name="copy" size="sm" />
@@ -364,7 +364,7 @@
               </button>
               <button
                 @click.stop="handleRateMultipliers(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-purple-600 dark:hover:bg-dark-700 dark:hover:text-purple-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-brand-600 dark:hover:bg-dark-700 dark:hover:text-brand-400"
                 :title="t('admin.groups.rateMultipliers')"
               >
                 <Icon name="dollar" size="sm" />
@@ -372,7 +372,7 @@
               </button>
               <button
                 @click.stop="handleRPMOverrides(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-orange-600 dark:hover:bg-dark-700 dark:hover:text-orange-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-brand-600 dark:hover:bg-dark-700 dark:hover:text-brand-400"
                 :title="t('admin.groups.rpmOverrides')"
               >
                 <Icon name="bolt" size="sm" />
@@ -380,7 +380,7 @@
               </button>
               <button
                 @click.stop="handleDelete(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-danger-soft hover:text-danger dark:hover:bg-danger/15 dark:hover:text-danger"
                 :title="t('common.delete')"
               >
                 <Icon name="trash" size="sm" />
@@ -579,7 +579,7 @@
             <input
               v-model="createForm.invoice_eligible"
               type="checkbox"
-              class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              class="h-4 w-4 rounded border-gray-300 text-info focus:ring-info"
             />
             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
               {{ t("admin.groups.form.invoiceEligible") }}
@@ -746,7 +746,7 @@
               <input
                 v-model="createForm.allow_image_generation"
                 type="checkbox"
-                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                class="rounded border-gray-300 text-info focus:ring-info"
               />
               {{ t("admin.groups.imagePricing.allowImageGeneration") }}
             </label>
@@ -754,7 +754,7 @@
               <input
                 v-model="createForm.image_rate_independent"
                 type="checkbox"
-                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                class="rounded border-gray-300 text-info focus:ring-info"
               />
               {{ t("admin.groups.imagePricing.independentMultiplier") }}
             </label>
@@ -1084,7 +1084,7 @@
                 class="border-b border-gray-100 bg-gray-50/80 px-4 py-3 dark:border-dark-700 dark:bg-dark-700/50"
               >
                 <div class="flex items-center gap-2">
-                  <div class="h-2 w-2 rounded-full bg-blue-500"></div>
+                  <div class="h-2 w-2 rounded-full bg-info"></div>
                   <label
                     class="text-sm font-medium text-gray-900 dark:text-white"
                     >{{
@@ -1238,7 +1238,7 @@
                       <button
                         type="button"
                         @click="removeCreateMessagesDispatchMapping(row)"
-                        class="mt-6 flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                        class="mt-6 flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-danger-soft hover:text-danger dark:hover:bg-danger/15 dark:hover:text-danger"
                         :title="
                           t('admin.groups.openaiMessages.removeExactMapping')
                         "
@@ -1545,7 +1545,7 @@
                 <button
                   type="button"
                   @click="removeCreateRoutingRule(rule)"
-                  class="mt-5 p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                  class="mt-5 p-1.5 text-gray-400 hover:text-danger transition-colors"
                   :title="t('admin.groups.modelRouting.removeRule')"
                 >
                   <Icon name="trash" size="sm" />
@@ -1741,16 +1741,16 @@
         </div>
 
         <!-- 限时倍率（promo rate）：配置后 billing 在窗口内自动用 promo 倍率，用户端显示划线价 + 倒计时 -->
-        <div class="rounded-2xl border border-rose-200/70 bg-rose-50/40 p-4 dark:border-rose-500/30 dark:bg-rose-500/10">
+        <div class="rounded-2xl border border-brand-200/70 bg-brand-50/40 p-4 dark:border-brand-500/30 dark:bg-brand-500/10">
           <div class="mb-3 flex items-center gap-2">
-            <Icon name="fire" size="sm" class="text-rose-500" :stroke-width="2.2" />
-            <h4 class="text-sm font-semibold tracking-tight text-rose-700 dark:text-rose-300">
+            <Icon name="fire" size="sm" class="text-brand-500" :stroke-width="2.2" />
+            <h4 class="text-sm font-semibold tracking-tight text-brand-700 dark:text-brand-300">
               {{ t("admin.groups.form.promoTitle") }}
             </h4>
             <button
               v-if="editForm.promo_rate_multiplier != null || editForm.promo_starts_at || editForm.promo_ends_at"
               type="button"
-              class="ml-auto text-xs font-medium text-rose-600 hover:text-rose-700 dark:text-rose-400"
+              class="ml-auto text-xs font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400"
               @click="clearEditPromo()"
             >
               {{ t("common.clear") }}
@@ -1796,7 +1796,7 @@
               />
             </div>
           </div>
-          <p class="mt-2 text-xs text-rose-600/80 dark:text-rose-300/70">
+          <p class="mt-2 text-xs text-brand-600/80 dark:text-brand-300/70">
             {{ t("admin.groups.form.promoHint") }}
           </p>
         </div>
@@ -1818,7 +1818,7 @@
             <input
               v-model="editForm.invoice_eligible"
               type="checkbox"
-              class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              class="h-4 w-4 rounded border-gray-300 text-info focus:ring-info"
             />
             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
               {{ t("admin.groups.form.invoiceEligible") }}
@@ -1987,7 +1987,7 @@
               <input
                 v-model="editForm.allow_image_generation"
                 type="checkbox"
-                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                class="rounded border-gray-300 text-info focus:ring-info"
               />
               {{ t("admin.groups.imagePricing.allowImageGeneration") }}
             </label>
@@ -1995,7 +1995,7 @@
               <input
                 v-model="editForm.image_rate_independent"
                 type="checkbox"
-                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                class="rounded border-gray-300 text-info focus:ring-info"
               />
               {{ t("admin.groups.imagePricing.independentMultiplier") }}
             </label>
@@ -2321,7 +2321,7 @@
                 class="border-b border-gray-100 bg-gray-50/80 px-4 py-3 dark:border-dark-700 dark:bg-dark-700/50"
               >
                 <div class="flex items-center gap-2">
-                  <div class="h-2 w-2 rounded-full bg-blue-500"></div>
+                  <div class="h-2 w-2 rounded-full bg-info"></div>
                   <label
                     class="text-sm font-medium text-gray-900 dark:text-white"
                     >{{
@@ -2475,7 +2475,7 @@
                       <button
                         type="button"
                         @click="removeEditMessagesDispatchMapping(row)"
-                        class="mt-6 flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                        class="mt-6 flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-danger-soft hover:text-danger dark:hover:bg-danger/15 dark:hover:text-danger"
                         :title="
                           t('admin.groups.openaiMessages.removeExactMapping')
                         "
@@ -2781,7 +2781,7 @@
                 <button
                   type="button"
                   @click="removeEditRoutingRule(rule)"
-                  class="mt-5 p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                  class="mt-5 p-1.5 text-gray-400 hover:text-danger transition-colors"
                   :title="t('admin.groups.modelRouting.removeRule')"
                 >
                   <Icon name="trash" size="sm" />
@@ -2870,12 +2870,12 @@
                   :class="[
                     'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium',
                     group.platform === 'anthropic'
-                      ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                      ? 'bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning'
                       : group.platform === 'openai'
-                        ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                        ? 'bg-success-soft text-success dark:bg-success/15 dark:text-tea-300'
                         : group.platform === 'antigravity'
-                          ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
-                          : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+                          ? 'bg-info-soft text-info dark:bg-info/15 dark:text-info'
+                          : 'bg-info-soft text-info dark:bg-info/15 dark:text-info',
                   ]"
                 >
                   {{ t("admin.groups.platforms." + group.platform) }}
@@ -2981,16 +2981,16 @@ const usagePercent = (group: AdminGroup): number => {
 // 限额警示色：< 80% emerald、80-100% amber、>= 100% red
 const usagePercentColor = (group: AdminGroup): string => {
   const pct = usagePercent(group);
-  if (pct >= 100) return 'text-red-600 dark:text-red-400 font-semibold';
-  if (pct >= 80) return 'text-amber-600 dark:text-amber-400 font-medium';
-  return 'text-emerald-600 dark:text-emerald-400';
+  if (pct >= 100) return 'text-danger dark:text-danger font-semibold';
+  if (pct >= 80) return 'text-warning dark:text-warning font-medium';
+  return 'text-success dark:text-tea-300';
 };
 
 const usagePercentBg = (group: AdminGroup): string => {
   const pct = usagePercent(group);
-  if (pct >= 100) return 'bg-red-500';
-  if (pct >= 80) return 'bg-amber-500';
-  return 'bg-emerald-500';
+  if (pct >= 100) return 'bg-danger';
+  if (pct >= 80) return 'bg-warning';
+  return 'bg-success';
 };
 const onboardingStore = useOnboardingStore();
 

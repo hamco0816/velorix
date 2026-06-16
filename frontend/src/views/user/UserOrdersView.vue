@@ -23,15 +23,15 @@
       <OrderTable :orders="orders" :loading="loading" :error="loadFailed" @inspect-refund="openRefundDetails" @retry="fetchOrders">
         <template #actions="{ row }">
           <div class="flex items-center gap-2">
-            <button v-if="canResumePayment(row)" @click="openResumeDialog(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/20">
+            <button v-if="canResumePayment(row)" @click="openResumeDialog(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-success hover:bg-success-soft dark:text-success dark:hover:bg-success-deep/30">
               <Icon name="creditCard" size="sm" />
               <span>{{ t('payment.orders.resume') }}</span>
             </button>
-            <button v-if="row.status === 'PENDING'" @click="handleCancel(row.id)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20">
+            <button v-if="row.status === 'PENDING'" @click="handleCancel(row.id)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-danger hover:bg-danger-soft dark:text-danger dark:hover:bg-danger-deep/30">
               <Icon name="x" size="sm" />
               <span>{{ t('payment.orders.cancel') }}</span>
             </button>
-            <button v-if="canRequestRefund(row)" @click="openRefundDialog(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/20">
+            <button v-if="canRequestRefund(row)" @click="openRefundDialog(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-warning hover:bg-warning-soft dark:text-warning dark:hover:bg-warning-deep/30">
               <Icon name="dollar" size="sm" />
               <span>{{ t('payment.orders.requestRefund') }}</span>
             </button>

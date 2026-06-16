@@ -143,8 +143,8 @@ function openErrorDetail(errorId: number | null | undefined) {
 }
 
 const kindBadgeClass = (kind: string) => {
-  if (kind === 'error') return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
-  return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+  if (kind === 'error') return 'bg-danger-soft text-danger dark:bg-danger/15 dark:text-danger'
+  return 'bg-success-soft text-success dark:bg-success/15 dark:text-success'
 }
 </script>
 
@@ -168,7 +168,7 @@ const kindBadgeClass = (kind: string) => {
         <!-- Loading -->
         <div v-if="loading" class="flex flex-1 items-center justify-center py-16">
           <div class="flex flex-col items-center gap-3">
-            <svg class="h-8 w-8 animate-spin text-blue-500" fill="none" viewBox="0 0 24 24">
+            <svg class="h-8 w-8 animate-spin text-info" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path
                 class="opacity-75"
@@ -257,7 +257,7 @@ const kindBadgeClass = (kind: string) => {
                   <td class="whitespace-nowrap px-4 py-3 text-right">
                     <button
                       v-if="row.kind === 'error' && row.error_id"
-                      class="rounded-lg bg-red-50 px-3 py-1.5 text-xs font-bold text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-300 dark:hover:bg-red-900/30"
+                      class="rounded-lg bg-danger-soft px-3 py-1.5 text-xs font-bold text-danger hover:bg-danger/15 dark:bg-danger/15 dark:text-danger dark:hover:bg-danger/25"
                       @click="openErrorDetail(row.error_id)"
                     >
                       {{ t('admin.ops.requestDetails.viewError') }}

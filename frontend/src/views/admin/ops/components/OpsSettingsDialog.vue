@@ -208,7 +208,7 @@ async function saveAllSettings() {
 
     <div v-else-if="runtimeSettings && emailConfig && advancedSettings" class="space-y-6">
       <!-- 验证错误 -->
-      <div v-if="!validation.valid" class="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-200">
+      <div v-if="!validation.valid" class="rounded-lg border border-warning/30 bg-warning-soft p-3 text-xs text-warning-deep dark:border-warning/40 dark:bg-warning/10 dark:text-warning">
         <div class="font-bold">{{ t('admin.ops.settings.validation.title') }}</div>
         <ul class="mt-1 list-disc space-y-1 pl-4">
           <li v-for="msg in validation.errors" :key="msg">{{ msg }}</li>
@@ -261,10 +261,10 @@ async function saveAllSettings() {
               <span
                 v-for="email in emailConfig.alert.recipients"
                 :key="email"
-                class="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                class="inline-flex items-center gap-2 rounded-full bg-info-soft px-3 py-1 text-xs font-medium text-info dark:bg-info/15 dark:text-info"
               >
                 {{ email }}
-                <button type="button" class="text-blue-700/80 hover:text-blue-900" @click="removeRecipient('alert', email)">×</button>
+                <button type="button" class="text-info/80 hover:text-info-deep" @click="removeRecipient('alert', email)">×</button>
               </span>
             </div>
             <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
@@ -309,10 +309,10 @@ async function saveAllSettings() {
               <span
                 v-for="email in emailConfig.report.recipients"
                 :key="email"
-                class="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                class="inline-flex items-center gap-2 rounded-full bg-info-soft px-3 py-1 text-xs font-medium text-info dark:bg-info/15 dark:text-info"
               >
                 {{ email }}
-                <button type="button" class="text-blue-700/80 hover:text-blue-900" @click="removeRecipient('report', email)">×</button>
+                <button type="button" class="text-info/80 hover:text-info-deep" @click="removeRecipient('report', email)">×</button>
               </span>
             </div>
             <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">

@@ -24,7 +24,7 @@
         <!-- 专属分组区域 -->
         <div v-if="exclusiveGroups.length > 0">
           <div class="mb-3 flex items-center gap-2">
-            <div class="h-1.5 w-1.5 rounded-full bg-violet-500"></div>
+            <div class="h-1.5 w-1.5 rounded-full bg-info"></div>
             <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ t('admin.users.exclusiveGroups') }}</h4>
             <span class="text-xs text-gray-400">({{ exclusiveGroupConfigs.filter(c => c.isSelected).length }}/{{ exclusiveGroupConfigs.length }})</span>
           </div>
@@ -57,7 +57,7 @@
                 <div class="min-w-0 flex-1">
                   <div class="flex items-center gap-2">
                     <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ config.groupName }}</span>
-                    <span class="inline-flex items-center rounded-full bg-violet-50 px-2 py-0.5 text-2xs font-medium text-violet-700 ring-1 ring-inset ring-violet-200/70 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30">
+                    <span class="inline-flex items-center rounded-full bg-info-soft px-2 py-0.5 text-2xs font-medium text-info-deep ring-1 ring-inset ring-info/30 dark:bg-info/15 dark:text-info dark:ring-info/30">
                       {{ t('admin.groups.exclusive') }}
                     </span>
                   </div>
@@ -94,7 +94,7 @@
         <!-- 公开分组区域 -->
         <div v-if="publicGroups.length > 0">
           <div class="mb-3 flex items-center gap-2">
-            <div class="h-1.5 w-1.5 rounded-full bg-emerald-500"></div>
+            <div class="h-1.5 w-1.5 rounded-full bg-success"></div>
             <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ t('admin.users.publicGroups') }}</h4>
             <span class="text-xs text-gray-400">({{ publicGroupConfigs.length }})</span>
           </div>
@@ -102,12 +102,12 @@
             <div
               v-for="config in publicGroupConfigs"
               :key="config.groupId"
-              class="relative overflow-hidden rounded-xl border border-emerald-200/70 bg-emerald-50/40 p-4 dark:border-emerald-500/30 dark:bg-emerald-500/10"
+              class="relative overflow-hidden rounded-xl border border-success/30 bg-success-soft/40 p-4 dark:border-success/30 dark:bg-success/10"
             >
               <div class="flex items-center gap-4">
                 <!-- 复选框（禁用状态） -->
                 <div class="flex-shrink-0">
-                  <div class="flex h-5 w-5 items-center justify-center rounded-md bg-emerald-500 ring-1 ring-inset ring-emerald-400 dark:bg-emerald-600 dark:ring-emerald-500">
+                  <div class="flex h-5 w-5 items-center justify-center rounded-md bg-success ring-1 ring-inset ring-success/70 dark:bg-success-deep dark:ring-success">
                     <Icon name="check" class="h-full w-full text-white" :stroke-width="3" />
                   </div>
                 </div>

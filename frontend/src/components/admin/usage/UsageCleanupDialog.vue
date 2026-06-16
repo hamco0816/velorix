@@ -10,7 +10,7 @@
         @change="noop"
       />
 
-      <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+      <div class="rounded-xl border border-warning/30 bg-warning-soft px-4 py-3 text-sm text-warning-deep dark:border-warning/40 dark:bg-warning/10 dark:text-warning">
         {{ t('admin.usage.cleanup.warning') }}
       </div>
 
@@ -46,7 +46,7 @@
                   <button
                     v-if="canCancel(task)"
                     type="button"
-                    class="btn btn-ghost btn-xs text-rose-600 hover:text-rose-700 dark:text-rose-300"
+                    class="btn btn-ghost btn-xs text-danger hover:text-danger-deep dark:text-danger"
                     @click="openCancelConfirm(task)"
                   >
                     {{ t('admin.usage.cleanup.cancel') }}
@@ -60,7 +60,7 @@
                 <span>{{ t('admin.usage.cleanup.range') }}: {{ formatRange(task) }}</span>
                 <span>{{ t('admin.usage.cleanup.deletedRows') }}: {{ task.deleted_rows.toLocaleString() }}</span>
               </div>
-              <div v-if="task.error_message" class="text-xs text-rose-500">
+              <div v-if="task.error_message" class="text-xs text-danger">
                 {{ task.error_message }}
               </div>
             </div>
@@ -205,10 +205,10 @@ const statusLabel = (status: string) => {
 
 const statusClass = (status: string) => {
   const map: Record<string, string> = {
-    pending: 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-200',
-    running: 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-200',
-    succeeded: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-200',
-    failed: 'bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-200',
+    pending: 'bg-warning-soft text-warning dark:bg-warning/20 dark:text-brand-300',
+    running: 'bg-info-soft text-info-deep dark:bg-info/20 dark:text-info',
+    succeeded: 'bg-success-soft text-success dark:bg-success/20 dark:text-tea-300',
+    failed: 'bg-danger-soft text-danger dark:bg-danger/20 dark:text-danger',
     canceled: 'bg-gray-200 text-gray-600 dark:bg-dark-600 dark:text-gray-300'
   }
   return map[status] || 'bg-gray-100 text-gray-600'

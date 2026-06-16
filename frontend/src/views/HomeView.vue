@@ -27,9 +27,9 @@
     <section class="relative overflow-hidden">
       <!-- 装饰：暖色 wash + 网格 + 右上 brand glow -->
       <div class="pointer-events-none absolute inset-0">
-        <div class="absolute inset-x-0 top-0 h-[640px] bg-gradient-to-b from-amber-50/70 via-orange-50/30 to-transparent dark:from-brand-500/[0.04] dark:via-amber-500/[0.02]"></div>
+        <div class="absolute inset-x-0 top-0 h-[640px] bg-gradient-to-b from-brand-50/70 via-brand-100/30 to-transparent dark:from-brand-500/[0.04] dark:via-brand-500/[0.02]"></div>
         <div
-          class="absolute inset-0 bg-[linear-gradient(rgba(120,113,108,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(120,113,108,0.05)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_top,black_5%,transparent_70%)]"
+          class="absolute inset-0 bg-[linear-gradient(theme(colors.gray.600/0.05)_1px,transparent_1px),linear-gradient(90deg,theme(colors.gray.600/0.05)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_top,black_5%,transparent_70%)]"
         ></div>
         <div class="absolute -right-32 top-32 h-[480px] w-[480px] rounded-full bg-brand-300/25 blur-[100px] dark:bg-brand-500/10"></div>
       </div>
@@ -74,7 +74,7 @@
               </a>
             </div>
             <p class="mt-3.5 inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-dark-400">
-              <Icon name="checkCircle" size="xs" class="text-emerald-500" :stroke-width="2" />
+              <Icon name="checkCircle" size="xs" class="text-success" :stroke-width="2" />
               {{ t('home.pricing.plans.free.priceNote') }}
             </p>
 
@@ -161,8 +161,8 @@ interface HeroChip {
 const heroChips = computed<HeroChip[]>(() => [
   {
     key: 'compatible', icon: 'check', strokeWidth: 2.5,
-    boxClass: 'bg-emerald-50 ring-emerald-200/70 dark:bg-emerald-500/15 dark:ring-emerald-500/30',
-    iconClass: 'text-emerald-600 dark:text-emerald-300',
+    boxClass: 'bg-success-soft ring-success/30 dark:bg-success/15 dark:ring-success/30',
+    iconClass: 'text-success dark:text-tea-300',
     title: t('home.stats.compatible'), sub: t('home.stats.compatibleSub')
   },
   {
@@ -173,8 +173,8 @@ const heroChips = computed<HeroChip[]>(() => [
   },
   {
     key: 'stable', icon: 'shield', strokeWidth: 2,
-    boxClass: 'bg-sky-50 ring-sky-200/70 dark:bg-sky-500/15 dark:ring-sky-500/30',
-    iconClass: 'text-sky-600 dark:text-sky-300',
+    boxClass: 'bg-info-soft ring-info/30 dark:bg-info/15 dark:ring-info/30',
+    iconClass: 'text-info dark:text-info',
     title: t('home.stats.stable'), sub: t('home.stats.stableSub')
   }
 ])

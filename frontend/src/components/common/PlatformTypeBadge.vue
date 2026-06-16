@@ -144,7 +144,7 @@ const typeClass = computed(() => {
 
 const planBadgeClass = computed(() => {
   if (props.planType && props.planType.toLowerCase() === 'abnormal') {
-    return 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'
+    return 'bg-danger-soft text-danger dark:bg-danger-soft dark:text-danger'
   }
   return typeClass.value
 })

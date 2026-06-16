@@ -13,15 +13,15 @@
           </span>
           <span
             v-if="activeCount > 0"
-            class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30"
+            class="inline-flex items-center gap-1.5 rounded-full bg-success-soft px-2.5 py-1 text-xs font-medium text-success ring-1 ring-inset ring-success/30 dark:bg-success/15 dark:text-tea-300 dark:ring-success/30"
           >
-            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="h-1.5 w-1.5 rounded-full bg-success animate-pulse"></span>
             <span class="tabular-nums">{{ activeCount }}</span>
             <span class="opacity-70">{{ t('exclusiveSeats.statActive') }}</span>
           </span>
           <span
             v-if="expiringSoonCount > 0"
-            class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30"
+            class="inline-flex items-center gap-1.5 rounded-full bg-warning-soft px-2.5 py-1 text-xs font-medium text-warning ring-1 ring-inset ring-warning/30 dark:bg-warning/15 dark:text-brand-300 dark:ring-warning/30"
           >
             <Icon name="clock" size="xs" />
             <span class="tabular-nums">{{ expiringSoonCount }}</span>
@@ -70,19 +70,19 @@
       <!-- 使用引导：用户有 active seat 时提醒需要 ApiKey；Notion 风克制 -->
       <div
         v-else-if="hasActiveSeats"
-        class="flex items-start gap-3 rounded-2xl border border-sky-200/70 bg-sky-50/60 px-5 py-3.5 dark:border-sky-500/30 dark:bg-sky-500/10"
+        class="flex items-start gap-3 rounded-2xl border border-info/30 bg-info-soft/60 px-5 py-3.5 dark:border-info/30 dark:bg-info/10"
       >
-        <div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/80 text-sky-600 ring-1 ring-inset ring-sky-200/70 dark:bg-sky-500/15 dark:text-sky-300 dark:ring-sky-500/30">
+        <div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/80 text-info ring-1 ring-inset ring-info/30 dark:bg-info/15 dark:text-info dark:ring-info/30">
           <Icon name="infoCircle" size="sm" :stroke-width="2.2" />
         </div>
-        <div class="flex-1 text-sm text-sky-900 dark:text-sky-100">
+        <div class="flex-1 text-sm text-info-deep dark:text-info">
           <p class="font-semibold">{{ t('exclusiveSeats.usageGuideTitle') }}</p>
-          <p class="mt-0.5 text-xs text-sky-700/80 dark:text-sky-200/80">
+          <p class="mt-0.5 text-xs text-info/80 dark:text-info/80">
             {{ t('exclusiveSeats.usageGuideHint') }}
           </p>
         </div>
         <button
-          class="shrink-0 rounded-lg bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-sky-700"
+          class="shrink-0 rounded-lg bg-info px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-info-deep"
           @click="router.push('/keys')">
           {{ t('exclusiveSeats.goToKeys') }}
         </button>
@@ -156,7 +156,7 @@
 
           <!-- Footer actions -->
           <div v-if="canRenew(seat)" class="flex border-t border-gray-100 dark:border-dark-700/60">
-            <button class="flex-1 py-2.5 text-sm font-medium text-emerald-600 transition-colors hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10"
+            <button class="flex-1 py-2.5 text-sm font-medium text-success transition-colors hover:bg-success-soft dark:text-tea-300 dark:hover:bg-success/10"
               @click="openRenew(seat)">
               <Icon name="refresh" size="sm" class="mr-1 inline-block" />
               {{ t('exclusiveSeats.renew') }}
@@ -173,28 +173,28 @@
           {{ t('exclusiveSeats.renewHint', { name: renewPreview.plan_name }) }}
         </p>
 
-        <!-- 价格变动提示块（三态都展示，保持高度一致）：涨价 amber、降价 emerald、不变中性灰 -->
+        <!-- 价格变动提示块（三态都展示，保持高度一致）：涨价 warning、降价 success、不变中性灰 -->
         <div v-if="renewPreview.last_paid_price > 0"
           class="flex items-start gap-2.5 rounded-lg border-l-4 px-3 py-2.5"
           :class="renewDialogTrend === 'up'
-            ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/30'
+            ? 'border-warning bg-warning-soft dark:bg-warning/15'
             : renewDialogTrend === 'down'
-              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30'
+              ? 'border-success bg-success-soft dark:bg-success/15'
               : 'border-gray-300 bg-gray-50 dark:border-dark-600 dark:bg-dark-800/60'">
           <Icon
             :name="renewDialogTrend === 'up' ? 'exclamationTriangle' : 'check'"
             size="sm"
             class="mt-0.5 shrink-0"
             :class="renewDialogTrend === 'up'
-              ? 'text-amber-600 dark:text-amber-300'
+              ? 'text-warning dark:text-brand-300'
               : renewDialogTrend === 'down'
-                ? 'text-emerald-600 dark:text-emerald-300'
+                ? 'text-success dark:text-tea-300'
                 : 'text-gray-500 dark:text-dark-300'" />
           <div class="flex-1 text-xs leading-5"
             :class="renewDialogTrend === 'up'
-              ? 'text-amber-800 dark:text-amber-200'
+              ? 'text-warning-deep dark:text-brand-200'
               : renewDialogTrend === 'down'
-                ? 'text-emerald-800 dark:text-emerald-200'
+                ? 'text-success-deep dark:text-tea-200'
                 : 'text-gray-700 dark:text-dark-200'">
             <span v-if="renewDialogTrend === 'up'">{{ t('exclusiveSeats.priceIncreasedWarning', { delta: (renewPreview.price - renewPreview.last_paid_price).toFixed(2) }) }}</span>
             <span v-else-if="renewDialogTrend === 'down'">{{ t('exclusiveSeats.priceDecreasedNote', { delta: (renewPreview.last_paid_price - renewPreview.price).toFixed(2) }) }}</span>
@@ -226,11 +226,11 @@
             <span class="text-sm text-gray-500 dark:text-gray-400">{{ t('payment.actualPay') }}</span>
             <div class="flex items-baseline gap-2">
               <span v-if="renewDialogTrend === 'up'"
-                class="inline-flex items-center rounded-md bg-amber-100/80 px-1.5 py-0.5 text-2xs font-bold tabular-nums text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                class="inline-flex items-center rounded-md bg-warning-soft px-1.5 py-0.5 text-2xs font-bold tabular-nums text-warning dark:bg-warning/20 dark:text-brand-300">
                 +¥{{ (renewPreview.price - renewPreview.last_paid_price).toFixed(2) }}
               </span>
               <span v-else-if="renewDialogTrend === 'down'"
-                class="inline-flex items-center rounded-md bg-emerald-100/80 px-1.5 py-0.5 text-2xs font-bold tabular-nums text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                class="inline-flex items-center rounded-md bg-success-soft px-1.5 py-0.5 text-2xs font-bold tabular-nums text-success dark:bg-success/20 dark:text-tea-300">
                 −¥{{ (renewPreview.last_paid_price - renewPreview.price).toFixed(2) }}
               </span>
               <span v-else
@@ -238,8 +238,8 @@
                 {{ t('payment.renewalBanner.priceSame') }}
               </span>
               <span class="font-mono text-2xl font-bold tabular-nums leading-none"
-                :class="renewDialogTrend === 'up' ? 'text-amber-600 dark:text-amber-300'
-                  : renewDialogTrend === 'down' ? 'text-emerald-600 dark:text-emerald-300'
+                :class="renewDialogTrend === 'up' ? 'text-warning dark:text-brand-300'
+                  : renewDialogTrend === 'down' ? 'text-success dark:text-tea-300'
                   : 'text-primary-600 dark:text-primary-400'">
                 ¥{{ renewPreview.price.toFixed(2) }}
               </span>
@@ -356,9 +356,9 @@ function goToRenewPayment() {
 // 状态左侧大图标筐配色：克制软底 + 主题色文字
 function statusIconClass(status: string): string {
   switch (status) {
-    case 'active': return 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300'
-    case 'expired': return 'bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300'
-    case 'refunded': return 'bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300'
+    case 'active': return 'bg-success-soft text-success dark:bg-success/15 dark:text-tea-300'
+    case 'expired': return 'bg-warning-soft text-warning dark:bg-warning/15 dark:text-brand-300'
+    case 'refunded': return 'bg-info-soft text-info dark:bg-info/15 dark:text-info'
     default: return 'bg-gray-50 text-gray-500 dark:bg-dark-700/40 dark:text-gray-400'
   }
 }
@@ -366,18 +366,18 @@ function statusIconClass(status: string): string {
 // 状态 chip：与全站 ring inset 软色调统一
 function statusPillClass(status: string): string {
   switch (status) {
-    case 'active': return 'bg-emerald-50 text-emerald-700 ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30'
-    case 'expired': return 'bg-amber-50 text-amber-700 ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30'
-    case 'refunded': return 'bg-violet-50 text-violet-700 ring-violet-200/70 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30'
+    case 'active': return 'bg-success-soft text-success ring-success/30 dark:bg-success/15 dark:text-tea-300 dark:ring-success/30'
+    case 'expired': return 'bg-warning-soft text-warning ring-warning/30 dark:bg-warning/15 dark:text-brand-300 dark:ring-warning/30'
+    case 'refunded': return 'bg-info-soft text-info ring-info/30 dark:bg-info/15 dark:text-info dark:ring-info/30'
     default: return 'bg-gray-50 text-gray-600 ring-gray-200/70 dark:bg-dark-700/40 dark:text-gray-400 dark:ring-dark-600/60'
   }
 }
 
 function statusDotClass(status: string): string {
   switch (status) {
-    case 'active': return 'bg-emerald-500 animate-pulse'
-    case 'expired': return 'bg-amber-500'
-    case 'refunded': return 'bg-violet-500'
+    case 'active': return 'bg-success animate-pulse'
+    case 'expired': return 'bg-warning'
+    case 'refunded': return 'bg-info'
     default: return 'bg-gray-400'
   }
 }
@@ -385,8 +385,8 @@ function statusDotClass(status: string): string {
 function expiryColor(seat: ExclusiveSeat): string {
   if (seat.status !== 'active') return 'text-gray-500 dark:text-gray-400'
   const remainingMs = Date.parse(seat.expires_at) - Date.now()
-  if (remainingMs <= 24 * 60 * 60 * 1000) return 'text-rose-600 dark:text-rose-400'
-  if (remainingMs <= 7 * 24 * 60 * 60 * 1000) return 'text-amber-600 dark:text-amber-400'
+  if (remainingMs <= 24 * 60 * 60 * 1000) return 'text-danger dark:text-danger'
+  if (remainingMs <= 7 * 24 * 60 * 60 * 1000) return 'text-warning dark:text-warning'
   return 'text-gray-900 dark:text-white'
 }
 
@@ -419,15 +419,15 @@ function usageWindows(seat: ExclusiveSeat): UsageWindow[] {
   return out
 }
 
-// 用量进度色阶（与全站统一）：<80% emerald / 80–100% amber / ≥100% rose
+// 用量进度色阶（与全站统一）：<80% success / 80–100% warning / ≥100% danger
 function usageBarColor(ratio: number): string {
-  if (ratio >= 1) return 'bg-rose-500'
-  if (ratio >= 0.8) return 'bg-amber-500'
-  return 'bg-emerald-500'
+  if (ratio >= 1) return 'bg-danger'
+  if (ratio >= 0.8) return 'bg-warning'
+  return 'bg-success'
 }
 function usageTextColor(ratio: number): string {
-  if (ratio >= 1) return 'text-rose-600 dark:text-rose-400'
-  if (ratio >= 0.8) return 'text-amber-600 dark:text-amber-400'
+  if (ratio >= 1) return 'text-danger dark:text-danger'
+  if (ratio >= 0.8) return 'text-warning dark:text-warning'
   return 'text-gray-700 dark:text-gray-200'
 }
 

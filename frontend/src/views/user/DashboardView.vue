@@ -8,8 +8,8 @@
           :subtitle="t('dashboard.welcomeMessage')"
         >
           <template #meta>
-            <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
-              <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-success-soft px-2.5 py-1 text-xs font-medium text-success dark:bg-success/15 dark:text-tea-300">
+              <span class="h-1.5 w-1.5 rounded-full bg-success"></span>
               {{ t('admin.dashboard.liveUpdated') }} {{ lastUpdatedLabel }}
             </span>
           </template>

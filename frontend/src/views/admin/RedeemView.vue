@@ -69,7 +69,7 @@
                 :class="[
                   'flex items-center transition-colors',
                   copiedCode === value
-                    ? 'text-green-500'
+                    ? 'text-success'
                     : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
                 ]"
                 :title="copiedCode === value ? t('admin.redeem.copied') : t('keys.copyToClipboard')"
@@ -84,10 +84,10 @@
             <span
               class="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium"
               :class="value === 'balance'
-                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                ? 'bg-success-soft text-success dark:bg-success/15 dark:text-success'
                 : value === 'subscription'
                   ? 'bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300'
-                  : 'bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300'"
+                  : 'bg-info-soft text-info dark:bg-info/15 dark:text-info'"
             >
               <Icon :name="value === 'balance' ? 'dollar' : value === 'subscription' ? 'badge' : 'gift'" size="xs" />
               {{ t('admin.redeem.types.' + value) }}
@@ -111,19 +111,19 @@
             <span
               class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium"
               :class="value === 'unused'
-                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                ? 'bg-success-soft text-success dark:bg-success/15 dark:text-success'
                 : value === 'used'
                   ? 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'
-                  : 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'"
+                  : 'bg-danger-soft text-danger dark:bg-danger/15 dark:text-danger'"
             >
               <span class="relative flex h-1.5 w-1.5">
                 <span
                   v-if="value === 'unused'"
-                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70"
+                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-70"
                 ></span>
                 <span
                   class="relative inline-flex h-1.5 w-1.5 rounded-full"
-                  :class="value === 'unused' ? 'bg-emerald-500' : value === 'used' ? 'bg-gray-400' : 'bg-rose-500'"
+                  :class="value === 'unused' ? 'bg-success' : value === 'used' ? 'bg-gray-400' : 'bg-danger'"
                 ></span>
               </span>
               {{ t('admin.redeem.status.' + value) }}
@@ -147,7 +147,7 @@
               <button
                 v-if="row.status === 'unused'"
                 @click="handleDelete(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-danger-soft hover:text-danger dark:hover:bg-danger/15 dark:hover:text-danger"
               >
                 <Icon name="trash" size="sm" :stroke-width="2" />
                 <span class="text-xs">{{ t('common.delete') }}</span>
@@ -235,8 +235,8 @@
               />
             </div>
             <!-- 邀请码类型：显示提示信息 -->
-            <div v-if="generateForm.type === 'invitation'" class="rounded-lg bg-blue-50 p-3 dark:bg-blue-900/20">
-              <p class="text-sm text-blue-700 dark:text-blue-300">
+            <div v-if="generateForm.type === 'invitation'" class="rounded-lg bg-info-soft p-3 dark:bg-info/15">
+              <p class="text-sm text-info dark:text-info">
                 {{ t('admin.redeem.invitationHint') }}
               </p>
             </div>
@@ -320,13 +320,13 @@
           >
             <div class="flex items-center gap-3">
               <div
-                class="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30"
+                class="flex h-10 w-10 items-center justify-center rounded-full bg-success-soft dark:bg-success/20"
               >
                 <Icon
                   name="check"
                   size="md"
                   :stroke-width="2"
-                  class="text-green-600 dark:text-green-400"
+                  class="text-success dark:text-success"
                 />
               </div>
               <div>

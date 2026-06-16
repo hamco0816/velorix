@@ -7,16 +7,16 @@
   >
     <form id="bulk-edit-account-form" class="space-y-5" @submit.prevent="() => handleSubmit()">
       <!-- Info -->
-      <div class="rounded-lg bg-sky-50 p-4 dark:bg-sky-900/20">
-        <p class="text-sm text-sky-700 dark:text-sky-400">
+      <div class="rounded-lg bg-info-soft p-4 dark:bg-info/15">
+        <p class="text-sm text-info dark:text-info">
           <Icon name="infoCircle" size="md" class="mr-1.5 inline" :stroke-width="2" />
           {{ t('admin.accounts.bulkEdit.selectionInfo', { count: targetMode === 'filtered' ? targetPreviewCount : accountIds.length }) }}
         </p>
       </div>
 
       <!-- Mixed platform warning -->
-      <div v-if="isMixedPlatform" class="rounded-lg bg-amber-50 p-4 dark:bg-amber-900/20">
-        <p class="text-sm text-amber-700 dark:text-amber-400">
+      <div v-if="isMixedPlatform" class="rounded-lg bg-warning-soft p-4 dark:bg-warning/15">
+        <p class="text-sm text-warning dark:text-warning">
           <svg class="mr-1.5 inline h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
@@ -61,7 +61,7 @@
             type="button"
             :class="[
               'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-              openaiPassthroughEnabled ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-gray-300 dark:bg-dark-600'
+              openaiPassthroughEnabled ? 'bg-success dark:bg-success' : 'bg-gray-300 dark:bg-dark-600'
             ]"
             @click="openaiPassthroughEnabled = !openaiPassthroughEnabled"
           >
@@ -135,9 +135,9 @@
         >
           <div
             v-if="isOpenAIModelRestrictionDisabled"
-            class="rounded-lg bg-amber-50 p-3 dark:bg-amber-900/20"
+            class="rounded-lg bg-warning-soft p-3 dark:bg-warning/15"
           >
-            <p class="text-xs text-amber-700 dark:text-amber-400">
+            <p class="text-xs text-warning dark:text-warning">
               {{ t('admin.accounts.openai.modelRestrictionDisabledByPassthrough') }}
             </p>
           </div>
@@ -175,8 +175,8 @@
 
             <!-- Whitelist Mode -->
             <div v-if="modelRestrictionMode === 'whitelist'">
-              <div class="mb-3 rounded-lg bg-sky-50 p-3 dark:bg-sky-900/20">
-                <p class="text-xs text-sky-700 dark:text-sky-400">
+              <div class="mb-3 rounded-lg bg-info-soft p-3 dark:bg-info/15">
+                <p class="text-xs text-info dark:text-info">
                   <Icon name="infoCircle" size="sm" class="mr-1 inline" :stroke-width="2" />
                   {{ t('admin.accounts.selectAllowedModels') }}
                 </p>
@@ -197,8 +197,8 @@
 
             <!-- Mapping Mode -->
             <div v-else>
-              <div class="mb-3 rounded-lg bg-sky-50 p-3 dark:bg-sky-900/20">
-                <p class="text-xs text-sky-700 dark:text-sky-400">
+              <div class="mb-3 rounded-lg bg-info-soft p-3 dark:bg-info/15">
+                <p class="text-xs text-info dark:text-info">
                   <Icon name="infoCircle" size="sm" class="mr-1 inline" :stroke-width="2" />
                   {{ t('admin.accounts.mapRequestModels') }}
                 </p>
@@ -226,7 +226,7 @@
                   />
                   <button
                     type="button"
-                    class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                    class="rounded-lg p-2 text-danger transition-colors hover:bg-danger-soft hover:text-danger-deep dark:hover:bg-danger/15"
                     @click="removeModelMapping(index)"
                   >
                     <Icon name="trash" size="sm" :stroke-width="2" />
@@ -285,8 +285,8 @@
         </div>
 
         <div v-if="enableCustomErrorCodes" id="bulk-edit-custom-error-codes-body" class="space-y-3">
-          <div class="rounded-lg bg-amber-50 p-3 dark:bg-amber-900/20">
-            <p class="text-xs text-amber-700 dark:text-amber-400">
+          <div class="rounded-lg bg-warning-soft p-3 dark:bg-warning/15">
+            <p class="text-xs text-warning dark:text-warning">
               <Icon name="exclamationTriangle" size="sm" class="mr-1 inline" :stroke-width="2" />
               {{ t('admin.accounts.customErrorCodesWarning') }}
             </p>
@@ -301,7 +301,7 @@
               :class="[
                 'rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
                 selectedErrorCodes.includes(code.value)
-                  ? 'bg-red-100 text-red-700 ring-1 ring-red-500 dark:bg-red-900/30 dark:text-red-400'
+                  ? 'bg-danger-soft text-danger ring-1 ring-danger dark:bg-danger/15 dark:text-danger'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
               ]"
               @click="toggleErrorCode(code.value)"
@@ -333,12 +333,12 @@
             <span
               v-for="code in selectedErrorCodes.sort((a, b) => a - b)"
               :key="code"
-              class="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 text-sm font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400"
+              class="inline-flex items-center gap-1 rounded-full bg-danger-soft px-2.5 py-0.5 text-sm font-medium text-danger dark:bg-danger/15 dark:text-danger"
             >
               {{ code }}
               <button
                 type="button"
-                class="hover:text-red-900 dark:hover:text-red-300"
+                class="hover:text-danger-deep dark:hover:text-danger"
                 @click="removeErrorCode(code)"
               >
                 <Icon name="x" size="xs" class="h-3.5 w-3.5" :stroke-width="2" />
@@ -379,7 +379,7 @@
             type="button"
             :class="[
               'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-              interceptWarmupRequests ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-gray-300 dark:bg-dark-600'
+              interceptWarmupRequests ? 'bg-success dark:bg-success' : 'bg-gray-300 dark:bg-dark-600'
             ]"
             @click="interceptWarmupRequests = !interceptWarmupRequests"
           >
@@ -635,7 +635,7 @@
             type="button"
             :class="[
               'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-              codexCLIOnlyEnabled ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-gray-300 dark:bg-dark-600'
+              codexCLIOnlyEnabled ? 'bg-success dark:bg-success' : 'bg-gray-300 dark:bg-dark-600'
             ]"
             @click="codexCLIOnlyEnabled = !codexCLIOnlyEnabled"
           >
@@ -772,7 +772,7 @@
               />
               <button
                 type="button"
-                class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                class="rounded-lg p-2 text-danger transition-colors hover:bg-danger-soft hover:text-danger-deep dark:hover:bg-danger/15"
                 @click="removeOpenAICompactModelMapping(index)"
               >
                 <Icon name="trash" size="sm" />
@@ -822,7 +822,7 @@
               @click="rpmLimitEnabled = !rpmLimitEnabled"
               :class="[
                 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-                rpmLimitEnabled ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-gray-300 dark:bg-dark-600'
+                rpmLimitEnabled ? 'bg-success dark:bg-success' : 'bg-gray-300 dark:bg-dark-600'
               ]"
             >
               <span

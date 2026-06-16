@@ -154,7 +154,7 @@
             class="btn btn-secondary w-full"
           >
             <LoadingSpinner v-if="testingDb" size="sm" color="current" class="-ml-1 mr-2" />
-            <Icon v-else-if="dbConnected" name="check" size="md" class="mr-2 text-green-500" :stroke-width="2" />
+            <Icon v-else-if="dbConnected" name="check" size="md" class="mr-2 text-success" :stroke-width="2" />
             {{
               testingDb
                 ? t('setup.status.testing')
@@ -240,7 +240,7 @@
               v-else-if="redisConnected"
               name="check"
               size="md"
-              class="mr-2 text-green-500"
+              class="mr-2 text-success"
               :stroke-width="2"
             />
             {{
@@ -345,27 +345,27 @@
         <!-- Error Message -->
         <div
           v-if="errorMessage"
-          class="mt-6 rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-800/50 dark:bg-red-900/20"
+          class="mt-6 rounded-xl border border-danger/30 bg-danger-soft p-4 dark:border-danger/40 dark:bg-danger/10"
         >
           <div class="flex items-start gap-3">
-            <Icon name="exclamationCircle" size="md" class="flex-shrink-0 text-red-500" />
-            <p class="text-sm text-red-700 dark:text-red-400">{{ errorMessage }}</p>
+            <Icon name="exclamationCircle" size="md" class="flex-shrink-0 text-danger" />
+            <p class="text-sm text-danger dark:text-danger">{{ errorMessage }}</p>
           </div>
         </div>
 
         <!-- Success Message -->
         <div
           v-if="installSuccess"
-          class="mt-6 rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-800/50 dark:bg-green-900/20"
+          class="mt-6 rounded-xl border border-success/30 bg-success-soft p-4 dark:border-success/40 dark:bg-success/10"
         >
           <div class="flex items-start gap-3">
-            <LoadingSpinner v-if="!serviceReady" size="base" color="current" class="flex-shrink-0 text-green-500" />
-            <Icon v-else name="checkCircle" size="md" class="flex-shrink-0 text-green-500" />
+            <LoadingSpinner v-if="!serviceReady" size="base" color="current" class="flex-shrink-0 text-success" />
+            <Icon v-else name="checkCircle" size="md" class="flex-shrink-0 text-success" />
             <div>
-              <p class="text-sm font-medium text-green-700 dark:text-green-400">
+              <p class="text-sm font-medium text-success dark:text-success">
                 {{ t('setup.status.completed') }}
               </p>
-              <p class="mt-1 text-sm text-green-600 dark:text-green-500">
+              <p class="mt-1 text-sm text-success/80 dark:text-success/80">
                 {{
                   serviceReady
                     ? t('setup.status.redirecting')

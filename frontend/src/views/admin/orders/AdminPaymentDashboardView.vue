@@ -31,7 +31,7 @@
         <section class="surface-card overflow-hidden">
           <header class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200/60 px-6 py-4 dark:border-dark-700/60">
             <div class="flex items-start gap-3">
-              <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
+              <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-success-soft text-success dark:bg-success/15 dark:text-tea-300">
                 <Icon name="chart" size="sm" :stroke-width="1.75" />
               </span>
               <div>
@@ -94,7 +94,7 @@
               </div>
               <div class="rounded-lg border border-gray-100 p-4 dark:border-dark-700">
                 <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('payment.admin.financeRefunds') }}</p>
-                <p class="mt-1 text-xl font-semibold tabular-nums text-red-600 dark:text-red-300">&yen;{{ financeStats.refund_amount.toFixed(2) }}</p>
+                <p class="mt-1 text-xl font-semibold tabular-nums text-danger dark:text-danger">&yen;{{ financeStats.refund_amount.toFixed(2) }}</p>
               </div>
               <div class="rounded-lg border border-gray-100 p-4 dark:border-dark-700">
                 <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('payment.admin.orderCount') }}</p>
@@ -123,7 +123,7 @@
                       <td class="px-4 py-3 font-mono text-gray-600 dark:text-gray-300">{{ bucket.date }}</td>
                       <td class="px-4 py-3 text-right font-medium tabular-nums text-gray-900 dark:text-white">&yen;{{ bucket.amount.toFixed(2) }}</td>
                       <td class="px-4 py-3 text-right tabular-nums text-gray-600 dark:text-gray-300">&yen;{{ bucket.gross_amount.toFixed(2) }}</td>
-                      <td class="px-4 py-3 text-right tabular-nums text-red-600 dark:text-red-300">&yen;{{ bucket.refund_amount.toFixed(2) }}</td>
+                      <td class="px-4 py-3 text-right tabular-nums text-danger dark:text-danger">&yen;{{ bucket.refund_amount.toFixed(2) }}</td>
                       <td class="px-4 py-3 text-right tabular-nums text-gray-600 dark:text-gray-300">{{ bucket.count }}</td>
                     </tr>
                   </tbody>
@@ -137,7 +137,7 @@
           <!-- 支付方式分布 -->
           <div class="surface-card overflow-hidden">
             <header class="flex items-start gap-3 border-b border-gray-200/60 px-6 py-4 dark:border-dark-700/60">
-              <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300">
+              <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-info-soft text-info dark:bg-info/15 dark:text-info">
                 <Icon name="creditCard" size="sm" :stroke-width="1.75" />
               </span>
               <h3 class="text-base font-semibold text-gray-900 dark:text-white">{{ t('payment.admin.paymentDistribution') }}</h3>
@@ -232,9 +232,9 @@ function formatLocalDate(value = new Date()): string {
 }
 
 function rankClass(idx: number): string {
-  if (idx === 0) return 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+  if (idx === 0) return 'bg-warning-soft text-warning-deep dark:bg-warning/15 dark:text-brand-300'
   if (idx === 1) return 'bg-gray-100 text-gray-700 dark:bg-dark-700 dark:text-gray-300'
-  if (idx === 2) return 'bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300'
+  if (idx === 2) return 'bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300'
   return 'bg-gray-100 text-gray-500 dark:bg-dark-700 dark:text-gray-400'
 }
 

@@ -53,7 +53,7 @@
           </div>
           <div class="card card-hover p-3 sm:p-5">
             <p class="text-xs sm:text-sm text-gray-500 dark:text-dark-400">{{ t('affiliate.stats.availableQuota') }}</p>
-            <p class="mt-2 text-xl font-semibold text-emerald-600 sm:text-2xl dark:text-emerald-400 tabular-nums">
+            <p class="mt-2 text-xl font-semibold text-success sm:text-2xl dark:text-success tabular-nums">
               ¥{{ detail.aff_quota.toFixed(2) }}
             </p>
           </div>
@@ -62,7 +62,7 @@
             <p class="mt-2 text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white tabular-nums">
               ¥{{ detail.aff_history_quota.toFixed(2) }}
             </p>
-            <p v-if="detail.aff_frozen_quota > 0" class="mt-1 text-xs tabular-nums text-amber-600 dark:text-amber-400">
+            <p v-if="detail.aff_frozen_quota > 0" class="mt-1 text-xs tabular-nums text-warning dark:text-warning">
               {{ t('affiliate.stats.frozenQuota') }}: ¥{{ detail.aff_frozen_quota.toFixed(2) }}
             </p>
           </div>
@@ -124,7 +124,7 @@
               <span>{{ transferring ? t('affiliate.transfer.transferring') : t('affiliate.transfer.button') }}</span>
             </button>
           </div>
-          <p v-if="detail.aff_quota <= 0" class="mt-3 text-sm text-amber-600 dark:text-amber-400">
+          <p v-if="detail.aff_quota <= 0" class="mt-3 text-sm text-warning dark:text-warning">
             {{ t('affiliate.transfer.empty') }}
           </p>
         </div>
@@ -159,7 +159,7 @@
                 >
                   <td class="px-3 py-3 text-gray-900 dark:text-white">{{ item.email || '-' }}</td>
                   <td class="px-3 py-3 text-gray-700 dark:text-gray-300">{{ item.username || '-' }}</td>
-                  <td class="px-3 py-3 text-right font-medium tabular-nums text-emerald-600 dark:text-emerald-400">¥{{ item.total_rebate.toFixed(2) }}</td>
+                  <td class="px-3 py-3 text-right font-medium tabular-nums text-success dark:text-success">¥{{ item.total_rebate.toFixed(2) }}</td>
                   <td class="px-3 py-3 text-gray-700 dark:text-gray-300">{{ formatDateTime(item.created_at) || '-' }}</td>
                 </tr>
               </tbody>

@@ -71,19 +71,19 @@
             <span
               class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium"
               :class="value === 'active'
-                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                ? 'bg-success-soft text-success dark:bg-success/15 dark:text-tea-300'
                 : value === 'draft'
                   ? 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'
-                  : 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'"
+                  : 'bg-warning-soft text-warning dark:bg-warning/15 dark:text-brand-300'"
             >
               <span class="relative flex h-1.5 w-1.5">
                 <span
                   v-if="value === 'active'"
-                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70"
+                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-70"
                 ></span>
                 <span
                   class="relative inline-flex h-1.5 w-1.5 rounded-full"
-                  :class="value === 'active' ? 'bg-emerald-500' : value === 'draft' ? 'bg-gray-400' : 'bg-amber-500'"
+                  :class="value === 'active' ? 'bg-success' : value === 'draft' ? 'bg-gray-400' : 'bg-warning'"
                 ></span>
               </span>
               {{ statusLabel(value) }}
@@ -129,7 +129,7 @@
             <div class="flex items-center justify-center space-x-1">
               <button
                 @click="openReadStatus(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-info-soft hover:text-info dark:hover:bg-info/15 dark:hover:text-info"
                 :title="t('admin.announcements.readStatus')"
               >
                 <Icon name="eye" size="sm" />
@@ -143,7 +143,7 @@
               </button>
               <button
                 @click="handleDelete(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-danger-soft hover:text-danger dark:hover:bg-danger-deep/30 dark:hover:text-danger"
                 :title="t('common.delete')"
               >
                 <Icon name="trash" size="sm" />

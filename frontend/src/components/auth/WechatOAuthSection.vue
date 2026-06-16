@@ -26,7 +26,7 @@
     <p
       v-if="disabledHint"
       data-testid="wechat-oauth-hint"
-      class="text-sm text-amber-600 dark:text-amber-400"
+      class="text-sm text-warning dark:text-warning"
     >
       {{ disabledHint }}
     </p>

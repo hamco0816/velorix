@@ -15,7 +15,7 @@
         <div class="flex gap-2">
           <div class="relative flex-1">
             <input v-model="form.password" type="text" class="input pr-10" :placeholder="t('admin.users.enterNewPassword')" />
-            <button v-if="form.password" type="button" @click="copyPassword" class="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1 transition-colors hover:bg-gray-100 dark:hover:bg-dark-700" :class="passwordCopied ? 'text-green-500' : 'text-gray-400'">
+            <button v-if="form.password" type="button" @click="copyPassword" class="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1 transition-colors hover:bg-gray-100 dark:hover:bg-dark-700" :class="passwordCopied ? 'text-success' : 'text-gray-400'">
               <Icon v-if="passwordCopied" name="check" size="sm" :stroke-width="2" />
               <Icon v-else name="clipboard" size="sm" />
             </button>

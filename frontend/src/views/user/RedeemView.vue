@@ -8,10 +8,10 @@
       <section class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
             <div class="surface-card p-4 sm:p-6">
               <div class="mb-4 flex items-start justify-between gap-3 sm:mb-6 sm:gap-4">
-                <div class="flex h-10 w-10 items-center justify-center sm:h-12 sm:w-12 rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-900/25 dark:text-sky-300">
+                <div class="flex h-10 w-10 items-center justify-center sm:h-12 sm:w-12 rounded-lg bg-info-soft text-info dark:bg-info/15 dark:text-info">
                   <Icon name="creditCard" size="lg" />
                 </div>
-                <span class="inline-flex items-center rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-900/25 dark:text-emerald-300">
+                <span class="inline-flex items-center rounded-md bg-success-soft px-2.5 py-1 text-xs font-medium text-success-deep dark:bg-success/40 dark:text-success">
                   USD
                 </span>
               </div>
@@ -25,10 +25,10 @@
 
             <div class="surface-card p-4 sm:p-6">
               <div class="mb-4 flex items-start justify-between gap-3 sm:mb-6 sm:gap-4">
-                <div class="flex h-10 w-10 items-center justify-center sm:h-12 sm:w-12 rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-900/25 dark:text-emerald-300">
+                <div class="flex h-10 w-10 items-center justify-center sm:h-12 sm:w-12 rounded-lg bg-success-soft text-success dark:bg-success/15 dark:text-tea-300">
                   <Icon name="bolt" size="lg" />
                 </div>
-                <span class="rounded-md bg-sky-50 px-2.5 py-1 text-xs font-medium text-sky-700 dark:bg-sky-900/25 dark:text-sky-300">
+                <span class="rounded-md bg-info-soft px-2.5 py-1 text-xs font-medium text-info-deep dark:bg-info/40 dark:text-info">
                   {{ t('redeem.requests') }}
                 </span>
               </div>
@@ -42,10 +42,10 @@
 
             <div class="surface-card p-4 sm:p-6">
               <div class="mb-4 flex items-start justify-between gap-3 sm:mb-6 sm:gap-4">
-                <div class="flex h-10 w-10 items-center justify-center sm:h-12 sm:w-12 rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-900/25 dark:text-amber-300">
+                <div class="flex h-10 w-10 items-center justify-center sm:h-12 sm:w-12 rounded-lg bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning">
                   <Icon name="badge" size="lg" />
                 </div>
-                <span class="rounded-md bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 dark:bg-amber-900/25 dark:text-amber-300">
+                <span class="rounded-md bg-warning-soft px-2.5 py-1 text-xs font-medium text-warning-deep dark:bg-warning/40 dark:text-warning">
                   {{ t('redeem.planLabel') }}
                 </span>
               </div>
@@ -62,7 +62,7 @@
 
             <div class="surface-card p-4 sm:p-6">
               <div class="mb-4 flex items-start justify-between gap-3 sm:mb-6 sm:gap-4">
-                <div class="flex h-10 w-10 items-center justify-center sm:h-12 sm:w-12 rounded-lg bg-teal-50 text-teal-600 dark:bg-teal-900/25 dark:text-teal-300">
+                <div class="flex h-10 w-10 items-center justify-center sm:h-12 sm:w-12 rounded-lg bg-info-soft text-info dark:bg-info/15 dark:text-info">
                   <Icon name="shield" size="lg" />
                 </div>
                 <span :class="['rounded-md px-2.5 py-1 text-xs font-medium', accountStatusBadgeClass]">
@@ -86,9 +86,9 @@
 
           <!-- Redeem Form -->
           <section class="surface-card overflow-hidden">
-            <div class="border-b border-sky-100 bg-sky-50/70 px-6 py-5 dark:border-dark-700 dark:bg-sky-900/10">
+            <div class="border-b border-info-soft bg-info-soft/70 px-6 py-5 dark:border-dark-700 dark:bg-info/10">
               <div class="flex items-center gap-3">
-                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-sky-600 shadow-sm dark:bg-dark-700 dark:text-sky-300">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-info shadow-sm dark:bg-dark-700 dark:text-info">
                   <Icon name="gift" size="md" />
                 </div>
                 <div>
@@ -110,7 +110,7 @@
                   </label>
                   <div class="relative mt-2">
                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                      <Icon name="gift" size="md" class="text-sky-500 dark:text-sky-300" />
+                      <Icon name="gift" size="md" class="text-info dark:text-info" />
                     </div>
                     <input
                       id="code"
@@ -123,7 +123,7 @@
                     />
                     <button
                       type="button"
-                      class="absolute inset-y-2 right-2 rounded-lg border border-gray-200 px-3 text-sm font-semibold text-sky-600 transition-colors hover:border-sky-300 hover:bg-sky-50 dark:border-dark-600 dark:text-sky-300 dark:hover:bg-sky-900/20"
+                      class="absolute inset-y-2 right-2 rounded-lg border border-gray-200 px-3 text-sm font-semibold text-info transition-colors hover:border-info/40 hover:bg-info-soft dark:border-dark-600 dark:text-info dark:hover:bg-info/20"
                       @click="pasteRedeemCode"
                     >
                       {{ t('redeem.paste') }}
@@ -151,20 +151,20 @@
       <transition name="fade">
         <div
           v-if="redeemResult"
-          class="rounded-2xl border border-emerald-200 bg-emerald-50 shadow-card dark:border-emerald-800/50 dark:bg-emerald-900/20"
+          class="rounded-2xl border border-success-soft bg-success-soft shadow-card dark:border-success/40 dark:bg-success/20"
         >
           <div class="p-6">
             <div class="flex items-start gap-4">
               <div
-                class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-900/30"
+                class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-success-soft dark:bg-success/30"
               >
-                <Icon name="checkCircle" size="md" class="text-emerald-600 dark:text-emerald-400" />
+                <Icon name="checkCircle" size="md" class="text-success dark:text-tea-300" />
               </div>
               <div class="flex-1">
-                <h3 class="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
+                <h3 class="text-sm font-semibold text-success-deep dark:text-tea-300">
                   {{ t('redeem.redeemSuccess') }}
                 </h3>
-                <div class="mt-2 text-sm text-emerald-700 dark:text-emerald-400">
+                <div class="mt-2 text-sm text-success dark:text-tea-300">
                   <p>{{ redeemResult.message }}</p>
                   <div class="mt-3 space-y-1">
                     <p v-if="redeemResult.type === 'balance'" class="font-medium">
@@ -205,24 +205,24 @@
       <transition name="fade">
         <div
           v-if="errorMessage"
-          class="rounded-2xl border border-red-200 bg-red-50 shadow-card dark:border-red-800/50 dark:bg-red-900/20"
+          class="rounded-2xl border border-danger-soft bg-danger-soft shadow-card dark:border-danger/40 dark:bg-danger/20"
         >
           <div class="p-6">
             <div class="flex items-start gap-4">
               <div
-                class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-red-100 dark:bg-red-900/30"
+                class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-danger-soft dark:bg-danger/30"
               >
                 <Icon
                   name="exclamationCircle"
                   size="md"
-                  class="text-red-600 dark:text-red-400"
+                  class="text-danger dark:text-danger"
                 />
               </div>
               <div class="flex-1">
-                <h3 class="text-sm font-semibold text-red-800 dark:text-red-300">
+                <h3 class="text-sm font-semibold text-danger-deep dark:text-danger">
                   {{ t('redeem.redeemFailed') }}
                 </h3>
-                <p class="mt-2 text-sm text-red-700 dark:text-red-400">
+                <p class="mt-2 text-sm text-danger dark:text-danger">
                   {{ errorMessage }}
                 </p>
               </div>
@@ -235,7 +235,7 @@
       <section class="surface-card overflow-hidden">
         <div class="border-b border-gray-100 bg-gray-50/70 px-6 py-4 dark:border-dark-700 dark:bg-dark-800/60">
           <div class="flex items-center gap-3">
-            <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-900/25 dark:text-amber-300">
+            <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning">
               <Icon name="clock" size="md" />
             </div>
             <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
@@ -275,13 +275,13 @@
                     'flex h-10 w-10 items-center justify-center rounded-xl',
                     isBalanceType(item.type)
                       ? item.value >= 0
-                        ? 'bg-emerald-100 dark:bg-emerald-900/30'
-                        : 'bg-red-100 dark:bg-red-900/30'
+                        ? 'bg-success-soft dark:bg-success/30'
+                        : 'bg-danger-soft dark:bg-danger/30'
                       : isSubscriptionType(item.type)
-                        ? 'bg-violet-100 dark:bg-violet-900/30'
+                        ? 'bg-info-soft dark:bg-info/30'
                         : item.value >= 0
-                          ? 'bg-sky-100 dark:bg-sky-900/30'
-                          : 'bg-amber-100 dark:bg-amber-900/30'
+                          ? 'bg-info-soft dark:bg-info/30'
+                          : 'bg-warning-soft dark:bg-warning/30'
                   ]"
                 >
                   <!-- 余额类型图标 -->
@@ -291,8 +291,8 @@
                     size="md"
                     :class="
                       item.value >= 0
-                        ? 'text-emerald-600 dark:text-emerald-400'
-                        : 'text-red-600 dark:text-red-400'
+                        ? 'text-success dark:text-tea-300'
+                        : 'text-danger dark:text-danger'
                     "
                   />
                   <!-- 订阅类型图标 -->
@@ -300,7 +300,7 @@
                     v-else-if="isSubscriptionType(item.type)"
                     name="badge"
                     size="md"
-                    class="text-violet-600 dark:text-violet-400"
+                    class="text-info dark:text-info"
                   />
                   <!-- 并发类型图标 -->
                   <Icon
@@ -309,8 +309,8 @@
                     size="md"
                     :class="
                       item.value >= 0
-                        ? 'text-sky-600 dark:text-sky-400'
-                        : 'text-amber-600 dark:text-amber-400'
+                        ? 'text-info dark:text-info'
+                        : 'text-warning dark:text-warning'
                     "
                   />
                 </div>
@@ -329,13 +329,13 @@
                     'text-sm font-semibold tabular-nums',
                     isBalanceType(item.type)
                       ? item.value >= 0
-                        ? 'text-emerald-600 dark:text-emerald-400'
-                        : 'text-red-600 dark:text-red-400'
+                        ? 'text-success dark:text-tea-300'
+                        : 'text-danger dark:text-danger'
                       : isSubscriptionType(item.type)
-                        ? 'text-violet-600 dark:text-violet-400'
+                        ? 'text-info dark:text-info'
                         : item.value >= 0
-                          ? 'text-sky-600 dark:text-sky-400'
-                          : 'text-amber-600 dark:text-amber-400'
+                          ? 'text-info dark:text-info'
+                          : 'text-warning dark:text-warning'
                   ]"
                 >
                   {{ formatHistoryValue(item) }}
@@ -380,7 +380,7 @@
         <aside class="space-y-5 xl:sticky xl:top-6 xl:self-start">
           <section class="surface-card p-6">
             <div class="mb-5 flex items-center gap-3">
-              <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-900/25 dark:text-sky-300">
+              <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-info-soft text-info dark:bg-info/15 dark:text-info">
                 <Icon name="infoCircle" size="md" />
               </div>
               <div>
@@ -394,19 +394,19 @@
             </div>
             <ul class="space-y-3 text-sm text-gray-700 dark:text-dark-200">
               <li class="flex gap-2">
-                <Icon name="check" size="sm" class="mt-0.5 flex-shrink-0 text-emerald-500" />
+                <Icon name="check" size="sm" class="mt-0.5 flex-shrink-0 text-success" />
                 <span>{{ t('redeem.codeRule1') }}</span>
               </li>
               <li class="flex gap-2">
-                <Icon name="check" size="sm" class="mt-0.5 flex-shrink-0 text-emerald-500" />
+                <Icon name="check" size="sm" class="mt-0.5 flex-shrink-0 text-success" />
                 <span>{{ t('redeem.codeRule2') }}</span>
               </li>
               <li class="flex gap-2">
-                <Icon name="check" size="sm" class="mt-0.5 flex-shrink-0 text-emerald-500" />
+                <Icon name="check" size="sm" class="mt-0.5 flex-shrink-0 text-success" />
                 <span>{{ t('redeem.codeRule3') }}</span>
               </li>
               <li class="flex gap-2">
-                <Icon name="check" size="sm" class="mt-0.5 flex-shrink-0 text-emerald-500" />
+                <Icon name="check" size="sm" class="mt-0.5 flex-shrink-0 text-success" />
                 <span>{{ t('redeem.codeRule4') }}</span>
               </li>
             </ul>
@@ -495,13 +495,13 @@ const accountStatusMeta = computed(() =>
 )
 const accountStatusClass = computed(() =>
   user.value?.status === 'active'
-    ? 'text-emerald-600 dark:text-emerald-400'
-    : 'text-red-600 dark:text-red-400',
+    ? 'text-success dark:text-tea-300'
+    : 'text-danger dark:text-danger',
 )
 const accountStatusBadgeClass = computed(() =>
   user.value?.status === 'active'
-    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/25 dark:text-emerald-300'
-    : 'bg-red-50 text-red-700 dark:bg-red-900/25 dark:text-red-300',
+    ? 'bg-success-soft text-success-deep dark:bg-success/25 dark:text-success'
+    : 'bg-danger-soft text-danger-deep dark:bg-danger/25 dark:text-danger',
 )
 
 // Helper functions for history display

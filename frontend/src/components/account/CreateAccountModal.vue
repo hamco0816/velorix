@@ -124,7 +124,7 @@
             :class="[
               'flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-all',
               form.platform === 'anthropic'
-                ? 'bg-white text-orange-600 shadow-sm dark:bg-dark-600 dark:text-orange-400'
+                ? 'bg-white text-brand-600 shadow-sm dark:bg-dark-600 dark:text-brand-400'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
             ]"
           >
@@ -137,7 +137,7 @@
             :class="[
               'flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-all',
               form.platform === 'openai'
-                ? 'bg-white text-green-600 shadow-sm dark:bg-dark-600 dark:text-green-400'
+                ? 'bg-white text-brand-600 shadow-sm dark:bg-dark-600 dark:text-brand-400'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
             ]"
           >
@@ -183,15 +183,15 @@
             :class="[
               'flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all',
               accountCategory === 'oauth-based'
-                ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20'
-                : 'border-gray-200 hover:border-orange-300 dark:border-dark-600 dark:hover:border-orange-700'
+                ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/20'
+                : 'border-gray-200 hover:border-brand-300 dark:border-dark-600 dark:hover:border-brand-700'
             ]"
           >
             <div
               :class="[
                 'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
                 accountCategory === 'oauth-based'
-                  ? 'bg-orange-500 text-white'
+                  ? 'bg-brand-500 text-white'
                   : 'bg-gray-100 text-gray-500 dark:bg-dark-600 dark:text-gray-400'
               ]"
             >
@@ -243,15 +243,15 @@
             :class="[
               'flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all',
               accountCategory === 'bedrock'
-                ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20'
-                : 'border-gray-200 hover:border-amber-300 dark:border-dark-600 dark:hover:border-amber-700'
+                ? 'border-warning bg-warning-soft dark:bg-warning/20'
+                : 'border-gray-200 hover:border-warning/60 dark:border-dark-600 dark:hover:border-warning/60'
             ]"
           >
             <div
               :class="[
                 'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
                 accountCategory === 'bedrock'
-                  ? 'bg-amber-500 text-white'
+                  ? 'bg-warning text-white'
                   : 'bg-gray-100 text-gray-500 dark:bg-dark-600 dark:text-gray-400'
               ]"
             >
@@ -273,15 +273,15 @@
             :class="[
               'flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all',
               accountCategory === 'service_account'
-                ? 'border-sky-500 bg-sky-50 dark:bg-sky-900/20'
-                : 'border-gray-200 hover:border-sky-300 dark:border-dark-600 dark:hover:border-sky-700'
+                ? 'border-info bg-info-soft dark:bg-info/20'
+                : 'border-gray-200 hover:border-info/60 dark:border-dark-600 dark:hover:border-info/60'
             ]"
           >
             <div
               :class="[
                 'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
                 accountCategory === 'service_account'
-                  ? 'bg-sky-500 text-white'
+                  ? 'bg-info text-white'
                   : 'bg-gray-100 text-gray-500 dark:bg-dark-600 dark:text-gray-400'
               ]"
             >
@@ -297,7 +297,7 @@
 
         <div
           v-if="accountCategory === 'service_account'"
-          class="mt-3 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-800 dark:border-sky-800/40 dark:bg-sky-900/20 dark:text-sky-200"
+          class="mt-3 rounded-lg border border-info/30 bg-info-soft px-3 py-2 text-xs text-info dark:border-info/50 dark:bg-info/15 dark:text-info"
         >
           <p>{{ t('admin.accounts.vertexAnthropicHint') }}</p>
         </div>
@@ -313,15 +313,15 @@
             :class="[
               'flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all',
               accountCategory === 'oauth-based'
-                ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
-                : 'border-gray-200 hover:border-green-300 dark:border-dark-600 dark:hover:border-green-700'
+                ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/20'
+                : 'border-gray-200 hover:border-brand-300 dark:border-dark-600 dark:hover:border-brand-700'
             ]"
           >
             <div
               :class="[
                 'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
                 accountCategory === 'oauth-based'
-                  ? 'bg-green-500 text-white'
+                  ? 'bg-brand-500 text-white'
                   : 'bg-gray-100 text-gray-500 dark:bg-dark-600 dark:text-gray-400'
               ]"
             >
@@ -454,15 +454,15 @@
             :class="[
               'flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all',
               accountCategory === 'service_account'
-                ? 'border-sky-500 bg-sky-50 dark:bg-sky-900/20'
-                : 'border-gray-200 hover:border-sky-300 dark:border-dark-600 dark:hover:border-sky-700'
+                ? 'border-info bg-info-soft dark:bg-info/20'
+                : 'border-gray-200 hover:border-info/60 dark:border-dark-600 dark:hover:border-info/60'
             ]"
           >
             <div
               :class="[
                 'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
                 accountCategory === 'service_account'
-                  ? 'bg-sky-500 text-white'
+                  ? 'bg-info text-white'
                   : 'bg-gray-100 text-gray-500 dark:bg-dark-600 dark:text-gray-400'
               ]"
             >
@@ -481,7 +481,7 @@
 
         <div
           v-if="accountCategory === 'apikey'"
-          class="mt-3 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-800 dark:border-sky-800/40 dark:bg-sky-900/20 dark:text-sky-200"
+          class="mt-3 rounded-lg border border-info/30 bg-info-soft px-3 py-2 text-xs text-info dark:border-info/50 dark:bg-info/15 dark:text-info"
         >
           <p>{{ t('admin.accounts.gemini.accountType.apiKeyNote') }}</p>
           <div class="mt-2 flex flex-wrap gap-2">
@@ -498,7 +498,7 @@
 
         <div
           v-if="accountCategory === 'service_account'"
-          class="mt-3 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-800 dark:border-sky-800/40 dark:bg-sky-900/20 dark:text-sky-200"
+          class="mt-3 rounded-lg border border-info/30 bg-info-soft px-3 py-2 text-xs text-info dark:border-info/50 dark:bg-info/15 dark:text-info"
         >
           <p>{{ t('admin.accounts.vertexGeminiHint') }}</p>
         </div>
@@ -542,7 +542,7 @@
                     推荐个人用户
                   </span>
                   <span
-                    class="rounded bg-emerald-100 px-2 py-0.5 text-2xs font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
+                    class="rounded bg-success-soft px-2 py-0.5 text-2xs font-semibold text-success dark:bg-success/30 dark:text-success"
                   >
                     无需 GCP
                   </span>
@@ -596,7 +596,7 @@
                     企业用户
                   </span>
                   <span
-                    class="rounded bg-emerald-100 px-2 py-0.5 text-2xs font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
+                    class="rounded bg-success-soft px-2 py-0.5 text-2xs font-semibold text-success dark:bg-success/30 dark:text-success"
                   >
                     高并发
                   </span>
@@ -632,15 +632,15 @@
                 'flex w-full items-center gap-3 rounded-lg border-2 p-3 text-left transition-all',
                 !geminiAIStudioOAuthEnabled ? 'cursor-not-allowed opacity-60' : '',
                 geminiOAuthType === 'ai_studio'
-                  ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20'
-                  : 'border-gray-200 hover:border-amber-300 dark:border-dark-600 dark:hover:border-amber-700'
+                  ? 'border-warning bg-warning-soft dark:bg-warning/20'
+                  : 'border-gray-200 hover:border-warning/60 dark:border-dark-600 dark:hover:border-warning/60'
               ]"
             >
               <div
                 :class="[
                   'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
                   geminiOAuthType === 'ai_studio'
-                    ? 'bg-amber-500 text-white'
+                    ? 'bg-warning text-white'
                     : 'bg-gray-100 text-gray-500 dark:bg-dark-600 dark:text-gray-400'
                 ]"
               >
@@ -670,12 +670,12 @@
                 </div>
                 <div class="mt-2 flex flex-wrap gap-1">
                   <span
-                    class="rounded bg-amber-100 px-2 py-0.5 text-2xs font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
+                    class="rounded bg-warning-soft px-2 py-0.5 text-2xs font-semibold text-warning dark:bg-warning/30 dark:text-warning"
                   >
                     {{ t('admin.accounts.gemini.oauthType.badges.orgManaged') }}
                   </span>
                   <span
-                    class="rounded bg-amber-100 px-2 py-0.5 text-2xs font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
+                    class="rounded bg-warning-soft px-2 py-0.5 text-2xs font-semibold text-warning dark:bg-warning/30 dark:text-warning"
                   >
                     {{ t('admin.accounts.gemini.oauthType.badges.adminRequired') }}
                   </span>
@@ -683,7 +683,7 @@
               </div>
               <span
                 v-if="!geminiAIStudioOAuthEnabled"
-                class="ml-auto shrink-0 rounded bg-amber-100 px-2 py-0.5 text-xs text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
+                class="ml-auto shrink-0 rounded bg-warning-soft px-2 py-0.5 text-xs text-warning dark:bg-warning/30 dark:text-warning"
               >
                 {{ t('admin.accounts.oauth.gemini.aiStudioNotConfiguredShort') }}
               </span>
@@ -691,7 +691,7 @@
 
             <div
               v-if="!geminiAIStudioOAuthEnabled"
-              class="pointer-events-none absolute right-0 top-full z-50 mt-2 w-80 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 opacity-0 shadow-lg transition-opacity group-hover:opacity-100 dark:border-amber-700 dark:bg-amber-900/40 dark:text-amber-200"
+              class="pointer-events-none absolute right-0 top-full z-50 mt-2 w-80 rounded-md border border-warning/30 bg-warning-soft px-3 py-2 text-xs text-warning opacity-0 shadow-lg transition-opacity group-hover:opacity-100 dark:border-warning/50 dark:bg-warning/15 dark:text-warning"
             >
               {{ t('admin.accounts.oauth.gemini.aiStudioNotConfiguredTip') }}
             </div>
@@ -833,8 +833,8 @@
             :class="[
               'rounded-lg border-2 border-dashed px-4 py-5 transition-colors',
               vertexServiceAccountDragActive
-                ? 'border-sky-500 bg-sky-50 dark:border-sky-500 dark:bg-sky-900/20'
-                : 'border-gray-300 bg-gray-50 hover:border-sky-400 hover:bg-sky-50/60 dark:border-dark-500 dark:bg-dark-700/40 dark:hover:border-sky-600 dark:hover:bg-sky-900/10'
+                ? 'border-info bg-info-soft dark:border-info dark:bg-info/20'
+                : 'border-gray-300 bg-gray-50 hover:border-info/60 hover:bg-info-soft/60 dark:border-dark-500 dark:bg-dark-700/40 dark:hover:border-info/60 dark:hover:bg-info/10'
             ]"
             @dragenter.prevent="vertexServiceAccountDragActive = true"
             @dragover.prevent="vertexServiceAccountDragActive = true"

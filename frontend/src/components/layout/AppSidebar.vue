@@ -13,7 +13,7 @@
         <img v-if="settingsLoaded" :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
       </div>
       <div class="sidebar-brand" :class="{ 'sidebar-brand-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">
-        <span class="sidebar-brand-title text-lg font-bold text-gray-900 dark:text-white">
+        <span class="sidebar-brand-title font-display text-lg font-bold italic text-gray-900 dark:text-white">
           {{ siteName }}
         </span>
         <span v-if="siteVersion" class="text-xs text-gray-500 dark:text-dark-400">

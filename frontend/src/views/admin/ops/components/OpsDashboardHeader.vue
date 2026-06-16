@@ -264,11 +264,11 @@ function getUpstreamErrorRateThresholdLevel(upstreamErrorRatePercent: number | n
 function getThresholdColorClass(level: ThresholdLevel): string {
   switch (level) {
     case 'critical':
-      return 'text-red-600 dark:text-red-400'
+      return 'text-danger dark:text-danger'
     case 'warning':
-      return 'text-yellow-600 dark:text-yellow-400'
+      return 'text-warning dark:text-warning'
     default:
-      return 'text-green-600 dark:text-green-400'
+      return 'text-success dark:text-success'
   }
 }
 
@@ -437,21 +437,21 @@ const healthScoreValue = computed<number | null>(() => {
 })
 
 const healthScoreColor = computed(() => {
-  if (isSystemIdle.value) return '#9ca3af' // gray-400
+  if (isSystemIdle.value) return '#b4ab98' // primary-400 暖墨中性
   const score = healthScoreValue.value
-  if (score == null) return '#9ca3af'
-  if (score >= 90) return '#10b981' // green
-  if (score >= 60) return '#f59e0b' // yellow
-  return '#ef4444' // red
+  if (score == null) return '#b4ab98'
+  if (score >= 90) return '#3d5a45' // success 竹青
+  if (score >= 60) return '#c56b3e' // warning 茶橘
+  return '#a23b2e' // danger 印章红
 })
 
 const healthScoreClass = computed(() => {
   if (isSystemIdle.value) return 'text-gray-400'
   const score = healthScoreValue.value
   if (score == null) return 'text-gray-400'
-  if (score >= 90) return 'text-green-500'
-  if (score >= 60) return 'text-yellow-500'
-  return 'text-red-500'
+  if (score >= 90) return 'text-success'
+  if (score >= 60) return 'text-warning'
+  return 'text-danger'
 })
 
 const circleSize = computed(() => props.fullscreen ? 140 : 100)
@@ -652,9 +652,9 @@ const cpuPercentValue = computed<number | null>(() => {
 const cpuPercentClass = computed(() => {
   const v = cpuPercentValue.value
   if (v == null) return 'text-gray-900 dark:text-white'
-  if (v >= 95) return 'text-rose-600 dark:text-rose-400'
-  if (v >= 80) return 'text-yellow-600 dark:text-yellow-400'
-  return 'text-emerald-600 dark:text-emerald-400'
+  if (v >= 95) return 'text-danger dark:text-danger'
+  if (v >= 80) return 'text-warning dark:text-warning'
+  return 'text-success dark:text-success'
 })
 
 const memPercentValue = computed<number | null>(() => {
@@ -665,9 +665,9 @@ const memPercentValue = computed<number | null>(() => {
 const memPercentClass = computed(() => {
   const v = memPercentValue.value
   if (v == null) return 'text-gray-900 dark:text-white'
-  if (v >= 95) return 'text-rose-600 dark:text-rose-400'
-  if (v >= 85) return 'text-yellow-600 dark:text-yellow-400'
-  return 'text-emerald-600 dark:text-emerald-400'
+  if (v >= 95) return 'text-danger dark:text-danger'
+  if (v >= 85) return 'text-warning dark:text-warning'
+  return 'text-success dark:text-success'
 })
 
 const dbConnActiveValue = computed<number | null>(() => {
@@ -708,13 +708,13 @@ const dbMiddleLabel = computed(() => {
 })
 
 const dbMiddleClass = computed(() => {
-  if (systemMetrics.value?.db_ok === false) return 'text-rose-600 dark:text-rose-400'
+  if (systemMetrics.value?.db_ok === false) return 'text-danger dark:text-danger'
   if (dbUsagePercent.value != null) {
-    if (dbUsagePercent.value >= 90) return 'text-rose-600 dark:text-rose-400'
-    if (dbUsagePercent.value >= 70) return 'text-yellow-600 dark:text-yellow-400'
-    return 'text-emerald-600 dark:text-emerald-400'
+    if (dbUsagePercent.value >= 90) return 'text-danger dark:text-danger'
+    if (dbUsagePercent.value >= 70) return 'text-warning dark:text-warning'
+    return 'text-success dark:text-success'
   }
-  if (systemMetrics.value?.db_ok === true) return 'text-emerald-600 dark:text-emerald-400'
+  if (systemMetrics.value?.db_ok === true) return 'text-success dark:text-success'
   return 'text-gray-900 dark:text-white'
 })
 
@@ -751,13 +751,13 @@ const redisMiddleLabel = computed(() => {
 })
 
 const redisMiddleClass = computed(() => {
-  if (systemMetrics.value?.redis_ok === false) return 'text-rose-600 dark:text-rose-400'
+  if (systemMetrics.value?.redis_ok === false) return 'text-danger dark:text-danger'
   if (redisUsagePercent.value != null) {
-    if (redisUsagePercent.value >= 90) return 'text-rose-600 dark:text-rose-400'
-    if (redisUsagePercent.value >= 70) return 'text-yellow-600 dark:text-yellow-400'
-    return 'text-emerald-600 dark:text-emerald-400'
+    if (redisUsagePercent.value >= 90) return 'text-danger dark:text-danger'
+    if (redisUsagePercent.value >= 70) return 'text-warning dark:text-warning'
+    return 'text-success dark:text-success'
   }
-  if (systemMetrics.value?.redis_ok === true) return 'text-emerald-600 dark:text-emerald-400'
+  if (systemMetrics.value?.redis_ok === true) return 'text-success dark:text-success'
   return 'text-gray-900 dark:text-white'
 })
 
@@ -793,11 +793,11 @@ const goroutineStatusLabel = computed(() => {
 const goroutineStatusClass = computed(() => {
   switch (goroutineStatus.value) {
     case 'ok':
-      return 'text-emerald-600 dark:text-emerald-400'
+      return 'text-success dark:text-success'
     case 'warning':
-      return 'text-yellow-600 dark:text-yellow-400'
+      return 'text-warning dark:text-warning'
     case 'critical':
-      return 'text-rose-600 dark:text-rose-400'
+      return 'text-danger dark:text-danger'
     default:
       return 'text-gray-900 dark:text-white'
   }
@@ -838,9 +838,9 @@ const jobsStatusLabel = computed(() => {
 const jobsStatusClass = computed(() => {
   switch (jobsStatus.value) {
     case 'ok':
-      return 'text-emerald-600 dark:text-emerald-400'
+      return 'text-success dark:text-success'
     case 'warn':
-      return 'text-yellow-600 dark:text-yellow-400'
+      return 'text-warning dark:text-warning'
     default:
       return 'text-gray-900 dark:text-white'
   }
@@ -866,8 +866,8 @@ function handleToolbarRefresh() {
         <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium"
               :class="props.loading
                 ? 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-dark-300'
-                : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300'">
-          <span class="h-1.5 w-1.5 rounded-full" :class="props.loading ? 'bg-gray-400' : 'bg-emerald-500'"></span>
+                : 'bg-success-soft text-success dark:bg-success/15 dark:text-success'">
+          <span class="h-1.5 w-1.5 rounded-full" :class="props.loading ? 'bg-gray-400' : 'bg-success'"></span>
           {{ props.loading ? t('admin.ops.loadingText') : t('admin.ops.ready') }}
         </span>
         <span class="text-xs text-gray-500 dark:text-dark-400">
@@ -967,28 +967,28 @@ function handleToolbarRefresh() {
             >
               <div class="rounded-xl bg-white p-4 shadow-xl ring-1 ring-black/5 dark:bg-gray-800 dark:ring-white/10">
                 <h4 class="mb-3 border-b border-gray-100 pb-2 text-sm font-semibold text-gray-900 dark:border-gray-700 dark:text-white flex items-center gap-2">
-                  <Icon name="brain" size="sm" class="text-blue-500" />
+                  <Icon name="brain" size="sm" class="text-info" />
                   {{ t('admin.ops.diagnosis.title') }}
                 </h4>
 
                 <div class="space-y-3">
                   <div v-for="(item, idx) in diagnosisReport" :key="idx" class="flex gap-3">
                     <div class="mt-0.5 shrink-0">
-                      <svg v-if="item.type === 'critical'" class="h-4 w-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                      <svg v-if="item.type === 'critical'" class="h-4 w-4 text-danger" fill="currentColor" viewBox="0 0 20 20">
                         <path
                           fill-rule="evenodd"
                           d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
                           clip-rule="evenodd"
                         />
                       </svg>
-                      <svg v-else-if="item.type === 'warning'" class="h-4 w-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                      <svg v-else-if="item.type === 'warning'" class="h-4 w-4 text-warning" fill="currentColor" viewBox="0 0 20 20">
                         <path
                           fill-rule="evenodd"
                           d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
                           clip-rule="evenodd"
                         />
                       </svg>
-                      <svg v-else class="h-4 w-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                      <svg v-else class="h-4 w-4 text-info" fill="currentColor" viewBox="0 0 20 20">
                         <path
                           fill-rule="evenodd"
                           d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 100 2 1 1 0 000-2zm-1 3a1 1 0 012 0v4a1 1 0 11-2 0v-4z"
@@ -999,7 +999,7 @@ function handleToolbarRefresh() {
                     <div class="flex-1">
                       <div class="text-xs font-semibold text-gray-900 dark:text-white">{{ item.message }}</div>
                       <div class="mt-0.5 text-2xs text-gray-500 dark:text-gray-400">{{ item.impact }}</div>
-                      <div v-if="item.action" class="mt-1 text-2xs text-blue-600 dark:text-blue-400 flex items-center gap-1">
+                      <div v-if="item.action" class="mt-1 text-2xs text-info dark:text-info flex items-center gap-1">
                         <Icon name="lightbulb" size="xs" />
                         {{ item.action }}
                       </div>
@@ -1068,8 +1068,8 @@ function handleToolbarRefresh() {
             <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
               <div class="flex items-center gap-2">
                 <div class="relative flex h-2 w-2 shrink-0">
-                  <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-                  <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+                  <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75"></span>
+                  <span class="relative inline-flex h-2 w-2 rounded-full bg-success"></span>
                 </div>
                 <h3 class="text-sm font-medium text-gray-500 dark:text-dark-400">{{ t('admin.ops.realtime.title') }}</h3>
                 <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.qps')" />
@@ -1147,7 +1147,7 @@ function handleToolbarRefresh() {
                   <path
                     d="M0 16 Q 20 16, 40 16 T 80 16 T 120 10 T 160 22 T 200 16 T 240 16 T 280 16"
                     fill="none"
-                    stroke="#3b82f6"
+                    stroke="#3a5570"
                     stroke-width="2"
                     vector-effect="non-scaling-stroke"
                   >
@@ -1212,7 +1212,7 @@ function handleToolbarRefresh() {
             <div class="flex items-center gap-2">
               <span class="text-2xs font-medium text-gray-500 dark:text-dark-400">{{ t('admin.ops.sla') }}</span>
               <HelpTooltip v-if="!props.fullscreen" :content="t('admin.ops.tooltips.sla')" />
-              <span class="h-1.5 w-1.5 rounded-full" :class="getSLAThresholdLevel(slaPercent) === 'critical' ? 'bg-red-500' : getSLAThresholdLevel(slaPercent) === 'warning' ? 'bg-yellow-500' : 'bg-green-500'"></span>
+              <span class="h-1.5 w-1.5 rounded-full" :class="getSLAThresholdLevel(slaPercent) === 'critical' ? 'bg-danger' : getSLAThresholdLevel(slaPercent) === 'warning' ? 'bg-warning' : 'bg-success'"></span>
             </div>
             <button
               v-if="!props.fullscreen"
@@ -1227,12 +1227,12 @@ function handleToolbarRefresh() {
             {{ slaPercent == null ? '-' : `${slaPercent.toFixed(3)}%` }}
           </div>
           <div class="mt-3 h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-dark-700">
-            <div class="h-full transition-all" :class="getSLAThresholdLevel(slaPercent) === 'critical' ? 'bg-red-500' : getSLAThresholdLevel(slaPercent) === 'warning' ? 'bg-yellow-500' : 'bg-green-500'" :style="{ width: `${Math.max((slaPercent ?? 0) - 90, 0) * 10}%` }"></div>
+            <div class="h-full transition-all" :class="getSLAThresholdLevel(slaPercent) === 'critical' ? 'bg-danger' : getSLAThresholdLevel(slaPercent) === 'warning' ? 'bg-warning' : 'bg-success'" :style="{ width: `${Math.max((slaPercent ?? 0) - 90, 0) * 10}%` }"></div>
           </div>
           <div class="mt-3 text-xs">
             <div class="flex justify-between">
               <span class="text-gray-500">{{ t('admin.ops.exceptions') }}:</span>
-              <span class="font-semibold text-red-600 dark:text-red-400">{{ formatNumber((overview.request_count_sla ?? 0) - (overview.success_count ?? 0)) }}</span>
+              <span class="font-semibold text-danger dark:text-danger">{{ formatNumber((overview.request_count_sla ?? 0) - (overview.success_count ?? 0)) }}</span>
             </div>
           </div>
         </div>
@@ -1537,7 +1537,7 @@ function handleToolbarRefresh() {
 
           <div
             v-if="hb.last_error"
-            class="mt-3 rounded-lg bg-rose-50 p-2 text-xs text-rose-700 dark:bg-rose-900/20 dark:text-rose-300"
+            class="mt-3 rounded-lg bg-danger-soft p-2 text-xs text-danger dark:bg-danger/15 dark:text-danger"
           >
             {{ hb.last_error }}
           </div>
@@ -1555,7 +1555,7 @@ function handleToolbarRefresh() {
           <input
             v-model="customStartTimeInput"
             type="datetime-local"
-            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-dark-600 dark:bg-dark-800 dark:text-white"
+            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-info focus:outline-none focus:ring-1 focus:ring-info dark:border-dark-600 dark:bg-dark-800 dark:text-white"
           />
         </div>
         <div>
@@ -1565,7 +1565,7 @@ function handleToolbarRefresh() {
           <input
             v-model="customEndTimeInput"
             type="datetime-local"
-            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-dark-600 dark:bg-dark-800 dark:text-white"
+            class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-info focus:outline-none focus:ring-1 focus:ring-info dark:border-dark-600 dark:bg-dark-800 dark:text-white"
           />
         </div>
         <div class="flex justify-end gap-3 pt-2">

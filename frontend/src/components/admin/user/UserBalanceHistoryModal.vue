@@ -27,7 +27,7 @@
           <!-- Current balance: prominent display on the right -->
           <div class="flex-shrink-0 text-right">
             <p class="text-xs font-medium text-gray-500 dark:text-dark-400">{{ t('admin.users.currentBalance') }}</p>
-            <p class="text-xl font-semibold tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400">
+            <p class="text-xl font-semibold tabular-nums tracking-tight text-success dark:text-tea-300">
               ${{ user.balance?.toFixed(2) || '0.00' }}
             </p>
           </div>
@@ -39,7 +39,7 @@
             <template v-else>&nbsp;</template>
           </p>
           <p class="ml-4 flex-shrink-0 text-xs text-gray-500 dark:text-dark-400">
-            {{ t('admin.users.totalRecharged') }}: <span class="font-semibold text-emerald-600 dark:text-emerald-400">¥{{ totalRecharged.toFixed(2) }}</span>
+            {{ t('admin.users.totalRecharged') }}: <span class="font-semibold text-success dark:text-tea-300">¥{{ totalRecharged.toFixed(2) }}</span>
           </p>
         </div>
       </div>
@@ -58,7 +58,7 @@
           @click="emit('deposit')"
           class="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-300 dark:hover:bg-dark-700"
         >
-          <Icon name="plus" size="sm" class="text-emerald-500" :stroke-width="2" />
+          <Icon name="plus" size="sm" class="text-success" :stroke-width="2" />
           {{ t('admin.users.deposit') }}
         </button>
         <!-- Withdraw button - matches menu style -->
@@ -67,7 +67,7 @@
           @click="emit('withdraw')"
           class="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-300 dark:hover:bg-dark-700"
         >
-          <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg class="h-4 w-4 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
           </svg>
           {{ t('admin.users.withdraw') }}
@@ -252,39 +252,39 @@ const getIconName = (item: BalanceHistoryItem) => {
 const getIconBg = (item: BalanceHistoryItem) => {
   if (isBalanceType(item.type)) {
     return item.value >= 0
-      ? 'bg-emerald-100 dark:bg-emerald-900/30'
-      : 'bg-red-100 dark:bg-red-900/30'
+      ? 'bg-success-soft dark:bg-success/20'
+      : 'bg-danger-soft dark:bg-danger/20'
   }
-  if (isSubscriptionType(item.type)) return 'bg-purple-100 dark:bg-purple-900/30'
+  if (isSubscriptionType(item.type)) return 'bg-tea-100 dark:bg-tea-900/30'
   return item.value >= 0
-    ? 'bg-blue-100 dark:bg-blue-900/30'
-    : 'bg-orange-100 dark:bg-orange-900/30'
+    ? 'bg-info-soft dark:bg-info/20'
+    : 'bg-warning-soft dark:bg-warning/20'
 }
 
 // Icon text color
 const getIconColor = (item: BalanceHistoryItem) => {
   if (isBalanceType(item.type)) {
     return item.value >= 0
-      ? 'text-emerald-600 dark:text-emerald-400'
-      : 'text-red-600 dark:text-red-400'
+      ? 'text-success dark:text-tea-300'
+      : 'text-danger dark:text-danger'
   }
-  if (isSubscriptionType(item.type)) return 'text-purple-600 dark:text-purple-400'
+  if (isSubscriptionType(item.type)) return 'text-tea-600 dark:text-tea-300'
   return item.value >= 0
-    ? 'text-blue-600 dark:text-blue-400'
-    : 'text-orange-600 dark:text-orange-400'
+    ? 'text-info dark:text-info'
+    : 'text-warning dark:text-warning'
 }
 
 // Value text color
 const getValueColor = (item: BalanceHistoryItem) => {
   if (isBalanceType(item.type)) {
     return item.value >= 0
-      ? 'text-emerald-600 dark:text-emerald-400'
-      : 'text-red-600 dark:text-red-400'
+      ? 'text-success dark:text-tea-300'
+      : 'text-danger dark:text-danger'
   }
-  if (isSubscriptionType(item.type)) return 'text-purple-600 dark:text-purple-400'
+  if (isSubscriptionType(item.type)) return 'text-tea-600 dark:text-tea-300'
   return item.value >= 0
-    ? 'text-blue-600 dark:text-blue-400'
-    : 'text-orange-600 dark:text-orange-400'
+    ? 'text-info dark:text-info'
+    : 'text-warning dark:text-warning'
 }
 
 // Item title

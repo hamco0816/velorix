@@ -28,13 +28,13 @@
           :class="[
             'inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset',
             account.status === 'active'
-              ? 'bg-emerald-50 text-emerald-700 ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30'
+              ? 'bg-success-soft text-success ring-success/30 dark:bg-success/15 dark:text-success dark:ring-success/30'
               : 'bg-gray-50 text-gray-600 ring-gray-200/70 dark:bg-dark-700/40 dark:text-dark-200 dark:ring-dark-600/60'
           ]"
         >
           <span
             class="h-1.5 w-1.5 rounded-full"
-            :class="account.status === 'active' ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'"
+            :class="account.status === 'active' ? 'bg-success animate-pulse' : 'bg-gray-400'"
           ></span>
           {{ account.status }}
         </span>
@@ -54,9 +54,9 @@
               <span class="text-xs font-medium text-gray-500 dark:text-dark-400">{{
                 t('admin.accounts.stats.totalCost')
               }}</span>
-              <div class="rounded-lg bg-emerald-50 p-1.5 ring-1 ring-inset ring-emerald-200/70 dark:bg-emerald-500/15 dark:ring-emerald-500/30">
+              <div class="rounded-lg bg-success-soft p-1.5 ring-1 ring-inset ring-success/30 dark:bg-success/15 dark:ring-success/30">
                 <svg
-                  class="h-4 w-4 text-emerald-600 dark:text-emerald-300"
+                  class="h-4 w-4 text-success dark:text-success"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -70,7 +70,7 @@
                 </svg>
               </div>
             </div>
-            <p class="text-xl font-semibold tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400">
+            <p class="text-xl font-semibold tabular-nums tracking-tight text-success dark:text-success">
               ${{ formatCost(stats.summary.total_cost) }}
             </p>
             <p class="mt-1 text-2xs leading-relaxed text-gray-500 dark:text-gray-400">
@@ -90,8 +90,8 @@
               <span class="text-xs font-medium text-gray-500 dark:text-dark-400">{{
                 t('admin.accounts.stats.totalRequests')
               }}</span>
-              <div class="rounded-lg bg-sky-50 p-1.5 ring-1 ring-inset ring-sky-200/70 dark:bg-sky-500/15 dark:ring-sky-500/30">
-                <Icon name="bolt" size="sm" class="text-sky-600 dark:text-sky-300" :stroke-width="2" />
+              <div class="rounded-lg bg-info-soft p-1.5 ring-1 ring-inset ring-info/30 dark:bg-info/15 dark:ring-info/30">
+                <Icon name="bolt" size="sm" class="text-info dark:text-info" :stroke-width="2" />
               </div>
             </div>
             <p class="text-xl font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">
@@ -108,11 +108,11 @@
               <span class="text-xs font-medium text-gray-500 dark:text-dark-400">{{
                 t('admin.accounts.stats.avgDailyCost')
               }}</span>
-              <div class="rounded-lg bg-amber-50 p-1.5 ring-1 ring-inset ring-amber-200/70 dark:bg-amber-500/15 dark:ring-amber-500/30">
+              <div class="rounded-lg bg-warning-soft p-1.5 ring-1 ring-inset ring-warning/30 dark:bg-warning/15 dark:ring-warning/30">
                 <Icon
                   name="calculator"
                   size="sm"
-                  class="text-amber-600 dark:text-amber-300"
+                  class="text-warning dark:text-warning"
                   :stroke-width="2"
                 />
               </div>
@@ -138,9 +138,9 @@
               <span class="text-xs font-medium text-gray-500 dark:text-dark-400">{{
                 t('admin.accounts.stats.avgDailyRequests')
               }}</span>
-              <div class="rounded-lg bg-violet-50 p-1.5 ring-1 ring-inset ring-violet-200/70 dark:bg-violet-500/15 dark:ring-violet-500/30">
+              <div class="rounded-lg bg-info-soft p-1.5 ring-1 ring-inset ring-info/30 dark:bg-info/15 dark:ring-info/30">
                 <svg
-                  class="h-4 w-4 text-violet-600 dark:text-violet-300"
+                  class="h-4 w-4 text-info dark:text-info"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -168,8 +168,8 @@
           <!-- Today Overview -->
           <div class="card p-4">
             <div class="mb-3 flex items-center gap-2">
-              <div class="rounded-lg bg-cyan-100 p-1.5 dark:bg-cyan-900/30">
-                <Icon name="clock" size="sm" class="text-cyan-600 dark:text-cyan-400" :stroke-width="2" />
+              <div class="rounded-lg bg-info-soft p-1.5 dark:bg-info/20">
+                <Icon name="clock" size="sm" class="text-info dark:text-info" :stroke-width="2" />
               </div>
               <span class="text-sm font-semibold text-gray-900 dark:text-white">{{
                 t('admin.accounts.stats.todayOverview')
@@ -210,11 +210,11 @@
           <!-- Highest Cost Day -->
           <div class="card p-4">
             <div class="mb-3 flex items-center gap-2">
-              <div class="rounded-lg bg-orange-100 p-1.5 dark:bg-orange-900/30">
+              <div class="rounded-lg bg-warning-soft p-1.5 dark:bg-warning/20">
                 <Icon
                   name="fire"
                   size="sm"
-                  class="text-orange-600 dark:text-orange-400"
+                  class="text-warning dark:text-warning"
                   :stroke-width="2"
                 />
               </div>
@@ -233,7 +233,7 @@
               </div>
               <div class="flex items-center justify-between">
                 <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('usage.accountBilled') }}</span>
-                <span class="text-sm font-semibold text-orange-600 dark:text-orange-400"
+                <span class="text-sm font-semibold text-warning dark:text-warning"
                   >${{ formatCost(stats.summary.highest_cost_day?.cost || 0) }}</span
                 >
               </div>
@@ -257,11 +257,11 @@
           <!-- Highest Request Day -->
           <div class="card p-4">
             <div class="mb-3 flex items-center gap-2">
-              <div class="rounded-lg bg-indigo-100 p-1.5 dark:bg-indigo-900/30">
+              <div class="rounded-lg bg-info-soft p-1.5 dark:bg-info/20">
                 <Icon
                   name="trendingUp"
                   size="sm"
-                  class="text-indigo-600 dark:text-indigo-400"
+                  class="text-info dark:text-info"
                   :stroke-width="2"
                 />
               </div>
@@ -282,7 +282,7 @@
                 <span class="text-xs text-gray-500 dark:text-gray-400">{{
                   t('admin.accounts.stats.requests')
                 }}</span>
-                <span class="text-sm font-semibold text-indigo-600 dark:text-indigo-400">{{
+                <span class="text-sm font-semibold text-info dark:text-info">{{
                   formatNumber(stats.summary.highest_request_day?.requests || 0)
                 }}</span>
               </div>
@@ -307,8 +307,8 @@
           <!-- Accumulated Tokens -->
           <div class="card p-4">
             <div class="mb-3 flex items-center gap-2">
-              <div class="rounded-lg bg-teal-100 p-1.5 dark:bg-teal-900/30">
-                <Icon name="cube" size="sm" class="text-teal-600 dark:text-teal-400" :stroke-width="2" />
+              <div class="rounded-lg bg-tea-100 p-1.5 dark:bg-tea-900/30">
+                <Icon name="cube" size="sm" class="text-tea-600 dark:text-tea-300" :stroke-width="2" />
               </div>
               <span class="text-sm font-semibold text-gray-900 dark:text-white">{{
                 t('admin.accounts.stats.accumulatedTokens')
@@ -337,8 +337,8 @@
           <!-- Performance -->
           <div class="card p-4">
             <div class="mb-3 flex items-center gap-2">
-              <div class="rounded-lg bg-rose-100 p-1.5 dark:bg-rose-900/30">
-                <Icon name="bolt" size="sm" class="text-rose-600 dark:text-rose-400" :stroke-width="2" />
+              <div class="rounded-lg bg-warning-soft p-1.5 dark:bg-warning/20">
+                <Icon name="bolt" size="sm" class="text-warning dark:text-warning" :stroke-width="2" />
               </div>
               <span class="text-sm font-semibold text-gray-900 dark:text-white">{{
                 t('admin.accounts.stats.performance')
@@ -367,11 +367,11 @@
           <!-- Recent Activity -->
           <div class="card p-4">
             <div class="mb-3 flex items-center gap-2">
-              <div class="rounded-lg bg-lime-100 p-1.5 dark:bg-lime-900/30">
+              <div class="rounded-lg bg-success-soft p-1.5 dark:bg-success/20">
                 <Icon
                   name="clipboard"
                   size="sm"
-                  class="text-lime-600 dark:text-lime-400"
+                  class="text-success dark:text-success"
                   :stroke-width="2"
                 />
               </div>
@@ -521,10 +521,10 @@ const isDarkMode = computed(() => {
   return document.documentElement.classList.contains('dark')
 })
 
-// Chart colors
+// Chart colors（图表中性轴线/文字，走宣纸暖墨阶；数据系列色见 trendChartData 保留品牌色）
 const chartColors = computed(() => ({
-  text: isDarkMode.value ? '#e5e7eb' : '#374151',
-  grid: isDarkMode.value ? '#374151' : '#e5e7eb'
+  text: isDarkMode.value ? '#e3dccb' : '#4a453d',
+  grid: isDarkMode.value ? '#46413a' : '#ddd5c4'
 }))
 
 // Line chart data

@@ -11,7 +11,7 @@
       <!-- 未读红点（去除呼吸动画） -->
       <span
         v-if="unreadCount > 0"
-        class="absolute right-1 top-1 inline-flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-dark-900"
+        class="absolute right-1 top-1 inline-flex h-2 w-2 rounded-full bg-danger ring-2 ring-white dark:ring-dark-900"
       ></span>
     </button>
 
@@ -87,7 +87,7 @@
                       v-if="!item.read_at"
                       class="relative flex h-10 w-10 items-center justify-center rounded bg-primary-50 text-primary-600 dark:bg-primary-500/10 dark:text-primary-400"
                     >
-                      <span class="absolute -right-0.5 -top-0.5 inline-flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-dark-800"></span>
+                      <span class="absolute -right-0.5 -top-0.5 inline-flex h-2 w-2 rounded-full bg-danger ring-2 ring-white dark:ring-dark-800"></span>
                       <Icon name="infoCircle" size="md" :stroke-width="1.8" />
                     </div>
                     <div
@@ -146,7 +146,7 @@
                   <div class="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-dark-700 dark:to-dark-600">
                     <Icon name="inbox" size="xl" class="text-gray-400 dark:text-gray-500" />
                   </div>
-                  <div class="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-white">
+                  <div class="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-success text-white">
                     <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                     </svg>
@@ -414,20 +414,20 @@ watch(
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #cbd5e1, #94a3b8);
+  background: linear-gradient(to bottom, #c8bfa9, #b4ab98);
   border-radius: 4px;
 }
 
 .dark .overflow-y-auto::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #4b5563, #374151);
+  background: linear-gradient(to bottom, #5c5649, #46413a);
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, #94a3b8, #64748b);
+  background: linear-gradient(to bottom, #b4ab98, #a39a86);
 }
 
 .dark .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, #6b7280, #4b5563);
+  background: linear-gradient(to bottom, #6b6557, #5c5649);
 }
 </style>
 
@@ -459,7 +459,7 @@ watch(
 }
 
 .markdown-body a {
-  @apply font-medium text-blue-600 underline decoration-blue-600/30 decoration-2 underline-offset-2 transition-all hover:decoration-blue-600 dark:text-blue-400 dark:decoration-blue-400/30 dark:hover:decoration-blue-400;
+  @apply font-medium text-info underline decoration-info/30 decoration-2 underline-offset-2 transition-all hover:decoration-info dark:text-info dark:decoration-info/30 dark:hover:decoration-info;
 }
 
 .markdown-body ul,
@@ -481,16 +481,16 @@ watch(
 }
 
 .markdown-body li::marker {
-  @apply text-blue-600 dark:text-blue-400;
+  @apply text-info dark:text-info;
 }
 
 .markdown-body blockquote {
-  @apply relative my-5 border-l-4 border-blue-500 bg-blue-50/50 py-3 pl-5 pr-4 italic text-gray-700 dark:border-blue-400 dark:bg-blue-900/10 dark:text-gray-300;
+  @apply relative my-5 border-l-4 border-info bg-info-soft py-3 pl-5 pr-4 italic text-info-deep dark:border-info dark:bg-info-soft dark:text-info-deep;
 }
 
 .markdown-body blockquote::before {
   content: '"';
-  @apply absolute -left-1 top-0 text-5xl font-serif text-blue-500/20 dark:text-blue-400/20;
+  @apply absolute -left-1 top-0 text-5xl font-serif text-info/20 dark:text-info/20;
 }
 
 .markdown-body code {

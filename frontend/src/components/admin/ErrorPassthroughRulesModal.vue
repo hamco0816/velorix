@@ -132,7 +132,7 @@
                     <Icon
                       :name="rule.passthrough_code ? 'checkCircle' : 'xCircle'"
                       size="xs"
-                      :class="rule.passthrough_code ? 'text-green-500' : 'text-gray-400'"
+                      :class="rule.passthrough_code ? 'text-success' : 'text-gray-400'"
                     />
                     <span class="text-gray-600 dark:text-gray-400">
                       {{ t('admin.errorPassthrough.code') }}:
@@ -143,7 +143,7 @@
                     <Icon
                       :name="rule.passthrough_body ? 'checkCircle' : 'xCircle'"
                       size="xs"
-                      :class="rule.passthrough_body ? 'text-green-500' : 'text-gray-400'"
+                      :class="rule.passthrough_body ? 'text-success' : 'text-gray-400'"
                     />
                     <span class="text-gray-600 dark:text-gray-400">
                       {{ t('admin.errorPassthrough.body') }}:
@@ -154,7 +154,7 @@
                     <Icon
                       name="checkCircle"
                       size="xs"
-                      class="text-yellow-500"
+                      class="text-warning"
                     />
                     <span class="text-gray-600 dark:text-gray-400">
                       {{ t('admin.errorPassthrough.skipMonitoring') }}
@@ -167,7 +167,7 @@
                   @click="toggleEnabled(rule)"
                   :class="[
                     'relative inline-flex h-4 w-7 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-                    rule.enabled ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-gray-300 dark:bg-dark-600'
+                    rule.enabled ? 'bg-success dark:bg-success' : 'bg-gray-300 dark:bg-dark-600'
                   ]"
                 >
                   <span
@@ -189,7 +189,7 @@
                   </button>
                   <button
                     @click="handleDelete(rule)"
-                    class="p-1 text-gray-500 hover:text-red-600 dark:hover:text-red-400"
+                    class="p-1 text-gray-500 hover:text-danger dark:hover:text-danger"
                     :title="t('common.delete')"
                   >
                     <Icon name="trash" size="sm" />
@@ -281,7 +281,7 @@
             </div>
           </div>
 
-          <!-- 匹配模式：单选改为"卡片式"，选中态用 sky 边框 + 浅底突出，描述更易读 -->
+          <!-- 匹配模式：单选改为"卡片式"，选中态用黛蓝边框 + 浅底突出，描述更易读 -->
           <div class="mt-4">
             <label class="input-label text-xs">{{ t('admin.errorPassthrough.form.matchMode') }}</label>
             <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -291,7 +291,7 @@
                 :class="[
                   'flex cursor-pointer items-start gap-2.5 rounded-md border px-3 py-2.5 transition-colors',
                   form.match_mode === option.value
-                    ? 'border-sky-300 bg-sky-50/70 dark:border-sky-700/60 dark:bg-sky-900/20'
+                    ? 'border-info bg-info-soft dark:border-info dark:bg-info/15'
                     : 'border-gray-200 bg-white hover:border-gray-300 dark:border-dark-600 dark:bg-dark-800/40 dark:hover:border-dark-500'
                 ]"
               >
@@ -299,7 +299,7 @@
                   type="radio"
                   :value="option.value"
                   v-model="form.match_mode"
-                  class="mt-0.5 h-3.5 w-3.5 border-gray-300 text-sky-600 focus:ring-sky-500"
+                  class="mt-0.5 h-3.5 w-3.5 border-gray-300 text-info focus:ring-info"
                 />
                 <div class="min-w-0 flex-1">
                   <span class="text-xs font-semibold text-gray-900 dark:text-white">{{ option.label }}</span>
@@ -319,7 +319,7 @@
                 :class="[
                   'inline-flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 transition-colors',
                   form.platforms.includes(platform.value)
-                    ? 'border-sky-300 bg-sky-50/70 dark:border-sky-700/60 dark:bg-sky-900/20'
+                    ? 'border-info bg-info-soft dark:border-info dark:bg-info/15'
                     : 'border-gray-200 bg-white hover:border-gray-300 dark:border-dark-600 dark:bg-dark-800/40 dark:hover:border-dark-500'
                 ]"
               >
@@ -327,7 +327,7 @@
                   type="checkbox"
                   :value="platform.value"
                   v-model="form.platforms"
-                  class="h-3.5 w-3.5 rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                  class="h-3.5 w-3.5 rounded border-gray-300 text-info focus:ring-info"
                 />
                 <BrandIcon
                   v-if="platform.brand"
@@ -336,7 +336,7 @@
                 />
                 <span
                   v-else
-                  class="inline-flex h-4 w-4 items-center justify-center rounded bg-violet-100 text-2xs font-bold text-violet-700 dark:bg-violet-900/40 dark:text-violet-300"
+                  class="inline-flex h-4 w-4 items-center justify-center rounded bg-info-soft text-2xs font-bold text-info dark:bg-info/20 dark:text-info"
                 >A</span>
                 <span class="text-xs font-medium text-gray-700 dark:text-dark-200">{{ platform.label }}</span>
               </label>
@@ -404,7 +404,7 @@
           <input
             type="checkbox"
             v-model="form.skip_monitoring"
-            class="h-3.5 w-3.5 rounded border-gray-300 text-yellow-600 focus:ring-yellow-500"
+            class="h-3.5 w-3.5 rounded border-gray-300 text-warning focus:ring-warning"
           />
           <span class="text-xs font-medium text-gray-700 dark:text-gray-300">
             {{ t('admin.errorPassthrough.form.skipMonitoring') }}

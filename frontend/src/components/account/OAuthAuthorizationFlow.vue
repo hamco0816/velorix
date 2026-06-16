@@ -124,9 +124,9 @@
             <!-- Error Message -->
             <div
               v-if="error"
-              class="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-700 dark:bg-red-900/30"
+              class="mb-4 rounded-lg border border-danger/30 bg-danger-soft p-3 dark:border-danger/50 dark:bg-danger/20"
             >
-              <p class="whitespace-pre-line text-sm text-red-600 dark:text-red-400">
+              <p class="whitespace-pre-line text-sm text-danger dark:text-danger-soft">
                 {{ error }}
               </p>
             </div>
@@ -201,13 +201,13 @@
             <!-- Help Section -->
             <div
               v-if="showHelpDialog && showHelp"
-              class="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-700 dark:bg-amber-900/30"
+              class="mb-4 rounded-lg border border-warning/30 bg-warning-soft p-3 dark:border-warning/50 dark:bg-warning/20"
             >
-              <h5 class="mb-2 font-semibold text-amber-800 dark:text-amber-200">
+              <h5 class="mb-2 font-semibold text-warning-deep dark:text-warning-soft">
                 {{ t('admin.accounts.oauth.howToGetSessionKey') }}
               </h5>
               <ol
-                class="list-inside list-decimal space-y-1 text-xs text-amber-700 dark:text-amber-300"
+                class="list-inside list-decimal space-y-1 text-xs text-warning-deep dark:text-warning-soft"
               >
                 <li>{{ t('admin.accounts.oauth.step1') }}</li>
                 <li>{{ t('admin.accounts.oauth.step2') }}</li>
@@ -217,7 +217,7 @@
                 <li>{{ t('admin.accounts.oauth.step6') }}</li>
               </ol>
               <p
-                class="mt-2 text-xs text-amber-600 dark:text-amber-400"
+                class="mt-2 text-xs text-warning dark:text-warning-soft"
                 v-text="t('admin.accounts.oauth.sessionKeyFormat')"
               ></p>
             </div>
@@ -225,9 +225,9 @@
             <!-- Error Message -->
             <div
               v-if="error"
-              class="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-700 dark:bg-red-900/30"
+              class="mb-4 rounded-lg border border-danger/30 bg-danger-soft p-3 dark:border-danger/50 dark:bg-danger/20"
             >
-              <p class="whitespace-pre-line text-sm text-red-600 dark:text-red-400">
+              <p class="whitespace-pre-line text-sm text-danger dark:text-danger-soft">
                 {{ error }}
               </p>
             </div>
@@ -323,7 +323,7 @@
                         v-else
                         name="check"
                         size="sm"
-                        class="text-green-500"
+                        class="text-success"
                         :stroke-width="2"
                       />
                     </button>
@@ -361,20 +361,20 @@
                 <!-- OpenAI Important Notice -->
                 <div
                   v-if="isOpenAI"
-                  class="mt-2 rounded border border-amber-300 bg-amber-50 p-3 dark:border-amber-700 dark:bg-amber-900/30"
+                  class="mt-2 rounded border border-warning/40 bg-warning-soft p-3 dark:border-warning/50 dark:bg-warning/20"
                 >
                   <p
-                    class="text-xs text-amber-800 dark:text-amber-300"
+                    class="text-xs text-warning-deep dark:text-warning-soft"
                     v-text="oauthImportantNotice"
                   ></p>
                 </div>
                 <!-- Proxy Warning (for non-OpenAI) -->
                 <div
                   v-else-if="showProxyWarning"
-                  class="mt-2 rounded border border-yellow-300 bg-yellow-50 p-3 dark:border-yellow-700 dark:bg-yellow-900/30"
+                  class="mt-2 rounded border border-warning/40 bg-warning-soft p-3 dark:border-warning/50 dark:bg-warning/20"
                 >
                   <p
-                    class="text-xs text-yellow-800 dark:text-yellow-300"
+                    class="text-xs text-warning-deep dark:text-warning-soft"
                     v-text="t('admin.accounts.oauth.proxyWarning')"
                   ></p>
                 </div>
@@ -419,16 +419,16 @@
                   <!-- Gemini-specific state parameter warning -->
                   <div
                     v-if="platform === 'gemini'"
-                    class="mt-3 rounded-lg border-2 border-amber-400 bg-amber-50 p-3 dark:border-amber-600 dark:bg-amber-900/30"
+                    class="mt-3 rounded-lg border-2 border-warning/50 bg-warning-soft p-3 dark:border-warning/60 dark:bg-warning/20"
                   >
                     <div class="flex items-start gap-2">
                       <Icon
                         name="exclamationTriangle"
                         size="md"
-                        class="flex-shrink-0 text-amber-600 dark:text-amber-400"
+                        class="flex-shrink-0 text-warning dark:text-warning-soft"
                         :stroke-width="2"
                       />
-                      <div class="text-sm text-amber-800 dark:text-amber-300">
+                      <div class="text-sm text-warning-deep dark:text-warning-soft">
                         <p class="font-semibold">{{ $t('admin.accounts.oauth.gemini.stateWarningTitle') }}</p>
                         <p class="mt-1">{{ $t('admin.accounts.oauth.gemini.stateWarningDesc') }}</p>
                       </div>
@@ -439,9 +439,9 @@
                 <!-- Error Message -->
                 <div
                   v-if="error"
-                  class="mt-3 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-700 dark:bg-red-900/30"
+                  class="mt-3 rounded-lg border border-danger/30 bg-danger-soft p-3 dark:border-danger/50 dark:bg-danger/20"
                 >
-                  <p class="whitespace-pre-line text-sm text-red-600 dark:text-red-400">
+                  <p class="whitespace-pre-line text-sm text-danger dark:text-danger-soft">
                     {{ error }}
                   </p>
                 </div>

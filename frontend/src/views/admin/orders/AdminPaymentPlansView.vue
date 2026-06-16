@@ -43,7 +43,7 @@
         <button
           type="button"
           :disabled="bulkActionLoading"
-          class="inline-flex items-center gap-1 rounded-md border border-emerald-200 bg-white px-2.5 py-1 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-50 disabled:opacity-50 dark:border-emerald-900/50 dark:bg-dark-800 dark:text-emerald-300 dark:hover:bg-emerald-950/20"
+          class="inline-flex items-center gap-1 rounded-md border border-success/40 bg-white px-2.5 py-1 text-xs font-medium text-success transition-colors hover:bg-success-soft disabled:opacity-50 dark:border-success-deep/50 dark:bg-dark-800 dark:text-success dark:hover:bg-success-deep/20"
           @click="bulkSetForSale(true)"
         >
           <Icon name="checkCircle" size="xs" />
@@ -104,7 +104,7 @@
               </span>
               <span
                 v-if="row.kind === 'exclusive'"
-                class="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 text-2xs font-semibold text-violet-700 ring-1 ring-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:ring-violet-900/50"
+                class="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 text-2xs font-semibold text-brand-700 ring-1 ring-brand-200 dark:bg-brand-900/30 dark:text-brand-300 dark:ring-brand-900/50"
                 :title="t('payment.admin.planKindExclusiveHint')"
               >
                 <Icon name="badge" size="xs" :stroke-width="2.5" />
@@ -121,7 +121,7 @@
               <!-- 独立档位徽章：plan 有自定义限额覆盖时展示，方便管理员一眼识别 -->
               <span
                 v-if="hasPlanLimitOverride(row)"
-                class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-2xs font-semibold text-indigo-700 ring-1 ring-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:ring-indigo-900/50"
+                class="inline-flex items-center gap-1 rounded-full bg-info-soft px-2 py-0.5 text-2xs font-semibold text-info ring-1 ring-info/30 dark:bg-info-deep/30 dark:text-info dark:ring-info-deep/50"
                 :title="t('payment.admin.limitOverrideHint')"
               >
                 <Icon name="badge" size="xs" :stroke-width="2.5" />
@@ -159,8 +159,8 @@
         <template #cell-group_id="{ value }">
           <span v-if="isGroupMissing(value)" class="inline-flex items-center gap-1 text-sm">
             <span class="text-gray-400">#{{ value }}</span>
-            <span class="ml-1 inline-flex items-center gap-1 rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 dark:bg-rose-500/15 dark:text-rose-300">
-              <span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span>
+            <span class="ml-1 inline-flex items-center gap-1 rounded-md bg-danger-soft px-2 py-0.5 text-xs font-medium text-danger dark:bg-danger-deep/15 dark:text-danger">
+              <span class="h-1.5 w-1.5 rounded-full bg-danger"></span>
               {{ t('payment.admin.groupMissing') }}
             </span>
           </span>
@@ -183,7 +183,7 @@
         </template>
         <template #cell-cost_multiplier="{ row }">
           <div class="text-sm" :title="costMultiplierTitle(row)">
-            <span v-if="planCostEstimate(row).effectiveCostMultiplier !== null" class="font-semibold text-emerald-700 dark:text-emerald-300">
+            <span v-if="planCostEstimate(row).effectiveCostMultiplier !== null" class="font-semibold text-success dark:text-success">
               {{ formatCostMultiplier(planCostEstimate(row).effectiveCostMultiplier) }}
             </span>
             <span v-else class="text-gray-400">-</span>
@@ -201,8 +201,8 @@
             :class="[
               'inline-flex min-w-[82px] items-center justify-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
               value
-                ? 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-emerald-100 hover:bg-emerald-100 dark:border-emerald-900/50 dark:bg-emerald-950/25 dark:text-emerald-300 dark:shadow-none'
-                : 'border-slate-200 bg-slate-50 text-slate-500 hover:bg-slate-100 dark:border-dark-600 dark:bg-dark-800 dark:text-dark-300'
+                ? 'border-success/40 bg-success-soft text-success shadow-sm hover:bg-success-soft dark:border-success-deep/50 dark:bg-success-deep/25 dark:text-success dark:shadow-none'
+                : 'border-gray-200 bg-gray-50 text-gray-500 hover:bg-gray-100 dark:border-dark-600 dark:bg-dark-800 dark:text-dark-300'
             ]"
             @click="toggleForSale(row)"
           >
@@ -216,11 +216,11 @@
         </template>
         <template #cell-actions="{ row }">
           <div class="flex items-center justify-center gap-2">
-            <button @click="openPlanEdit(row)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400">
+            <button @click="openPlanEdit(row)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-info-soft hover:text-info dark:hover:bg-info-deep/20 dark:hover:text-info">
               <Icon name="edit" size="sm" />
               <span class="text-xs">{{ t('common.edit') }}</span>
             </button>
-            <button @click="confirmDeletePlan(row)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400">
+            <button @click="confirmDeletePlan(row)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-danger-soft hover:text-danger dark:hover:bg-danger-deep/20 dark:hover:text-danger">
               <Icon name="trash" size="sm" />
               <span class="text-xs">{{ t('common.delete') }}</span>
             </button>

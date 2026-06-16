@@ -17,7 +17,7 @@
     </button>
     <button
       @click="$emit('delete', row)"
-      class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+      class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-danger-soft hover:text-danger dark:hover:bg-danger-soft dark:hover:text-danger"
     >
       <Icon name="trash" size="sm" />
       <span class="text-xs">{{ t('common.delete') }}</span>

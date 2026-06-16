@@ -29,7 +29,7 @@
               </span>
               <span
                 v-if="exclusiveCount > 0"
-                class="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2.5 py-1 font-medium text-violet-700 ring-1 ring-inset ring-violet-200/70 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30"
+                class="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 font-medium text-brand-700 ring-1 ring-inset ring-brand-200/70 dark:bg-brand-500/15 dark:text-brand-300 dark:ring-brand-500/30"
               >
                 <Icon name="shield" size="xs" />
                 <span class="tabular-nums">{{ exclusiveCount }}</span>

@@ -2,7 +2,7 @@
   <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
     <!-- Total Requests -->
     <div class="metric-card">
-      <span class="metric-icon bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300">
+      <span class="metric-icon bg-info-soft text-info dark:bg-info-deep/30 dark:text-info">
         <Icon name="document" size="sm" :stroke-width="1.75" />
       </span>
       <div class="min-w-0 flex-1">
@@ -16,7 +16,7 @@
 
     <!-- Total Tokens -->
     <div class="metric-card">
-      <span class="metric-icon bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300">
+      <span class="metric-icon bg-warning-soft text-warning dark:bg-warning-deep/30 dark:text-brand-300">
         <Icon name="cube" size="sm" :stroke-width="1.75" />
       </span>
       <div class="min-w-0 flex-1">
@@ -38,12 +38,12 @@
 
     <!-- Total Cost -->
     <div class="metric-card">
-      <span class="metric-icon bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
+      <span class="metric-icon bg-success-soft text-success dark:bg-success-deep/30 dark:text-tea-300">
         <Icon name="dollar" size="sm" :stroke-width="1.75" />
       </span>
       <div class="min-w-0 flex-1">
         <p class="text-sm font-medium text-gray-500 dark:text-dark-400">{{ t('usage.totalCost') }}</p>
-        <p class="mt-1 text-[26px] font-semibold leading-tight tabular-nums text-emerald-600 dark:text-emerald-400">
+        <p class="mt-1 text-[26px] font-semibold leading-tight tabular-nums text-success dark:text-tea-300">
           ${{ (stats?.total_actual_cost || 0).toFixed(4) }}
         </p>
         <p class="mt-1 flex flex-wrap items-center gap-x-1 text-xs tabular-nums text-gray-500 dark:text-dark-400">
@@ -56,7 +56,7 @@
 
     <!-- Avg Duration -->
     <div class="metric-card">
-      <span class="metric-icon bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300">
+      <span class="metric-icon bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-300">
         <Icon name="clock" size="sm" :stroke-width="1.75" />
       </span>
       <div class="min-w-0 flex-1">

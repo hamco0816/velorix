@@ -86,9 +86,9 @@
 
           <div
             v-if="isOpenAIModelRestrictionDisabled"
-            class="mb-3 rounded-lg bg-amber-50 p-3 dark:bg-amber-900/20"
+            class="mb-3 rounded-lg bg-warning-soft p-3 dark:bg-warning-deep/30"
           >
-            <p class="text-xs text-amber-700 dark:text-amber-400">
+            <p class="text-xs text-warning dark:text-warning">
               {{ t('admin.accounts.openai.modelRestrictionDisabledByPassthrough') }}
             </p>
           </div>
@@ -137,8 +137,8 @@
 
             <!-- Mapping Mode -->
             <div v-else>
-              <div class="mb-3 rounded-lg bg-sky-50 p-3 dark:bg-sky-900/20">
-                <p class="text-xs text-sky-700 dark:text-sky-400">
+              <div class="mb-3 rounded-lg bg-info-soft p-3 dark:bg-info-deep/30">
+                <p class="text-xs text-info dark:text-info">
                   <Icon name="infoCircle" size="sm" class="mr-1 inline" :stroke-width="2" />
                   {{ t('admin.accounts.mapRequestModels') }}
                 </p>
@@ -167,7 +167,7 @@
                 <button
                   type="button"
                   @click="removeModelMapping(index)"
-                  class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                  class="rounded-lg p-2 text-danger transition-colors hover:bg-danger-soft hover:text-danger-deep dark:hover:bg-danger-deep/20"
                 >
                   <Icon name="trash" size="sm" :stroke-width="2" />
                 </button>
@@ -213,7 +213,7 @@
               @click="poolModeEnabled = !poolModeEnabled"
               :class="[
                 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-                poolModeEnabled ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-gray-300 dark:bg-dark-600'
+                poolModeEnabled ? 'bg-success dark:bg-success' : 'bg-gray-300 dark:bg-dark-600'
               ]"
             >
               <span
@@ -224,8 +224,8 @@
               />
             </button>
           </div>
-          <div v-if="poolModeEnabled" class="rounded-lg bg-sky-50 p-3 dark:bg-sky-900/20">
-            <p class="text-xs text-sky-700 dark:text-sky-400">
+          <div v-if="poolModeEnabled" class="rounded-lg bg-info-soft p-3 dark:bg-info-deep/30">
+            <p class="text-xs text-info dark:text-info">
               <Icon name="exclamationCircle" size="sm" class="mr-1 inline" :stroke-width="2" />
               {{ t('admin.accounts.poolModeInfo') }}
             </p>
@@ -265,7 +265,7 @@
               @click="customErrorCodesEnabled = !customErrorCodesEnabled"
               :class="[
                 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-                customErrorCodesEnabled ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-gray-300 dark:bg-dark-600'
+                customErrorCodesEnabled ? 'bg-success dark:bg-success' : 'bg-gray-300 dark:bg-dark-600'
               ]"
             >
               <span
@@ -278,8 +278,8 @@
           </div>
 
           <div v-if="customErrorCodesEnabled" class="space-y-3">
-            <div class="rounded-lg bg-amber-50 p-3 dark:bg-amber-900/20">
-              <p class="text-xs text-amber-700 dark:text-amber-400">
+            <div class="rounded-lg bg-warning-soft p-3 dark:bg-warning-deep/30">
+              <p class="text-xs text-warning dark:text-warning">
                 <Icon name="exclamationTriangle" size="sm" class="mr-1 inline" :stroke-width="2" />
                 {{ t('admin.accounts.customErrorCodesWarning') }}
               </p>
@@ -295,7 +295,7 @@
                 :class="[
                   'rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
                   selectedErrorCodes.includes(code.value)
-                    ? 'bg-red-100 text-red-700 ring-1 ring-red-500 dark:bg-red-900/30 dark:text-red-400'
+                    ? 'bg-danger-soft text-danger ring-1 ring-danger dark:bg-danger-deep/30 dark:text-danger'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
                 ]"
               >
@@ -324,13 +324,13 @@
               <span
                 v-for="code in selectedErrorCodes.sort((a, b) => a - b)"
                 :key="code"
-                class="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 text-sm font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                class="inline-flex items-center gap-1 rounded-full bg-danger-soft px-2.5 py-0.5 text-sm font-medium text-danger dark:bg-danger-deep/30 dark:text-danger"
               >
                 {{ code }}
                 <button
                   type="button"
                   @click="removeErrorCode(code)"
-                  class="hover:text-red-900 dark:hover:text-red-300"
+                  class="hover:text-danger-deep dark:hover:text-danger"
                 >
                   <Icon name="x" size="sm" :stroke-width="2" />
                 </button>
@@ -353,9 +353,9 @@
 
         <div
           v-if="isOpenAIModelRestrictionDisabled"
-          class="mb-3 rounded-lg bg-amber-50 p-3 dark:bg-amber-900/20"
+          class="mb-3 rounded-lg bg-warning-soft p-3 dark:bg-warning-deep/30"
         >
-          <p class="text-xs text-amber-700 dark:text-amber-400">
+          <p class="text-xs text-warning dark:text-warning">
             {{ t('admin.accounts.openai.modelRestrictionDisabledByPassthrough') }}
           </p>
         </div>
@@ -402,8 +402,8 @@
 
           <!-- Mapping Mode -->
           <div v-else>
-            <div class="mb-3 rounded-lg bg-sky-50 p-3 dark:bg-sky-900/20">
-              <p class="text-xs text-sky-700 dark:text-sky-400">
+            <div class="mb-3 rounded-lg bg-info-soft p-3 dark:bg-info-deep/30">
+              <p class="text-xs text-info dark:text-info">
                 {{ t('admin.accounts.mapRequestModels') }}
               </p>
             </div>
@@ -430,7 +430,7 @@
                 <button
                   type="button"
                   @click="removeModelMapping(index)"
-                  class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                  class="rounded-lg p-2 text-danger transition-colors hover:bg-danger-soft hover:text-danger-deep dark:hover:bg-danger-deep/20"
                 >
                   <Icon name="trash" size="sm" :stroke-width="2" />
                 </button>
@@ -571,8 +571,8 @@
 
           <!-- Mapping Mode -->
           <div v-else>
-            <div class="mb-3 rounded-lg bg-sky-50 p-3 dark:bg-sky-900/20">
-              <p class="text-xs text-sky-700 dark:text-sky-400">
+            <div class="mb-3 rounded-lg bg-info-soft p-3 dark:bg-info-deep/30">
+              <p class="text-xs text-info dark:text-info">
                 <Icon name="infoCircle" size="sm" class="mr-1 inline" :stroke-width="2" />
                 {{ t('admin.accounts.mapRequestModels') }}
               </p>
@@ -601,7 +601,7 @@
                 <button
                   type="button"
                   @click="removeModelMapping(index)"
-                  class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                  class="rounded-lg p-2 text-danger transition-colors hover:bg-danger-soft hover:text-danger-deep dark:hover:bg-danger-deep/20"
                 >
                   <Icon name="trash" size="sm" :stroke-width="2" />
                 </button>
@@ -752,7 +752,7 @@
               <input v-model="mapping.from" type="text" class="input flex-1" :placeholder="t('admin.accounts.fromModel')" />
               <span class="text-gray-400">→</span>
               <input v-model="mapping.to" type="text" class="input flex-1" :placeholder="t('admin.accounts.toModel')" />
-              <button type="button" @click="modelMappings.splice(index, 1)" class="text-red-500 hover:text-red-700">
+              <button type="button" @click="modelMappings.splice(index, 1)" class="text-danger hover:text-danger-deep">
                 <Icon name="trash" size="sm" />
               </button>
             </div>
@@ -788,7 +788,7 @@
               @click="poolModeEnabled = !poolModeEnabled"
               :class="[
                 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-                poolModeEnabled ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-gray-300 dark:bg-dark-600'
+                poolModeEnabled ? 'bg-success dark:bg-success' : 'bg-gray-300 dark:bg-dark-600'
               ]"
             >
               <span
@@ -799,8 +799,8 @@
               />
             </button>
           </div>
-          <div v-if="poolModeEnabled" class="rounded-lg bg-sky-50 p-3 dark:bg-sky-900/20">
-            <p class="text-xs text-sky-700 dark:text-sky-400">
+          <div v-if="poolModeEnabled" class="rounded-lg bg-info-soft p-3 dark:bg-info-deep/30">
+            <p class="text-xs text-info dark:text-info">
               <Icon name="exclamationCircle" size="sm" class="mr-1 inline" :stroke-width="2" />
               {{ t('admin.accounts.poolModeInfo') }}
             </p>
@@ -834,8 +834,8 @@
 
         <!-- Mapping Mode Only (no toggle for Antigravity) -->
         <div>
-          <div class="mb-3 rounded-lg bg-sky-50 p-3 dark:bg-sky-900/20">
-            <p class="text-xs text-sky-700 dark:text-sky-400">{{ t('admin.accounts.mapRequestModels') }}</p>
+          <div class="mb-3 rounded-lg bg-info-soft p-3 dark:bg-info-deep/30">
+            <p class="text-xs text-info dark:text-info">{{ t('admin.accounts.mapRequestModels') }}</p>
           </div>
 
           <div v-if="antigravityModelMappings.length > 0" class="mb-3 space-y-2">
@@ -850,7 +850,7 @@
                   type="text"
                   :class="[
                     'input flex-1',
-                    !isValidWildcardPattern(mapping.from) ? 'border-red-500 dark:border-red-500' : '',
+                    !isValidWildcardPattern(mapping.from) ? 'border-danger dark:border-danger' : '',
                     mapping.to.includes('*') ? '' : ''
                   ]"
                   :placeholder="t('admin.accounts.requestModel')"
@@ -861,23 +861,23 @@
                   type="text"
                   :class="[
                     'input flex-1',
-                    mapping.to.includes('*') ? 'border-red-500 dark:border-red-500' : ''
+                    mapping.to.includes('*') ? 'border-danger dark:border-danger' : ''
                   ]"
                   :placeholder="t('admin.accounts.actualModel')"
                 />
                 <button
                   type="button"
                   @click="removeAntigravityModelMapping(index)"
-                  class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                  class="rounded-lg p-2 text-danger transition-colors hover:bg-danger-soft hover:text-danger-deep dark:hover:bg-danger-deep/20"
                 >
                   <Icon name="trash" size="sm" :stroke-width="2" />
                 </button>
               </div>
               <!-- 校验错误提示 -->
-              <p v-if="!isValidWildcardPattern(mapping.from)" class="text-xs text-red-500">
+              <p v-if="!isValidWildcardPattern(mapping.from)" class="text-xs text-danger">
                 {{ t('admin.accounts.wildcardOnlyAtEnd') }}
               </p>
-              <p v-if="mapping.to.includes('*')" class="text-xs text-red-500">
+              <p v-if="mapping.to.includes('*')" class="text-xs text-danger">
                 {{ t('admin.accounts.targetNoWildcard') }}
               </p>
             </div>
@@ -920,7 +920,7 @@
             @click="tempUnschedEnabled = !tempUnschedEnabled"
             :class="[
               'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-              tempUnschedEnabled ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-gray-300 dark:bg-dark-600'
+              tempUnschedEnabled ? 'bg-success dark:bg-success' : 'bg-gray-300 dark:bg-dark-600'
             ]"
           >
             <span
@@ -933,8 +933,8 @@
         </div>
 
         <div v-if="tempUnschedEnabled" class="space-y-3">
-          <div class="rounded-lg bg-sky-50 p-3 dark:bg-sky-900/20">
-            <p class="text-xs text-sky-700 dark:text-sky-400">
+          <div class="rounded-lg bg-info-soft p-3 dark:bg-info-deep/30">
+            <p class="text-xs text-info dark:text-info">
               <Icon name="exclamationTriangle" size="sm" class="mr-1 inline" :stroke-width="2" />
               {{ t('admin.accounts.tempUnschedulable.notice') }}
             </p>
@@ -982,7 +982,7 @@
                   <button
                     type="button"
                     @click="removeTempUnschedRule(index)"
-                    class="rounded p-1 text-red-500 transition-colors hover:text-red-600"
+                    class="rounded p-1 text-danger transition-colors hover:text-danger-deep"
                   >
                     <Icon name="x" size="sm" :stroke-width="2" />
                   </button>
@@ -1064,7 +1064,7 @@
             @click="interceptWarmupRequests = !interceptWarmupRequests"
             :class="[
               'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-              interceptWarmupRequests ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-gray-300 dark:bg-dark-600'
+              interceptWarmupRequests ? 'bg-success dark:bg-success' : 'bg-gray-300 dark:bg-dark-600'
             ]"
           >
             <span
@@ -1135,7 +1135,7 @@
             @click="openaiPassthroughEnabled = !openaiPassthroughEnabled"
             :class="[
               'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-              openaiPassthroughEnabled ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-gray-300 dark:bg-dark-600'
+              openaiPassthroughEnabled ? 'bg-success dark:bg-success' : 'bg-gray-300 dark:bg-dark-600'
             ]"
           >
             <span
@@ -1186,7 +1186,7 @@
             @click="anthropicPassthroughEnabled = !anthropicPassthroughEnabled"
             :class="[
               'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-              anthropicPassthroughEnabled ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-gray-300 dark:bg-dark-600'
+              anthropicPassthroughEnabled ? 'bg-success dark:bg-success' : 'bg-gray-300 dark:bg-dark-600'
             ]"
           >
             <span
@@ -1339,7 +1339,7 @@
             @click="codexCLIOnlyEnabled = !codexCLIOnlyEnabled"
             :class="[
               'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-              codexCLIOnlyEnabled ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-gray-300 dark:bg-dark-600'
+              codexCLIOnlyEnabled ? 'bg-success dark:bg-success' : 'bg-gray-300 dark:bg-dark-600'
             ]"
           >
             <span
@@ -1399,7 +1399,7 @@
                 class="input flex-1"
                 :placeholder="t('admin.accounts.toModel')"
               />
-              <button type="button" @click="removeOpenAICompactModelMapping(index)" class="text-red-500 hover:text-red-700">
+              <button type="button" @click="removeOpenAICompactModelMapping(index)" class="text-danger hover:text-danger-deep">
                 <Icon name="trash" size="sm" />
               </button>
             </div>
@@ -1425,7 +1425,7 @@
             @click="autoPauseOnExpired = !autoPauseOnExpired"
             :class="[
               'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-              autoPauseOnExpired ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-gray-300 dark:bg-dark-600'
+              autoPauseOnExpired ? 'bg-success dark:bg-success' : 'bg-gray-300 dark:bg-dark-600'
             ]"
           >
             <span
@@ -1464,7 +1464,7 @@
               @click="windowCostEnabled = !windowCostEnabled"
               :class="[
                 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-                windowCostEnabled ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-gray-300 dark:bg-dark-600'
+                windowCostEnabled ? 'bg-success dark:bg-success' : 'bg-gray-300 dark:bg-dark-600'
               ]"
             >
               <span
@@ -1524,7 +1524,7 @@
               @click="sessionLimitEnabled = !sessionLimitEnabled"
               :class="[
                 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-                sessionLimitEnabled ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-gray-300 dark:bg-dark-600'
+                sessionLimitEnabled ? 'bg-success dark:bg-success' : 'bg-gray-300 dark:bg-dark-600'
               ]"
             >
               <span
@@ -1581,7 +1581,7 @@
               @click="rpmLimitEnabled = !rpmLimitEnabled"
               :class="[
                 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-                rpmLimitEnabled ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-gray-300 dark:bg-dark-600'
+                rpmLimitEnabled ? 'bg-success dark:bg-success' : 'bg-gray-300 dark:bg-dark-600'
               ]"
             >
               <span
@@ -1694,7 +1694,7 @@
               @click="tlsFingerprintEnabled = !tlsFingerprintEnabled"
               :class="[
                 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-                tlsFingerprintEnabled ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-gray-300 dark:bg-dark-600'
+                tlsFingerprintEnabled ? 'bg-success dark:bg-success' : 'bg-gray-300 dark:bg-dark-600'
               ]"
             >
               <span
@@ -1729,7 +1729,7 @@
               @click="sessionIdMaskingEnabled = !sessionIdMaskingEnabled"
               :class="[
                 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-                sessionIdMaskingEnabled ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-gray-300 dark:bg-dark-600'
+                sessionIdMaskingEnabled ? 'bg-success dark:bg-success' : 'bg-gray-300 dark:bg-dark-600'
               ]"
             >
               <span
@@ -1756,7 +1756,7 @@
               @click="cacheTTLOverrideEnabled = !cacheTTLOverrideEnabled"
               :class="[
                 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-                cacheTTLOverrideEnabled ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-gray-300 dark:bg-dark-600'
+                cacheTTLOverrideEnabled ? 'bg-success dark:bg-success' : 'bg-gray-300 dark:bg-dark-600'
               ]"
             >
               <span
@@ -1796,7 +1796,7 @@
               @click="customBaseUrlEnabled = !customBaseUrlEnabled"
               :class="[
                 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-                customBaseUrlEnabled ? 'bg-emerald-500 dark:bg-emerald-600' : 'bg-gray-300 dark:bg-dark-600'
+                customBaseUrlEnabled ? 'bg-success dark:bg-success' : 'bg-gray-300 dark:bg-dark-600'
               ]"
             >
               <span

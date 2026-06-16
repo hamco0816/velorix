@@ -77,14 +77,14 @@
       <button
         type="button"
         @click="fillRelated"
-        class="rounded-lg border border-blue-200 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-900/30"
+        class="rounded-lg border border-info/40 px-3 py-1.5 text-sm text-info hover:bg-info-soft dark:border-info/50 dark:text-info dark:hover:bg-info/15"
       >
         {{ t('admin.accounts.fillRelatedModels') }}
       </button>
       <button
         type="button"
         @click="clearAll"
-        class="rounded-lg border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/30"
+        class="rounded-lg border border-danger/40 px-3 py-1.5 text-sm text-danger hover:bg-danger-soft dark:border-danger/50 dark:text-danger dark:hover:bg-danger/15"
       >
         {{ t('admin.accounts.clearAllModels') }}
       </button>

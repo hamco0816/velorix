@@ -33,7 +33,7 @@
       <Icon
         name="questionCircle"
         size="sm"
-        class="cursor-help text-red-500 transition-colors hover:text-red-600 dark:text-red-400 dark:hover:text-red-300"
+        class="cursor-help text-danger transition-colors hover:text-danger-deep dark:text-danger dark:hover:text-danger"
         :stroke-width="2"
       />
       <!-- Tooltip - 向下显示 -->
@@ -53,7 +53,7 @@
     <!-- Rate Limit Indicator (429) -->
     <div v-if="isRateLimited" class="group relative">
       <span
-        class="inline-flex items-center gap-1 rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+        class="inline-flex items-center gap-1 rounded bg-warning-soft px-1.5 py-0.5 text-xs font-medium text-warning dark:bg-warning-deep/30 dark:text-brand-300"
       >
         <Icon name="exclamationTriangle" size="xs" :stroke-width="2" />
         429
@@ -84,7 +84,7 @@
         <!-- 积分已用尽 -->
         <span
           v-if="item.kind === 'credits_exhausted'"
-          class="inline-flex items-center gap-1 rounded bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400"
+          class="inline-flex items-center gap-1 rounded bg-danger-soft px-1.5 py-0.5 text-xs font-medium text-danger dark:bg-danger-deep/30 dark:text-danger"
         >
           <Icon name="exclamationTriangle" size="xs" :stroke-width="2" />
           {{ t('admin.accounts.status.creditsExhausted') }}
@@ -93,7 +93,7 @@
         <!-- 正在走积分（模型限流但积分可用）-->
         <span
           v-else-if="item.kind === 'credits_active'"
-          class="inline-flex items-center gap-1 rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+          class="inline-flex items-center gap-1 rounded bg-warning-soft px-1.5 py-0.5 text-xs font-medium text-warning dark:bg-warning-deep/30 dark:text-brand-300"
         >
           <Icon name="bolt" size="xs" :stroke-width="2" />
           {{ formatScopeName(item.model) }}
@@ -102,7 +102,7 @@
         <!-- 普通模型限流 -->
         <span
           v-else
-          class="inline-flex items-center gap-1 rounded bg-purple-100 px-1.5 py-0.5 text-xs font-medium text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
+          class="inline-flex items-center gap-1 rounded bg-info-soft px-1.5 py-0.5 text-xs font-medium text-info dark:bg-info-deep/30 dark:text-info"
         >
           <Icon name="exclamationTriangle" size="xs" :stroke-width="2" />
           {{ formatScopeName(item.model) }}
@@ -129,7 +129,7 @@
     <!-- Overload Indicator (529) -->
     <div v-if="isOverloaded" class="group relative">
       <span
-        class="inline-flex items-center gap-1 rounded bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400"
+        class="inline-flex items-center gap-1 rounded bg-danger-soft px-1.5 py-0.5 text-xs font-medium text-danger dark:bg-danger-deep/30 dark:text-danger"
       >
         <Icon name="exclamationTriangle" size="xs" :stroke-width="2" />
         529

@@ -108,7 +108,7 @@
                     :min="globalMinAmount"
                     :max="globalMaxAmount"
                   />
-                  <p v-if="amountError" class="flex items-start gap-2 rounded-xl border border-red-200/70 bg-red-50/60 px-3 py-2 text-xs text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+                  <p v-if="amountError" class="flex items-start gap-2 rounded-xl border border-danger-soft bg-danger-soft/60 px-3 py-2 text-xs text-danger dark:border-danger/30 dark:bg-danger/10 dark:text-danger">
                     <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
                     <span>{{ amountError }}</span>
                   </p>
@@ -144,7 +144,7 @@
                     </div>
                     <div v-if="balanceRechargeMultiplier !== 1" class="flex justify-between">
                       <span class="text-gray-500 dark:text-dark-400">{{ t('payment.creditedBalance') }}</span>
-                      <span class="font-medium tabular-nums text-emerald-600 dark:text-emerald-400">${{ creditedAmount.toFixed(2) }}</span>
+                      <span class="font-medium tabular-nums text-success dark:text-tea-300">${{ creditedAmount.toFixed(2) }}</span>
                     </div>
                   </div>
 
@@ -249,11 +249,11 @@
                         ¥{{ selectedPlan.price.toFixed(2) }}
                       </span>
                       <span v-if="renewPriceTrend === 'up'"
-                        class="inline-flex items-center rounded-md bg-amber-100/80 px-1.5 py-0.5 text-2xs font-bold tabular-nums text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                        class="inline-flex items-center rounded-md bg-warning-soft px-1.5 py-0.5 text-2xs font-bold tabular-nums text-warning-deep dark:bg-warning/40 dark:text-warning">
                         +¥{{ (selectedPlan.price - renewLastPaidPrice).toFixed(2) }}
                       </span>
                       <span v-else-if="renewPriceTrend === 'down'"
-                        class="inline-flex items-center rounded-md bg-emerald-100/80 px-1.5 py-0.5 text-2xs font-bold tabular-nums text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                        class="inline-flex items-center rounded-md bg-success-soft px-1.5 py-0.5 text-2xs font-bold tabular-nums text-success-deep dark:bg-success/40 dark:text-success">
                         −¥{{ (renewLastPaidPrice - selectedPlan.price).toFixed(2) }}
                       </span>
                       <span v-else
@@ -297,7 +297,7 @@
                         </span>
                         <span v-if="selectedPlan.original_price" class="inline-flex items-center gap-1.5">
                           <span class="text-xs tabular-nums text-gray-400 line-through dark:text-gray-500">¥{{ selectedPlan.original_price }}</span>
-                          <span v-if="selectedPlanDiscountText" class="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-2xs font-semibold tabular-nums text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400">{{ selectedPlanDiscountText }}</span>
+                          <span v-if="selectedPlanDiscountText" class="inline-flex rounded-full bg-success-soft px-2 py-0.5 text-2xs font-semibold tabular-nums text-success dark:bg-success/15 dark:text-tea-300">{{ selectedPlanDiscountText }}</span>
                         </span>
                       </div>
                     </div>
@@ -312,26 +312,26 @@
                     <div v-if="selectedPlanLimitVisibility.showDaily" class="rounded-xl bg-gray-50/70 px-4 py-3 dark:bg-dark-800/40">
                       <span class="block text-xs font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.dailyLimit') }}</span>
                       <span v-if="(selectedPlan.daily_limit_usd ?? 0) > 0" class="mt-1 block text-lg font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">${{ selectedPlan.daily_limit_usd }}</span>
-                      <span v-else class="mt-1 block text-lg font-semibold tracking-tight text-emerald-600 dark:text-emerald-400">{{ t('payment.planCard.unlimited') }}</span>
+                      <span v-else class="mt-1 block text-lg font-semibold tracking-tight text-success dark:text-tea-300">{{ t('payment.planCard.unlimited') }}</span>
                     </div>
                     <div v-if="selectedPlanLimitVisibility.showWeekly" class="rounded-xl bg-gray-50/70 px-4 py-3 dark:bg-dark-800/40">
                       <span class="block text-xs font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.weeklyLimit') }}</span>
                       <span v-if="(selectedPlan.weekly_limit_usd ?? 0) > 0" class="mt-1 block text-lg font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">${{ selectedPlan.weekly_limit_usd }}</span>
-                      <span v-else class="mt-1 block text-lg font-semibold tracking-tight text-emerald-600 dark:text-emerald-400">{{ t('payment.planCard.unlimited') }}</span>
+                      <span v-else class="mt-1 block text-lg font-semibold tracking-tight text-success dark:text-tea-300">{{ t('payment.planCard.unlimited') }}</span>
                     </div>
                     <div v-if="selectedPlanLimitVisibility.showMonthly" class="rounded-xl bg-gray-50/70 px-4 py-3 dark:bg-dark-800/40">
                       <span class="block text-xs font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.monthlyLimit') }}</span>
                       <span v-if="(selectedPlan.monthly_limit_usd ?? 0) > 0" class="mt-1 block text-lg font-semibold tabular-nums tracking-tight text-gray-900 dark:text-white">${{ selectedPlan.monthly_limit_usd }}</span>
-                      <span v-else class="mt-1 block text-lg font-semibold tracking-tight text-emerald-600 dark:text-emerald-400">{{ t('payment.planCard.unlimited') }}</span>
+                      <span v-else class="mt-1 block text-lg font-semibold tracking-tight text-success dark:text-tea-300">{{ t('payment.planCard.unlimited') }}</span>
                     </div>
                     <div v-if="selectedPlan.daily_limit_usd == null && selectedPlan.weekly_limit_usd == null && selectedPlan.monthly_limit_usd == null" class="rounded-xl bg-gray-50/70 px-4 py-3 dark:bg-dark-800/40">
                       <span class="block text-xs font-medium text-gray-500 dark:text-dark-400">{{ t('payment.planCard.quota') }}</span>
-                      <span class="mt-1 block text-lg font-semibold tracking-tight text-emerald-600 dark:text-emerald-400">{{ t('payment.planCard.unlimited') }}</span>
+                      <span class="mt-1 block text-lg font-semibold tracking-tight text-success dark:text-tea-300">{{ t('payment.planCard.unlimited') }}</span>
                     </div>
                   </div>
 
                   <!-- 3. 续费用户提示：仅同一 group 已有活跃订阅时显示，避免误以为续费即清零用量 -->
-                  <p v-if="paymentNoticeIsRenewal" class="flex items-start gap-1.5 rounded-lg bg-amber-50/60 px-3 py-2 text-xs leading-relaxed text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
+                  <p v-if="paymentNoticeIsRenewal" class="flex items-start gap-1.5 rounded-lg bg-warning-soft/60 px-3 py-2 text-xs leading-relaxed text-warning-deep dark:bg-warning/10 dark:text-warning">
                     <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
                     <span>{{ t('payment.purchaseNotice.renewalHint') }}</span>
                   </p>
@@ -353,7 +353,7 @@
                   <!-- 5. 套餐特性 chips（admin 在 features 数组里填了才显示）-->
                   <div v-if="selectedPlan.features.length > 0" class="grid gap-2 sm:grid-cols-2">
                     <div v-for="feature in selectedPlan.features" :key="feature" class="flex items-start gap-2 rounded-xl bg-white px-3 py-2 text-sm text-gray-600 ring-1 ring-inset ring-gray-200/70 dark:bg-dark-800/40 dark:text-gray-300 dark:ring-dark-700/60">
-                      <Icon name="check" size="sm" class="mt-0.5 shrink-0 text-emerald-500" :stroke-width="2.5" />
+                      <Icon name="check" size="sm" class="mt-0.5 shrink-0 text-success" :stroke-width="2.5" />
                       <span>{{ feature }}</span>
                     </div>
                   </div>
@@ -387,7 +387,7 @@
                     v-if="invoiceEnabled"
                     class="flex items-start gap-2 rounded-xl px-3 py-2.5 text-xs leading-relaxed"
                     :class="selectedPlan.invoice_eligible
-                      ? 'bg-emerald-50/70 text-emerald-700 dark:bg-emerald-900/15 dark:text-emerald-300'
+                      ? 'bg-success-soft/70 text-success-deep dark:bg-success/15 dark:text-success'
                       : 'bg-gray-50/70 text-gray-500 dark:bg-dark-800/40 dark:text-dark-400'"
                   >
                     <Icon :name="selectedPlan.invoice_eligible ? 'checkCircle' : 'infoCircle'" size="sm" class="mt-0.5 shrink-0" :stroke-width="2" />
@@ -503,8 +503,8 @@
                         <span v-else>{{ t('userSubscriptions.noExpiration') }}</span>
                       </div>
                     </div>
-                    <span class="inline-flex shrink-0 items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-2xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30">
-                      <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="inline-flex shrink-0 items-center gap-1 rounded-full bg-success-soft px-2 py-0.5 text-2xs font-medium text-success-deep ring-1 ring-inset ring-success/30 dark:bg-success/15 dark:text-success dark:ring-success/30">
+                      <span class="h-1.5 w-1.5 rounded-full bg-success animate-pulse"></span>
                       {{ t('userSubscriptions.status.active') }}
                     </span>
                   </div>
@@ -1055,9 +1055,9 @@ const renewPriceTrend = computed<'up' | 'down' | 'same'>(() => {
 const renewPriceTextClass = computed(() => {
   switch (renewPriceTrend.value) {
     case 'up':
-      return 'text-amber-600 dark:text-amber-300'
+      return 'text-warning dark:text-warning'
     case 'down':
-      return 'text-emerald-600 dark:text-emerald-300'
+      return 'text-success dark:text-tea-300'
     default:
       return 'text-gray-900 dark:text-gray-50'
   }
@@ -1067,9 +1067,9 @@ const renewPriceTextClass = computed(() => {
 const renewBannerOuterClass = computed(() => {
   switch (renewPriceTrend.value) {
     case 'up':
-      return 'border-amber-200 border-l-4 border-l-amber-500 dark:border-amber-900/50 dark:border-l-amber-500'
+      return 'border-warning-soft border-l-4 border-l-warning dark:border-warning/50 dark:border-l-warning'
     case 'down':
-      return 'border-emerald-200 border-l-4 border-l-emerald-500 dark:border-emerald-900/50 dark:border-l-emerald-500'
+      return 'border-success-soft border-l-4 border-l-success dark:border-success/50 dark:border-l-success'
     default:
       return 'border-gray-200 dark:border-dark-700'
   }
@@ -1079,11 +1079,11 @@ const renewBannerOuterClass = computed(() => {
 const renewBannerIconBoxClass = computed(() => {
   switch (renewPriceTrend.value) {
     case 'up':
-      return 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-300'
+      return 'bg-warning-soft text-warning dark:bg-warning/30 dark:text-warning'
     case 'down':
-      return 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300'
+      return 'bg-success-soft text-success dark:bg-success/30 dark:text-tea-300'
     default:
-      return 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300'
+      return 'bg-success-soft text-success dark:bg-success/30 dark:text-tea-300'
   }
 })
 
@@ -1091,9 +1091,9 @@ const renewBannerIconBoxClass = computed(() => {
 const renewTrendDotClass = computed(() => {
   switch (renewPriceTrend.value) {
     case 'up':
-      return 'bg-amber-500 text-white ring-4 ring-amber-100 dark:bg-amber-500 dark:text-white dark:ring-amber-900/40'
+      return 'bg-warning text-white ring-4 ring-warning-soft dark:bg-warning dark:text-white dark:ring-warning/40'
     case 'down':
-      return 'bg-emerald-500 text-white ring-4 ring-emerald-100 dark:bg-emerald-500 dark:text-white dark:ring-emerald-900/40'
+      return 'bg-success text-white ring-4 ring-success-soft dark:bg-success dark:text-white dark:ring-success/40'
     default:
       return 'bg-gray-300 text-white ring-4 ring-gray-100 dark:bg-dark-500 dark:text-dark-200 dark:ring-dark-700'
   }
@@ -1103,9 +1103,9 @@ const renewTrendDotClass = computed(() => {
 const renewBannerHintClass = computed(() => {
   switch (renewPriceTrend.value) {
     case 'up':
-      return 'text-amber-700 dark:text-amber-300/90'
+      return 'text-warning-deep dark:text-warning/90'
     case 'down':
-      return 'text-emerald-700 dark:text-emerald-300/90'
+      return 'text-success-deep dark:text-tea-300/90'
     default:
       return 'text-gray-500 dark:text-dark-300'
   }

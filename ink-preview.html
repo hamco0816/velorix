@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="theme-paper">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>宣纸墨色 · 换肤预览</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Cinzel:wght@400;500;600&family=Marcellus&family=Italiana&family=Pinyon+Script&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Spectral:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@500;600;700&display=swap" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" rel="stylesheet" />
+<style>
+  /* ============================================================
+     宣纸墨色 设计令牌 —— 浅色（宣纸）默认
+     评审修正已落地：
+       1) dark 阶沿用 Tailwind 正向（50 浅 → 950 深），暗色不翻白
+       2) 占位/链接/实心 warning 一律改 brand-600 / muted-600，弃用 #b4ab98 文字
+       3) focus ring 加宽 2px + offset，必要处上移 brand-600
+       4) 暗色 danger 提亮到 #d8786a
+     ============================================================ */
+  .theme-paper {
+    /* —— 中性墨色：宣纸 → 暖墨 —— */
+    --paper:        #f6f2e9;  /* 页面背景 */
+    --paper-deep:   #efe8d8;  /* 次级背景 / 内容区底 */
+    --line:         #ddd5c4;  /* 常规线 */
+    --line-strong:  #c8bfa9;  /* 强调线 */
+    --ink-thin:     #b4ab98;  /* 纯装饰图标专用，禁用于文字 */
+    --ink-faint:    #8a8275;  /* 辅助文字（达 3.4:1，UI 可读） */
+    --ink-mute:     #6b6356;  /* 占位/次级正文（达 4.5:1） */
+    --ink-soft:     #4a453d;  /* 次要文字 */
+    --ink-deep:     #34302a;
+    --ink-900:      #2a2722;
+    --ink:          #22201c;  /* 主文字 / 墨 CTA 底 */
+
+    --surface:      #fbf8f1;  /* 卡片 / 浮层 paper-warm */
+    --surface-2:    #f3eee3;  /* 斑马行 / 表头 */
+
+    /* —— 点睛：茶汤橘 —— */
+    --brand:        #c56b3e;  /* 主点睛：大面积/图标/选中态 */
+    --brand-bright: #d18f5e;
+    --brand-600:    #a9542c;  /* 链接/实心按钮底/focus ring（达 4.7:1） */
+    --brand-700:    #8c4424;  /* 按下 */
+    --brand-soft:   #f4e6d8;  /* 淡底 */
+    --brand-wash:   #fbf3ea;
+
+    /* —— 竹青绿：辅助强调 —— */
+    --tea:          #3d5a45;
+    --tea-deep:     #2c4232;
+    --tea-soft:     #e7ece2;
+
+    /* —— 语义色 —— */
+    --success:      #3d5a45;  --success-soft: #e7ece2;  --success-deep: #2c4232;
+    --warning:      #c56b3e;  --warning-soft: #f4e6d8;  --warning-deep: #a9542c;
+    --danger:       #a23b2e;  --danger-soft:  #f3e1dc;  --danger-deep:  #872f24;
+    --info:         #3a5570;  --info-soft:    #e3e8ee;  --info-deep:    #2c4256;
+
+    /* —— 阴影：极淡暖墨投影 —— */
+    --shadow-card:  0 1px 1px rgba(34,32,28,0.04), 0 2px 6px -1px rgba(34,32,28,0.06);
+    --shadow-hover: 0 14px 30px -16px rgba(34,32,28,0.22), 0 4px 10px -4px rgba(34,32,28,0.10);
+    --shadow-pop:   0 22px 48px -34px rgba(34,32,28,0.50), 0 6px 16px -6px rgba(34,32,28,0.14);
+
+    /* —— 圆角：近方角 —— */
+    --r-xs: 2px; --r: 3px; --r-md: 4px; --r-lg: 6px; --r-xl: 8px; --r-pill: 999px;
+
+    --noise-opacity: 0.04;
+    --noise-blend: normal;
+  }
+
+  /* ============ 夜墨暗色 ============ */
+  .theme-ink {
+    --paper:        #22201c;  /* 页面背景 */
+    --paper-deep:   #1a1815;  /* 次级背景 / 内容区底 */
+    --line:         #46413a;
+    --line-strong:  #5c5649;
+    --ink-thin:     #8a8275;  /* 纯装饰 */
+    --ink-faint:    #b4ab98;  /* 辅助文字 */
+    --ink-mute:     #b4ab98;  /* 占位 */
+    --ink-soft:     #cfc7b6;  /* 次要文字 */
+    --ink-deep:     #e3dccb;
+    --ink-900:      #e3dccb;
+    --ink:          #f1ebdc;  /* 主文字 */
+
+    --surface:      #2a2722;  /* 卡片 */
+    --surface-2:    #34302a;  /* 斑马 / 抬升面 */
+
+    --brand:        #d18f5e;  /* 暗底提亮 */
+    --brand-bright: #dca878;
+    --brand-600:    #dca878;  /* 暗底链接更亮 */
+    --brand-700:    #e6c099;
+    --brand-soft:   #3a2a1a;
+    --brand-wash:   #2e251c;
+
+    --tea:          #88a081;
+    --tea-deep:     #3d5a45;
+    --tea-soft:     #243528;
+
+    --success:      #88a081;  --success-soft: #243528;  --success-deep: #3d5a45;
+    --warning:      #d18f5e;  --warning-soft: #3a2a1a;  --warning-deep: #c56b3e;
+    --danger:       #d8786a;  --danger-soft:  #3a201c;  --danger-deep:  #cf6a5b;
+    --info:         #7d97b3;  --info-soft:    #1f2a36;  --info-deep:    #5b7794;
+
+    --surface-raised: #34302a;
+
+    --shadow-card:  0 1px 1px rgba(0,0,0,0.30), 0 2px 6px -1px rgba(0,0,0,0.40);
+    --shadow-hover: 0 14px 30px -16px rgba(0,0,0,0.55), 0 4px 10px -4px rgba(0,0,0,0.40);
+    --shadow-pop:   0 22px 48px -30px rgba(0,0,0,0.70), 0 6px 16px -6px rgba(0,0,0,0.45);
+
+    --noise-opacity: 0.025;
+    --noise-blend: screen;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', 'Noto Sans SC', system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color .35s ease, color .35s ease;
+    min-height: 100vh;
+  }
+
+  /* 宣纸噪点纹理 */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: var(--noise-opacity);
+    mix-blend-mode: var(--noise-blend);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'LXGW WenKai', 'LXGW WenKai GB', 'Noto Serif SC', Georgia, serif;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+    margin: 0;
+  }
+
+  /* 数字：等高(lining)+等宽(tabular) 对齐，清晰又精致 */
+  .num {
+    font-family: 'Fraunces', 'Noto Serif SC', Georgia, serif;
+    font-variant-numeric: lining-nums tabular-nums;
+    font-weight: 600;
+    letter-spacing: 0.005em;
+  }
+
+  /* —— 数字字体对比区 —— */
+  .numfont-row {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 20px; padding: 12px 4px; border-bottom: 1px solid var(--line);
+  }
+  .numfont-row:last-child { border-bottom: none; }
+  .numfont-row .fname {
+    font-family: 'Noto Sans SC', sans-serif; font-size: 12.5px;
+    color: var(--ink-faint); flex: none; width: 188px;
+  }
+  .numfont-row .fname b { color: var(--ink); font-weight: 600; }
+  .numfont-row .demo {
+    display: flex; gap: 28px; align-items: baseline;
+    font-size: 30px; color: var(--ink);
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+  .nf-fraunces    { font-family: 'Fraunces', serif; letter-spacing: .005em; }
+  .nf-spectral    { font-family: 'Spectral', serif; }
+  .nf-playfair    { font-family: 'Playfair Display', serif; }
+  .nf-serifsc     { font-family: 'Noto Serif SC', serif; }
+  .nf-sanssc      { font-family: 'Noto Sans SC', sans-serif; font-weight: 600; }
+  .nf-cormorant   { font-family: 'Cormorant Garamond', serif; font-variant-numeric: oldstyle-nums proportional-nums; }
+
+  /* —— 中文字体对比 —— */
+  .cnfont-row { display: flex; gap: 20px; padding: 14px 4px; border-bottom: 1px solid var(--line); align-items: baseline; }
+  .cnfont-row:last-child { border-bottom: none; }
+  .cnfont-row .fname { font-family: 'Noto Sans SC', sans-serif; font-size: 12.5px; color: var(--ink-faint); flex: none; width: 210px; }
+  .cnfont-row .fname b { color: var(--ink); font-weight: 600; }
+  .cnfont-row .cndemo { flex: 1; }
+  .cnfont-row .cndemo .t { font-size: 21px; color: var(--ink); display: block; margin-bottom: 4px; line-height: 1.4; }
+  .cnfont-row .cndemo .p { font-size: 14px; color: var(--ink-soft); display: block; }
+  .cf-heiti    { font-family: 'Noto Sans SC', sans-serif; }
+  .cf-songti   { font-family: 'Noto Serif SC', serif; }
+  .cf-wenkai   { font-family: 'LXGW WenKai', 'LXGW WenKai GB', serif; }
+  .cf-fangsong { font-family: 'FangSong', 'STFangsong', '仿宋', 'Noto Serif SC', serif; }
+
+  /* —— 英文字体对比 —— */
+  .enfont-row { display: flex; gap: 20px; padding: 14px 4px; border-bottom: 1px solid var(--line); align-items: baseline; }
+  .enfont-row:last-child { border-bottom: none; }
+  .enfont-row .fname { font-family: 'Noto Sans SC', sans-serif; font-size: 12.5px; color: var(--ink-faint); flex: none; width: 210px; }
+  .enfont-row .fname b { color: var(--ink); font-weight: 600; }
+  .enfont-row .endemo { flex: 1; }
+  .enfont-row .endemo .t { font-size: 19px; color: var(--ink); display: block; margin-bottom: 3px; font-weight: 600; }
+  .enfont-row .endemo .p { font-size: 13.5px; color: var(--ink-soft); display: block; font-variant-numeric: lining-nums tabular-nums; }
+  .ef-inter    { font-family: 'Inter', sans-serif; }
+  .ef-geist    { font-family: 'Geist', sans-serif; }
+  .ef-manrope  { font-family: 'Manrope', sans-serif; }
+  .ef-plex     { font-family: 'IBM Plex Sans', sans-serif; }
+  .ef-spectral { font-family: 'Spectral', serif; }
+
+  /* —— 英文艺术字（品牌/大标题用） —— */
+  .artfont-row { display: flex; gap: 20px; padding: 16px 4px; border-bottom: 1px solid var(--line); align-items: baseline; }
+  .artfont-row:last-child { border-bottom: none; }
+  .artfont-row .fname { font-family: 'Noto Sans SC', sans-serif; font-size: 12.5px; color: var(--ink-faint); flex: none; width: 220px; }
+  .artfont-row .fname b { color: var(--ink); font-weight: 600; }
+  .artfont-row .artdemo { flex: 1; display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; }
+  .artfont-row .artdemo .big { font-size: 34px; color: var(--ink); line-height: 1.1; }
+  .artfont-row .artdemo .sub { font-size: 12px; color: var(--ink-faint); letter-spacing: .16em; text-transform: uppercase; }
+  .af-cinzel    { font-family: 'Cinzel', serif; }
+  .af-marcellus { font-family: 'Marcellus', serif; }
+  .af-italiana  { font-family: 'Italiana', serif; }
+  .af-cormorant { font-family: 'Cormorant Garamond', serif; font-style: italic; }
+  .af-pinyon    { font-family: 'Pinyon Script', cursive; }
+  .af-pinyon .big { font-size: 46px; }
+
+  @media (max-width: 720px) { .numfont-row { flex-direction: column; gap: 6px; } .numfont-row .demo { font-size: 21px; } .cnfont-row { flex-direction: column; gap: 6px; } .enfont-row { flex-direction: column; gap: 6px; } .artfont-row { flex-direction: column; gap: 8px; } }
+
+  /* ---------- 布局外壳 ---------- */
+  .app {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 232px 1fr;
+    grid-template-rows: 56px 1fr;
+    grid-template-areas: "brand topbar" "sidebar main";
+    min-height: 100vh;
+  }
+
+  /* ---------- 顶部应用栏 ---------- */
+  .topbar {
+    grid-area: topbar;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 24px;
+    background: color-mix(in srgb, var(--surface) 86%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar .search {
+    flex: 1;
+    max-width: 420px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--paper);
+    color: var(--ink-mute);
+  }
+  .topbar .search input {
+    border: none; background: transparent; outline: none;
+    font: inherit; color: var(--ink); width: 100%;
+  }
+  .topbar .search input::placeholder { color: var(--ink-mute); }
+  .topbar .spacer { flex: 1; }
+  .topbar-actions { display: flex; align-items: center; gap: 10px; }
+
+  .icon-btn {
+    width: 34px; height: 34px;
+    display: grid; place-items: center;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--surface);
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: border-color .2s, color .2s, background .2s;
+  }
+  .icon-btn:hover { border-color: var(--line-strong); color: var(--ink); }
+
+  .avatar {
+    width: 34px; height: 34px; border-radius: var(--r-pill);
+    background: var(--ink); color: var(--paper);
+    display: grid; place-items: center;
+    font-weight: 600; font-size: 13px;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  /* ---------- 品牌角 + 侧边栏 ---------- */
+  .brandcell {
+    grid-area: brand;
+    display: flex; align-items: center; gap: 10px;
+    padding: 0 18px;
+    border-bottom: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .seal {
+    width: 30px; height: 30px;
+    border-radius: var(--r-md);
+    background: var(--ink);
+    color: var(--paper);
+    display: grid; place-items: center;
+    font-family: 'Noto Serif SC', serif; font-weight: 700; font-size: 16px;
+  }
+  .brandcell .name { font-family: 'Noto Serif SC', serif; font-weight: 600; font-size: 15px; letter-spacing: .04em; }
+  .brandcell .name span { color: var(--brand); }
+
+  .sidebar {
+    grid-area: sidebar;
+    border-right: 1px solid var(--line);
+    background: var(--surface);
+    padding: 16px 12px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .nav-label {
+    font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--ink-faint); padding: 12px 10px 6px; font-weight: 500;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 11px;
+    padding: 9px 11px;
+    border-radius: var(--r-md);
+    color: var(--ink-soft);
+    font-size: 14px; font-weight: 500;
+    cursor: pointer;
+    transition: background .18s, color .18s;
+  }
+  .nav-item svg { width: 17px; height: 17px; flex: none; }
+  .nav-item:hover { background: var(--paper-deep); color: var(--ink); }
+  .nav-item.active {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .nav-item.active svg { color: var(--brand-bright); }
+  .nav-item .tag {
+    margin-left: auto; font-size: 11px; padding: 1px 7px;
+    border-radius: var(--r-pill);
+    background: var(--brand-soft); color: var(--brand-600);
+    font-weight: 600;
+  }
+
+  /* ---------- 主内容 ---------- */
+  .main {
+    grid-area: main;
+    background: var(--paper-deep);
+    padding: 28px 32px 64px;
+    overflow-y: auto;
+  }
+  .preview-note {
+    font-size: 12px; color: var(--ink-faint);
+    margin: -8px 0 22px;
+  }
+  .preview-note b { color: var(--ink-mute); font-weight: 600; }
+
+  /* ---------- page-hero ---------- */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-xl);
+    padding: 32px 34px;
+    box-shadow: var(--shadow-card);
+    margin-bottom: 28px;
+  }
+  .hero::after {
+    content: '茶';
+    position: absolute;
+    right: 24px; bottom: -28px;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 150px; font-weight: 700;
+    color: var(--ink);
+    opacity: .035;
+    line-height: 1;
+  }
+  .hero .eyebrow {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 12px; font-weight: 600; letter-spacing: .04em;
+    color: var(--brand-600);
+    background: var(--brand-soft);
+    padding: 4px 11px; border-radius: var(--r-pill);
+    margin-bottom: 14px;
+  }
+  .hero h1 { font-size: 30px; margin-bottom: 10px; }
+  .hero p { color: var(--ink-soft); max-width: 560px; margin: 0 0 20px; font-size: 14.5px; }
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  /* ---------- 按钮全套 ---------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    height: 38px; padding: 0 18px;
+    border-radius: var(--r);
+    font: inherit; font-size: 14px; font-weight: 600;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background .18s, border-color .18s, color .18s, box-shadow .18s;
+    white-space: nowrap;
+  }
+  .btn svg { width: 16px; height: 16px; }
+  .btn:focus-visible {
+    outline: 2px solid var(--brand-600);
+    outline-offset: 2px;
+  }
+  .btn-primary { background: var(--ink); color: var(--paper); }
+  .btn-primary:hover { background: var(--ink-900); }
+  .btn-outline { background: transparent; border-color: var(--line-strong); color: var(--ink); }
+  .btn-outline:hover { border-color: var(--ink-soft); background: var(--surface); }
+  .btn-ghost { background: transparent; color: var(--ink-soft); }
+  .btn-ghost:hover { background: var(--paper-deep); color: var(--ink); }
+  /* 实心 warning 用 brand-600（白字 5.26:1，达 AA） */
+  .btn-warning { background: var(--brand-600); color: #fff; }
+  .btn-warning:hover { background: var(--brand-700); }
+  .btn-success { background: var(--success); color: #fff; }
+  .btn-success:hover { background: var(--success-deep); }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-danger:hover { background: var(--danger-deep); }
+  /* 夜墨：实心彩色按钮改深墨字（提亮底上白字对比不足，会发虚发粉） */
+  .theme-ink .btn-warning,
+  .theme-ink .btn-success,
+  .theme-ink .btn-danger { color: #22201c; }
+
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+  /* ---------- 卡片 / section ---------- */
+  .section { margin-bottom: 28px; }
+  .section-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .section-head h2 { font-size: 17px; }
+  .section-head .hint { font-size: 12.5px; color: var(--ink-faint); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-xl);
+    box-shadow: var(--shadow-card);
+  }
+  .card-pad { padding: 20px 22px; }
+
+  /* ---------- 统计卡 ---------- */
+  .stat-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: 18px 20px;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow .2s, border-color .2s;
+  }
+  .stat:hover { box-shadow: var(--shadow-hover); border-color: var(--line-strong); }
+  .stat .label {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12.5px; color: var(--ink-faint); font-weight: 500;
+  }
+  .stat .label svg { width: 15px; height: 15px; color: var(--ink-thin); }
+  .stat .value {
+    font-size: 32px; margin-top: 6px; color: var(--ink);
+    display: flex; align-items: baseline; gap: 6px;
+  }
+  .stat .value small { font-size: 14px; color: var(--ink-faint); font-family: inherit; }
+  .stat .delta { font-size: 12.5px; margin-top: 4px; display: inline-flex; align-items: center; gap: 4px; }
+  .delta.up { color: var(--success); }
+  .delta.down { color: var(--danger); }
+
+  /* ---------- 输入框 ---------- */
+  .field { display: flex; flex-direction: column; gap: 7px; }
+  .field label { font-size: 13px; font-weight: 500; color: var(--ink-soft); }
+  .input {
+    height: 38px; padding: 0 13px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r);
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit; font-size: 14px;
+    transition: border-color .18s, box-shadow .18s;
+    width: 100%;
+  }
+  .input::placeholder { color: var(--ink-mute); }
+  .input:focus {
+    outline: none;
+    border-color: var(--brand-600);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-600) 22%, transparent);
+  }
+  .input.is-focus {
+    border-color: var(--brand-600);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-600) 22%, transparent);
+  }
+  .field .help { font-size: 12px; color: var(--ink-faint); }
+
+  /* ---------- 数据表 ---------- */
+  .table-wrap {
+    border: 1px solid var(--line);
+    border-radius: var(--r-xl);
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  thead th {
+    text-align: left;
+    padding: 11px 18px;
+    background: var(--surface-2);
+    color: var(--ink-faint);
+    font-weight: 600; font-size: 12px;
+    letter-spacing: .03em; text-transform: uppercase;
+    border-bottom: 1px solid var(--line);
+  }
+  tbody td { padding: 13px 18px; border-bottom: 1px solid var(--line); color: var(--ink-soft); }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:nth-child(even) { background: color-mix(in srgb, var(--surface-2) 55%, transparent); }
+  tbody tr:hover { background: var(--brand-wash); }
+  td .model { font-weight: 600; color: var(--ink); }
+  td .num { color: var(--ink); }
+
+  /* ---------- 徽章全套 ---------- */
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    height: 22px; padding: 0 9px;
+    border-radius: var(--r-pill);
+    font-size: 12px; font-weight: 600;
+    line-height: 1;
+  }
+  .badge svg { width: 11px; height: 11px; }
+  .badge-brand   { background: var(--brand-soft);   color: var(--brand-600); }
+  .badge-success { background: var(--success-soft);  color: var(--success-deep); }
+  .badge-warning { background: var(--warning-soft);  color: var(--warning-deep); }
+  .badge-danger  { background: var(--danger-soft);   color: var(--danger-deep); }
+  .badge-info    { background: var(--info-soft);     color: var(--info-deep); }
+  .badge-gray    { background: var(--paper-deep);    color: var(--ink-mute); border: 1px solid var(--line); }
+
+  .theme-ink .badge-success { color: var(--success); }
+  .theme-ink .badge-warning { color: var(--warning); }
+  .theme-ink .badge-danger  { color: var(--danger); }
+  .theme-ink .badge-info    { color: var(--info); }
+  .theme-ink .badge-brand   { color: var(--brand); }
+
+  .badge-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+  /* ---------- toast ---------- */
+  .toast-stack {
+    position: fixed; right: 26px; bottom: 26px;
+    display: flex; flex-direction: column; gap: 12px;
+    z-index: 50; width: 320px;
+  }
+  .toast {
+    display: flex; align-items: flex-start; gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: 13px 15px;
+    box-shadow: var(--shadow-pop);
+    animation: toastIn .35s cubic-bezier(.22,1,.36,1) both;
+  }
+  @keyframes toastIn { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+  /* 语义靠图标徽托表达，不用侧边粗条 */
+  .toast .t-icon {
+    width: 30px; height: 30px; flex: none; padding: 6px;
+    border-radius: var(--r-pill);
+  }
+  .toast.success .t-icon { color: var(--success-deep); background: var(--success-soft); }
+  .toast.warning .t-icon { color: var(--brand-600);   background: var(--brand-soft); }
+  .toast.danger  .t-icon { color: var(--danger-deep);  background: var(--danger-soft); }
+  .theme-ink .toast.success .t-icon { color: var(--success); }
+  .theme-ink .toast.danger  .t-icon { color: var(--danger); }
+  .toast .t-title { font-weight: 600; font-size: 13.5px; color: var(--ink); }
+  .toast .t-body { font-size: 12.5px; color: var(--ink-faint); margin-top: 2px; }
+  .toast .t-close {
+    margin-left: auto; color: var(--ink-thin); cursor: pointer;
+    background: none; border: none; padding: 2px;
+  }
+  .toast .t-close:hover { color: var(--ink-soft); }
+
+  /* ---------- 主题切换 ---------- */
+  .theme-toggle {
+    display: inline-flex; align-items: center; gap: 7px;
+    height: 34px; padding: 0 13px;
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    background: var(--surface);
+    color: var(--ink-soft);
+    font: inherit; font-size: 13px; font-weight: 500;
+    cursor: pointer;
+    transition: border-color .2s, color .2s;
+  }
+  .theme-toggle:hover { border-color: var(--line-strong); color: var(--ink); }
+  .theme-toggle svg { width: 15px; height: 15px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; grid-template-areas: "topbar" "main"; }
+    .brandcell, .sidebar { display: none; }
+    .stat-grid { grid-template-columns: 1fr 1fr; }
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 品牌角 -->
+  <div class="brandcell">
+    <div class="seal">墨</div>
+    <div class="name">宣纸<span>墨色</span></div>
+  </div>
+
+  <!-- 顶部应用栏 -->
+  <header class="topbar">
+    <div class="search">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input type="text" placeholder="搜索渠道、模型或密钥…" />
+    </div>
+    <div class="spacer"></div>
+    <div class="topbar-actions">
+      <button class="theme-toggle" id="themeToggle" type="button">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+        <span id="themeText">夜墨</span>
+      </button>
+      <button class="icon-btn" type="button" aria-label="通知">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+      </button>
+      <div class="avatar">CY</div>
+    </div>
+  </header>
+
+  <!-- 左侧边栏 -->
+  <aside class="sidebar">
+    <div class="nav-label">总览</div>
+    <div class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+      <span>仪表盘</span>
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+      <span>渠道管理</span>
+      <span class="tag">12</span>
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v3m0 12v3M3 12h3m12 0h3"/></svg>
+      <span>模型映射</span>
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11V7a5 5 0 0 1 10 0v4"/><rect x="5" y="11" width="14" height="9" rx="2"/></svg>
+      <span>API 密钥</span>
+    </div>
+    <div class="nav-label">运营</div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 3-4 4 3 5-7"/></svg>
+      <span>用量统计</span>
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span>账单充值</span>
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 6.6 19l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.7 1.7 0 0 0 3 13.4H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 5 6.6l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 10 4.6V4a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 2.9 1.2l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0 .3 1.9Z"/></svg>
+      <span>系统设置</span>
+    </div>
+  </aside>
+
+  <!-- 主内容 -->
+  <main class="main">
+    <p class="preview-note">预览用 <b>在线字体</b>（Google Fonts：Noto Serif SC / Noto Sans SC / Cormorant Garamond），正式版将以 @fontsource 自托管分片替换。</p>
+
+    <!-- page-hero -->
+    <section class="hero">
+      <span class="eyebrow">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12l5 5L20 7"/></svg>
+        本月运营概览
+      </span>
+      <h1>聚合网关 · 控制台</h1>
+      <p>宣纸暖墨底色配茶橘点睛与竹青辅助，近方角与极淡暖墨投影。所有强调皆克制，靠细线与留白区分层级。</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          新建渠道
+        </button>
+        <button class="btn btn-outline" type="button">查看文档</button>
+      </div>
+    </section>
+
+    <!-- 统计卡 -->
+    <section class="section">
+      <div class="stat-grid">
+        <div class="stat">
+          <div class="label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+            总调用量
+          </div>
+          <div class="value"><span class="num">1,284,930</span></div>
+          <div class="delta up">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12l7-7 7 7M12 5v14"/></svg>
+            较上月 +12.4%
+          </div>
+        </div>
+        <div class="stat">
+          <div class="label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            本月消耗
+          </div>
+          <div class="value"><span class="num">¥ 8,642</span><small>.50</small></div>
+          <div class="delta down">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12l-7 7-7-7M12 19V5"/></svg>
+            较上月 -3.1%
+          </div>
+        </div>
+        <div class="stat">
+          <div class="label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+            活跃渠道
+          </div>
+          <div class="value"><span class="num">12</span><small>/ 15</small></div>
+          <div class="delta up">3 个待启用</div>
+        </div>
+        <div class="stat">
+          <div class="label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            平均延迟
+          </div>
+          <div class="value"><span class="num">486</span><small>ms</small></div>
+          <div class="delta up">P99 健康</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 数字字体对比 -->
+    <section class="section">
+      <div class="section-head"><h2>数字字体对比</h2><span class="hint">既要看清、又要高级——挑一个，我落地到两端</span></div>
+      <div class="card card-pad">
+        <div class="numfont-row">
+          <div class="fname"><b>Fraunces</b>（推荐·高级又清晰）</div>
+          <div class="demo nf-fraunces"><span>1,284,930</span><span>12 / 15</span><span>¥8,642.50</span><span>486 ms</span></div>
+        </div>
+        <div class="numfont-row">
+          <div class="fname"><b>Spectral</b>（沉稳编辑衬线）</div>
+          <div class="demo nf-spectral"><span>1,284,930</span><span>12 / 15</span><span>¥8,642.50</span><span>486 ms</span></div>
+        </div>
+        <div class="numfont-row">
+          <div class="fname"><b>Playfair Display</b>（华丽时装感）</div>
+          <div class="demo nf-playfair"><span>1,284,930</span><span>12 / 15</span><span>¥8,642.50</span><span>486 ms</span></div>
+        </div>
+        <div class="numfont-row">
+          <div class="fname"><b>思源宋体</b>（与标题同源·最统一）</div>
+          <div class="demo nf-serifsc"><span>1,284,930</span><span>12 / 15</span><span>¥8,642.50</span><span>486 ms</span></div>
+        </div>
+        <div class="numfont-row">
+          <div class="fname"><b>思源黑体</b>（最清晰·数据感）</div>
+          <div class="demo nf-sanssc"><span>1,284,930</span><span>12 / 15</span><span>¥8,642.50</span><span>486 ms</span></div>
+        </div>
+        <div class="numfont-row">
+          <div class="fname">Cormorant 当前（旧体·难认）</div>
+          <div class="demo nf-cormorant"><span>1,284,930</span><span>12 / 15</span><span>¥8,642.50</span><span>486 ms</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 中文字体对比 -->
+    <section class="section">
+      <div class="section-head"><h2>中文字体对比</h2><span class="hint">仿宋无理想开源 web 字体，霞鹜文楷是更稳的古典替代</span></div>
+      <div class="card card-pad">
+        <div class="cnfont-row">
+          <div class="fname"><b>思源黑体</b>（当前正文·最清晰）</div>
+          <div class="cndemo cf-heiti"><span class="t">聚合网关 · 控制台</span><span class="p">宣纸暖墨底色配茶橘点睛与竹青辅助，近方角与极淡投影。</span></div>
+        </div>
+        <div class="cnfont-row">
+          <div class="fname"><b>思源宋体</b>（当前标题·书卷气）</div>
+          <div class="cndemo cf-songti"><span class="t">聚合网关 · 控制台</span><span class="p">宣纸暖墨底色配茶橘点睛与竹青辅助，近方角与极淡投影。</span></div>
+        </div>
+        <div class="cnfont-row">
+          <div class="fname"><b>霞鹜文楷</b>（开源楷体·温润古典·可自托管）</div>
+          <div class="cndemo cf-wenkai"><span class="t">聚合网关 · 控制台</span><span class="p">宣纸暖墨底色配茶橘点睛与竹青辅助，近方角与极淡投影。</span></div>
+        </div>
+        <div class="cnfont-row">
+          <div class="fname">系统仿宋（仅本机预览·不可自托管）</div>
+          <div class="cndemo cf-fangsong"><span class="t">聚合网关 · 控制台</span><span class="p">宣纸暖墨底色配茶橘点睛与竹青辅助，近方角与极淡投影。</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 英文字体对比 -->
+    <section class="section">
+      <div class="section-head"><h2>英文字体对比</h2><span class="hint">界面/正文英文用哪个——挑一个</span></div>
+      <div class="card card-pad">
+        <div class="enfont-row">
+          <div class="fname"><b>Inter</b>（推荐·中性清晰）</div>
+          <div class="endemo ef-inter"><span class="t">Aggregate Gateway Console</span><span class="p">gpt-4o · claude-opus-4 · 1,284,930 tokens · 486ms · P99</span></div>
+        </div>
+        <div class="enfont-row">
+          <div class="fname"><b>Geist</b>（Vercel·现代精致）</div>
+          <div class="endemo ef-geist"><span class="t">Aggregate Gateway Console</span><span class="p">gpt-4o · claude-opus-4 · 1,284,930 tokens · 486ms · P99</span></div>
+        </div>
+        <div class="enfont-row">
+          <div class="fname"><b>Manrope</b>（人文几何·温润）</div>
+          <div class="endemo ef-manrope"><span class="t">Aggregate Gateway Console</span><span class="p">gpt-4o · claude-opus-4 · 1,284,930 tokens · 486ms · P99</span></div>
+        </div>
+        <div class="enfont-row">
+          <div class="fname"><b>IBM Plex Sans</b>（理性工程感）</div>
+          <div class="endemo ef-plex"><span class="t">Aggregate Gateway Console</span><span class="p">gpt-4o · claude-opus-4 · 1,284,930 tokens · 486ms · P99</span></div>
+        </div>
+        <div class="enfont-row">
+          <div class="fname">Spectral（衬线·呼应宋韵）</div>
+          <div class="endemo ef-spectral"><span class="t">Aggregate Gateway Console</span><span class="p">gpt-4o · claude-opus-4 · 1,284,930 tokens · 486ms · P99</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 英文艺术字 -->
+    <section class="section">
+      <div class="section-head"><h2>英文艺术字</h2><span class="hint">用于品牌名/大标题点睛——正文界面仍用清晰字体</span></div>
+      <div class="card card-pad">
+        <div class="artfont-row">
+          <div class="fname"><b>Cinzel</b>（罗马碑刻·金石庄重·推荐）</div>
+          <div class="artdemo af-cinzel"><span class="big">Velorix</span><span class="sub">Aggregate Gateway</span></div>
+        </div>
+        <div class="artfont-row">
+          <div class="fname"><b>Marcellus</b>（古典罗马·清瘦秀雅）</div>
+          <div class="artdemo af-marcellus"><span class="big">Velorix</span><span class="sub">Aggregate Gateway</span></div>
+        </div>
+        <div class="artfont-row">
+          <div class="fname"><b>Italiana</b>（时装高对比·高级）</div>
+          <div class="artdemo af-italiana"><span class="big">Velorix</span><span class="sub">Aggregate Gateway</span></div>
+        </div>
+        <div class="artfont-row">
+          <div class="fname"><b>Cormorant Italic</b>（文艺复兴·优雅斜体）</div>
+          <div class="artdemo af-cormorant"><span class="big">Velorix</span><span class="sub">Aggregate Gateway</span></div>
+        </div>
+        <div class="artfont-row">
+          <div class="fname">Pinyon Script（花体书法·仅纯装饰）</div>
+          <div class="artdemo af-pinyon"><span class="big">Velorix</span><span class="sub">Aggregate Gateway</span></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid-2">
+      <!-- 按钮全套 -->
+      <section class="section">
+        <div class="section-head"><h2>按钮</h2><span class="hint">墨 CTA + 茶橘 + 竹青</span></div>
+        <div class="card card-pad">
+          <div class="btn-row" style="margin-bottom:14px">
+            <button class="btn btn-primary" type="button">主操作</button>
+            <button class="btn btn-outline" type="button">次级描边</button>
+            <button class="btn btn-ghost" type="button">幽灵按钮</button>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-warning" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+              警告
+            </button>
+            <button class="btn btn-success" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12l5 5L20 7"/></svg>
+              成功
+            </button>
+            <button class="btn btn-danger" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2m-9 0 1 14h8l1-14"/></svg>
+              删除
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 徽章全套 -->
+      <section class="section">
+        <div class="section-head"><h2>徽章</h2><span class="hint">语义标签</span></div>
+        <div class="card card-pad">
+          <div class="badge-row" style="margin-bottom:14px">
+            <span class="badge badge-brand">主点睛</span>
+            <span class="badge badge-success">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12l5 5L20 7"/></svg>
+              运行中
+            </span>
+            <span class="badge badge-warning">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+              额度偏低
+            </span>
+          </div>
+          <div class="badge-row">
+            <span class="badge badge-danger">已禁用</span>
+            <span class="badge badge-info">同步中</span>
+            <span class="badge badge-gray">草稿</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- 输入框 -->
+    <section class="section">
+      <div class="section-head"><h2>表单输入</h2><span class="hint">默认 / focus 茶橘环</span></div>
+      <div class="card card-pad">
+        <div class="grid-2">
+          <div class="field">
+            <label>渠道名称</label>
+            <input class="input" type="text" placeholder="例如：OpenAI 主线" value="OpenAI 主线" />
+            <span class="help">展示在渠道列表与日志中。</span>
+          </div>
+          <div class="field">
+            <label>上游地址（focus 态）</label>
+            <input class="input is-focus" type="text" placeholder="https://api.example.com/v1" />
+            <span class="help">茶橘 focus 环 + 2px outline，键盘焦点清晰可见。</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 数据表 -->
+    <section class="section">
+      <div class="section-head"><h2>渠道列表</h2><span class="hint">表头 + 斑马 + hover</span></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>渠道</th><th>模型</th><th class="num">今日调用</th><th>延迟</th><th>状态</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="model">OpenAI 主线</span></td>
+              <td>gpt-4o</td>
+              <td class="num">48,210</td>
+              <td class="num">412 ms</td>
+              <td><span class="badge badge-success">运行中</span></td>
+            </tr>
+            <tr>
+              <td><span class="model">Claude 备线</span></td>
+              <td>claude-opus-4</td>
+              <td class="num">23,884</td>
+              <td class="num">680 ms</td>
+              <td><span class="badge badge-warning">额度偏低</span></td>
+            </tr>
+            <tr>
+              <td><span class="model">Gemini 实验</span></td>
+              <td>gemini-2.0-pro</td>
+              <td class="num">9,402</td>
+              <td class="num">534 ms</td>
+              <td><span class="badge badge-info">同步中</span></td>
+            </tr>
+            <tr>
+              <td><span class="model">DeepSeek 国内</span></td>
+              <td>deepseek-v3</td>
+              <td class="num">0</td>
+              <td class="num">—</td>
+              <td><span class="badge badge-danger">已禁用</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- toast -->
+<div class="toast-stack">
+  <div class="toast success">
+    <svg class="t-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>
+    <div>
+      <div class="t-title">渠道已保存</div>
+      <div class="t-body">OpenAI 主线 配置更新成功。</div>
+    </div>
+    <button class="t-close" type="button" aria-label="关闭">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+  <div class="toast warning">
+    <svg class="t-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+    <div>
+      <div class="t-title">额度即将耗尽</div>
+      <div class="t-body">Claude 备线 剩余额度低于 10%。</div>
+    </div>
+    <button class="t-close" type="button" aria-label="关闭">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const toggle = document.getElementById('themeToggle');
+  const themeText = document.getElementById('themeText');
+  const themeIcon = document.getElementById('themeIcon');
+
+  const sunPath = 'M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10ZM12 2v2m0 16v2M4.2 4.2l1.4 1.4m12.8 12.8 1.4 1.4M2 12h2m16 0h2M4.2 19.8l1.4-1.4m12.8-12.8 1.4-1.4';
+  const moonPath = 'M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z';
+
+  toggle.addEventListener('click', () => {
+    const dark = root.classList.toggle('theme-ink');
+    root.classList.toggle('theme-paper', !dark);
+    themeText.textContent = dark ? '宣纸' : '夜墨';
+    themeIcon.setAttribute('d', dark ? sunPath : moonPath);
+  });
+
+  document.querySelectorAll('.t-close').forEach(b => {
+    b.addEventListener('click', () => b.closest('.toast').remove());
+  });
+</script>
+</body>
+</html>

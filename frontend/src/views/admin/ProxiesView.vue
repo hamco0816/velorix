@@ -219,10 +219,10 @@
 
           <template #cell-latency="{ row }">
             <div class="flex flex-col gap-1">
-              <!-- 延迟：< 200 emerald / 200-500 amber / >= 500 rose / failed rose chip -->
+              <!-- 延迟：< 200 竹青 / 200-500 茶橘 / >= 500 印章红 / 失败印章红胶囊 -->
               <span
                 v-if="row.latency_status === 'failed'"
-                class="inline-flex w-fit items-center gap-1 rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 dark:bg-rose-500/15 dark:text-rose-300"
+                class="inline-flex w-fit items-center gap-1 rounded-md bg-danger-soft px-2 py-0.5 text-xs font-medium text-danger dark:bg-danger/15 dark:text-danger"
                 :title="row.latency_message || undefined"
               >
                 <Icon name="xCircle" size="xs" />
@@ -232,10 +232,10 @@
                 v-else-if="typeof row.latency_ms === 'number'"
                 class="inline-flex w-fit items-center rounded-md px-2 py-0.5 text-xs font-medium tabular-nums"
                 :class="row.latency_ms < 200
-                  ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                  ? 'bg-success-soft text-success dark:bg-success/15 dark:text-tea-300'
                   : row.latency_ms < 500
-                    ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
-                    : 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'"
+                    ? 'bg-warning-soft text-warning dark:bg-warning/15 dark:text-brand-300'
+                    : 'bg-danger-soft text-danger dark:bg-danger/15 dark:text-danger'"
               >
                 {{ row.latency_ms }}ms
               </span>
@@ -257,17 +257,17 @@
             <span
               class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium"
               :class="value === 'active'
-                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
-                : 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'"
+                ? 'bg-success-soft text-success dark:bg-success/15 dark:text-tea-300'
+                : 'bg-danger-soft text-danger dark:bg-danger/15 dark:text-danger'"
             >
               <span class="relative flex h-1.5 w-1.5">
                 <span
                   v-if="value === 'active'"
-                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70"
+                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-70"
                 ></span>
                 <span
                   class="relative inline-flex h-1.5 w-1.5 rounded-full"
-                  :class="value === 'active' ? 'bg-emerald-500' : 'bg-rose-500'"
+                  :class="value === 'active' ? 'bg-success' : 'bg-danger'"
                 ></span>
               </span>
               {{ t('admin.accounts.status.' + value) }}
@@ -279,7 +279,7 @@
               <button
                 @click="handleTestConnection(row)"
                 :disabled="testingProxyIds.has(row.id)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-emerald-50 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-emerald-900/20 dark:hover:text-emerald-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-success-soft hover:text-success disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-success/15 dark:hover:text-tea-300"
               >
                 <LoadingSpinner v-if="testingProxyIds.has(row.id)" size="sm" color="current" />
                 <Icon v-else name="checkCircle" size="sm" />
@@ -288,7 +288,7 @@
               <button
                 @click="handleQualityCheck(row)"
                 :disabled="qualityCheckingProxyIds.has(row.id)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-info-soft hover:text-info disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-info/15 dark:hover:text-info"
               >
                 <LoadingSpinner v-if="qualityCheckingProxyIds.has(row.id)" size="sm" color="current" />
                 <Icon v-else name="shield" size="sm" />
@@ -303,7 +303,7 @@
               </button>
               <button
                 @click="handleDelete(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-danger-soft hover:text-danger dark:hover:bg-danger/15 dark:hover:text-danger"
               >
                 <Icon name="trash" size="sm" />
                 <span class="text-xs">{{ t('common.delete') }}</span>
@@ -489,9 +489,9 @@
                 name="exclamationCircle"
                 size="sm"
                 :stroke-width="2"
-                class="text-amber-500"
+                class="text-warning"
               />
-              <span class="text-amber-600 dark:text-amber-400">
+              <span class="text-warning dark:text-brand-300">
                 {{ t('admin.proxies.invalidCount', { count: batchParseResult.invalid }) }}
               </span>
             </div>
@@ -1504,9 +1504,9 @@ const qualityStatusLabel = (status: string) => {
 }
 
 const qualityOverallClass = (status?: string) => {
-  if (status === 'healthy') return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
-  if (status === 'warn') return 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
-  return 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'
+  if (status === 'healthy') return 'bg-success-soft text-success dark:bg-success/15 dark:text-tea-300'
+  if (status === 'warn') return 'bg-warning-soft text-warning dark:bg-warning/15 dark:text-brand-300'
+  return 'bg-danger-soft text-danger dark:bg-danger/15 dark:text-danger'
 }
 
 const qualityOverallLabel = (status?: string) => {

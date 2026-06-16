@@ -279,7 +279,7 @@ onMounted(() => {
           </div>
 
           <details class="col-span-1 md:col-span-2">
-            <summary class="cursor-pointer text-xs font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400">
+            <summary class="cursor-pointer text-xs font-medium text-info hover:text-info-deep dark:text-info">
               {{ t('admin.ops.runtime.showAdvancedDeveloperSettings') }}
             </summary>
             <div class="mt-2 grid grid-cols-1 gap-3 rounded-lg bg-gray-100 p-3 dark:bg-dark-800 md:grid-cols-2">
@@ -306,7 +306,7 @@ onMounted(() => {
     <div v-if="draftAlert" class="space-y-4">
       <div
         v-if="!alertValidation.valid"
-        class="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-200"
+        class="rounded-lg border border-warning/30 bg-warning-soft p-3 text-xs text-warning-deep dark:border-warning/40 dark:bg-warning/10 dark:text-warning"
       >
         <div class="font-bold">{{ t('admin.ops.runtime.validation.title') }}</div>
         <ul class="mt-1 list-disc space-y-1 pl-4">

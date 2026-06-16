@@ -9,7 +9,7 @@
             <div class="flex h-8 w-8 items-center justify-center overflow-hidden rounded-md ring-1 ring-gray-200 dark:ring-dark-700">
               <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
             </div>
-            <span class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white">{{ siteName }}</span>
+            <span class="font-display text-sm font-semibold italic tracking-tight text-gray-900 dark:text-white">{{ siteName }}</span>
           </div>
           <p class="mt-3 text-xs leading-relaxed text-gray-500 dark:text-dark-400">
             {{ t('home.heroLead') }}

@@ -30,7 +30,7 @@
           <!-- 限时活动 chip：当选中分组在 promo 窗口内，显示活动名 + 倒计时 -->
           <span
             v-if="selectedGroup && promoActive(selectedGroup)"
-            class="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-2.5 py-1 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-200/70 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/30"
+            class="inline-flex items-center gap-1.5 rounded-full bg-danger-soft px-2.5 py-1 text-xs font-medium text-danger ring-1 ring-inset ring-danger/30 dark:bg-danger/15 dark:text-danger-soft dark:ring-danger/30"
           >
             <Icon name="fire" size="xs" :stroke-width="2.2" />
             <span v-if="selectedGroup.promo_label">{{ selectedGroup.promo_label }}</span>
@@ -172,7 +172,7 @@
                         v-if="group.is_exclusive"
                         name="shield"
                         size="xs"
-                        class="shrink-0 text-violet-500"
+                        class="shrink-0 text-info"
                         :title="t('pricing.exclusiveGroup')"
                       />
                       <PlatformIcon :platform="group.platform as GroupPlatform" size="xs" class="shrink-0" />
@@ -182,7 +182,7 @@
                       class="inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-2xs font-semibold tabular-nums ring-1 ring-inset"
                       :class="
                         promoActive(group)
-                          ? 'bg-rose-50 text-rose-700 ring-rose-200/70 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/30'
+                          ? 'bg-danger-soft text-danger ring-danger/30 dark:bg-danger/15 dark:text-danger-soft dark:ring-danger/30'
                           : selectedGroupId === group.id
                             ? 'bg-brand-100 text-brand-700 ring-brand-200/70 dark:bg-brand-500/20 dark:text-brand-200 dark:ring-brand-500/30'
                             : 'bg-gray-100 text-gray-600 ring-gray-200/70 dark:bg-dark-700/40 dark:text-dark-200 dark:ring-dark-600/60'
@@ -197,7 +197,7 @@
                     v-if="promoActive(group)"
                     class="flex items-center justify-between gap-2 text-2xs tabular-nums"
                   >
-                    <span class="inline-flex items-center gap-1 text-rose-600 dark:text-rose-400">
+                    <span class="inline-flex items-center gap-1 text-danger dark:text-danger-soft">
                       <Icon name="fire" size="xs" class="animate-pulse" />
                       <span class="font-medium">{{ countdownLabel(group) }}</span>
                     </span>
@@ -409,7 +409,7 @@
                 <template v-else>
                   <div class="flex items-center justify-between">
                     <span class="inline-flex items-center gap-1.5 text-gray-500 dark:text-dark-400">
-                      <Icon name="arrowDown" size="sm" class="text-emerald-500" />
+                      <Icon name="arrowDown" size="sm" class="text-success" />
                       {{ t('pricing.input') }}
                     </span>
                     <span class="inline-flex items-center gap-1.5 tabular-nums">
@@ -418,7 +418,7 @@
                       </span>
                       <span
                         class="font-semibold"
-                        :class="selectedGroupPromoActive ? 'text-rose-600 dark:text-rose-400' : 'text-gray-900 dark:text-white'"
+                        :class="selectedGroupPromoActive ? 'text-danger dark:text-danger-soft' : 'text-gray-900 dark:text-white'"
                       >
                         {{ formatPricePerM(applyRate(model.inputPrice)) }}
                       </span>
@@ -426,7 +426,7 @@
                   </div>
                   <div class="flex items-center justify-between">
                     <span class="inline-flex items-center gap-1.5 text-gray-500 dark:text-dark-400">
-                      <Icon name="arrowUp" size="sm" class="text-violet-500" />
+                      <Icon name="arrowUp" size="sm" class="text-info" />
                       {{ t('pricing.output') }}
                     </span>
                     <span class="inline-flex items-center gap-1.5 tabular-nums">
@@ -435,7 +435,7 @@
                       </span>
                       <span
                         class="font-semibold"
-                        :class="selectedGroupPromoActive ? 'text-rose-600 dark:text-rose-400' : 'text-gray-900 dark:text-white'"
+                        :class="selectedGroupPromoActive ? 'text-danger dark:text-danger-soft' : 'text-gray-900 dark:text-white'"
                       >
                         {{ formatPricePerM(applyRate(model.outputPrice)) }}
                       </span>
@@ -443,28 +443,28 @@
                   </div>
                   <div v-if="model.cacheReadPrice != null && model.cacheReadPrice > 0" class="flex items-center justify-between">
                     <span class="inline-flex items-center gap-1.5 text-gray-500 dark:text-dark-400">
-                      <Icon name="inbox" size="sm" class="text-sky-500" />
+                      <Icon name="inbox" size="sm" class="text-info" />
                       {{ t('pricing.cacheRead') }}
                     </span>
                     <span class="inline-flex items-center gap-1.5 tabular-nums">
                       <span v-if="selectedGroupPromoActive" class="text-xs text-gray-400 line-through">
                         {{ formatPricePerM(applyBaseRate(model.cacheReadPrice)) }}
                       </span>
-                      <span class="font-medium" :class="selectedGroupPromoActive ? 'text-rose-600 dark:text-rose-400' : 'text-sky-700 dark:text-sky-300'">
+                      <span class="font-medium" :class="selectedGroupPromoActive ? 'text-danger dark:text-danger-soft' : 'text-info dark:text-info'">
                         {{ formatPricePerM(applyRate(model.cacheReadPrice)) }}
                       </span>
                     </span>
                   </div>
                   <div v-if="model.cacheWritePrice != null && model.cacheWritePrice > 0" class="flex items-center justify-between">
                     <span class="inline-flex items-center gap-1.5 text-gray-500 dark:text-dark-400">
-                      <Icon name="edit" size="sm" class="text-amber-500" />
+                      <Icon name="edit" size="sm" class="text-warning" />
                       {{ t('pricing.cacheWrite') }}
                     </span>
                     <span class="inline-flex items-center gap-1.5 tabular-nums">
                       <span v-if="selectedGroupPromoActive" class="text-xs text-gray-400 line-through">
                         {{ formatPricePerM(applyBaseRate(model.cacheWritePrice)) }}
                       </span>
-                      <span class="font-medium" :class="selectedGroupPromoActive ? 'text-rose-600 dark:text-rose-400' : 'text-amber-700 dark:text-amber-300'">
+                      <span class="font-medium" :class="selectedGroupPromoActive ? 'text-danger dark:text-danger-soft' : 'text-warning dark:text-warning'">
                         {{ formatPricePerM(applyRate(model.cacheWritePrice)) }}
                       </span>
                     </span>
@@ -490,8 +490,8 @@
                   :title="t('pricing.switchToGroup', { name: g.name })"
                   @click="selectedGroupId = g.id"
                 >
-                  <Icon v-if="g.is_exclusive" name="shield" size="xs" class="text-violet-500" />
-                  <Icon v-if="promoActive(g)" name="fire" size="xs" class="text-rose-500 animate-pulse" />
+                  <Icon v-if="g.is_exclusive" name="shield" size="xs" class="text-info" />
+                  <Icon v-if="promoActive(g)" name="fire" size="xs" class="text-danger animate-pulse" />
                   <span>{{ g.name }}</span>
                   <span class="tabular-nums opacity-70">×{{ effectiveRate(g).toFixed(2) }}</span>
                 </button>
@@ -502,7 +502,7 @@
           <!-- 倍率提示：选中"全部分组"时说明显示原价 -->
           <p
             v-if="!loading && filteredModels.length > 0 && !selectedGroup"
-            class="mt-4 inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30"
+            class="mt-4 inline-flex items-center gap-1.5 rounded-full bg-warning-soft px-3 py-1 text-xs font-medium text-warning-deep ring-1 ring-inset ring-warning/30 dark:bg-warning/15 dark:text-warning dark:ring-warning/30"
           >
             <Icon name="infoCircle" size="xs" />
             {{ t('pricing.standardPriceHint') }}
@@ -933,10 +933,10 @@ function billingModeLabel(mode: BillingMode | string | undefined): string {
 
 function billingModeChipClass(mode: BillingMode | string | undefined): string {
   if (mode === 'per_request')
-    return 'bg-violet-50 text-violet-700 ring-violet-200/70 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30'
+    return 'bg-brand-50 text-brand-700 ring-brand-200/70 dark:bg-brand-500/15 dark:text-brand-300 dark:ring-brand-500/30'
   if (mode === 'image')
-    return 'bg-pink-50 text-pink-700 ring-pink-200/70 dark:bg-pink-500/15 dark:text-pink-300 dark:ring-pink-500/30'
-  return 'bg-sky-50 text-sky-700 ring-sky-200/70 dark:bg-sky-500/15 dark:text-sky-300 dark:ring-sky-500/30'
+    return 'bg-tea-50 text-tea-700 ring-tea-200/70 dark:bg-tea-500/15 dark:text-tea-300 dark:ring-tea-500/30'
+  return 'bg-info-soft text-info ring-info/30 dark:bg-info/15 dark:text-info dark:ring-info/30'
 }
 
 // ============ 平台图标筐配色 ============

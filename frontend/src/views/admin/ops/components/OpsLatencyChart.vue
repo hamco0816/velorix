@@ -22,8 +22,8 @@ const { t } = useI18n()
 const isDarkMode = computed(() => document.documentElement.classList.contains('dark'))
 const colors = computed(() => ({
   blue: '#3b82f6',
-  grid: isDarkMode.value ? '#374151' : '#f3f4f6',
-  text: isDarkMode.value ? '#9ca3af' : '#6b7280'
+  grid: isDarkMode.value ? '#46413a' : '#efe8d8',
+  text: isDarkMode.value ? '#b4ab98' : '#8a8275'
 }))
 
 const hasData = computed(() => (props.latencyData?.total_requests ?? 0) > 0)
@@ -78,7 +78,7 @@ const options = computed(() => {
   <div class="surface-card flex h-full flex-col p-6">
     <div class="mb-4 flex items-center justify-between">
       <h3 class="flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white">
-        <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300">
+        <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-info-soft text-info dark:bg-info/15 dark:text-info">
           <Icon name="clock" size="sm" :stroke-width="1.75" />
         </span>
         {{ t('admin.ops.latencyHistogram') }}

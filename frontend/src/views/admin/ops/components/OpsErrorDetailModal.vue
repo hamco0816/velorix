@@ -352,9 +352,9 @@ watch(
 
 const statusClass = computed(() => {
   const code = detail.value?.status_code ?? 0
-  if (code >= 500) return 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-900/30 dark:text-red-400 dark:ring-red-500/30'
-  if (code === 429) return 'bg-purple-50 text-purple-700 ring-purple-600/20 dark:bg-purple-900/30 dark:text-purple-400 dark:ring-purple-500/30'
-  if (code >= 400) return 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-400 dark:ring-amber-500/30'
+  if (code >= 500) return 'bg-danger-soft text-danger ring-danger/20 dark:bg-danger/15 dark:text-danger dark:ring-danger/30'
+  if (code === 429) return 'bg-info-soft text-info ring-info/20 dark:bg-info/15 dark:text-info dark:ring-info/30'
+  if (code >= 400) return 'bg-warning-soft text-warning ring-warning/20 dark:bg-warning/15 dark:text-warning dark:ring-warning/30'
   return 'bg-gray-50 text-gray-700 ring-gray-600/20 dark:bg-gray-900/30 dark:text-gray-400 dark:ring-gray-500/30'
 })
 

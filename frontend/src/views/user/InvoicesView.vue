@@ -86,11 +86,11 @@
                 <td class="px-4 py-3 text-gray-500 dark:text-gray-400">{{ formatDate(row.created_at) }}</td>
                 <td class="px-4 py-3">
                   <div class="flex items-center justify-end gap-2">
-                    <button @click="openDetail(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-sky-600 hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-900/20">
+                    <button @click="openDetail(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-info hover:bg-info-soft dark:text-info dark:hover:bg-info/15">
                       <Icon name="eye" size="sm" />
                       <span>{{ t('common.view') }}</span>
                     </button>
-                    <button v-if="row.status === 'pending'" @click="cancelTarget = row" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-yellow-600 hover:bg-yellow-50 dark:text-yellow-400 dark:hover:bg-yellow-900/20">
+                    <button v-if="row.status === 'pending'" @click="cancelTarget = row" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-warning hover:bg-warning-soft dark:text-warning dark:hover:bg-warning/15">
                       <Icon name="x" size="sm" />
                       <span>{{ t('invoice.actions.cancel') }}</span>
                     </button>
@@ -116,15 +116,15 @@
     <BaseDialog :show="applyVisible" :title="t('invoice.apply.title')" width="wide" @close="applyVisible = false">
       <div class="space-y-5">
         <!-- 可开票额度 -->
-        <div class="rounded-xl border border-teal-100 bg-teal-50 px-4 py-3 dark:border-teal-500/20 dark:bg-teal-900/20">
+        <div class="rounded-xl border border-success-soft bg-success-soft px-4 py-3 dark:border-success/40 dark:bg-success/10">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p class="text-sm font-medium text-teal-800 dark:text-teal-200">{{ t('invoice.apply.availableTitle') }}</p>
-              <p class="mt-1 text-xs text-teal-700 dark:text-teal-300">{{ t('invoice.apply.availableHint') }}</p>
+              <p class="text-sm font-medium text-success-deep dark:text-tea-200">{{ t('invoice.apply.availableTitle') }}</p>
+              <p class="mt-1 text-xs text-success dark:text-tea-300">{{ t('invoice.apply.availableHint') }}</p>
             </div>
             <div class="text-right">
-              <div v-if="summaryLoading" class="text-sm text-teal-700 dark:text-teal-300">{{ t('common.loading') }}</div>
-              <div v-else class="text-2xl font-semibold tabular-nums text-teal-800 dark:text-teal-100">¥{{ availableAmount.toFixed(2) }}</div>
+              <div v-if="summaryLoading" class="text-sm text-success dark:text-tea-300">{{ t('common.loading') }}</div>
+              <div v-else class="text-2xl font-semibold tabular-nums text-success-deep dark:text-tea-100">¥{{ availableAmount.toFixed(2) }}</div>
             </div>
           </div>
         </div>
@@ -197,10 +197,10 @@
           <DetailRow v-if="detailTarget.issued_at" :label="t('invoice.fields.issuedAt')">{{ formatDate(detailTarget.issued_at) }}</DetailRow>
         </div>
 
-        <div v-if="detailTarget.status === 'rejected' && detailTarget.reject_reason" class="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-300">
+        <div v-if="detailTarget.status === 'rejected' && detailTarget.reject_reason" class="rounded-xl bg-danger-soft px-4 py-3 text-sm text-danger-deep dark:bg-danger/15 dark:text-danger">
           <span class="font-medium">{{ t('invoice.fields.rejectReason') }}：</span>{{ detailTarget.reject_reason }}
         </div>
-        <div v-if="detailTarget.status === 'issued'" class="rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300">
+        <div v-if="detailTarget.status === 'issued'" class="rounded-xl bg-success-soft px-4 py-3 text-sm text-success-deep dark:bg-success/15 dark:text-tea-300">
           {{ detailTarget.email_sent ? t('invoice.detail.emailSent') : t('invoice.detail.emailPending') }}
         </div>
 

@@ -100,12 +100,12 @@
             <!-- 校验状态指示：spin / 对号 / 叉号（输入框内部右侧居中） -->
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
               <LoadingSpinner v-if="invitationValidating" size="sm" color="current" class="text-gray-400" />
-              <Icon v-else-if="invitationValidation.valid" name="checkCircle" size="sm" class="text-emerald-500" />
+              <Icon v-else-if="invitationValidation.valid" name="checkCircle" size="sm" class="text-success" />
               <Icon
                 v-else-if="invitationValidation.invalid || errors.invitation_code"
                 name="exclamationCircle"
                 size="sm"
-                class="text-red-500"
+                class="text-danger"
               />
             </div>
           </div>
@@ -133,14 +133,14 @@
             />
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
               <LoadingSpinner v-if="promoValidating" size="sm" color="current" class="text-gray-400" />
-              <Icon v-else-if="promoValidation.valid" name="checkCircle" size="sm" class="text-emerald-500" />
-              <Icon v-else-if="promoValidation.invalid" name="exclamationCircle" size="sm" class="text-red-500" />
+              <Icon v-else-if="promoValidation.valid" name="checkCircle" size="sm" class="text-success" />
+              <Icon v-else-if="promoValidation.invalid" name="exclamationCircle" size="sm" class="text-danger" />
             </div>
           </div>
           <!-- 优惠码生效时的轻量提示（金额信息） -->
           <p
             v-if="promoValidation.valid && promoValidation.bonusAmount"
-            class="mt-1.5 text-xs text-emerald-600 dark:text-emerald-400"
+            class="mt-1.5 text-xs text-success"
           >
             {{ t('auth.promoCodeValid', { amount: promoValidation.bonusAmount.toFixed(2) }) }}
           </p>
@@ -158,25 +158,25 @@
 
           <div
             v-else-if="turnstileToken"
-            class="flex items-center gap-2.5 rounded-md border border-emerald-200 bg-emerald-50/70 px-3.5 py-3 dark:border-emerald-800/60 dark:bg-emerald-900/15"
+            class="flex items-center gap-2.5 rounded-md border border-success-soft bg-success-soft px-3.5 py-3"
           >
-            <Icon name="checkCircle" size="sm" class="flex-shrink-0 text-emerald-500" />
-            <span class="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+            <Icon name="checkCircle" size="sm" class="flex-shrink-0 text-success" />
+            <span class="text-xs font-medium text-success">
               {{ t('auth.turnstileVerified') }}
             </span>
           </div>
 
           <div
             v-else-if="turnstileLoadFailed"
-            class="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2.5 dark:border-amber-800/60 dark:bg-amber-900/15"
+            class="flex items-start gap-2 rounded-md border border-warning-soft bg-warning-soft px-3 py-2.5"
           >
-            <Icon name="exclamationTriangle" size="sm" class="mt-0.5 flex-shrink-0 text-amber-500" />
-            <p class="text-xs leading-relaxed text-amber-800 dark:text-amber-200">
+            <Icon name="exclamationTriangle" size="sm" class="mt-0.5 flex-shrink-0 text-warning" />
+            <p class="text-xs leading-relaxed text-warning-deep">
               {{ t('auth.turnstileLoadSlow') }}
               <button
                 type="button"
                 @click="retryTurnstile"
-                class="font-medium underline hover:text-amber-900 dark:hover:text-amber-100"
+                class="font-medium underline hover:text-warning"
               >
                 {{ t('auth.turnstileRetry') }}
               </button>

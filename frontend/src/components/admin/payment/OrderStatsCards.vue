@@ -2,7 +2,7 @@
   <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
     <!-- Today Revenue -->
     <div class="metric-card">
-      <span class="metric-icon bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
+      <span class="metric-icon bg-success-soft text-success dark:bg-success/15 dark:text-success">
         <Icon name="dollar" size="sm" :stroke-width="1.75" />
       </span>
       <div class="min-w-0 flex-1">
@@ -17,7 +17,7 @@
 
     <!-- Total Revenue -->
     <div class="metric-card">
-      <span class="metric-icon bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300">
+      <span class="metric-icon bg-info-soft text-info dark:bg-info/15 dark:text-info">
         <Icon name="creditCard" size="sm" :stroke-width="1.75" />
       </span>
       <div class="min-w-0 flex-1">
@@ -32,7 +32,7 @@
 
     <!-- Today Orders -->
     <div class="metric-card">
-      <span class="metric-icon bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300">
+      <span class="metric-icon bg-info-soft text-info dark:bg-info/15 dark:text-info">
         <Icon name="chart" size="sm" :stroke-width="1.75" />
       </span>
       <div class="min-w-0 flex-1">
@@ -43,7 +43,7 @@
 
     <!-- Average Amount -->
     <div class="metric-card">
-      <span class="metric-icon bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300">
+      <span class="metric-icon bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning">
         <Icon name="chart" size="sm" :stroke-width="1.75" />
       </span>
       <div class="min-w-0 flex-1">

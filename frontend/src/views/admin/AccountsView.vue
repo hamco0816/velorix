@@ -130,7 +130,7 @@
         </div>
         <div
           v-if="hasPendingListSync"
-          class="mt-2 flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-700/40 dark:bg-amber-900/20 dark:text-amber-200"
+          class="mt-2 flex items-center justify-between rounded-lg border border-warning/30 bg-warning-soft px-3 py-2 text-sm text-warning-deep dark:border-warning/40 dark:bg-warning-deep/20 dark:text-brand-200"
         >
           <span>{{ t('admin.accounts.listPendingSyncHint') }}</span>
           <button
@@ -189,14 +189,14 @@
                 <!-- 订阅档位角标：标过的显示档位名；OAuth 类账号未标的显示橙色提醒 -->
                 <span
                   v-if="row.subscription_tier"
-                  class="inline-flex items-center rounded bg-violet-50 px-1.5 py-0.5 text-2xs font-medium text-violet-700 dark:bg-violet-500/15 dark:text-violet-300"
+                  class="inline-flex items-center rounded bg-info-soft px-1.5 py-0.5 text-2xs font-medium text-info dark:bg-info/15 dark:text-info"
                   :title="t('admin.accounts.subscriptionTier')"
                 >
                   {{ formatSubscriptionTier(row.subscription_tier) }}
                 </span>
                 <span
                   v-else-if="needsSubscriptionTier(row)"
-                  class="inline-flex items-center rounded bg-amber-50 px-1.5 py-0.5 text-2xs font-medium text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
+                  class="inline-flex items-center rounded bg-warning-soft px-1.5 py-0.5 text-2xs font-medium text-warning dark:bg-warning/15 dark:text-brand-300"
                   :title="t('admin.accounts.tierMissingHint')"
                 >
                   {{ t('admin.accounts.tierMissing') }}
@@ -242,7 +242,7 @@
             </div>
           </template>
           <template #cell-schedulable="{ row }">
-            <button @click="handleToggleSchedulable(row)" :disabled="togglingSchedulable === row.id" class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-dark-800" :class="[row.schedulable ? 'bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-500' : 'bg-gray-300 hover:bg-gray-400 dark:bg-dark-600 dark:hover:bg-dark-500']" :title="row.schedulable ? t('admin.accounts.schedulableEnabled') : t('admin.accounts.schedulableDisabled')">
+            <button @click="handleToggleSchedulable(row)" :disabled="togglingSchedulable === row.id" class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-success focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-dark-800" :class="[row.schedulable ? 'bg-success hover:bg-success-deep dark:bg-success-deep dark:hover:bg-success' : 'bg-gray-300 hover:bg-gray-400 dark:bg-dark-600 dark:hover:bg-dark-500']" :title="row.schedulable ? t('admin.accounts.schedulableEnabled') : t('admin.accounts.schedulableDisabled')">
               <span class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out" :class="[row.schedulable ? 'translate-x-4' : 'translate-x-0']" />
             </button>
           </template>
@@ -287,9 +287,9 @@
             <span
               class="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium tabular-nums"
               :class="(row.rate_multiplier ?? 1) > 1
-                ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+                ? 'bg-warning-soft text-warning dark:bg-warning/15 dark:text-brand-300'
                 : (row.rate_multiplier ?? 1) < 1
-                  ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                  ? 'bg-success-soft text-success dark:bg-success/15 dark:text-tea-300'
                   : 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'"
             >{{ (row.rate_multiplier ?? 1).toFixed(2) }}x</span>
           </template>
@@ -305,14 +305,14 @@
               <div v-if="isExpired(value) || (row.auto_pause_on_expired && value)" class="flex items-center gap-1">
                 <span
                   v-if="isExpired(value)"
-                  class="inline-flex items-center gap-1 rounded-md bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700 dark:bg-rose-500/15 dark:text-rose-300"
+                  class="inline-flex items-center gap-1 rounded-md bg-danger-soft px-2 py-0.5 text-xs font-medium text-danger dark:bg-danger/15 dark:text-danger"
                 >
-                  <span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span>
+                  <span class="h-1.5 w-1.5 rounded-full bg-danger"></span>
                   {{ t('admin.accounts.expired') }}
                 </span>
                 <span
                   v-if="row.auto_pause_on_expired && value"
-                  class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
+                  class="inline-flex items-center rounded-md bg-success-soft px-2 py-0.5 text-xs font-medium text-success dark:bg-success/15 dark:text-tea-300"
                 >
                   {{ t('admin.accounts.autoPauseOnExpired') }}
                 </span>
@@ -325,7 +325,7 @@
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
                 <span class="text-xs">{{ t('common.edit') }}</span>
               </button>
-              <button @click="handleDelete(row)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400">
+              <button @click="handleDelete(row)" class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-danger-soft hover:text-danger dark:hover:bg-danger-deep/20 dark:hover:text-danger">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
                 <span class="text-xs">{{ t('common.delete') }}</span>
               </button>
@@ -1076,9 +1076,9 @@ function getOpenAICompactLabel(row: any): string | null {
 
 function getOpenAICompactClass(row: any): string {
   switch (getOpenAICompactState(row)) {
-    case 'supported': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
-    case 'unsupported': return 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300'
-    case 'unknown': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
+    case 'supported': return 'bg-success-soft text-success dark:bg-success-deep/40 dark:text-tea-300'
+    case 'unsupported': return 'bg-danger-soft text-danger dark:bg-danger-deep/40 dark:text-danger'
+    case 'unknown': return 'bg-warning-soft text-warning dark:bg-warning-deep/40 dark:text-brand-300'
     default: return ''
   }
 }
@@ -1094,8 +1094,8 @@ function getAntigravityTierClass(row: any): string {
   const tier = getAntigravityTierFromRow(row)
   switch (tier) {
     case 'free-tier': return 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'
-    case 'g1-pro-tier': return 'bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300'
-    case 'g1-ultra-tier': return 'bg-violet-50 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300'
+    case 'g1-pro-tier': return 'bg-info-soft text-info dark:bg-info/15 dark:text-info'
+    case 'g1-ultra-tier': return 'bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300'
     default: return ''
   }
 }

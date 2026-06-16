@@ -48,15 +48,15 @@
             <div class="space-y-4 p-6">
               <!-- Security Warning -->
               <div
-                class="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20"
+                class="rounded-lg border border-warning bg-warning-soft p-4 dark:border-warning dark:bg-warning-deep/20"
               >
                 <div class="flex items-start">
                   <Icon
                     name="exclamationTriangle"
                     size="md"
-                    class="mt-0.5 flex-shrink-0 text-amber-500"
+                    class="mt-0.5 flex-shrink-0 text-warning"
                   />
-                  <p class="ml-3 text-sm text-amber-700 dark:text-amber-300">
+                  <p class="ml-3 text-sm text-warning-deep dark:text-brand-300">
                     {{ t("admin.settings.adminApiKey.securityWarning") }}
                   </p>
                 </div>
@@ -128,7 +128,7 @@
                       type="button"
                       @click="deleteAdminApiKey"
                       :disabled="adminApiKeyOperating"
-                      class="btn btn-secondary btn-sm text-red-600 hover:text-red-700 dark:text-red-400"
+                      class="btn btn-secondary btn-sm text-danger hover:text-danger-deep dark:text-danger"
                     >
                       {{ t("admin.settings.adminApiKey.delete") }}
                     </button>
@@ -138,16 +138,16 @@
                 <!-- Newly Generated Key Display -->
                 <div
                   v-if="newAdminApiKey"
-                  class="space-y-3 rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20"
+                  class="space-y-3 rounded-lg border border-success bg-success-soft p-4 dark:border-success-deep dark:bg-success-deep/20"
                 >
                   <p
-                    class="text-sm font-medium text-green-700 dark:text-green-300"
+                    class="text-sm font-medium text-success-deep dark:text-tea-300"
                   >
                     {{ t("admin.settings.adminApiKey.keyWarning") }}
                   </p>
                   <div class="flex items-center gap-2">
                     <code
-                      class="flex-1 select-all break-all rounded border border-green-300 bg-white px-3 py-2 font-mono text-sm dark:border-green-700 dark:bg-dark-800"
+                      class="flex-1 select-all break-all rounded border border-success bg-white px-3 py-2 font-mono text-sm dark:border-success-deep dark:bg-dark-800"
                     >
                       {{ newAdminApiKey }}
                     </code>
@@ -159,7 +159,7 @@
                       {{ t("admin.settings.adminApiKey.copyKey") }}
                     </button>
                   </div>
-                  <p class="text-xs text-green-600 dark:text-green-400">
+                  <p class="text-xs text-success dark:text-tea-300">
                     {{ t("admin.settings.adminApiKey.usage") }}
                   </p>
                 </div>
@@ -548,7 +548,7 @@
                             1,
                           )
                         "
-                        class="btn btn-ghost btn-xs text-red-500 hover:text-red-700"
+                        class="btn btn-ghost btn-xs text-danger hover:text-danger-deep"
                       >
                         <Icon name="x" size="sm" :stroke-width="2" />
                       </button>
@@ -724,7 +724,7 @@
                       <button
                         type="button"
                         @click="rule.model_whitelist!.splice(index, 1)"
-                        class="shrink-0 rounded p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                        class="shrink-0 rounded p-1 text-danger transition-colors hover:bg-danger-soft hover:text-danger-deep dark:hover:bg-danger-deep/20"
                       >
                         <Icon name="x" size="sm" :stroke-width="2" />
                       </button>
@@ -858,7 +858,7 @@
                   <button
                     type="button"
                     @click="removeOpenAIFastPolicyRule(ruleIndex)"
-                    class="rounded p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                    class="rounded p-1 text-danger transition-colors hover:bg-danger-soft hover:text-danger-deep dark:hover:bg-danger-deep/20"
                     :title="t('admin.settings.openaiFastPolicy.removeRule')"
                   >
                     <Icon name="x" size="sm" :stroke-width="2" />
@@ -976,7 +976,7 @@
                       @click="
                         removeOpenAIFastPolicyModelPattern(rule, patternIdx)
                       "
-                      class="shrink-0 rounded p-1 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                      class="shrink-0 rounded p-1 text-danger transition-colors hover:bg-danger-soft hover:text-danger-deep dark:hover:bg-danger-deep/20"
                     >
                       <Icon name="x" size="sm" :stroke-width="2" />
                     </button>
@@ -1306,7 +1306,7 @@
                     </p>
                   </div>
                 </div>
-                <p v-if="form.ai_review_enabled" class="mt-3 flex items-start gap-2 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+                <p v-if="form.ai_review_enabled" class="mt-3 flex items-start gap-2 rounded-md bg-warning-soft px-3 py-2 text-xs text-warning-deep dark:bg-warning-deep/20 dark:text-brand-300">
                   <Icon name="exclamationTriangle" size="xs" class="mt-0.5 flex-shrink-0" />
                   <span>{{ t("admin.settings.registration.aiReviewBillingWarn") }}</span>
                 </p>
@@ -1373,7 +1373,7 @@
                   <!-- Warning when encryption key not configured -->
                   <p
                     v-if="!form.totp_encryption_key_configured"
-                    class="mt-2 text-sm text-amber-600 dark:text-amber-400"
+                    class="mt-2 text-sm text-warning dark:text-brand-400"
                   >
                     {{ t("admin.settings.registration.totpKeyNotConfigured") }}
                   </p>
@@ -1851,7 +1851,7 @@
                     (form.wechat_connect_mp_enabled ||
                       form.wechat_connect_mobile_enabled)
                   "
-                  class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/10 dark:text-amber-300"
+                  class="rounded-lg border border-warning bg-warning-soft px-4 py-3 text-sm text-warning-deep dark:border-warning-deep/40 dark:bg-warning-deep/10 dark:text-brand-300"
                 >
                   {{
                     localText(
@@ -2539,7 +2539,7 @@
                     <div class="flex items-end">
                       <button
                         type="button"
-                        class="btn btn-secondary default-sub-delete-btn w-full text-red-600 hover:text-red-700 dark:text-red-400"
+                        class="btn btn-secondary default-sub-delete-btn w-full text-danger hover:text-danger-deep dark:text-danger"
                         @click="removeDefaultSubscription(index)"
                       >
                         {{ t("common.delete") }}
@@ -2808,7 +2808,7 @@
                         <div class="flex items-end">
                           <button
                             type="button"
-                            class="btn btn-secondary w-full text-red-600 hover:text-red-700 dark:text-red-400"
+                            class="btn btn-secondary w-full text-danger hover:text-danger-deep dark:text-danger"
                             @click="
                               removeAuthSourceDefaultSubscription(
                                 authSource.source,
@@ -3200,7 +3200,7 @@
                           !expandedProviders[pIdx] &&
                           provider.api_key_configured
                         "
-                        class="text-xs text-green-500"
+                        class="text-xs text-success"
                       >
                         {{
                           t(
@@ -3211,7 +3211,7 @@
                     </div>
                     <button
                       type="button"
-                      class="text-red-500 hover:text-red-700 text-xs"
+                      class="text-danger hover:text-danger-deep text-xs"
                       @click.stop="removeWebSearchProvider(pIdx)"
                     >
                       {{
@@ -3396,10 +3396,10 @@
                           class="h-full rounded-full transition-all"
                           :class="
                             quotaPercentage(provider) > 90
-                              ? 'bg-red-500'
+                              ? 'bg-danger'
                               : quotaPercentage(provider) > 70
-                                ? 'bg-yellow-500'
-                                : 'bg-green-500'
+                                ? 'bg-warning'
+                                : 'bg-success'
                           "
                           :style="{
                             width:
@@ -3515,7 +3515,7 @@
                   <a
                     :href="r.url"
                     target="_blank"
-                    class="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
+                    class="text-sm font-medium text-info hover:underline dark:text-info"
                     >{{ r.title }}</a
                   >
                   <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
@@ -3554,7 +3554,7 @@
             <div class="space-y-6 p-6">
               <!-- Backend Mode -->
               <div
-                class="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20"
+                class="flex items-center justify-between rounded-lg border border-warning bg-warning-soft p-4 dark:border-warning dark:bg-warning-deep/20"
               >
                 <div>
                   <h3 class="text-sm font-medium text-gray-900 dark:text-white">
@@ -3699,7 +3699,7 @@
                       </span>
                       <button
                         type="button"
-                        class="rounded p-1 text-red-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                        class="rounded p-1 text-danger hover:bg-danger-soft hover:text-danger-deep dark:hover:bg-danger-deep/20"
                         @click="removeEndpoint(index)"
                       >
                         <Icon name="trash" size="sm" :stroke-width="2" />
@@ -3786,7 +3786,7 @@
                   <div class="flex flex-wrap items-center gap-2">
                     <button
                       type="button"
-                      class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:border-sky-300 hover:text-sky-700 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-100"
+                      class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:border-info hover:text-info dark:border-dark-700 dark:bg-dark-800 dark:text-dark-100"
                       @click="addContactMethod('qq')"
                     >
                       <ContactMethodIcon type="qq" size="18px" />
@@ -3794,7 +3794,7 @@
                     </button>
                     <button
                       type="button"
-                      class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:border-sky-300 hover:text-sky-700 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-100"
+                      class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:border-info hover:text-info dark:border-dark-700 dark:bg-dark-800 dark:text-dark-100"
                       @click="addContactMethod('qq_group')"
                     >
                       <ContactMethodIcon type="qq_group" size="18px" />
@@ -3802,7 +3802,7 @@
                     </button>
                     <button
                       type="button"
-                      class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:border-emerald-300 hover:text-emerald-700 dark:border-dark-700 dark:bg-dark-800 dark:text-dark-100"
+                      class="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:border-success hover:text-success dark:border-dark-700 dark:bg-dark-800 dark:text-dark-100"
                       @click="addContactMethod('wechat')"
                     >
                       <ContactMethodIcon type="wechat" size="18px" />
@@ -3904,7 +3904,7 @@
                       <!-- 删除按钮：贴底对齐 -->
                       <button
                         type="button"
-                        class="ml-auto h-[38px] shrink-0 rounded-lg p-2 text-gray-400 transition-colors hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/15 dark:hover:text-rose-300"
+                        class="ml-auto h-[38px] shrink-0 rounded-lg p-2 text-gray-400 transition-colors hover:bg-danger-soft hover:text-danger dark:hover:bg-danger/15 dark:hover:text-danger"
                         :title="t('common.delete')"
                         @click="removeContactMethod(index)"
                       >
@@ -3925,7 +3925,7 @@
                             <img :src="method.image_data" alt="QR" class="h-full w-full object-contain" />
                             <button
                               type="button"
-                              class="absolute right-0 top-0 rounded-bl bg-red-500 px-1.5 py-0.5 text-2xs font-medium text-white hover:bg-red-600"
+                              class="absolute right-0 top-0 rounded-bl bg-danger px-1.5 py-0.5 text-2xs font-medium text-white hover:bg-danger-deep"
                               @click="method.image_data = ''"
                             >
                               {{ t("common.delete") }}
@@ -3950,10 +3950,10 @@
                             <p class="text-2xs text-gray-500 dark:text-gray-400">
                               {{ t("admin.settings.site.contactMethodQrHint") }}
                             </p>
-                            <p v-if="contactQrError[index]" class="break-words text-2xs text-red-600 dark:text-red-400">
+                            <p v-if="contactQrError[index]" class="break-words text-2xs text-danger dark:text-danger">
                               {{ contactQrError[index] }}
                             </p>
-                            <p v-else-if="contactQrInfo[index]" class="text-2xs text-emerald-600 dark:text-emerald-400">
+                            <p v-else-if="contactQrInfo[index]" class="text-2xs text-success dark:text-tea-300">
                               {{ contactQrInfo[index] }}
                             </p>
                           </div>
@@ -4030,7 +4030,7 @@
                   {{ t("admin.settings.site.homeContentHint") }}
                 </p>
                 <!-- iframe CSP Warning -->
-                <p class="mt-2 text-xs text-amber-600 dark:text-amber-400">
+                <p class="mt-2 text-xs text-warning dark:text-brand-400">
                   {{ t("admin.settings.site.homeContentIframeWarning") }}
                 </p>
               </div>
@@ -4115,7 +4115,7 @@
                     <!-- Delete -->
                     <button
                       type="button"
-                      class="rounded p-1 text-red-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                      class="rounded p-1 text-danger hover:bg-danger-soft hover:text-danger-deep dark:hover:bg-danger-deep/20"
                       :title="t('admin.settings.customMenu.remove')"
                       @click="removeMenuItem(index)"
                     >
@@ -4246,7 +4246,7 @@
             <div v-if="form.channel_monitor_enabled">
               <label class="input-label">
                 {{ t('admin.settings.features.channelMonitor.defaultInterval') }}
-                <span class="text-red-500">*</span>
+                <span class="text-danger">*</span>
               </label>
               <input
                 v-model.number="form.channel_monitor_default_interval_seconds"
@@ -4510,7 +4510,7 @@
                             </button>
                             <button
                               type="button"
-                              class="text-red-600 hover:underline"
+                              class="text-danger hover:underline"
                               @click="askResetAffiliateUser(entry)"
                             >
                               {{ t('common.delete') }}
@@ -4575,7 +4575,7 @@
                   </div>
                   <button
                     type="button"
-                    class="text-lg leading-none text-gray-400 hover:text-red-600"
+                    class="text-lg leading-none text-gray-400 hover:text-danger"
                     :title="t('admin.settings.features.affiliate.modal.changeUser')"
                     @click="clearSelectedAffiliateUser"
                   >
@@ -4742,7 +4742,7 @@
                 :class="[
                   'inline-flex w-fit rounded-full px-3 py-1 text-xs font-semibold',
                   form.payment_enabled
-                    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
+                    ? 'bg-success-soft text-success dark:bg-success/15 dark:text-tea-300'
                     : 'bg-gray-100 text-gray-500 dark:bg-dark-700 dark:text-gray-300',
                 ]"
               >
@@ -4949,7 +4949,7 @@
                   <div>
                     <label class="input-label"
                       >{{ t("admin.settings.payment.orderTimeout") }}
-                      <span class="text-red-500">*</span></label
+                      <span class="text-danger">*</span></label
                     ><input
                       v-model.number="form.payment_order_timeout_minutes"
                       type="number"
@@ -4989,7 +4989,7 @@
                       <p class="mb-2 text-xs font-medium text-gray-400 dark:text-gray-500">
                         {{ t("admin.settings.payment.quickAmountsPreview") }}
                       </p>
-                      <div class="flex min-h-[42px] flex-wrap gap-2 rounded-xl border border-gray-100 bg-slate-50 p-2 dark:border-dark-700 dark:bg-dark-800/60">
+                      <div class="flex min-h-[42px] flex-wrap gap-2 rounded-xl border border-gray-100 bg-gray-50 p-2 dark:border-dark-700 dark:bg-dark-800/60">
                         <span
                           v-for="amountItem in paymentQuickAmountsPreview"
                           :key="amountItem"
@@ -5038,9 +5038,9 @@
                         type="button"
                         :aria-pressed="form.payment_cancel_rate_limit_enabled"
                         :class="[
-                          'relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2',
+                          'relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-success focus:ring-offset-2',
                           form.payment_cancel_rate_limit_enabled
-                            ? 'bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-600'
+                            ? 'bg-success hover:bg-success-deep dark:bg-success'
                             : 'bg-gray-300 hover:bg-gray-400 dark:bg-dark-600 dark:hover:bg-dark-500',
                         ]"
                         @click="
@@ -5521,7 +5521,7 @@
                         class="sr-only peer"
                       />
                       <div
-                        class="w-9 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:after:border-gray-500 peer-checked:bg-emerald-500 dark:peer-checked:bg-emerald-600"
+                        class="w-9 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:after:border-gray-500 peer-checked:bg-success dark:peer-checked:bg-success"
                       ></div>
                     </label>
                     <input
@@ -5673,7 +5673,7 @@
               原文片段：{{ aiReviewTestResult.raw }}
             </p>
           </div>
-          <div v-if="aiReviewTestError" class="flex items-start gap-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-300">
+          <div v-if="aiReviewTestError" class="flex items-start gap-2 rounded-lg bg-danger-soft px-3 py-2 text-sm text-danger-deep dark:bg-danger-deep/20 dark:text-danger-soft">
             <Icon name="xCircle" size="sm" class="mt-0.5 flex-shrink-0" />
             <span>{{ aiReviewTestError }}</span>
           </div>
@@ -6719,20 +6719,20 @@ const aiTestResultLabel = computed(() => {
 const aiTestResultBadge = computed(() => {
   const v = aiReviewTestResult.value?.verdict || "";
   switch (v) {
-    case "pass": return "badge-green";
-    case "flag": return "badge-amber";
-    case "reject": return "badge-red";
-    case "error": return "badge-red";
+    case "pass": return "badge-success";
+    case "flag": return "badge-warning";
+    case "reject": return "badge-danger";
+    case "error": return "badge-danger";
     default: return "badge-gray";
   }
 });
 const aiTestResultBorder = computed(() => {
   const v = aiReviewTestResult.value?.verdict || "";
   switch (v) {
-    case "pass": return "border-emerald-200 bg-emerald-50/50 dark:border-emerald-900/40 dark:bg-emerald-900/10";
-    case "flag": return "border-amber-200 bg-amber-50/50 dark:border-amber-900/40 dark:bg-amber-900/10";
+    case "pass": return "border-success bg-success-soft/50 dark:border-success-deep/40 dark:bg-success-deep/10";
+    case "flag": return "border-warning bg-warning-soft/50 dark:border-warning-deep/40 dark:bg-warning-deep/10";
     case "reject":
-    case "error": return "border-red-200 bg-red-50/50 dark:border-red-900/40 dark:bg-red-900/10";
+    case "error": return "border-danger bg-danger-soft/50 dark:border-danger-deep/40 dark:bg-danger-deep/10";
     default: return "border-gray-200 bg-gray-50 dark:border-dark-700 dark:bg-dark-800";
   }
 });
@@ -8740,7 +8740,7 @@ watch(
 .settings-page :deep(.card) {
   position: relative;
   @apply overflow-hidden rounded-2xl border border-gray-200/70 bg-white;
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 8px 24px -18px rgb(15 23 42 / 0.18);
+  box-shadow: 0 1px 2px rgb(34 32 28 / 0.04), 0 8px 24px -18px rgb(34 32 28 / 0.18);
 }
 
 :root.dark .settings-page :deep(.card) {
@@ -8755,7 +8755,7 @@ watch(
 }
 
 :root.dark .settings-page :deep(.card > div:first-child) {
-  border-color: rgb(55 65 81 / 0.6);
+  border-color: rgb(70 65 58 / 0.6);
   background-color: rgb(255 255 255 / 0.02);
 }
 
@@ -8793,14 +8793,14 @@ watch(
 .settings-page :deep(.card .input-hint),
 .settings-page :deep(.card label + p) {
   font-size: 0.75rem;
-  color: rgb(107 114 128);
+  color: rgb(138 130 117);
   margin-top: 0.5rem;
   line-height: 1.5;
 }
 
 :root.dark .settings-page :deep(.card .input-hint),
 :root.dark .settings-page :deep(.card label + p) {
-  color: rgb(156 163 175);
+  color: rgb(180 171 152);
 }
 
 /* 输入控件高度统一为 40px，左右 padding 一致，跟其他页面输入控件视觉一致 */
@@ -8830,7 +8830,7 @@ watch(
 /* 裸开关行加底部 hairline，让字段成"行"分组（amber 警告条等带装饰的不受影响） */
 .settings-page :deep(.card .space-y-6 > .flex.items-center.justify-between:not(.rounded-lg):not(.rounded-xl)) {
   padding-bottom: 1.25rem;
-  border-bottom: 1px solid rgb(243 244 246);
+  border-bottom: 1px solid rgb(239 232 216);
 }
 
 .settings-page :deep(.card .space-y-6 > .flex.items-center.justify-between:not(.rounded-lg):not(.rounded-xl):last-child) {
@@ -8839,14 +8839,14 @@ watch(
 }
 
 :root.dark .settings-page :deep(.card .space-y-6 > .flex.items-center.justify-between:not(.rounded-lg):not(.rounded-xl)) {
-  border-bottom-color: rgb(55 65 81 / 0.5);
+  border-bottom-color: rgb(70 65 58 / 0.5);
 }
 
 /* 字段子分组小标题（h3）：作为视觉锚点 */
 .settings-page :deep(.card h3) {
   font-size: 0.875rem;
   font-weight: 600;
-  color: rgb(17 24 39);
+  color: rgb(42 39 34);
   letter-spacing: 0.005em;
 }
 
@@ -8879,7 +8879,7 @@ watch(
   @apply rounded-2xl border border-gray-200/70 dark:border-dark-700/80;
   @apply bg-white/95 backdrop-blur-md dark:bg-dark-900/95;
   @apply px-5 py-3.5;
-  box-shadow: 0 -1px 2px rgb(15 23 42 / 0.04), 0 12px 32px -20px rgb(15 23 42 / 0.22);
+  box-shadow: 0 -1px 2px rgb(34 32 28 / 0.04), 0 12px 32px -20px rgb(34 32 28 / 0.22);
 }
 
 :root.dark .settings-save-bar {
@@ -8987,7 +8987,7 @@ watch(
 .settings-tab-active {
   @apply text-gray-900 dark:text-white;
   background: transparent;
-  border-bottom-color: rgb(17 24 39);
+  border-bottom-color: rgb(42 39 34);
   box-shadow: none;
 }
 

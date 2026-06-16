@@ -79,7 +79,7 @@
                 class="flex flex-wrap items-center gap-1.5"
               >
                 <span
-                  class="inline-flex items-center gap-0.5 text-2xs font-medium uppercase text-purple-600 dark:text-purple-400"
+                  class="inline-flex items-center gap-0.5 text-2xs font-medium uppercase text-info dark:text-info"
                   :title="t('availableChannels.exclusiveTooltip')"
                 >
                   <Icon name="shield" size="xs" class="h-3 w-3" />

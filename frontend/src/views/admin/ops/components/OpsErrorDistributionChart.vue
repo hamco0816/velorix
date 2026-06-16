@@ -27,7 +27,7 @@ const colors = computed(() => ({
   red: '#ef4444',
   orange: '#f59e0b',
   gray: '#9ca3af',
-  text: isDarkMode.value ? '#9ca3af' : '#6b7280'
+  text: isDarkMode.value ? '#b4ab98' : '#6b6356'
 }))
 
 const hasData = computed(() => (props.data?.total ?? 0) > 0)
@@ -100,10 +100,10 @@ const options = computed(() => ({
     legend: { display: false },
     tooltip: {
       usePointStyle: true,
-      backgroundColor: isDarkMode.value ? '#1f2937' : '#ffffff',
-      titleColor: isDarkMode.value ? '#f3f4f6' : '#111827',
-      bodyColor: isDarkMode.value ? '#d1d5db' : '#4b5563',
-      borderColor: isDarkMode.value ? 'rgba(255,255,255,0.08)' : 'rgba(15,23,42,0.08)',
+      backgroundColor: isDarkMode.value ? '#34302a' : '#ffffff',
+      titleColor: isDarkMode.value ? '#f1ebdc' : '#2a2722',
+      bodyColor: isDarkMode.value ? '#cfc7b6' : '#4a453d',
+      borderColor: isDarkMode.value ? 'rgba(246,242,233,0.08)' : 'rgba(34,32,28,0.08)',
       borderWidth: 1,
       padding: 12,
       cornerRadius: 10,
@@ -117,7 +117,7 @@ const options = computed(() => ({
   <div class="surface-card flex h-full flex-col p-6">
     <div class="mb-4 flex items-center justify-between">
       <h3 class="flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white">
-        <svg class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg class="h-4 w-4 text-danger" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"

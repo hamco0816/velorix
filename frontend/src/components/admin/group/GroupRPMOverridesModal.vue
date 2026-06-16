@@ -73,7 +73,7 @@
           <button
             type="button"
             :disabled="clearing"
-            class="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40"
+            class="rounded-lg border border-danger/20 bg-danger-soft px-3 py-1.5 text-sm font-medium text-danger transition-colors hover:bg-danger/15 disabled:opacity-50 dark:border-danger/30 dark:bg-danger/10 dark:text-danger dark:hover:bg-danger/20"
             @click="clearAllLocal"
           >
             <Icon v-if="clearing" name="refresh" size="sm" class="mr-1 inline animate-spin" />
@@ -130,7 +130,7 @@
                         :class="[
                           'inline-flex rounded-full px-2 py-0.5 text-xs font-medium',
                           entry.user_status === 'active'
-                            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                            ? 'bg-success-soft text-success dark:bg-success/15 dark:text-success'
                             : 'bg-gray-100 text-gray-600 dark:bg-dark-600 dark:text-gray-400'
                         ]"
                       >
@@ -151,7 +151,7 @@
                     <td class="px-2 py-2">
                       <button
                         type="button"
-                        class="rounded p-1 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                        class="rounded p-1 text-gray-400 transition-colors hover:bg-danger-soft hover:text-danger dark:hover:bg-danger/10 dark:hover:text-danger"
                         @click="removeLocal(entry.user_id)"
                       >
                         <Icon name="trash" size="sm" />
@@ -176,7 +176,7 @@
       <!-- 底部 -->
       <div class="flex items-center gap-3 border-t border-gray-200 pt-4 dark:border-dark-600">
         <template v-if="isDirty">
-          <span class="text-xs text-amber-600 dark:text-amber-400">{{ t('admin.groups.unsavedChanges') }}</span>
+          <span class="text-xs text-warning dark:text-warning">{{ t('admin.groups.unsavedChanges') }}</span>
           <button
             type="button"
             class="text-xs font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"

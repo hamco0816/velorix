@@ -181,11 +181,11 @@
         </div>
 
         <!-- Stripe webhook hint -->
-        <div v-if="stripeWebhookUrl" class="mt-3 rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800/50 dark:bg-blue-900/20">
-          <p class="text-xs text-blue-700 dark:text-blue-300">
+        <div v-if="stripeWebhookUrl" class="mt-3 rounded-lg border border-info/30 bg-info-soft p-3 dark:border-info-deep/60 dark:bg-info-deep/20">
+          <p class="text-xs text-info-deep dark:text-info">
             {{ t('admin.settings.payment.stripeWebhookHint') }}
           </p>
-          <code class="mt-1 block break-all rounded bg-blue-100 px-2 py-1 text-xs text-blue-800 dark:bg-blue-900/40 dark:text-blue-200">
+          <code class="mt-1 block break-all rounded bg-info-soft px-2 py-1 text-xs text-info-deep dark:bg-info-deep/40 dark:text-info">
             {{ stripeWebhookUrl }}
           </code>
         </div>

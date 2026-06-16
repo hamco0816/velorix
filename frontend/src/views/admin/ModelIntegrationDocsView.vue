@@ -1,10 +1,10 @@
 <template>
   <AppLayout wide>
     <div class="space-y-6">
-      <!-- 顶部 amber 警示条：强调上线链路完整性 -->
-      <div class="flex items-start gap-2.5 rounded-xl border border-amber-200/60 bg-amber-50/60 px-4 py-3 dark:border-amber-500/20 dark:bg-amber-500/5">
-        <Icon name="exclamationCircle" size="sm" class="mt-0.5 flex-shrink-0 text-amber-600 dark:text-amber-300" />
-        <p class="text-sm leading-6 text-amber-900 dark:text-amber-200">
+      <!-- 顶部告警条：强调上线链路完整性 -->
+      <div class="flex items-start gap-2.5 rounded-xl border border-warning/30 bg-warning-soft/60 px-4 py-3 dark:border-warning/20 dark:bg-warning/5">
+        <Icon name="exclamationCircle" size="sm" class="mt-0.5 flex-shrink-0 text-warning dark:text-warning-soft" />
+        <p class="text-sm leading-6 text-warning-deep dark:text-warning-soft">
           后台配置不要只看"能不能保存"。完整上线链路是：<span class="font-semibold">出口可控、账号可调度、分组能授权、渠道能展示、模型能计费、错误能归因、风控能拦截、日志能复核</span>。
         </p>
       </div>
@@ -12,7 +12,7 @@
       <!-- 新平台上线顺序：8 个步骤卡片 -->
       <section class="space-y-4">
         <div class="flex items-center gap-2.5">
-          <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
+          <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-success-soft text-success dark:bg-success/15 dark:text-tea-300">
             <Icon name="checkCircle" size="sm" :stroke-width="1.75" />
           </span>
           <h2 class="text-base font-semibold text-gray-900 dark:text-white">新平台上线顺序</h2>
@@ -21,7 +21,7 @@
           <article
             v-for="step in setupSteps"
             :key="step.title"
-            class="surface-card group p-5 transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(15,23,42,0.06)]"
+            class="surface-card group p-5 transition-all hover:-translate-y-0.5 hover:shadow-card-hover"
           >
             <div class="flex items-start gap-3">
               <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gray-900 text-sm font-semibold text-white dark:bg-white dark:text-gray-900">{{ step.no }}</span>
@@ -38,7 +38,7 @@
       <!-- 后台术语词典 -->
       <section class="surface-card overflow-hidden">
         <header class="flex items-start gap-3 border-b border-gray-200/60 px-6 py-4 dark:border-dark-700/60">
-          <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300">
+          <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-info-soft text-info dark:bg-info/15 dark:text-info-soft">
             <Icon name="grid" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0">
@@ -101,7 +101,7 @@
       <!-- 风控与敏感词建议 -->
       <section class="surface-card overflow-hidden">
         <header class="flex items-start gap-3 border-b border-gray-200/60 px-6 py-4 dark:border-dark-700/60">
-          <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-500/15 dark:text-rose-300">
+          <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-danger-soft text-danger dark:bg-danger/15 dark:text-danger">
             <Icon name="shield" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0">
@@ -124,7 +124,7 @@
       <!-- 常见排查路径 -->
       <section class="surface-card overflow-hidden">
         <header class="flex items-start gap-3 border-b border-gray-200/60 px-6 py-4 dark:border-dark-700/60">
-          <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300">
+          <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-info-soft text-info dark:bg-info/15 dark:text-info-soft">
             <Icon name="questionCircle" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0">
@@ -139,7 +139,7 @@
             class="rounded-xl border border-gray-200/70 bg-gray-50/40 p-4 dark:border-dark-700/60 dark:bg-dark-800/40"
           >
             <div class="flex items-start gap-2">
-              <Icon name="search" size="xs" class="mt-1 flex-shrink-0 text-sky-600 dark:text-sky-300" />
+              <Icon name="search" size="xs" class="mt-1 flex-shrink-0 text-info dark:text-info-soft" />
               <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ item.problem }}</h3>
             </div>
             <p class="mt-1.5 pl-5 text-xs leading-5 text-gray-600 dark:text-dark-300">{{ item.check }}</p>
@@ -147,10 +147,10 @@
         </div>
       </section>
 
-      <!-- 外部接入依据：sky 提示条 -->
-      <div class="flex items-start gap-2.5 rounded-xl border border-sky-200/60 bg-sky-50/60 px-4 py-3 dark:border-sky-500/20 dark:bg-sky-500/5">
-        <Icon name="infoCircle" size="sm" class="mt-0.5 flex-shrink-0 text-sky-600 dark:text-sky-300" />
-        <div class="text-sm leading-6 text-sky-900 dark:text-sky-200">
+      <!-- 外部接入依据：信息提示条 -->
+      <div class="flex items-start gap-2.5 rounded-xl border border-info/30 bg-info-soft/60 px-4 py-3 dark:border-info/20 dark:bg-info/5">
+        <Icon name="infoCircle" size="sm" class="mt-0.5 flex-shrink-0 text-info dark:text-info-soft" />
+        <div class="text-sm leading-6 text-info-deep dark:text-info-soft">
           <div class="font-semibold">外部接入依据</div>
           <p class="mt-0.5">
             Claude Code 官方网关文档要求网关暴露 Anthropic Messages 端点，并说明 <code class="docs-hint-code">ANTHROPIC_AUTH_TOKEN</code> 的认证行为；Codex 官方文档使用 <code class="docs-hint-code">config.toml</code> 管理 provider。用户接入页已经按这些行为写成可复制示例。
@@ -165,7 +165,7 @@
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Icon from '@/components/icons/Icon.vue'
 
-type Tone = 'sky' | 'emerald' | 'violet' | 'amber' | 'rose' | 'indigo' | 'teal'
+type Tone = 'info' | 'success' | 'warning' | 'danger'
 type DocIcon = 'server' | 'sparkles' | 'cpu' | 'creditCard'
 
 const setupSteps = [
@@ -211,7 +211,7 @@ const adminSections: Array<{
     title: '账号、代理与 IP',
     summary: '上游账号的安全与可调度，先做隔离再做调度',
     icon: 'server',
-    tone: 'sky',
+    tone: 'info',
     items: [
       { title: '同平台账号尽量独立出口', tag: '账号安全', desc: '不同平台可以复用代理；同平台账号建议一账号一出口。真实出口 IP 只能靠检测、日志或代理商面板确认。' },
       { title: '动态代理要定期复测', tag: '稳定性', desc: '动态代理可能换出口，同平台账号可能在一段时间后出现 IP 撞车，建议监控最近检测 IP 和检测时间。' },
@@ -222,7 +222,7 @@ const adminSections: Array<{
     title: '渠道、模型广场与状态',
     summary: '前台展示与监控状态的来源，避免出现"看到但用不了"',
     icon: 'sparkles',
-    tone: 'teal',
+    tone: 'success',
     items: [
       { title: '模型广场展示条件', tag: '展示', desc: '渠道启用、用户有可访问分组、存在模型映射和价格，才适合展示给用户。' },
       { title: '可用状态来自监控', tag: '状态', desc: '模型广场不应在用户打开页面时临时探测上游，应复用后台渠道监控结果，避免页面慢和额外消耗。' },
@@ -233,7 +233,7 @@ const adminSections: Array<{
     title: 'TLS 指纹与错误透传',
     summary: '环境特征与错误信息要分层处理，兼顾风控与可解释性',
     icon: 'cpu',
-    tone: 'emerald',
+    tone: 'warning',
     items: [
       { title: 'TLS 指纹模板不要频繁换', tag: '风控', desc: '同一账号短时间切换明显不同的网络/客户端特征，会增加上游风险。变更后应小流量观察错误率。' },
       { title: '错误透传要分级', tag: '体验', desc: '用户参数错误可以友好提示；余额、限流、封禁、认证失败等内部细节应写日志，前台只给可理解提示。' },
@@ -244,7 +244,7 @@ const adminSections: Array<{
     title: '支付、订阅与金额校验',
     summary: '支付链路要后端校验、权益要绑定分组、回调要可恢复',
     icon: 'creditCard',
-    tone: 'amber',
+    tone: 'danger',
     items: [
       { title: '订单金额必须后端校验', tag: '支付安全', desc: '虎皮椒、微信、支付宝回调都不能只看订单号，必须校验实际金额、计划金额、订单状态和回调签名。' },
       { title: '订阅权益绑定分组', tag: '授权', desc: '支付成功只代表订单完成，还要把用户权益同步到正确分组，否则用户充值后仍然无法调用模型。' },
@@ -283,24 +283,18 @@ const troubleshooting = [
  * 管理员文档页：复用全局 surface-card；只扩展色调标签和 icon 背景色
  * ========================================================================= */
 
-/* section header 内的 colored icon 背景（柔和的 50 浅底 + 600 描边图标） */
-.docs-icon-sky     { background: rgb(240 249 255); color: rgb(2 132 199); }
-.docs-icon-emerald { background: rgb(236 253 245); color: rgb(5 150 105); }
-.docs-icon-violet  { background: rgb(245 243 255); color: rgb(124 58 237); }
-.docs-icon-amber   { background: rgb(255 251 235); color: rgb(217 119 6); }
-.docs-icon-rose    { background: rgb(255 241 242); color: rgb(225 29 72); }
-.docs-icon-indigo  { background: rgb(238 242 255); color: rgb(79 70 229); }
-.docs-icon-teal    { background: rgb(240 253 250); color: rgb(13 148 136); }
+/* section header 内的 colored icon 背景（柔和 soft 浅底 + 主色描边图标） */
+.docs-icon-info    { background: #e3e8ee; color: #3a5570; }
+.docs-icon-success { background: #e7ece2; color: #3d5a45; }
+.docs-icon-warning { background: #f4e6d8; color: #c56b3e; }
+.docs-icon-danger  { background: #f3e1dc; color: #a23b2e; }
 
-:global(:root.dark) .docs-icon-sky     { background: rgb(14 165 233 / 0.15); color: rgb(125 211 252); }
-:global(:root.dark) .docs-icon-emerald { background: rgb(16 185 129 / 0.15); color: rgb(110 231 183); }
-:global(:root.dark) .docs-icon-violet  { background: rgb(139 92 246 / 0.15); color: rgb(196 181 253); }
-:global(:root.dark) .docs-icon-amber   { background: rgb(245 158 11 / 0.15); color: rgb(252 211 77); }
-:global(:root.dark) .docs-icon-rose    { background: rgb(244 63 94 / 0.15); color: rgb(253 164 175); }
-:global(:root.dark) .docs-icon-indigo  { background: rgb(99 102 241 / 0.15); color: rgb(165 180 252); }
-:global(:root.dark) .docs-icon-teal    { background: rgb(20 184 166 / 0.15); color: rgb(94 234 212); }
+:global(:root.dark) .docs-icon-info    { background: rgb(58 85 112 / 0.15); color: #e3e8ee; }
+:global(:root.dark) .docs-icon-success { background: rgb(61 90 69 / 0.15); color: #aebfa6; }
+:global(:root.dark) .docs-icon-warning { background: rgb(197 107 62 / 0.15); color: #dfb088; }
+:global(:root.dark) .docs-icon-danger  { background: rgb(162 59 46 / 0.15); color: #f3e1dc; }
 
-/* code 标签：sky 调代码片段 */
+/* code 标签：信息态代码片段 */
 .docs-hint-code {
   display: inline-block;
   background: rgb(255 255 255 / 0.8);
@@ -308,12 +302,12 @@ const troubleshooting = [
   padding: 0.05rem 0.35rem;
   font-family: ui-monospace, monospace;
   font-size: 0.75rem;
-  color: rgb(2 132 199);
+  color: #3a5570;
 }
 
 :global(:root.dark) .docs-hint-code {
-  background: rgb(31 41 55 / 0.7);
-  color: rgb(125 211 252);
+  background: rgb(52 48 42 / 0.7);
+  color: #e3e8ee;
 }
 
 /* 子分组标签：与所在 panel 色调呼应 */
@@ -326,19 +320,13 @@ const troubleshooting = [
   font-weight: 500;
 }
 
-.docs-tag-sky { background: rgb(224 242 254); color: rgb(3 105 161); }
-.docs-tag-emerald { background: rgb(209 250 229); color: rgb(4 120 87); }
-.docs-tag-violet { background: rgb(237 233 254); color: rgb(91 33 182); }
-.docs-tag-amber { background: rgb(254 243 199); color: rgb(146 64 14); }
-.docs-tag-rose { background: rgb(255 228 230); color: rgb(159 18 57); }
-.docs-tag-indigo { background: rgb(224 231 255); color: rgb(55 48 163); }
-.docs-tag-teal { background: rgb(204 251 241); color: rgb(15 118 110); }
+.docs-tag-info { background: #e3e8ee; color: #2c4256; }
+.docs-tag-success { background: #e7ece2; color: #2c4232; }
+.docs-tag-warning { background: #f4e6d8; color: #a9542c; }
+.docs-tag-danger { background: #f3e1dc; color: #872f24; }
 
-:global(:root.dark) .docs-tag-sky { background: rgb(14 116 144 / 0.25); color: rgb(125 211 252); }
-:global(:root.dark) .docs-tag-emerald { background: rgb(6 95 70 / 0.25); color: rgb(110 231 183); }
-:global(:root.dark) .docs-tag-violet { background: rgb(91 33 182 / 0.25); color: rgb(196 181 253); }
-:global(:root.dark) .docs-tag-amber { background: rgb(120 53 15 / 0.3); color: rgb(252 211 77); }
-:global(:root.dark) .docs-tag-rose { background: rgb(159 18 57 / 0.25); color: rgb(253 164 175); }
-:global(:root.dark) .docs-tag-indigo { background: rgb(55 48 163 / 0.25); color: rgb(165 180 252); }
-:global(:root.dark) .docs-tag-teal { background: rgb(15 118 110 / 0.25); color: rgb(94 234 212); }
+:global(:root.dark) .docs-tag-info { background: rgb(44 66 86 / 0.25); color: #e3e8ee; }
+:global(:root.dark) .docs-tag-success { background: rgb(44 66 50 / 0.25); color: #aebfa6; }
+:global(:root.dark) .docs-tag-warning { background: rgb(169 84 44 / 0.3); color: #dfb088; }
+:global(:root.dark) .docs-tag-danger { background: rgb(135 47 36 / 0.25); color: #f3e1dc; }
 </style>

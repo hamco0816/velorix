@@ -44,9 +44,11 @@ defineProps<{
 }>()
 
 function rankClass(idx: number): string {
-  if (idx === 0) return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+  // 第 1 名金牌、第 3 名铜牌均为装饰性奖牌色，统一归茶橘 warning 令牌；
+  // 第 1 名用品牌主橘更醒目，第 3 名用较浅档区分，第 2 名银牌与其余沿用中性灰
+  if (idx === 0) return 'bg-warning-soft text-warning dark:bg-brand-900/30 dark:text-brand-300'
   if (idx === 1) return 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
-  if (idx === 2) return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+  if (idx === 2) return 'bg-brand-100 text-brand-600 dark:bg-brand-900/20 dark:text-brand-400'
   return 'bg-gray-100 text-gray-500 dark:bg-dark-700 dark:text-gray-400'
 }
 </script>

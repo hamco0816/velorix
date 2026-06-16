@@ -2,9 +2,9 @@
   <AppLayout wide>
     <div class="risk-page space-y-5">
       <!-- 简洁说明 chip 替代 hero（页面标题已由 AppHeader 提供） -->
-      <div class="flex items-start gap-2.5 rounded-xl border border-amber-200/60 bg-amber-50/60 px-4 py-3 dark:border-amber-500/20 dark:bg-amber-500/5">
-        <Icon name="shield" size="sm" class="mt-0.5 flex-shrink-0 text-amber-600 dark:text-amber-400" />
-        <p class="text-sm leading-6 text-amber-900 dark:text-amber-200">
+      <div class="flex items-start gap-2.5 rounded-xl border border-warning/30 bg-warning-soft/60 px-4 py-3 dark:border-warning/20 dark:bg-warning/5">
+        <Icon name="shield" size="sm" class="mt-0.5 flex-shrink-0 text-warning dark:text-warning" />
+        <p class="text-sm leading-6 text-warning-deep dark:text-warning">
           风控拦截会在请求发送到上游前执行。这里记录命中规则、是否经过 AI 审核以及管理员复核状态，便于排查风险和清空用户管控记录。
         </p>
       </div>
@@ -103,7 +103,7 @@
           <button
             v-if="pendingAIReviewCount > 0"
             type="button"
-            class="rounded-md bg-violet-100 px-3 py-1.5 text-sm font-medium text-violet-700 hover:bg-violet-200 disabled:opacity-50 dark:bg-violet-900/30 dark:text-violet-300 dark:hover:bg-violet-900/50"
+            class="rounded-md bg-info-soft px-3 py-1.5 text-sm font-medium text-info hover:bg-info/15 disabled:opacity-50 dark:bg-info/20 dark:text-info dark:hover:bg-info/30"
             :disabled="batchAIReviewing"
             title="对当前页所有未经过 AI 的事件依次跑 AI 审核（顺序执行避免限流）"
             @click="batchAIReview"
@@ -157,12 +157,12 @@
                   <span class="font-mono text-gray-500">#{{ user.id }}</span>
                   <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ user.username || user.email }}</span>
                   <span v-if="user.username && user.email" class="ml-2 text-xs text-gray-500">{{ user.email }}</span>
-                  <span v-if="allowlistedUserIds.has(user.id)" class="ml-2 text-xs text-emerald-600 dark:text-emerald-400">已在白名单</span>
+                  <span v-if="allowlistedUserIds.has(user.id)" class="ml-2 text-xs text-success dark:text-success">已在白名单</span>
                   <span v-else-if="allowlistAddingId === user.id" class="ml-2 text-xs text-gray-500">添加中…</span>
                 </button>
               </div>
             </div>
-            <p v-if="allowlistSearchQuery && allowlistSearchResults.length === 0 && !allowlistSearchLoading" class="mt-1 text-xs text-amber-600 dark:text-amber-400">
+            <p v-if="allowlistSearchQuery && allowlistSearchResults.length === 0 && !allowlistSearchLoading" class="mt-1 text-xs text-warning dark:text-warning">
               没有匹配的用户
             </p>
             <p v-else class="mt-1 text-2xs text-gray-400">
@@ -213,7 +213,7 @@
             </button>
             <span class="ml-auto text-xs text-gray-400">显示 top {{ ruleStats.length }}，按命中数降序</span>
           </div>
-          <p class="mb-3 rounded-md bg-blue-50 px-3 py-2 text-xs text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
+          <p class="mb-3 rounded-md bg-info-soft px-3 py-2 text-xs text-info dark:bg-info/20 dark:text-info">
             提示：如果某条规则的 AI Pass 率很高 → 大概率是误报源头，建议把它从 block 改为 warn 或删除
           </p>
           <div v-if="ruleStatsLoading" class="py-4 text-center text-sm text-gray-400">加载中...</div>
@@ -242,7 +242,7 @@
                     <div class="font-mono text-xs">{{ row.rule_word }}</div>
                   </td>
                   <td class="table-td">
-                    <span class="badge" :class="row.rule_source === 'custom' ? 'badge-blue' : 'badge-gray'">
+                    <span class="badge" :class="row.rule_source === 'custom' ? 'badge-info' : 'badge-gray'">
                       {{ row.rule_source === 'custom' ? '自定义' : '内置' }}
                     </span>
                   </td>
@@ -250,9 +250,9 @@
                   <td class="table-td text-right font-mono tabular-nums">{{ row.blocked_count }}</td>
                   <td class="table-td text-right font-mono tabular-nums">{{ row.warned_count }}</td>
                   <td class="table-td text-right font-mono tabular-nums">{{ row.cleared_count }}</td>
-                  <td class="table-td text-right font-mono tabular-nums text-emerald-600 dark:text-emerald-400">{{ row.ai_pass_count }}</td>
-                  <td class="table-td text-right font-mono tabular-nums text-red-600 dark:text-red-400">{{ row.ai_reject_count }}</td>
-                  <td class="table-td text-right font-mono tabular-nums text-amber-600 dark:text-amber-400">{{ row.ai_flag_count }}</td>
+                  <td class="table-td text-right font-mono tabular-nums text-success dark:text-success">{{ row.ai_pass_count }}</td>
+                  <td class="table-td text-right font-mono tabular-nums text-danger dark:text-danger">{{ row.ai_reject_count }}</td>
+                  <td class="table-td text-right font-mono tabular-nums text-warning dark:text-warning">{{ row.ai_flag_count }}</td>
                   <td class="table-td text-right">
                     <span :class="['font-mono tabular-nums', falseRateClass(row)]">
                       {{ falseRate(row) }}
@@ -318,17 +318,17 @@
                   </td>
                   <td class="table-td min-w-[180px]">
                     <div class="flex flex-wrap items-center gap-1.5">
-                      <span class="badge" :class="item.rule_source === 'custom' ? 'badge-blue' : 'badge-gray'">
+                      <span class="badge" :class="item.rule_source === 'custom' ? 'badge-info' : 'badge-gray'">
                         {{ sourceText(item.rule_source) }}
                       </span>
-                      <span class="badge badge-amber">{{ item.action || 'blocked' }}</span>
+                      <span class="badge badge-warning">{{ item.action || 'blocked' }}</span>
                     </div>
                     <div class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ item.rule_word || '-' }}</div>
                     <div class="text-xs text-gray-500 dark:text-gray-400">{{ item.rule_path || '-' }}</div>
                   </td>
                   <td class="table-td whitespace-nowrap">
                     <!-- AI 审核结果：未审核显示灰；已审核解析 ai_review_result JSON 显示彩色 verdict badge
-                         pass=绿 / flag=黄 / reject=红 / raw=灰 / error=红边框
+                         pass=竹青 / flag=茶橘 / reject=印章红 / raw=灰 / error=印章红
                          hover 时通过 title 显示完整 reason -->
                     <template v-if="!item.ai_reviewed">
                       <span class="badge badge-gray">未经过 AI</span>
@@ -399,7 +399,7 @@
                     </button>
                     <span
                       v-else-if="item.user_id && allowlistedUserIds.has(item.user_id)"
-                      class="mr-2 inline-flex items-center rounded bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
+                      class="mr-2 inline-flex items-center rounded bg-success-soft px-2 py-0.5 text-xs font-medium text-success dark:bg-success/20 dark:text-success"
                       title="该用户已在风控白名单"
                     >
                       已白名单
@@ -790,8 +790,8 @@ function falseRateClass(row: SafetyRiskRuleStat): string {
   const aiTotal = row.ai_pass_count + row.ai_reject_count + row.ai_flag_count
   if (aiTotal === 0) return 'text-gray-400'
   const rate = row.ai_pass_count / aiTotal
-  if (rate >= 0.3) return 'text-red-600 dark:text-red-400 font-semibold'
-  if (rate >= 0.1) return 'text-amber-600 dark:text-amber-400'
+  if (rate >= 0.3) return 'text-danger dark:text-danger font-semibold'
+  if (rate >= 0.1) return 'text-warning dark:text-warning'
   return 'text-gray-500 dark:text-gray-400'
 }
 
@@ -850,7 +850,7 @@ const riskStats = computed<RiskStat[]>(() => [
     value: pagination.total,
     hint: timeRangeText(filters.time_range),
     icon: 'document',
-    iconClass: 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300',
+    iconClass: 'bg-info-soft text-info dark:bg-info/20 dark:text-info',
   },
   {
     key: 'pending',
@@ -858,7 +858,7 @@ const riskStats = computed<RiskStat[]>(() => [
     value: countByStatus('pending'),
     hint: '当前页',
     icon: 'shield',
-    iconClass: 'bg-violet-50 text-violet-600 dark:bg-violet-900/30 dark:text-violet-300',
+    iconClass: 'bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-300',
   },
   {
     key: 'ai',
@@ -866,7 +866,7 @@ const riskStats = computed<RiskStat[]>(() => [
     value: events.value.filter(isAIReviewing).length,
     hint: '当前页',
     icon: 'brain',
-    iconClass: 'bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-300',
+    iconClass: 'bg-warning-soft text-warning dark:bg-warning/20 dark:text-warning',
   },
   {
     key: 'approved',
@@ -874,7 +874,7 @@ const riskStats = computed<RiskStat[]>(() => [
     value: events.value.filter(isApproved).length,
     hint: '当前页',
     icon: 'checkCircle',
-    iconClass: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300',
+    iconClass: 'bg-success-soft text-success dark:bg-success/20 dark:text-success',
   },
   {
     key: 'rejected',
@@ -882,7 +882,7 @@ const riskStats = computed<RiskStat[]>(() => [
     value: events.value.filter(isRejected).length,
     hint: '当前页',
     icon: 'xCircle',
-    iconClass: 'bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-300',
+    iconClass: 'bg-danger-soft text-danger dark:bg-danger/20 dark:text-danger',
   },
 ])
 
@@ -1061,15 +1061,15 @@ function statusText(status: string): string {
 function statusClass(status: string): string {
   switch (status) {
     case 'pending':
-      return 'badge-amber'
+      return 'badge-warning'
     case 'reviewed':
-      return 'badge-blue'
+      return 'badge-info'
     case 'cleared':
     case 'approved':
     case 'passed':
-      return 'badge-green'
+      return 'badge-success'
     case 'rejected':
-      return 'badge-red'
+      return 'badge-danger'
     default:
       return 'badge-gray'
   }
@@ -1135,13 +1135,13 @@ function aiVerdictLabel(verdict: string): string {
 function aiVerdictBadgeClass(verdict: string): string {
   switch (verdict) {
     case 'pass':
-      return 'badge-green'
+      return 'badge-success'
     case 'flag':
-      return 'badge-amber'
+      return 'badge-warning'
     case 'reject':
-      return 'badge-red'
+      return 'badge-danger'
     case 'error':
-      return 'badge-red'
+      return 'badge-danger'
     default:
       return 'badge-gray'
   }
@@ -1156,31 +1156,31 @@ onMounted(() => {
 <style scoped>
 /* 风控页全局：所有 .card 用兑换码同款远距离阴影，与全站视觉调性统一 */
 .risk-page :deep(.card) {
-  box-shadow: 0 18px 44px -34px rgb(15 23 42 / 0.55);
+  box-shadow: 0 18px 44px -34px rgb(34 32 28 / 0.55);
 }
 
 :global(:root.dark) .risk-page :deep(.card) {
   box-shadow: none;
 }
 
-/* 信息提示条：sky 调，与登录注册的辅助提示一致 */
+/* 信息提示条：黛蓝信息态，与登录注册的辅助提示一致 */
 .risk-info-banner {
   display: flex;
   align-items: center;
   gap: 0.625rem;
-  border: 1px solid rgb(186 230 253);
+  border: 1px solid #e3e8ee;
   border-radius: 0.5rem;
-  background: rgb(240 249 255 / 0.7);
+  background: rgb(227 232 238 / 0.7);
   padding: 0.875rem 1rem;
-  color: rgb(2 132 199);
+  color: #3a5570;
   font-size: 0.875rem;
   line-height: 1.6;
 }
 
 :global(:root.dark) .risk-info-banner {
-  border-color: rgb(7 89 133 / 0.6);
-  background: rgb(8 47 73 / 0.25);
-  color: rgb(125 211 252);
+  border-color: rgb(44 66 86 / 0.6);
+  background: rgb(44 66 86 / 0.25);
+  color: #3a5570;
 }
 
 .risk-info-icon {
@@ -1190,30 +1190,30 @@ onMounted(() => {
 
 .filter-label {
   display: block;
-  color: rgb(55 65 81);
+  color: #4a453d;
   font-size: 0.8125rem;
   font-weight: 500;
 }
 
 .dark .filter-label {
-  color: rgb(209 213 219);
+  color: #cfc7b6;
 }
 
 .risk-select :deep(.select-trigger) {
   height: 2.75rem;
-  border-color: rgb(209 213 219);
+  border-color: #ddd5c4;
   border-radius: 0.5rem;
   padding: 0.625rem 0.875rem;
-  box-shadow: 0 1px 1px rgb(16 24 40 / 0.03), 0 2px 5px -1px rgb(16 24 40 / 0.05);
+  box-shadow: 0 1px 1px rgb(34 32 28 / 0.03), 0 2px 5px -1px rgb(34 32 28 / 0.05);
 }
 
 .risk-select :deep(.select-trigger-open) {
-  border-color: rgb(59 130 246);
-  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.14);
+  border-color: #3a5570;
+  box-shadow: 0 0 0 3px rgb(58 85 112 / 0.14);
 }
 
 .dark .risk-select :deep(.select-trigger) {
-  border-color: rgb(75 85 99);
+  border-color: #46413a;
   box-shadow: none;
 }
 
@@ -1221,36 +1221,36 @@ onMounted(() => {
   display: block;
   width: 100%;
   height: 2.75rem;
-  border: 1px solid rgb(209 213 219);
+  border: 1px solid #ddd5c4;
   border-radius: 0.5rem;
   background-color: rgb(255 255 255);
   padding: 0.625rem 0.875rem;
-  color: rgb(17 24 39);
+  color: #2a2722;
   font-size: 0.875rem;
   line-height: 1.25rem;
-  box-shadow: 0 1px 1px rgb(16 24 40 / 0.03), 0 2px 5px -1px rgb(16 24 40 / 0.05);
+  box-shadow: 0 1px 1px rgb(34 32 28 / 0.03), 0 2px 5px -1px rgb(34 32 28 / 0.05);
   transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
 .risk-filter-control::placeholder {
-  color: rgb(156 163 175);
+  color: #b4ab98;
 }
 
 .risk-filter-control:focus {
-  border-color: rgb(59 130 246);
-  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.14);
+  border-color: #3a5570;
+  box-shadow: 0 0 0 3px rgb(58 85 112 / 0.14);
   outline: none;
 }
 
 .dark .risk-filter-control {
-  border-color: rgb(75 85 99);
-  background-color: rgb(17 24 39);
-  color: rgb(243 244 246);
+  border-color: #46413a;
+  background-color: #22201c;
+  color: #efe8d8;
   box-shadow: none;
 }
 
 .dark .risk-filter-control::placeholder {
-  color: rgb(107 114 128);
+  color: #6b6356;
 }
 
 .risk-action-button,
@@ -1272,23 +1272,23 @@ onMounted(() => {
 }
 
 .risk-action-primary {
-  border: 1px solid rgb(37 99 235);
-  background: linear-gradient(180deg, rgb(37 99 235), rgb(29 78 216));
+  border: 1px solid #3a5570;
+  background: linear-gradient(180deg, #3a5570, #2c4256);
   color: white;
-  box-shadow: 0 8px 18px rgb(37 99 235 / 0.18);
+  box-shadow: 0 8px 18px rgb(58 85 112 / 0.18);
 }
 
 .risk-action-primary:hover:not(:disabled) {
-  border-color: rgb(29 78 216);
-  background: linear-gradient(180deg, rgb(29 78 216), rgb(30 64 175));
+  border-color: #2c4256;
+  background: linear-gradient(180deg, #2c4256, #243646);
 }
 
 .risk-action-secondary,
 .risk-icon-button {
-  border: 1px solid rgb(209 213 219);
+  border: 1px solid #ddd5c4;
   background: rgb(255 255 255);
-  color: rgb(55 65 81);
-  box-shadow: 0 1px 1px rgb(16 24 40 / 0.03), 0 2px 5px -1px rgb(16 24 40 / 0.05);
+  color: #4a453d;
+  box-shadow: 0 1px 1px rgb(34 32 28 / 0.03), 0 2px 5px -1px rgb(34 32 28 / 0.05);
 }
 
 .risk-icon-button {
@@ -1297,9 +1297,9 @@ onMounted(() => {
 
 .risk-action-secondary:hover:not(:disabled),
 .risk-icon-button:hover:not(:disabled) {
-  border-color: rgb(156 163 175);
-  background: rgb(249 250 251);
-  color: rgb(17 24 39);
+  border-color: #c8bfa9;
+  background: #f6f2e9;
+  color: #2a2722;
 }
 
 .risk-action-button:disabled,
@@ -1310,16 +1310,16 @@ onMounted(() => {
 
 .dark .risk-action-secondary,
 .dark .risk-icon-button {
-  border-color: rgb(75 85 99);
-  background: rgb(17 24 39);
-  color: rgb(229 231 235);
+  border-color: #46413a;
+  background: #22201c;
+  color: #cfc7b6;
   box-shadow: none;
 }
 
 .dark .risk-action-secondary:hover:not(:disabled),
 .dark .risk-icon-button:hover:not(:disabled) {
-  border-color: rgb(107 114 128);
-  background: rgb(31 41 55);
+  border-color: #5c5649;
+  background: #34302a;
   color: white;
 }
 
@@ -1340,23 +1340,23 @@ onMounted(() => {
   align-items: flex-start;
   gap: 0.75rem;
   border-radius: 1rem;
-  border: 1px solid rgb(229 231 235 / 0.7);
+  border: 1px solid rgb(221 213 196 / 0.7);
   background: white;
   padding: 1rem;
-  box-shadow: 0 1px 1px rgb(16 24 40 / 0.03), 0 2px 5px -1px rgb(16 24 40 / 0.05);
+  box-shadow: 0 1px 1px rgb(34 32 28 / 0.03), 0 2px 5px -1px rgb(34 32 28 / 0.05);
   transition: all 0.2s;
 }
 .metric-card:hover {
-  border-color: rgb(209 213 219);
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  border-color: #c8bfa9;
+  box-shadow: 0 4px 16px rgb(34 32 28 / 0.08);
   transform: translateY(-2px);
 }
 .dark .metric-card {
-  border-color: rgb(55 65 81 / 0.6);
-  background: rgb(31 41 55 / 0.4);
+  border-color: rgb(70 65 58 / 0.6);
+  background: rgb(52 48 42 / 0.4);
 }
 .dark .metric-card:hover {
-  border-color: rgb(75 85 99);
+  border-color: #5c5649;
 }
 
 .risk-empty-state {
@@ -1376,14 +1376,14 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   border-radius: 1rem;
-  background: rgb(243 244 246);
-  color: rgb(156 163 175);
+  background: #efe8d8;
+  color: #b4ab98;
   margin-bottom: 1rem;
 }
 
 .dark .risk-empty-icon {
-  background: rgb(55 65 81);
-  color: rgb(107 114 128);
+  background: #46413a;
+  color: #6b6356;
 }
 
 .table-th {
@@ -1392,7 +1392,7 @@ onMounted(() => {
   font-size: 0.8125rem;
   font-weight: 700;
   letter-spacing: 0;
-  color: rgb(17 24 39);
+  color: #2a2722;
   white-space: nowrap;
 }
 
@@ -1406,7 +1406,7 @@ onMounted(() => {
 }
 
 .dark .table-th {
-  color: rgb(229 231 235);
+  color: #cfc7b6;
 }
 
 .table-td {
@@ -1424,53 +1424,14 @@ onMounted(() => {
   line-height: 1.25rem;
 }
 
+/* badge-gray：宣纸暖墨中性档（与全局令牌一致） */
 .badge-gray {
-  background: rgb(243 244 246);
-  color: rgb(55 65 81);
-}
-
-.badge-blue {
-  background: rgb(219 234 254);
-  color: rgb(30 64 175);
-}
-
-.badge-amber {
-  background: rgb(254 243 199);
-  color: rgb(146 64 14);
-}
-
-.badge-green {
-  background: rgb(220 252 231);
-  color: rgb(22 101 52);
-}
-
-.badge-red {
-  background: rgb(254 226 226);
-  color: rgb(153 27 27);
+  background: #efe8d8;
+  color: #4a453d;
 }
 
 .dark .badge-gray {
-  background: rgb(55 65 81);
-  color: rgb(229 231 235);
-}
-
-.dark .badge-blue {
-  background: rgb(30 58 138 / 0.35);
-  color: rgb(147 197 253);
-}
-
-.dark .badge-amber {
-  background: rgb(120 53 15 / 0.35);
-  color: rgb(252 211 77);
-}
-
-.dark .badge-green {
-  background: rgb(20 83 45 / 0.35);
-  color: rgb(134 239 172);
-}
-
-.dark .badge-red {
-  background: rgb(127 29 29 / 0.35);
-  color: rgb(252 165 165);
+  background: #46413a;
+  color: #cfc7b6;
 }
 </style>

@@ -303,10 +303,10 @@ watch(
 )
 
 function getLoadBarClass(loadPct: number): string {
-  if (loadPct >= 90) return 'bg-red-500 dark:bg-red-600'
-  if (loadPct >= 70) return 'bg-orange-500 dark:bg-orange-600'
-  if (loadPct >= 50) return 'bg-yellow-500 dark:bg-yellow-600'
-  return 'bg-green-500 dark:bg-green-600'
+  if (loadPct >= 90) return 'bg-danger dark:bg-danger'
+  if (loadPct >= 70) return 'bg-warning-deep dark:bg-warning-deep'
+  if (loadPct >= 50) return 'bg-warning dark:bg-warning'
+  return 'bg-success dark:bg-success'
 }
 
 function getLoadBarStyle(loadPct: number): string {
@@ -314,10 +314,10 @@ function getLoadBarStyle(loadPct: number): string {
 }
 
 function getLoadTextClass(loadPct: number): string {
-  if (loadPct >= 90) return 'text-red-600 dark:text-red-400'
-  if (loadPct >= 70) return 'text-orange-600 dark:text-orange-400'
-  if (loadPct >= 50) return 'text-yellow-600 dark:text-yellow-400'
-  return 'text-green-600 dark:text-green-400'
+  if (loadPct >= 90) return 'text-danger dark:text-danger'
+  if (loadPct >= 70) return 'text-warning-deep dark:text-warning'
+  if (loadPct >= 50) return 'text-warning dark:text-warning'
+  return 'text-success dark:text-success'
 }
 
 function formatDuration(seconds: number): string {
@@ -346,7 +346,7 @@ watch(
     <!-- 头部 -->
     <div class="mb-4 flex shrink-0 items-center justify-between gap-3">
       <h3 class="flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white">
-        <svg class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg class="h-4 w-4 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
         {{ t('admin.ops.concurrency.title') }}
@@ -356,7 +356,7 @@ watch(
         <button
           class="flex items-center justify-center rounded-lg px-2 py-1 transition-colors"
           :class="showByUser
-            ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
+            ? 'bg-brand-100 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400'
             : 'bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 dark:bg-dark-700 dark:text-gray-400 dark:hover:bg-dark-600 dark:hover:text-gray-300'"
           :title="showByUser ? t('admin.ops.concurrency.switchToPlatform') : t('admin.ops.concurrency.switchToUser')"
           @click="showByUser = !showByUser"
@@ -378,7 +378,7 @@ watch(
     </div>
 
     <!-- 错误提示 -->
-    <div v-if="errorMessage" class="mb-3 shrink-0 rounded-xl bg-red-50 p-2.5 text-xs text-red-600 dark:bg-red-900/20 dark:text-red-400">
+    <div v-if="errorMessage" class="mb-3 shrink-0 rounded-xl bg-danger-soft p-2.5 text-xs text-danger dark:bg-danger/15 dark:text-danger">
       {{ errorMessage }}
     </div>
 
@@ -433,7 +433,7 @@ watch(
 
           <!-- 等待队列 -->
           <div v-if="row.waiting_in_queue > 0" class="mt-1.5 flex justify-end">
-            <span class="rounded-full bg-purple-100 px-1.5 py-0.5 text-2xs font-semibold text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
+            <span class="rounded-full bg-info-soft px-1.5 py-0.5 text-2xs font-semibold text-info dark:bg-info/20 dark:text-info">
               {{ t('admin.ops.concurrency.queued', { count: row.waiting_in_queue }) }}
             </span>
           </div>
@@ -481,7 +481,7 @@ watch(
                 />
               </svg>
               <span class="text-gray-600 dark:text-gray-300">
-                <span class="font-semibold text-emerald-600 dark:text-emerald-400">{{ row.available_accounts }}</span
+                <span class="font-semibold text-success dark:text-success">{{ row.available_accounts }}</span
                 >/{{ row.total_accounts }}
               </span>
               <span class="text-gray-400 dark:text-gray-500">{{ row.availability_percentage }}%</span>
@@ -490,7 +490,7 @@ watch(
             <!-- 限流账号 -->
             <span
               v-if="row.rate_limited_accounts > 0"
-              class="rounded-full bg-amber-100 px-1.5 py-0.5 font-semibold text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+              class="rounded-full bg-warning-soft px-1.5 py-0.5 font-semibold text-warning dark:bg-warning/20 dark:text-warning"
             >
               {{ t('admin.ops.concurrency.rateLimited', { count: row.rate_limited_accounts }) }}
             </span>
@@ -498,7 +498,7 @@ watch(
             <!-- 异常账号 -->
             <span
               v-if="row.error_accounts > 0"
-              class="rounded-full bg-red-100 px-1.5 py-0.5 font-semibold text-red-700 dark:bg-red-900/30 dark:text-red-400"
+              class="rounded-full bg-danger-soft px-1.5 py-0.5 font-semibold text-danger dark:bg-danger/20 dark:text-danger"
             >
               {{ t('admin.ops.concurrency.errorAccounts', { count: row.error_accounts }) }}
             </span>
@@ -506,7 +506,7 @@ watch(
             <!-- 等待队列 -->
             <span
               v-if="row.waiting_in_queue > 0"
-              class="rounded-full bg-purple-100 px-1.5 py-0.5 font-semibold text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
+              class="rounded-full bg-info-soft px-1.5 py-0.5 font-semibold text-info dark:bg-info/20 dark:text-info"
             >
               {{ t('admin.ops.concurrency.queued', { count: row.waiting_in_queue }) }}
             </span>
@@ -533,21 +533,21 @@ watch(
               <!-- 状态徽章 -->
               <span
                 v-if="row.is_available"
-                class="inline-flex items-center gap-1 rounded bg-green-100 px-1.5 py-0.5 text-2xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                class="inline-flex items-center gap-1 rounded bg-success-soft px-1.5 py-0.5 text-2xs font-medium text-success dark:bg-success/20 dark:text-success"
               >
                 <Icon name="check" size="xs" :stroke-width="2" />
                 {{ t('admin.ops.accountAvailability.available') }}
               </span>
               <span
                 v-else-if="row.is_rate_limited"
-                class="inline-flex items-center gap-1 rounded bg-amber-100 px-1.5 py-0.5 text-2xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                class="inline-flex items-center gap-1 rounded bg-warning-soft px-1.5 py-0.5 text-2xs font-medium text-warning dark:bg-warning/20 dark:text-warning"
               >
                 <Icon name="clock" size="xs" :stroke-width="2" />
                 {{ formatDuration(row.rate_limit_remaining_sec || 0) }}
               </span>
               <span
                 v-else-if="row.is_overloaded"
-                class="inline-flex items-center gap-1 rounded bg-red-100 px-1.5 py-0.5 text-2xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                class="inline-flex items-center gap-1 rounded bg-danger-soft px-1.5 py-0.5 text-2xs font-medium text-danger dark:bg-danger/20 dark:text-danger"
               >
                 <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
@@ -561,7 +561,7 @@ watch(
               </span>
               <span
                 v-else-if="row.has_error"
-                class="inline-flex items-center gap-1 rounded bg-red-100 px-1.5 py-0.5 text-2xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                class="inline-flex items-center gap-1 rounded bg-danger-soft px-1.5 py-0.5 text-2xs font-medium text-danger dark:bg-danger/20 dark:text-danger"
               >
                 <Icon name="x" size="xs" :stroke-width="2" />
                 {{ t('admin.ops.accountAvailability.accountError') }}
@@ -582,7 +582,7 @@ watch(
 
           <!-- 等待队列 -->
           <div v-if="row.waiting_in_queue > 0" class="mt-1.5 flex justify-end">
-            <span class="rounded-full bg-purple-100 px-1.5 py-0.5 text-2xs font-semibold text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
+            <span class="rounded-full bg-info-soft px-1.5 py-0.5 text-2xs font-semibold text-info dark:bg-info/20 dark:text-info">
               {{ t('admin.ops.concurrency.queued', { count: row.waiting_in_queue }) }}
             </span>
           </div>
@@ -595,7 +595,7 @@ watch(
 <style scoped>
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(156, 163, 175, 0.3) transparent;
+  scrollbar-color: rgba(180, 171, 152, 0.3) transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -607,11 +607,11 @@ watch(
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgba(156, 163, 175, 0.3);
+  background-color: rgba(180, 171, 152, 0.3);
   border-radius: 3px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(156, 163, 175, 0.5);
+  background-color: rgba(180, 171, 152, 0.5);
 }
 </style>

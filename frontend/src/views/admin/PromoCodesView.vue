@@ -59,7 +59,7 @@
                 :class="[
                   'flex items-center transition-colors',
                   copiedCode === value
-                    ? 'text-green-500'
+                    ? 'text-success'
                     : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
                 ]"
                 :title="copiedCode === value ? t('admin.promo.copied') : t('keys.copyToClipboard')"
@@ -90,15 +90,15 @@
               <span class="relative flex h-1.5 w-1.5">
                 <span
                   v-if="value === 'active' && !(row.expires_at && new Date(row.expires_at) < new Date()) && !(row.max_uses > 0 && row.used_count >= row.max_uses)"
-                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70"
+                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-70"
                 ></span>
                 <span
                   class="relative inline-flex h-1.5 w-1.5 rounded-full"
                   :class="(row.expires_at && new Date(row.expires_at) < new Date())
-                    ? 'bg-rose-500'
+                    ? 'bg-danger'
                     : (row.max_uses > 0 && row.used_count >= row.max_uses)
                       ? 'bg-gray-400'
-                      : value === 'active' ? 'bg-emerald-500' : 'bg-gray-400'"
+                      : value === 'active' ? 'bg-success' : 'bg-gray-400'"
                 ></span>
               </span>
               {{ getStatusLabel(value, row) }}
@@ -121,14 +121,14 @@
             <div class="flex items-center justify-center space-x-1">
               <button
                 @click="copyRegisterLink(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/20 dark:hover:text-green-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-success-soft hover:text-success dark:hover:bg-success/20 dark:hover:text-success"
                 :title="t('admin.promo.copyRegisterLink')"
               >
                 <Icon name="link" size="sm" />
               </button>
               <button
                 @click="handleViewUsages(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-info-soft hover:text-info dark:hover:bg-info/20 dark:hover:text-info"
                 :title="t('admin.promo.viewUsages')"
               >
                 <Icon name="eye" size="sm" />
@@ -142,7 +142,7 @@
               </button>
               <button
                 @click="handleDelete(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-danger-soft hover:text-danger dark:hover:bg-danger/20 dark:hover:text-danger"
                 :title="t('common.delete')"
               >
                 <Icon name="trash" size="sm" />
@@ -341,8 +341,8 @@
           class="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-dark-600"
         >
           <div class="flex items-center gap-3">
-            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-              <Icon name="user" size="sm" class="text-green-600 dark:text-green-400" />
+            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-success-soft dark:bg-success/30">
+              <Icon name="user" size="sm" class="text-success dark:text-success" />
             </div>
             <div>
               <p class="text-sm font-medium text-gray-900 dark:text-white">
@@ -354,7 +354,7 @@
             </div>
           </div>
           <div class="text-right">
-            <span class="text-sm font-medium text-green-600 dark:text-green-400">
+            <span class="text-sm font-medium text-success dark:text-success">
               +${{ usage.bonus_amount.toFixed(2) }}
             </span>
           </div>
@@ -500,13 +500,13 @@ const columns = computed<Column[]>(() => [
 // Helpers
 const getStatusClass = (status: string, row: PromoCode) => {
   if (row.expires_at && new Date(row.expires_at) < new Date()) {
-    return 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'
+    return 'bg-danger-soft text-danger dark:bg-danger/15 dark:text-danger'
   }
   if (row.max_uses > 0 && row.used_count >= row.max_uses) {
     return 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'
   }
   return status === 'active'
-    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+    ? 'bg-success-soft text-success dark:bg-success/15 dark:text-success'
     : 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'
 }
 

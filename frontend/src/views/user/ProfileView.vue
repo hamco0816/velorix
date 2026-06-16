@@ -20,7 +20,7 @@
       <section data-testid="profile-security-panel" class="space-y-4">
         <!-- Section header：克制的水平 divider 风，与 AppHeader 标题不重复 -->
         <div class="flex items-center gap-3">
-          <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-inset ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30">
+          <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-success-soft text-success ring-1 ring-inset ring-success/30 dark:bg-success/15 dark:text-tea-300 dark:ring-success/30">
             <Icon name="shield" size="sm" />
           </div>
           <div class="min-w-0 flex-1">

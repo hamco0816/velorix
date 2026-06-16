@@ -9,19 +9,19 @@
       <!-- Refund Request Info -->
       <div
         v-if="order?.refund_requested_at || order?.refund_request_reason"
-        class="rounded-lg border border-violet-200 bg-violet-50 p-3 dark:border-violet-800 dark:bg-violet-900/20"
+        class="rounded-lg border border-info/30 bg-info-soft p-3 dark:border-info-deep/60 dark:bg-info-deep/20"
       >
-        <div class="flex items-center gap-2 text-sm font-medium text-violet-700 dark:text-violet-300">
+        <div class="flex items-center gap-2 text-sm font-medium text-info-deep dark:text-info">
           <Icon name="infoCircle" size="sm" :stroke-width="2" />
           {{ t('payment.admin.refundRequestInfo') }}
         </div>
         <div v-if="order?.refund_requested_at" class="mt-2 flex justify-between text-sm">
-          <span class="text-violet-600 dark:text-violet-400">{{ t('payment.admin.refundRequestedAt') }}</span>
-          <span class="text-violet-800 dark:text-violet-200">{{ formatDateTime(order.refund_requested_at) }}</span>
+          <span class="text-info dark:text-info">{{ t('payment.admin.refundRequestedAt') }}</span>
+          <span class="text-info-deep dark:text-info">{{ formatDateTime(order.refund_requested_at) }}</span>
         </div>
         <div v-if="order?.refund_request_reason" class="mt-1 text-sm">
-          <span class="text-violet-600 dark:text-violet-400">{{ t('payment.admin.refundRequestReason') }}:</span>
-          <span class="ml-1 text-violet-800 dark:text-violet-200">{{ order.refund_request_reason }}</span>
+          <span class="text-info dark:text-info">{{ t('payment.admin.refundRequestReason') }}:</span>
+          <span class="ml-1 text-info-deep dark:text-info">{{ order.refund_request_reason }}</span>
         </div>
       </div>
 
@@ -41,12 +41,12 @@
         </div>
         <div v-if="actuallyRefunded > 0" class="mt-1 flex justify-between text-sm">
           <span class="text-gray-500 dark:text-gray-400">{{ t('payment.admin.alreadyRefunded') }}</span>
-          <span class="font-medium text-red-600 dark:text-red-400">{{ order?.order_type === 'balance' ? '$' : '¥' }}{{ actuallyRefunded.toFixed(2) }}</span>
+          <span class="font-medium text-danger dark:text-danger">{{ order?.order_type === 'balance' ? '$' : '¥' }}{{ actuallyRefunded.toFixed(2) }}</span>
         </div>
         <!-- 本次可退上限：单独一行高亮，避免操作员看错为"全单可退"导致超额退款被后端拒 -->
         <div class="mt-2 flex justify-between border-t border-gray-200 pt-2 text-sm dark:border-dark-600">
           <span class="font-medium text-gray-700 dark:text-gray-200">{{ t('payment.admin.maxRefundable') }}</span>
-          <span class="font-bold text-emerald-600 dark:text-emerald-400">
+          <span class="font-bold text-success dark:text-success">
             {{ order?.order_type === 'balance' ? '$' : '¥' }}{{ maxRefundable.toFixed(2) }}
           </span>
         </div>
@@ -82,7 +82,7 @@
         <!-- Insufficient balance warning -->
         <div
           v-if="form.deduct_balance && balanceInsufficient"
-          class="mt-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-700 dark:bg-amber-900/20 dark:text-amber-300"
+          class="mt-2 rounded-lg bg-warning-soft p-3 text-sm text-warning-deep dark:bg-warning-deep/20 dark:text-warning"
         >
           {{ t('payment.admin.insufficientBalance') }}
         </div>
@@ -90,9 +90,9 @@
         <!-- No deduction info -->
         <div
           v-if="!form.deduct_balance"
-          class="mt-2 flex items-start gap-2 rounded-xl border border-sky-200/70 bg-sky-50/60 p-3 text-sm leading-relaxed text-sky-800 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-200"
+          class="mt-2 flex items-start gap-2 rounded-xl border border-info/30 bg-info-soft/60 p-3 text-sm leading-relaxed text-info-deep dark:border-info-deep/40 dark:bg-info-deep/10 dark:text-info"
         >
-          <Icon name="infoCircle" size="sm" class="mt-0.5 shrink-0 text-sky-500 dark:text-sky-300" />
+          <Icon name="infoCircle" size="sm" class="mt-0.5 shrink-0 text-info dark:text-info" />
           <span>{{ t('payment.admin.noDeduction') }}</span>
         </div>
       </div>
@@ -132,9 +132,9 @@
       <!-- Warning -->
       <div
         v-if="warning"
-        class="flex items-start gap-2 rounded-xl border border-amber-200/70 bg-amber-50/60 p-3 text-sm leading-relaxed text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200"
+        class="flex items-start gap-2 rounded-xl border border-warning/30 bg-warning-soft/60 p-3 text-sm leading-relaxed text-warning-deep dark:border-warning-deep/40 dark:bg-warning-deep/10 dark:text-warning"
       >
-        <Icon name="exclamationTriangle" size="sm" class="mt-0.5 shrink-0 text-amber-500 dark:text-amber-300" />
+        <Icon name="exclamationTriangle" size="sm" class="mt-0.5 shrink-0 text-warning dark:text-warning" />
         <span>{{ warning }}</span>
       </div>
 
@@ -144,9 +144,9 @@
           id="force-refund"
           v-model="form.force"
           type="checkbox"
-          class="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500"
+          class="h-4 w-4 rounded border-gray-300 text-danger focus:ring-danger"
         />
-        <label for="force-refund" class="text-sm font-medium text-red-600 dark:text-red-400">
+        <label for="force-refund" class="text-sm font-medium text-danger dark:text-danger">
           {{ t('payment.admin.forceRefund') }}
         </label>
       </div>
@@ -161,7 +161,7 @@
           type="submit"
           form="refund-form"
           :disabled="submitting || form.amount <= 0 || (requireForce && !form.force)"
-          class="inline-flex items-center rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:focus:ring-offset-dark-800"
+          class="inline-flex items-center rounded-md bg-danger px-4 py-2 text-sm font-medium text-white hover:bg-danger-deep focus:outline-none focus:ring-2 focus:ring-danger focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:focus:ring-offset-dark-800"
         >
           <!-- 退款是不可逆财务操作：处理中显示转圈 icon + 切换文案，避免运营以为没点上而重复提交 -->
           <LoadingSpinner v-if="submitting" size="sm" color="current" class="-ml-1 mr-2 text-white" />

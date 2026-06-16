@@ -83,29 +83,29 @@
             <span class="text-xs text-gray-600 dark:text-dark-300">{{ t('auth.turnstileLoading') }}</span>
           </div>
 
-          <!-- 2) 已验证：emerald 成功提示 -->
+          <!-- 2) 已验证：竹青成功提示 -->
           <div
             v-else-if="turnstileToken"
-            class="flex items-center gap-2.5 rounded-md border border-emerald-200 bg-emerald-50/70 px-3.5 py-3 dark:border-emerald-800/60 dark:bg-emerald-900/15"
+            class="flex items-center gap-2.5 rounded-md border border-success-soft bg-success-soft/70 px-3.5 py-3 dark:border-success/40 dark:bg-success/10"
           >
-            <Icon name="checkCircle" size="sm" class="flex-shrink-0 text-emerald-500" />
-            <span class="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+            <Icon name="checkCircle" size="sm" class="flex-shrink-0 text-success" />
+            <span class="text-xs font-medium text-success-deep dark:text-success">
               {{ t('auth.turnstileVerified') }}
             </span>
           </div>
 
-          <!-- 3) 加载失败：amber 提示 + 重试 -->
+          <!-- 3) 加载失败：茶橘警告提示 + 重试 -->
           <div
             v-else-if="turnstileLoadFailed"
-            class="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2.5 dark:border-amber-800/60 dark:bg-amber-900/15"
+            class="flex items-start gap-2 rounded-md border border-warning-soft bg-warning-soft px-3 py-2.5 dark:border-warning/40 dark:bg-warning/10"
           >
-            <Icon name="exclamationTriangle" size="sm" class="mt-0.5 flex-shrink-0 text-amber-500" />
-            <p class="text-xs leading-relaxed text-amber-800 dark:text-amber-200">
+            <Icon name="exclamationTriangle" size="sm" class="mt-0.5 flex-shrink-0 text-warning" />
+            <p class="text-xs leading-relaxed text-warning-deep dark:text-warning">
               {{ t('auth.turnstileLoadSlow') }}
               <button
                 type="button"
                 @click="retryTurnstile"
-                class="font-medium underline hover:text-amber-900 dark:hover:text-amber-100"
+                class="font-medium underline hover:text-warning dark:hover:text-warning"
               >
                 {{ t('auth.turnstileRetry') }}
               </button>

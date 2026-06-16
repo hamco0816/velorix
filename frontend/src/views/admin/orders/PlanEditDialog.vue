@@ -3,11 +3,11 @@
     <form id="plan-form" @submit.prevent="handleSavePlan" class="space-y-4">
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label class="input-label">{{ t('payment.admin.planName') }} <span class="text-red-500">*</span></label>
+          <label class="input-label">{{ t('payment.admin.planName') }} <span class="text-danger">*</span></label>
           <input v-model="planForm.name" type="text" class="input" required />
         </div>
         <div>
-          <label class="input-label">{{ t('payment.admin.group') }} <span class="text-red-500">*</span></label>
+          <label class="input-label">{{ t('payment.admin.group') }} <span class="text-danger">*</span></label>
           <Select v-model="planForm.group_id" :options="groupOptions" :placeholder="t('payment.admin.selectGroup')" class="w-full">
             <template #selected="{ option }">
               <span v-if="option?.platform" :class="platformTextClass(String(option.platform))">{{ option.label }}</span>
@@ -33,14 +33,14 @@
         </div>
       </div>
 
-      <div><label class="input-label">{{ t('payment.admin.planDescription') }} <span class="text-red-500">*</span></label><textarea v-model="planForm.description" rows="2" class="input" required></textarea></div>
+      <div><label class="input-label">{{ t('payment.admin.planDescription') }} <span class="text-danger">*</span></label><textarea v-model="planForm.description" rows="2" class="input" required></textarea></div>
       <div class="grid grid-cols-2 gap-4">
-        <div><label class="input-label">{{ t('payment.admin.price') }} <span class="text-red-500">*</span></label><input v-model.number="planForm.price" type="number" step="0.01" min="0.01" class="input" required @input="handleCostPriceInput" /></div>
+        <div><label class="input-label">{{ t('payment.admin.price') }} <span class="text-danger">*</span></label><input v-model.number="planForm.price" type="number" step="0.01" min="0.01" class="input" required @input="handleCostPriceInput" /></div>
         <div><label class="input-label">{{ t('payment.admin.originalPrice') }}</label><input v-model.number="planForm.original_price" type="number" step="0.01" min="0" class="input" /></div>
       </div>
       <div class="grid grid-cols-2 gap-4">
-        <div><label class="input-label">{{ t('payment.admin.validityDays') }} <span class="text-red-500">*</span></label><input v-model.number="planForm.validity_days" type="number" min="1" class="input" required /></div>
-        <div><label class="input-label">{{ t('payment.admin.validityUnit') }} <span class="text-red-500">*</span></label><Select v-model="planForm.validity_unit" :options="validityUnitOptions" /></div>
+        <div><label class="input-label">{{ t('payment.admin.validityDays') }} <span class="text-danger">*</span></label><input v-model.number="planForm.validity_days" type="number" min="1" class="input" required /></div>
+        <div><label class="input-label">{{ t('payment.admin.validityUnit') }} <span class="text-danger">*</span></label><Select v-model="planForm.validity_unit" :options="validityUnitOptions" /></div>
       </div>
       <!-- 档位名 + 档位样式：决定对比表的列头标识（图标 + 配色，越高越豪华）-->
       <div class="grid grid-cols-2 gap-4">
@@ -92,7 +92,7 @@
       <div class="grid grid-cols-2 gap-4">
         <div><label class="input-label">{{ t('payment.admin.sortOrder') }}</label><input v-model.number="planForm.sort_order" type="number" min="0" class="input" /></div>
         <div>
-          <label class="input-label">{{ t('payment.admin.planKind') }} <span class="text-red-500">*</span></label>
+          <label class="input-label">{{ t('payment.admin.planKind') }} <span class="text-danger">*</span></label>
           <Select v-model="planForm.kind" :options="planKindOptions" />
           <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
             {{ planForm.kind === 'exclusive' ? t('payment.admin.planKindExclusiveHint') : t('payment.admin.planKindSharedHint') }}
@@ -128,9 +128,9 @@
           <div>
             <label class="input-label">{{ t('payment.admin.planWeeklyLimitUSD') }}</label>
             <input v-model.number="planForm.weekly_limit_usd" type="number" step="0.01" min="0" class="input"
-                   :class="limitWarnings.weekly ? 'border-amber-400 focus:border-amber-500 focus:ring-amber-300/40 dark:border-amber-500/60' : ''"
+                   :class="limitWarnings.weekly ? 'border-warning focus:border-warning focus:ring-warning/40 dark:border-warning/60' : ''"
                    :placeholder="t('payment.admin.limitInheritGroup')" @input="handlePeriodLimitInput" />
-            <p v-if="limitWarnings.weekly" class="mt-1 flex items-start gap-1 text-2xs leading-relaxed text-amber-600 dark:text-amber-400">
+            <p v-if="limitWarnings.weekly" class="mt-1 flex items-start gap-1 text-2xs leading-relaxed text-warning dark:text-warning">
               <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
               <span>{{ t('payment.admin.warnWeeklyRedundant', { max: Math.floor(limitWarnings.weekly.effectiveMax) }) }}</span>
             </p>
@@ -138,9 +138,9 @@
           <div>
             <label class="input-label">{{ t('payment.admin.planMonthlyLimitUSD') }}</label>
             <input v-model.number="planForm.monthly_limit_usd" type="number" step="0.01" min="0" class="input"
-                   :class="limitWarnings.monthly ? 'border-amber-400 focus:border-amber-500 focus:ring-amber-300/40 dark:border-amber-500/60' : ''"
+                   :class="limitWarnings.monthly ? 'border-warning focus:border-warning focus:ring-warning/40 dark:border-warning/60' : ''"
                    :placeholder="t('payment.admin.limitInheritGroup')" @input="handlePeriodLimitInput" />
-            <p v-if="limitWarnings.monthly" class="mt-1 flex items-start gap-1 text-2xs leading-relaxed text-amber-600 dark:text-amber-400">
+            <p v-if="limitWarnings.monthly" class="mt-1 flex items-start gap-1 text-2xs leading-relaxed text-warning dark:text-warning">
               <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
               <span>{{ t('payment.admin.warnMonthlyRedundant_' + limitWarnings.monthly.cappedBy, { max: Math.floor(limitWarnings.monthly.effectiveMax) }) }}</span>
             </p>
@@ -150,10 +150,10 @@
             <input v-model.number="planForm.rate_multiplier" type="number" step="0.01" min="0" class="input" :placeholder="t('payment.admin.limitInheritGroup')" />
           </div>
         </div>
-        <div class="col-span-2 mt-4 rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-xs dark:border-dark-700 dark:bg-dark-900/60">
+        <div class="col-span-2 mt-4 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-xs dark:border-dark-700 dark:bg-dark-900/60">
           <div class="mb-2 flex items-center justify-between gap-3">
             <span class="font-semibold text-gray-800 dark:text-gray-100">{{ t('payment.admin.costMultiplierPreview') }}</span>
-            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-2xs font-medium text-slate-500 dark:bg-dark-700 dark:text-dark-300">
+            <span class="rounded-full bg-gray-100 px-2 py-0.5 text-2xs font-medium text-gray-500 dark:bg-dark-700 dark:text-dark-300">
               {{ t('payment.admin.adminOnly') }}
             </span>
           </div>
@@ -168,14 +168,14 @@
             </div>
             <div>
               <span class="block text-gray-400">{{ t('payment.admin.effectiveCostRate') }}</span>
-              <span class="mt-0.5 block font-semibold text-emerald-700 dark:text-emerald-300">{{ formatCostMultiplier(costEstimate.effectiveCostMultiplier) }}</span>
+              <span class="mt-0.5 block font-semibold text-success dark:text-success">{{ formatCostMultiplier(costEstimate.effectiveCostMultiplier) }}</span>
             </div>
           </div>
           <p v-else class="text-gray-500 dark:text-dark-400">{{ t('payment.admin.costMultiplierUnavailable') }}</p>
           <p v-if="costEstimate.periodLimitUSD !== null" class="mt-2 text-2xs text-gray-400 dark:text-dark-500">
             {{ t('payment.admin.periodQuotaUsed', { quota: Number(costEstimate.periodLimitUSD.toFixed(4)) }) }}
           </p>
-          <div class="mt-3 grid gap-2 border-t border-slate-100 pt-3 dark:border-dark-700 sm:grid-cols-2">
+          <div class="mt-3 grid gap-2 border-t border-gray-100 pt-3 dark:border-dark-700 sm:grid-cols-2">
             <div>
               <label class="input-label">{{ t('payment.admin.targetCostMultiplier') }}</label>
               <input
@@ -212,7 +212,7 @@
           type="button"
           :class="[
             'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
-            planForm.for_sale ? 'bg-green-500' : 'bg-gray-300 dark:bg-dark-600'
+            planForm.for_sale ? 'bg-success' : 'bg-gray-300 dark:bg-dark-600'
           ]"
           @click="planForm.for_sale = !planForm.for_sale"
         >
@@ -224,9 +224,9 @@
         <!-- 显式状态文字 + 颜色，让"已开启 / 已关闭"一眼可辨 -->
         <span
           v-if="planForm.for_sale"
-          class="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-300"
+          class="inline-flex items-center gap-1 rounded-full bg-success-soft px-2 py-0.5 text-xs font-medium text-success-deep dark:bg-success/20 dark:text-success"
         >
-          <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>
+          <span class="h-1.5 w-1.5 rounded-full bg-success"></span>
           {{ t('payment.admin.forSaleOn') }}
         </span>
         <span

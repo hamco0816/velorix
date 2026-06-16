@@ -45,12 +45,14 @@ watch(
 
 const isDarkMode = computed(() => document.documentElement.classList.contains('dark'))
 const colors = computed(() => ({
+  // 数据系列色（A 类功能识别色，区分 QPS / TPS 两条曲线，保留不令牌化）
   blue: '#3b82f6',
   blueAlpha: '#3b82f620',
   green: '#10b981',
   greenAlpha: '#10b98120',
-  grid: isDarkMode.value ? '#374151' : '#f3f4f6',
-  text: isDarkMode.value ? '#9ca3af' : '#6b7280'
+  // 图表骨架色（网格线 / 坐标轴文字，宣纸暖墨中性阶）
+  grid: isDarkMode.value ? '#46413a' : '#efe8d8',
+  text: isDarkMode.value ? '#b4ab98' : '#8a8275'
 }))
 
 const totalRequests = computed(() => sumNumbers(props.points.map((p) => p.request_count)))
@@ -104,9 +106,9 @@ const options = computed(() => {
         labels: { color: c.text, usePointStyle: true, boxWidth: 6, font: { size: 10 } }
       },
       tooltip: {
-        backgroundColor: isDarkMode.value ? '#1f2937' : '#ffffff',
-        titleColor: isDarkMode.value ? '#f3f4f6' : '#111827',
-        bodyColor: isDarkMode.value ? '#d1d5db' : '#4b5563',
+        backgroundColor: isDarkMode.value ? '#2a2722' : '#fbf8f1',
+        titleColor: isDarkMode.value ? '#f1ebdc' : '#22201c',
+        bodyColor: isDarkMode.value ? '#cfc7b6' : '#4a453d',
         borderColor: c.grid,
         borderWidth: 1,
         padding: 10,
@@ -176,7 +178,7 @@ function downloadChart() {
   <div class="surface-card flex h-full flex-col p-6">
     <div class="mb-4 flex shrink-0 items-center justify-between">
       <h3 class="flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white">
-        <svg class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg class="h-4 w-4 text-info" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
         </svg>
         {{ t('admin.ops.throughputTrend') }}

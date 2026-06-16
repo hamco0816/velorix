@@ -56,10 +56,10 @@
                     <button @click="openDetail(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-dark-600">
                       <Icon name="eye" size="sm" />{{ t('common.view') }}
                     </button>
-                    <button v-if="row.status === 'pending'" @click="openIssueDialog(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/20">
+                    <button v-if="row.status === 'pending'" @click="openIssueDialog(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-success hover:bg-success-soft dark:text-tea-300 dark:hover:bg-success/15">
                       <Icon name="check" size="sm" />{{ t('invoice.admin.issue') }}
                     </button>
-                    <button v-if="row.status === 'pending'" @click="openRejectDialog(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20">
+                    <button v-if="row.status === 'pending'" @click="openRejectDialog(row)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-danger hover:bg-danger-soft dark:text-danger dark:hover:bg-danger/15">
                       <Icon name="x" size="sm" />{{ t('invoice.admin.reject') }}
                     </button>
                   </div>
@@ -141,7 +141,7 @@
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div>
-            <label class="input-label">{{ t('invoice.fields.invoiceNumber') }} <span class="text-red-500">*</span></label>
+            <label class="input-label">{{ t('invoice.fields.invoiceNumber') }} <span class="text-danger">*</span></label>
             <input v-model.trim="issueForm.invoice_number" type="text" class="input mt-1 w-full" :placeholder="t('invoice.admin.invoiceNumberPlaceholder')" />
           </div>
           <div>
@@ -246,11 +246,11 @@ const statusFilterOptions = computed(() => [
 function statusClass(status: string): string {
   switch (status) {
     case 'pending':
-      return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300'
+      return 'bg-warning-soft text-warning dark:bg-warning/15 dark:text-brand-300'
     case 'issued':
-      return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
+      return 'bg-success-soft text-success dark:bg-success/15 dark:text-tea-300'
     case 'rejected':
-      return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
+      return 'bg-danger-soft text-danger dark:bg-danger/15 dark:text-danger'
     default:
       return 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-400'
   }

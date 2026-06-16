@@ -16,8 +16,8 @@
 
       <!-- Base URL 速查表：最高优先级，让用户一眼对到自己客户端该填什么 -->
       <section id="base-url" class="surface-card overflow-hidden scroll-mt-20">
-        <header class="flex items-start gap-3 border-b border-gray-200/60 bg-rose-50/40 px-6 py-4 dark:border-dark-700/60 dark:bg-rose-500/5">
-          <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-500/15 dark:text-rose-300">
+        <header class="flex items-start gap-3 border-b border-gray-200/60 bg-warning-soft/40 px-6 py-4 dark:border-dark-700/60 dark:bg-warning/5">
+          <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning-soft">
             <Icon name="exclamationCircle" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0">
@@ -68,9 +68,9 @@
       </section>
 
       <!-- amber 警示条：终端配置避坑（合并去重） -->
-      <div class="flex items-start gap-2.5 rounded-xl border border-amber-200/60 bg-amber-50/60 px-4 py-3 dark:border-amber-500/20 dark:bg-amber-500/5">
-        <Icon name="exclamationCircle" size="sm" class="mt-0.5 flex-shrink-0 text-amber-600 dark:text-amber-300" />
-        <p class="text-sm leading-6 text-amber-900 dark:text-amber-200">
+      <div class="flex items-start gap-2.5 rounded-xl border border-warning/30 bg-warning-soft/60 px-4 py-3 dark:border-warning/20 dark:bg-warning/5">
+        <Icon name="exclamationCircle" size="sm" class="mt-0.5 flex-shrink-0 text-warning dark:text-warning-soft" />
+        <p class="text-sm leading-6 text-warning-deep dark:text-warning-soft">
           <span class="font-semibold">终端配置避坑：</span>
           直接复制 <code class="docs-hint-code">VAR=value</code> 这种写法到终端可能报"命令不存在"。
           macOS/Linux 必须用 <code class="docs-hint-code">export VAR="value"</code>；
@@ -83,7 +83,7 @@
       <!-- 快速开始 3 步 -->
       <section id="quick-start" class="space-y-4 scroll-mt-20">
         <div class="flex items-center gap-2.5">
-          <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
+          <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-success-soft text-success dark:bg-success/15 dark:text-success-soft">
             <Icon name="checkCircle" size="sm" :stroke-width="1.75" />
           </span>
           <h2 class="text-base font-semibold text-gray-900 dark:text-white">快速开始</h2>
@@ -92,7 +92,7 @@
           <article
             v-for="item in quickStart"
             :key="item.title"
-            class="surface-card group p-5 transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(15,23,42,0.06)]"
+            class="surface-card group p-5 transition-all hover:-translate-y-0.5 hover:shadow-card-hover"
           >
             <div class="flex items-start gap-3">
               <span class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gray-900 text-sm font-semibold text-white dark:bg-white dark:text-gray-900">{{ item.no }}</span>
@@ -116,7 +116,7 @@
       <!-- 管理员自定义端点（仅当后台公开了额外端点时显示；标准 URL 已在速查表里） -->
       <section v-if="customEndpoints.length" class="surface-card overflow-hidden">
         <header class="flex items-start gap-3 border-b border-gray-200/60 px-6 py-4 dark:border-dark-700/60">
-          <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300">
+          <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-info-soft text-info dark:bg-info/15 dark:text-info-soft">
             <Icon name="link" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0">
@@ -142,7 +142,7 @@
                   <Icon :name="copiedEndpoint === endpoint.endpoint ? 'check' : 'copy'" size="xs" />
                 </button>
               </div>
-              <code class="mt-1 block break-all font-mono text-xs text-violet-700 dark:text-violet-300">{{ endpoint.endpoint }}</code>
+              <code class="mt-1 block break-all font-mono text-xs text-info dark:text-info-soft">{{ endpoint.endpoint }}</code>
               <p v-if="endpoint.description" class="mt-1 text-xs leading-5 text-gray-500 dark:text-dark-400">{{ endpoint.description }}</p>
             </div>
           </div>
@@ -152,7 +152,7 @@
       <!-- 接入示例：tab 切换 + 代码块 + 复制 -->
       <section id="snippets" class="space-y-4 scroll-mt-20">
         <div class="flex items-center gap-2.5">
-          <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
+          <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-success-soft text-success dark:bg-success/15 dark:text-success-soft">
             <Icon name="terminal" size="sm" :stroke-width="1.75" />
           </span>
           <h2 class="text-base font-semibold text-gray-900 dark:text-white">客户端接入示例</h2>
@@ -179,7 +179,7 @@
             <div class="px-6 pb-3 pt-4">
               <div class="flex flex-wrap items-center gap-2">
                 <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{ activeSnippet.title }}</h3>
-                <span class="rounded-md bg-emerald-50 px-2 py-0.5 text-2xs font-medium text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
+                <span class="rounded-md bg-success-soft px-2 py-0.5 text-2xs font-medium text-success dark:bg-success/15 dark:text-success-soft">
                   {{ activeSnippet.tag }}
                 </span>
               </div>
@@ -187,19 +187,19 @@
             </div>
             <div class="relative">
               <!-- 顶部工具栏：左侧 language 标签 + 右侧复制按钮 -->
-              <div class="absolute left-3 top-3 z-10 inline-flex items-center gap-1 rounded-md bg-slate-800/80 px-2 py-1 text-2xs font-medium uppercase tracking-wider text-slate-300 backdrop-blur">
+              <div class="absolute left-3 top-3 z-10 inline-flex items-center gap-1 rounded-md bg-dark-800/80 px-2 py-1 text-2xs font-medium uppercase tracking-wider text-gray-300 backdrop-blur">
                 <span class="h-1.5 w-1.5 rounded-full" :class="langDotClass(activeSnippet.title)"></span>
                 {{ snippetLang(activeSnippet.title) }}
               </div>
               <button
                 type="button"
-                class="absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-md bg-slate-800/80 px-2.5 py-1.5 text-xs font-medium text-slate-100 backdrop-blur transition-colors hover:bg-slate-700/90"
+                class="absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-md bg-dark-800/80 px-2.5 py-1.5 text-xs font-medium text-gray-100 backdrop-blur transition-colors hover:bg-dark-700/90"
                 @click="copySnippet(activeSnippet)"
               >
                 <Icon :name="copiedSnippetTitle === activeSnippet.title ? 'check' : 'copy'" size="xs" />
                 {{ copiedSnippetTitle === activeSnippet.title ? '已复制' : '复制' }}
               </button>
-              <pre class="snippet-pre overflow-x-auto bg-slate-950 p-5 pt-12 text-xs leading-6 text-slate-100 sm:p-6 sm:pt-12"><code v-html="highlightCode(activeSnippet.code)"></code></pre>
+              <pre class="snippet-pre overflow-x-auto bg-dark-950 p-5 pt-12 text-xs leading-6 text-gray-100 sm:p-6 sm:pt-12"><code v-html="highlightCode(activeSnippet.code)"></code></pre>
             </div>
           </template>
         </article>
@@ -247,7 +247,7 @@
       <!-- 高级用法：流式、图像、function calling、缓存 -->
       <section id="advanced" class="surface-card overflow-hidden scroll-mt-20">
         <header class="flex items-start gap-3 border-b border-gray-200/60 px-6 py-4 dark:border-dark-700/60">
-          <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300">
+          <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-info-soft text-info dark:bg-info/15 dark:text-info-soft">
             <Icon name="bolt" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0">
@@ -267,7 +267,7 @@
                     <span>查看示例</span>
                     <Icon name="chevronDown" size="xs" class="transition-transform group-open:rotate-180" />
                   </summary>
-                  <pre class="snippet-pre mt-2 overflow-x-auto rounded-lg bg-slate-950 p-4 text-2xs leading-5 text-slate-100"><code v-html="highlightCode(feature.example)"></code></pre>
+                  <pre class="snippet-pre mt-2 overflow-x-auto rounded-lg bg-dark-950 p-4 text-2xs leading-5 text-gray-100"><code v-html="highlightCode(feature.example)"></code></pre>
                 </details>
               </div>
             </div>
@@ -277,8 +277,8 @@
 
       <!-- 下游对接：把 API 提供给第三方时该交付什么 -->
       <section id="downstream" class="surface-card overflow-hidden scroll-mt-20">
-        <header class="flex items-start gap-3 border-b border-gray-200/60 bg-violet-50/40 px-6 py-4 dark:border-dark-700/60 dark:bg-violet-500/5">
-          <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300">
+        <header class="flex items-start gap-3 border-b border-gray-200/60 bg-info-soft/40 px-6 py-4 dark:border-dark-700/60 dark:bg-info/5">
+          <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-info-soft text-info dark:bg-info/15 dark:text-info-soft">
             <Icon name="link" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0 flex-1">
@@ -290,7 +290,7 @@
               :href="downstreamDocUrl"
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center gap-1.5 rounded-lg border border-violet-300 bg-white px-3 py-1.5 text-xs font-semibold text-violet-700 transition-colors hover:bg-violet-50 dark:border-violet-500/40 dark:bg-dark-800 dark:text-violet-300 dark:hover:bg-violet-500/10"
+              class="inline-flex items-center gap-1.5 rounded-lg border border-info/40 bg-white px-3 py-1.5 text-xs font-semibold text-info transition-colors hover:bg-info-soft dark:border-info/40 dark:bg-dark-800 dark:text-info-soft dark:hover:bg-info/10"
             >
               <Icon name="externalLink" size="xs" />
               <span>完整文档</span>
@@ -308,12 +308,12 @@
 
         <div class="space-y-5 p-6">
           <!-- 最小配置块：交付给下游的标准卡片 -->
-          <div class="rounded-xl border border-violet-200/60 bg-violet-50/40 p-4 dark:border-violet-500/20 dark:bg-violet-500/5">
+          <div class="rounded-xl border border-info/20 bg-info-soft/40 p-4 dark:border-info/20 dark:bg-info/5">
             <div class="mb-2 flex items-center gap-2">
-              <Icon name="cube" size="sm" class="text-violet-600 dark:text-violet-300" />
+              <Icon name="cube" size="sm" class="text-info dark:text-info-soft" />
               <span class="text-sm font-semibold text-gray-900 dark:text-white">最小交付配置（推荐 OpenAI 兼容路径）</span>
             </div>
-            <pre class="snippet-pre overflow-x-auto rounded-lg bg-slate-950 p-3 text-2xs leading-5 text-slate-100"><code>{{ downstreamMinimalConfig }}</code></pre>
+            <pre class="snippet-pre overflow-x-auto rounded-lg bg-dark-950 p-3 text-2xs leading-5 text-gray-100"><code>{{ downstreamMinimalConfig }}</code></pre>
           </div>
 
           <!-- 关键提醒：四点高频踩坑 -->
@@ -336,10 +336,10 @@
           </div>
 
           <!-- 提示：完整文档里包含的内容 -->
-          <div class="rounded-xl border border-sky-200/60 bg-sky-50/40 p-3.5 dark:border-sky-500/20 dark:bg-sky-500/5">
+          <div class="rounded-xl border border-info/20 bg-info-soft/40 p-3.5 dark:border-info/20 dark:bg-info/5">
             <div class="flex items-start gap-2.5">
-              <Icon name="infoCircle" size="sm" class="mt-0.5 flex-shrink-0 text-sky-600 dark:text-sky-300" />
-              <p class="text-xs leading-5 text-sky-900 dark:text-sky-100">
+              <Icon name="infoCircle" size="sm" class="mt-0.5 flex-shrink-0 text-info dark:text-info-soft" />
+              <p class="text-xs leading-5 text-info-deep dark:text-info-soft">
                 <span class="font-semibold">完整文档包含：</span>
                 Base URL 速查、鉴权方式、所有支持的接口路径、模型查询、计费与限流详解、<code class="docs-hint-code">/v1/usage</code> 返回结构、错误码表、CC Switch/Codex/Gemini/Claude 客户端对接示例、上线检查清单。把链接整体发给下游即可。
               </p>
@@ -352,7 +352,7 @@
       <section id="troubleshoot" class="grid grid-cols-1 gap-4 lg:grid-cols-2 scroll-mt-20">
         <article class="surface-card overflow-hidden">
           <header class="flex items-start gap-3 border-b border-gray-200/60 px-6 py-4 dark:border-dark-700/60">
-            <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300">
+            <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning-soft">
               <Icon name="exclamationCircle" size="sm" :stroke-width="1.75" />
             </span>
             <div class="min-w-0">
@@ -363,7 +363,7 @@
           <div class="divide-y divide-gray-100 dark:divide-dark-700/60">
             <div v-for="error in commonErrors" :key="error.code" class="px-6 py-3">
               <div class="flex flex-wrap items-center gap-2">
-                <code class="rounded-md bg-amber-50 px-2 py-0.5 font-mono text-xs font-medium text-amber-700 dark:bg-amber-500/15 dark:text-amber-300">{{ error.code }}</code>
+                <code class="rounded-md bg-warning-soft px-2 py-0.5 font-mono text-xs font-medium text-warning dark:bg-warning/15 dark:text-warning-soft">{{ error.code }}</code>
                 <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ error.title }}</span>
               </div>
               <p class="mt-1 text-xs leading-5 text-gray-600 dark:text-dark-300">{{ error.desc }}</p>
@@ -373,7 +373,7 @@
 
         <article class="surface-card overflow-hidden">
           <header class="flex items-start gap-3 border-b border-gray-200/60 px-6 py-4 dark:border-dark-700/60">
-            <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-500/15 dark:text-rose-300">
+            <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-danger-soft text-danger dark:bg-danger/15 dark:text-danger-soft">
               <Icon name="shield" size="sm" :stroke-width="1.75" />
             </span>
             <div class="min-w-0">
@@ -383,7 +383,7 @@
           </header>
           <ul class="space-y-3 px-6 py-4 text-sm leading-6 text-gray-700 dark:text-dark-200">
             <li v-for="(tip, i) in securityTips" :key="i" class="flex items-start gap-2.5">
-              <Icon name="checkCircle" size="xs" class="mt-1.5 flex-shrink-0 text-emerald-500 dark:text-emerald-400" />
+              <Icon name="checkCircle" size="xs" class="mt-1.5 flex-shrink-0 text-success dark:text-success-soft" />
               <span>{{ tip }}</span>
             </li>
           </ul>
@@ -393,7 +393,7 @@
       <!-- 官方参考 -->
       <section id="sources" class="surface-card overflow-hidden scroll-mt-20">
         <header class="flex items-start gap-3 border-b border-gray-200/60 px-6 py-4 dark:border-dark-700/60">
-          <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300">
+          <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-info-soft text-info dark:bg-info/15 dark:text-info-soft">
             <Icon name="externalLink" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0">
@@ -460,11 +460,11 @@ function snippetLang(title: string): string {
 }
 function langDotClass(title: string): string {
   const lang = snippetLang(title)
-  if (lang.includes('json')) return 'bg-amber-400'
-  if (lang.includes('bash') || lang.includes('shell')) return 'bg-emerald-400'
-  if (lang.includes('toml')) return 'bg-violet-400'
-  if (lang.includes('python')) return 'bg-sky-400'
-  if (lang.includes('GUI')) return 'bg-rose-400'
+  if (lang.includes('json')) return 'bg-warning'
+  if (lang.includes('bash') || lang.includes('shell')) return 'bg-success'
+  if (lang.includes('toml')) return 'bg-brand-400'
+  if (lang.includes('python')) return 'bg-info'
+  if (lang.includes('GUI')) return 'bg-danger'
   return 'bg-gray-400'
 }
 
@@ -538,25 +538,25 @@ const downstreamTips = [
   {
     title: '鉴权放请求头',
     icon: 'shield',
-    iconClass: 'bg-rose-50 text-rose-600 dark:bg-rose-500/15 dark:text-rose-300',
+    iconClass: 'bg-danger-soft text-danger dark:bg-danger/15 dark:text-danger-soft',
     desc: '用 Authorization: Bearer ＿。把 Key 放到 URL 查询参数（?key= 或 ?api_key=）会被网关直接 400 拒绝。',
   },
   {
     title: '模型名先查再填',
     icon: 'search',
-    iconClass: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300',
+    iconClass: 'bg-success-soft text-success dark:bg-success/15 dark:text-success-soft',
     desc: '不要凭印象写模型名。调 GET /v1/models 返回的 data[].id 才是分组实际开放的模型。',
   },
   {
     title: '429 不一定是限速',
     icon: 'exclamationCircle',
-    iconClass: 'bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300',
+    iconClass: 'bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning-soft',
     desc: '可能是余额不足、套餐额度耗尽、Key 配额耗尽、并发超限、RPM 超限五种之一。先看 /v1/usage 自检。',
   },
   {
     title: '流式响应调大超时',
     icon: 'clock',
-    iconClass: 'bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300',
+    iconClass: 'bg-info-soft text-info dark:bg-info/15 dark:text-info-soft',
     desc: '代码生成或 Agent 场景建议 HTTP 读取超时 10–60 分钟，并确认 Nginx/Cloudflare 等代理层没有更短的超时设置。',
   },
 ]
@@ -574,90 +574,90 @@ async function copyDownstreamConfig(): Promise<void> {
 const baseUrlMatrix = computed(() => [
   {
     client: 'Claude Code',
-    tagClass: 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300',
+    tagClass: 'bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning-soft',
     protocol: 'Anthropic Messages',
     url: siteRootUrl.value,
-    urlClass: 'text-emerald-700 dark:text-emerald-300',
+    urlClass: 'text-success dark:text-success-soft',
     note: '不带 /v1，客户端会自动拼 /v1/messages'
   },
   {
     client: 'Cursor',
-    tagClass: 'bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300',
+    tagClass: 'bg-info-soft text-info dark:bg-info/15 dark:text-info-soft',
     protocol: 'OpenAI Chat',
     url: openAIBaseUrl.value,
-    urlClass: 'text-emerald-700 dark:text-emerald-300',
+    urlClass: 'text-success dark:text-success-soft',
     note: '带 /v1，Override OpenAI Base URL 字段'
   },
   {
     client: 'OpenAI SDK',
-    tagClass: 'bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300',
+    tagClass: 'bg-info-soft text-info dark:bg-info/15 dark:text-info-soft',
     protocol: 'OpenAI Chat',
     url: openAIBaseUrl.value,
-    urlClass: 'text-emerald-700 dark:text-emerald-300',
+    urlClass: 'text-success dark:text-success-soft',
     note: 'baseURL / base_url 参数填这个'
   },
   {
     client: 'Cline',
-    tagClass: 'bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300',
+    tagClass: 'bg-info-soft text-info dark:bg-info/15 dark:text-info-soft',
     protocol: 'OpenAI Chat',
     url: openAIBaseUrl.value,
-    urlClass: 'text-emerald-700 dark:text-emerald-300',
+    urlClass: 'text-success dark:text-success-soft',
     note: 'OpenAI Compatible Provider 的 Base URL'
   },
   {
     client: 'Cherry Studio',
-    tagClass: 'bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300',
+    tagClass: 'bg-info-soft text-info dark:bg-info/15 dark:text-info-soft',
     protocol: 'OpenAI Chat',
     url: openAIBaseUrl.value,
-    urlClass: 'text-emerald-700 dark:text-emerald-300',
+    urlClass: 'text-success dark:text-success-soft',
     note: 'API 地址字段（OpenAI 服务商）'
   },
   {
     client: 'Continue.dev',
-    tagClass: 'bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300',
+    tagClass: 'bg-info-soft text-info dark:bg-info/15 dark:text-info-soft',
     protocol: 'OpenAI Chat',
     url: openAIBaseUrl.value,
-    urlClass: 'text-emerald-700 dark:text-emerald-300',
+    urlClass: 'text-success dark:text-success-soft',
     note: 'apiBase 字段'
   },
   {
     client: 'JetBrains AI',
-    tagClass: 'bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300',
+    tagClass: 'bg-info-soft text-info dark:bg-info/15 dark:text-info-soft',
     protocol: 'OpenAI Chat',
     url: openAIBaseUrl.value,
-    urlClass: 'text-emerald-700 dark:text-emerald-300',
+    urlClass: 'text-success dark:text-success-soft',
     note: 'Custom Model URL 字段'
   },
   {
     client: 'LobeChat',
-    tagClass: 'bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300',
+    tagClass: 'bg-info-soft text-info dark:bg-info/15 dark:text-info-soft',
     protocol: 'OpenAI Chat',
     url: openAIBaseUrl.value,
-    urlClass: 'text-emerald-700 dark:text-emerald-300',
+    urlClass: 'text-success dark:text-success-soft',
     note: 'API 代理地址（OpenAI Provider）'
   },
   {
     client: 'Codex CLI',
-    tagClass: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300',
+    tagClass: 'bg-success-soft text-success dark:bg-success/15 dark:text-success-soft',
     protocol: 'OpenAI Responses',
     url: openAIBaseUrl.value,
-    urlClass: 'text-emerald-700 dark:text-emerald-300',
+    urlClass: 'text-success dark:text-success-soft',
     note: 'config.toml 的 base_url；wire_api = "responses"'
   },
   {
     client: 'CC Switch / Codex',
-    tagClass: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300',
+    tagClass: 'bg-success-soft text-success dark:bg-success/15 dark:text-success-soft',
     protocol: 'OpenAI Responses',
     url: openAIBaseUrl.value,
-    urlClass: 'text-emerald-700 dark:text-emerald-300',
+    urlClass: 'text-success dark:text-success-soft',
     note: '供应商 API 地址填 /v1，config.toml 必须有 model_providers 块'
   },
   {
     client: 'Gemini SDK',
-    tagClass: 'bg-violet-50 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300',
+    tagClass: 'bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300',
     protocol: 'Gemini Native',
     url: geminiBaseUrl.value,
-    urlClass: 'text-emerald-700 dark:text-emerald-300',
+    urlClass: 'text-success dark:text-success-soft',
     note: 'Gemini 兼容 SDK 的 base URL'
   }
 ])
@@ -990,42 +990,42 @@ const modelGuide = [
     scene: '日常对话 / 翻译 / 文档总结',
     desc: '快速响应、便宜，适合高频轻量场景',
     icon: 'chat',
-    iconClass: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300',
+    iconClass: 'bg-success-soft text-success dark:bg-success/15 dark:text-success-soft',
     models: ['gpt-4o-mini', 'claude-haiku-4-5', 'gemini-2.0-flash']
   },
   {
     scene: '编码 / 代码审查',
     desc: '需要长上下文 + 高准确率，强烈推荐 Claude Sonnet 系列',
     icon: 'terminal',
-    iconClass: 'bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300',
+    iconClass: 'bg-info-soft text-info dark:bg-info/15 dark:text-info-soft',
     models: ['claude-sonnet-4-5', 'claude-opus-4-5', 'gpt-4o']
   },
   {
     scene: '复杂推理 / 数学 / 决策分析',
     desc: '深度推理任务，回复较慢但质量高',
     icon: 'lightbulb',
-    iconClass: 'bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300',
+    iconClass: 'bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning-soft',
     models: ['o1', 'o1-mini', 'claude-opus-4-5']
   },
   {
     scene: '图像理解 / OCR / 视觉问答',
     desc: '上传图片让模型描述/分析，需要 multimodal 模型',
     icon: 'eye',
-    iconClass: 'bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300',
+    iconClass: 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300',
     models: ['gpt-4o', 'claude-sonnet-4-5', 'gemini-2.0-flash']
   },
   {
     scene: 'Agent / Function Calling',
     desc: '工具调用、Cline/Cursor Agent 等场景，模型要支持 function calling',
     icon: 'bolt',
-    iconClass: 'bg-rose-50 text-rose-600 dark:bg-rose-500/15 dark:text-rose-300',
+    iconClass: 'bg-danger-soft text-danger dark:bg-danger/15 dark:text-danger-soft',
     models: ['claude-sonnet-4-5', 'gpt-4o', 'gpt-4o-mini']
   },
   {
     scene: '超长上下文 / 长文档分析',
     desc: '200K+ tokens 上下文，可一次性塞入整本书或大代码库',
     icon: 'document',
-    iconClass: 'bg-teal-50 text-teal-600 dark:bg-teal-500/15 dark:text-teal-300',
+    iconClass: 'bg-success-soft text-success dark:bg-success/15 dark:text-success-soft',
     models: ['claude-sonnet-4-5', 'gemini-2.0-flash', 'gpt-4o']
   }
 ]
@@ -1191,7 +1191,7 @@ async function copyEndpoint(url: string): Promise<void> {
  * 使用文档：与全站 Notion 风一致，仅保留 snippet tab 与 code 标签的局部样式
  * ========================================================================= */
 
-/* code 内联标签：sky 调代码片段 */
+/* code 内联标签：黛蓝信息调代码片段 */
 .docs-hint-code {
   display: inline-block;
   background: rgb(255 255 255 / 0.7);
@@ -1199,12 +1199,12 @@ async function copyEndpoint(url: string): Promise<void> {
   padding: 0.05rem 0.35rem;
   font-family: ui-monospace, monospace;
   font-size: 0.75rem;
-  color: rgb(2 132 199);
+  color: rgb(58 85 112); /* info */
 }
 
 :global(:root.dark) .docs-hint-code {
-  background: rgb(31 41 55 / 0.7);
-  color: rgb(125 211 252);
+  background: rgb(52 48 42 / 0.7); /* dark-800 */
+  color: rgb(227 232 238); /* info-soft */
 }
 
 /* ============ 接入示例 Tab 切换：黑底 active 与全站时间窗口风格一致 ============ */
@@ -1213,8 +1213,8 @@ async function copyEndpoint(url: string): Promise<void> {
   display: flex;
   gap: 0;
   overflow-x: auto;
-  border-bottom: 1px solid rgb(229 231 235 / 0.6);
-  background: rgb(249 250 251 / 0.5);
+  border-bottom: 1px solid rgb(221 213 196 / 0.6); /* gray-200 */
+  background: rgb(246 242 233 / 0.5); /* gray-50 */
   padding: 0 0.75rem;
   scrollbar-width: none;
   -webkit-mask-image: linear-gradient(to right, transparent 0, black 1.5rem, black calc(100% - 1.5rem), transparent 100%);
@@ -1226,8 +1226,8 @@ async function copyEndpoint(url: string): Promise<void> {
 }
 
 :global(:root.dark) .snippet-tabs {
-  border-bottom-color: rgb(55 65 81 / 0.6);
-  background: rgb(31 41 55 / 0.4);
+  border-bottom-color: rgb(70 65 58 / 0.6); /* dark-700 */
+  background: rgb(52 48 42 / 0.4); /* dark-800 */
 }
 
 .snippet-tab {
@@ -1239,23 +1239,23 @@ async function copyEndpoint(url: string): Promise<void> {
   padding: 0.75rem 1rem;
   font-size: 0.8125rem;
   font-weight: 500;
-  color: rgb(107 114 128);
+  color: rgb(138 130 117); /* gray-500 */
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
   transition: color 0.15s, border-color 0.15s;
 }
 
 .snippet-tab:hover:not(.snippet-tab-active) {
-  color: rgb(17 24 39);
+  color: rgb(42 39 34); /* gray-900 */
 }
 
 .snippet-tab-active {
-  color: rgb(17 24 39);
-  border-bottom-color: rgb(17 24 39);
+  color: rgb(42 39 34); /* gray-900 */
+  border-bottom-color: rgb(42 39 34); /* gray-900 */
 }
 
 :global(:root.dark) .snippet-tab {
-  color: rgb(156 163 175);
+  color: rgb(180 171 152); /* dark-300 */
 }
 
 :global(:root.dark) .snippet-tab:hover:not(.snippet-tab-active) {

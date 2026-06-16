@@ -15,12 +15,12 @@
             :class="[
               'flex h-10 w-10 items-center justify-center rounded',
               isOpenAILike
-                ? 'bg-emerald-500'
+                ? 'bg-success'
                 : isGemini
-                  ? 'bg-blue-500'
+                  ? 'bg-info'
                   : isAntigravity
-                    ? 'bg-indigo-500'
-                    : 'bg-orange-500'
+                    ? 'bg-info-deep'
+                    : 'bg-brand-500'
             ]"
           >
             <Icon name="sparkles" size="md" class="text-white" />
@@ -83,10 +83,10 @@
             :class="[
               'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
               geminiOAuthType === 'google_one'
-                ? 'bg-purple-500 text-white'
+                ? 'bg-brand-500 text-white'
                 : geminiOAuthType === 'code_assist'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-amber-500 text-white'
+                  ? 'bg-info text-white'
+                  : 'bg-warning text-white'
             ]"
           >
             <Icon v-if="geminiOAuthType === 'google_one'" name="user" size="sm" />

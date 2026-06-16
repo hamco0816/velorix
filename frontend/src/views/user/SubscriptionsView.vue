@@ -37,15 +37,15 @@
         </span>
         <span
           v-if="activeCount > 0"
-          class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30"
+          class="inline-flex items-center gap-1.5 rounded-full bg-success-soft px-2.5 py-1 text-xs font-medium text-success ring-1 ring-inset ring-success/30 dark:bg-success/15 dark:text-tea-300 dark:ring-success/30"
         >
-          <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="h-1.5 w-1.5 rounded-full bg-success animate-pulse"></span>
           <span class="tabular-nums">{{ activeCount }}</span>
           <span class="opacity-70">{{ t('userSubscriptions.statActive') }}</span>
         </span>
         <span
           v-if="expiringSoonCount > 0"
-          class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30"
+          class="inline-flex items-center gap-1.5 rounded-full bg-warning-soft px-2.5 py-1 text-xs font-medium text-warning ring-1 ring-inset ring-warning/30 dark:bg-warning/15 dark:text-warning dark:ring-warning/30"
         >
           <Icon name="clock" size="xs" />
           <span class="tabular-nums">{{ expiringSoonCount }}</span>
@@ -278,14 +278,14 @@
             <!-- No limits configured - Unlimited badge -->
             <div
               v-if="!hasUsageLimit(subscription)"
-              class="flex items-center justify-center gap-3 rounded-2xl border border-emerald-200/70 bg-emerald-50/60 py-5 dark:border-emerald-500/30 dark:bg-emerald-500/10"
+              class="flex items-center justify-center gap-3 rounded-2xl border border-success/30 bg-success-soft/60 py-5 dark:border-success/30 dark:bg-success/10"
             >
-              <span class="text-3xl font-light leading-none text-emerald-600 dark:text-emerald-400">∞</span>
+              <span class="text-3xl font-light leading-none text-success dark:text-tea-300">∞</span>
               <div>
-                <p class="text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+                <p class="text-sm font-semibold text-success dark:text-tea-300">
                   {{ t('userSubscriptions.unlimited') }}
                 </p>
-                <p class="text-xs text-emerald-600/70 dark:text-emerald-400/70">
+                <p class="text-xs text-success/70 dark:text-tea-300/70">
                   {{ t('userSubscriptions.unlimitedDesc') }}
                 </p>
               </div>
@@ -400,35 +400,35 @@ function getProgressWidth(used: number | undefined, limit: number | null | undef
   return `${percentage}%`
 }
 
-// 用量进度色阶（与全站统一）：<80% emerald 健康 / 80–100% amber 接近上限 / ≥100% rose 已耗尽
+// 用量进度色阶（与全站统一）：<80% 竹青健康 / 80–100% 茶橘接近上限 / ≥100% 印章红已耗尽
 function getProgressBarClass(used: number | undefined, limit: number | null | undefined): string {
   if (!limit || limit === 0) return 'bg-gray-400'
   const percentage = ((used || 0) / limit) * 100
-  if (percentage >= 100) return 'bg-rose-500'
-  if (percentage >= 80) return 'bg-amber-500'
-  return 'bg-emerald-500'
+  if (percentage >= 100) return 'bg-danger'
+  if (percentage >= 80) return 'bg-warning'
+  return 'bg-success'
 }
 
-// 订阅状态 chip：active 绿 / expired 琥珀（提示续费） / 其他 (cancelled 等) 玫红
+// 订阅状态 chip：active 竹青 / expired 茶橘（提示续费） / 其他 (cancelled 等) 印章红
 function statusChipClass(status: string): string {
   switch (status) {
     case 'active':
-      return 'bg-emerald-50 text-emerald-700 ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30'
+      return 'bg-success-soft text-success ring-success/30 dark:bg-success/15 dark:text-tea-300 dark:ring-success/30'
     case 'expired':
-      return 'bg-amber-50 text-amber-700 ring-amber-200/70 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30'
+      return 'bg-warning-soft text-warning ring-warning/30 dark:bg-warning/15 dark:text-warning dark:ring-warning/30'
     default:
-      return 'bg-rose-50 text-rose-700 ring-rose-200/70 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/30'
+      return 'bg-danger-soft text-danger ring-danger/30 dark:bg-danger/15 dark:text-danger dark:ring-danger/30'
   }
 }
 
 function statusDotClass(status: string): string {
   switch (status) {
     case 'active':
-      return 'bg-emerald-500 animate-pulse'
+      return 'bg-success animate-pulse'
     case 'expired':
-      return 'bg-amber-500'
+      return 'bg-warning'
     default:
-      return 'bg-rose-500'
+      return 'bg-danger'
   }
 }
 
@@ -475,9 +475,9 @@ function getExpirationClass(expiresAt: string): string {
   const diff = expires.getTime() - now.getTime()
   const days = Math.ceil(diff / (1000 * 60 * 60 * 24))
 
-  if (days <= 0) return 'text-red-600 dark:text-red-400 font-medium'
-  if (days <= 3) return 'text-red-600 dark:text-red-400'
-  if (days <= 7) return 'text-orange-600 dark:text-orange-400'
+  if (days <= 0) return 'text-danger dark:text-danger font-medium'
+  if (days <= 3) return 'text-danger dark:text-danger'
+  if (days <= 7) return 'text-warning dark:text-warning'
   return 'text-gray-700 dark:text-gray-300'
 }
 

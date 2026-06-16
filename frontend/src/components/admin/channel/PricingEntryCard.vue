@@ -55,7 +55,7 @@
       <button
         type="button"
         @click.stop="emit('remove')"
-        class="inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+        class="inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded text-gray-400 transition-colors hover:bg-danger-soft hover:text-danger-deep dark:hover:bg-danger-deep/20 dark:hover:text-danger"
       >
         <Icon name="trash" size="sm" />
       </button>
@@ -71,7 +71,7 @@
         <div class="mt-3 flex items-start gap-2">
           <div class="flex-1">
             <label class="text-xs font-medium text-gray-500 dark:text-gray-400">
-              {{ t('admin.channels.form.models', '模型列表') }} <span class="text-red-500">*</span>
+              {{ t('admin.channels.form.models', '模型列表') }} <span class="text-danger">*</span>
             </label>
             <ModelTagInput
               :models="entry.models"

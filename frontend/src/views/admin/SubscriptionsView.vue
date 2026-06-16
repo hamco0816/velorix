@@ -293,10 +293,10 @@
               <!-- No Limits - Unlimited badge -->
               <div
                 v-if="!hasUsageLimit(row)"
-                class="flex items-center gap-2 rounded-lg bg-gradient-to-r from-emerald-50 to-teal-50 px-3 py-2 dark:from-emerald-900/20 dark:to-teal-900/20"
+                class="flex items-center gap-2 rounded-lg bg-success-soft px-3 py-2 dark:bg-success/15"
               >
-                <span class="text-lg text-emerald-600 dark:text-emerald-400">∞</span>
-                <span class="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                <span class="text-lg text-success dark:text-tea-300">∞</span>
+                <span class="text-xs font-medium text-success dark:text-tea-300">
                   {{ t('admin.subscriptions.unlimited') }}
                 </span>
               </div>
@@ -310,14 +310,14 @@
                 v-if="formatTimeRemaining(value)"
                 class="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-2xs font-medium"
                 :class="isExpiringSoon(value)
-                  ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+                  ? 'bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning'
                   : 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'"
               >
-                <span class="h-1.5 w-1.5 rounded-full" :class="isExpiringSoon(value) ? 'bg-amber-500' : 'bg-gray-400'"></span>
+                <span class="h-1.5 w-1.5 rounded-full" :class="isExpiringSoon(value) ? 'bg-warning' : 'bg-gray-400'"></span>
                 {{ formatTimeRemaining(value) }}
               </span>
             </div>
-            <span v-else class="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
+            <span v-else class="inline-flex items-center gap-1 rounded-md bg-success-soft px-2 py-0.5 text-xs font-medium text-success dark:bg-success/15 dark:text-tea-300">
               <Icon name="checkCircle" size="xs" />
               {{ t('admin.subscriptions.noExpiration') }}
             </span>
@@ -327,19 +327,19 @@
             <span
               class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium"
               :class="value === 'active'
-                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                ? 'bg-success-soft text-success dark:bg-success/15 dark:text-tea-300'
                 : value === 'expired'
-                  ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
-                  : 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'"
+                  ? 'bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning'
+                  : 'bg-danger-soft text-danger dark:bg-danger/15 dark:text-danger'"
             >
               <span class="relative flex h-1.5 w-1.5">
                 <span
                   v-if="value === 'active'"
-                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70"
+                  class="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-70"
                 ></span>
                 <span
                   class="relative inline-flex h-1.5 w-1.5 rounded-full"
-                  :class="value === 'active' ? 'bg-emerald-500' : value === 'expired' ? 'bg-amber-500' : 'bg-rose-500'"
+                  :class="value === 'active' ? 'bg-success' : value === 'expired' ? 'bg-warning' : 'bg-danger'"
                 ></span>
               </span>
               {{ t(`admin.subscriptions.status.${value}`) }}
@@ -351,7 +351,7 @@
               <button
                 v-if="row.status === 'active' || row.status === 'expired'"
                 @click="handleExtend(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-info-soft hover:text-info dark:hover:bg-info/20 dark:hover:text-info"
               >
                 <Icon name="calendar" size="sm" />
                 <span class="text-xs">{{ t('admin.subscriptions.adjust') }}</span>
@@ -360,7 +360,7 @@
                 v-if="row.status === 'active'"
                 @click="handleResetQuota(row)"
                 :disabled="resettingQuota && resettingSubscription?.id === row.id"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-orange-900/20 dark:hover:text-orange-400 disabled:cursor-not-allowed disabled:opacity-50"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-warning-soft hover:text-warning dark:hover:bg-warning/20 dark:hover:text-warning disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Icon
                   name="refresh"
@@ -377,7 +377,7 @@
               <button
                 v-if="row.status === 'active'"
                 @click="handleRevoke(row)"
-                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-900/20 dark:hover:text-red-300"
+                class="flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-danger transition-colors hover:bg-danger-soft hover:text-danger dark:text-danger dark:hover:bg-danger/20 dark:hover:text-danger"
               >
                 <Icon name="ban" size="sm" />
                 <span class="text-xs">{{ t('admin.subscriptions.revoke') }}</span>
@@ -682,7 +682,7 @@
             </div>
 
             <!-- Tip -->
-            <div class="rounded-lg bg-blue-50 p-3 text-xs text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
+            <div class="rounded-lg bg-info-soft p-3 text-xs text-info dark:bg-info/20 dark:text-info">
               {{ t('admin.subscriptions.guide.tip') }}
             </div>
 
@@ -1349,10 +1349,10 @@ const getProgressClass = (used: number | null | undefined, limit: number | null)
   if (!limit || limit === 0) return 'bg-gray-400'
   const usedValue = used ?? 0
   const percentage = (usedValue / limit) * 100
-  // 与全站警示色一致：>= 90% red、>= 70% amber、否则 emerald
-  if (percentage >= 90) return 'bg-red-500'
-  if (percentage >= 70) return 'bg-amber-500'
-  return 'bg-emerald-500'
+  // 与全站警示色一致：>= 90% 印章红、>= 70% 茶橘、否则 竹青
+  if (percentage >= 90) return 'bg-danger'
+  if (percentage >= 70) return 'bg-warning'
+  return 'bg-success'
 }
 
 // Format reset time based on window start and period type
@@ -1436,6 +1436,6 @@ onUnmounted(() => {
 }
 
 .reset-info {
-  @apply flex items-center gap-1 pl-12 text-2xs text-blue-600 dark:text-blue-400;
+  @apply flex items-center gap-1 pl-12 text-2xs text-info dark:text-info;
 }
 </style>

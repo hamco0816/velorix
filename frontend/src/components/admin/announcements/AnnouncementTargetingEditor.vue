@@ -18,7 +18,7 @@
           :class="[
             'rounded px-3.5 py-1.5 text-xs font-medium transition-colors',
             mode === 'all'
-              ? 'bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300'
+              ? 'bg-info-soft text-info dark:bg-info-deep/30 dark:text-info'
               : 'text-gray-500 hover:text-gray-900 dark:text-dark-400 dark:hover:text-white'
           ]"
           @click="setMode('all')"
@@ -30,7 +30,7 @@
           :class="[
             'rounded px-3.5 py-1.5 text-xs font-medium transition-colors',
             mode === 'custom'
-              ? 'bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300'
+              ? 'bg-info-soft text-info dark:bg-info-deep/30 dark:text-info'
               : 'text-gray-500 hover:text-gray-900 dark:text-dark-400 dark:hover:text-white'
           ]"
           @click="setMode('custom')"
@@ -83,7 +83,7 @@
 
           <button
             type="button"
-            class="inline-flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+            class="inline-flex h-8 w-8 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-danger-soft hover:text-danger dark:text-dark-400 dark:hover:bg-danger-deep/20 dark:hover:text-danger"
             :title="t('common.delete')"
             @click="removeOrGroup(groupIndex)"
           >
@@ -141,7 +141,7 @@
               <div class="flex items-end justify-end">
                 <button
                   type="button"
-                  class="inline-flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                  class="inline-flex h-8 w-8 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-danger-soft hover:text-danger dark:text-dark-400 dark:hover:bg-danger-deep/20 dark:hover:text-danger"
                   :title="t('common.delete')"
                   @click="removeAndCondition(groupIndex, condIndex)"
                 >
@@ -166,8 +166,8 @@
       </div>
 
       <!-- 校验失败提示：克制的 amber 提示行（替代之前的红色块） -->
-      <div v-if="validationError" class="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50/70 px-3 py-2.5 text-xs text-amber-800 dark:border-amber-800/60 dark:bg-amber-900/15 dark:text-amber-200">
-        <Icon name="exclamationTriangle" size="sm" class="mt-0.5 flex-shrink-0 text-amber-500" />
+      <div v-if="validationError" class="flex items-start gap-2 rounded-md border border-warning/40 bg-warning-soft/70 px-3 py-2.5 text-xs text-warning-deep dark:border-warning-deep/60 dark:bg-warning-deep/15 dark:text-warning">
+        <Icon name="exclamationTriangle" size="sm" class="mt-0.5 flex-shrink-0 text-warning" />
         <span class="leading-relaxed">{{ validationError }}</span>
       </div>
     </div>

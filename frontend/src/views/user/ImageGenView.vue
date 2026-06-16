@@ -31,7 +31,7 @@
               :class="[
                 'block w-full rounded-lg px-2.5 py-2 text-left transition',
                 entry.group.id === form.groupId
-                  ? 'bg-blue-50 dark:bg-blue-500/10'
+                  ? 'bg-brand-50 dark:bg-brand-500/10'
                   : 'hover:bg-gray-50 dark:hover:bg-dark-800/40',
               ]"
               @click="form.groupId = entry.group.id"
@@ -41,7 +41,7 @@
                   :class="[
                     'min-w-0 flex-1 truncate text-sm',
                     entry.group.id === form.groupId
-                      ? 'font-semibold text-blue-700 dark:text-blue-300'
+                      ? 'font-semibold text-brand-700 dark:text-brand-300'
                       : 'font-medium text-gray-800 dark:text-dark-200',
                   ]"
                 >
@@ -49,7 +49,7 @@
                 </span>
                 <span
                   v-if="entry.group.is_exclusive"
-                  class="shrink-0 rounded bg-amber-100 px-1 py-px text-2xs font-medium text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
+                  class="shrink-0 rounded bg-warning-soft px-1 py-px text-2xs font-medium text-warning-deep dark:bg-warning/15 dark:text-warning"
                 >
                   {{ t('imageGen.groupExclusive') }}
                 </span>
@@ -67,7 +67,7 @@
       <!-- 右主区 -->
       <div class="space-y-4 min-w-0">
       <!-- 体验版提示：保持简洁，单行 -->
-      <p class="flex items-start gap-1.5 rounded-lg bg-amber-50/60 px-3 py-2 text-xs leading-relaxed text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">
+      <p class="flex items-start gap-1.5 rounded-lg bg-warning-soft/60 px-3 py-2 text-xs leading-relaxed text-warning-deep dark:bg-warning/10 dark:text-warning">
         <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
         <span>{{ t('imageGen.notSavedHint') }}</span>
       </p>
@@ -170,7 +170,7 @@
         </div>
 
         <!-- 错误 / 无 key 提示 -->
-        <div v-if="keyError || referenceError" class="mt-3 rounded-md bg-rose-50/60 px-3 py-2.5 text-xs text-rose-700 dark:bg-rose-500/10 dark:text-rose-300">
+        <div v-if="keyError || referenceError" class="mt-3 rounded-md bg-danger-soft/60 px-3 py-2.5 text-xs text-danger dark:bg-danger/10 dark:text-danger">
           <p class="flex items-start gap-1.5">
             <Icon name="exclamationTriangle" size="xs" class="mt-0.5 shrink-0" />
             <span>{{ keyError || referenceError }}</span>
@@ -179,7 +179,7 @@
           <button
             v-if="canCreateKeyInline"
             type="button"
-            class="mt-2 inline-flex items-center gap-1.5 rounded-md bg-rose-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-rose-600 dark:hover:bg-rose-500"
+            class="mt-2 inline-flex items-center gap-1.5 rounded-md bg-danger px-3 py-1.5 text-xs font-medium text-white transition hover:bg-danger-deep disabled:cursor-not-allowed disabled:opacity-60 dark:bg-danger dark:hover:bg-danger-deep"
             :disabled="creatingKey"
             @click="createKeyInline"
           >
@@ -221,12 +221,12 @@
           </div>
 
           <!-- 错误态 -->
-          <div v-else-if="lastError" class="rounded-lg border border-rose-200/60 bg-rose-50/40 p-4 text-sm dark:border-rose-500/20 dark:bg-rose-500/5">
-            <p class="flex items-start gap-2 font-semibold text-rose-800 dark:text-rose-200">
+          <div v-else-if="lastError" class="rounded-lg border border-danger-soft bg-danger-soft/40 p-4 text-sm dark:border-danger/20 dark:bg-danger/5">
+            <p class="flex items-start gap-2 font-semibold text-danger-deep dark:text-danger">
               <Icon name="exclamationTriangle" size="sm" class="mt-0.5 shrink-0" />
               {{ t('imageGen.errorHeader') }}
             </p>
-            <p class="ml-6 mt-1 break-words text-rose-700 dark:text-rose-300">{{ lastError }}</p>
+            <p class="ml-6 mt-1 break-words text-danger dark:text-danger">{{ lastError }}</p>
             <button class="btn btn-secondary btn-sm ml-6 mt-3" @click="generate">{{ t('imageGen.errorRetry') }}</button>
           </div>
 
@@ -958,29 +958,29 @@ function onPromptKeydown(e: KeyboardEvent) {
   gap: 0.375rem;
   min-height: 2.25rem;
   border-radius: 0.5rem;
-  border: 1px solid rgba(226, 232, 240, 0.7);
-  background: rgba(255, 255, 255, 1);
+  border: 1px solid rgba(221, 213, 196, 0.7); /* primary-200 半透明 */
+  background: #f6f2e9; /* primary-50 */
   padding: 0 0.75rem;
   font-size: 12px;
   font-weight: 500;
-  color: rgb(75 85 99);
+  color: #4a453d; /* primary-700 */
   transition: background 0.12s ease, border-color 0.12s ease;
 }
 .toolbar-btn:hover:not(:disabled) {
-  background: rgb(249 250 251);
-  border-color: rgba(203, 213, 225, 1);
+  background: #efe8d8; /* primary-100 */
+  border-color: #c8bfa9; /* primary-300 */
 }
 .toolbar-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 :root.dark .toolbar-btn {
-  border-color: rgba(51, 65, 85, 0.6);
-  background: rgba(30, 41, 59, 0.4);
-  color: rgb(203 213 225);
+  border-color: rgba(70, 65, 58, 0.6); /* dark-700 半透明 */
+  background: rgba(52, 48, 42, 0.4); /* dark-800 半透明 */
+  color: #cfc7b6; /* dark-200 */
 }
 :root.dark .toolbar-btn:hover:not(:disabled) {
-  background: rgba(30, 41, 59, 0.7);
+  background: rgba(52, 48, 42, 0.7); /* dark-800 半透明 */
 }
 
 /* 圆形提交按钮：FAB 风格 */
@@ -994,48 +994,48 @@ function onPromptKeydown(e: KeyboardEvent) {
   transition: background 0.12s ease, transform 0.08s ease;
 }
 .submit-fab-active {
-  background: rgb(17 24 39);
-  color: white;
+  background: #22201c; /* primary-950 */
+  color: #f6f2e9; /* primary-50 */
 }
 .submit-fab-active:hover {
-  background: rgb(31 41 55);
+  background: #2a2722; /* primary-900 */
 }
 .submit-fab-active:active {
   transform: scale(0.96);
 }
 .submit-fab-disabled {
-  background: rgb(229 231 235);
-  color: rgb(156 163 175);
+  background: #ddd5c4; /* primary-200 */
+  color: #8a8275; /* primary-500 */
   cursor: not-allowed;
 }
 :root.dark .submit-fab-disabled {
-  background: rgb(51 65 85);
-  color: rgb(100 116 139);
+  background: #34302a; /* dark-800 */
+  color: #6b6356; /* dark-600 */
 }
 
 /* 生成中的画布：点阵背景 + 中央预览 */
 /* ChatGPT 风：浅色卡片，左上角状态文字 + 内部点阵舞台 */
 .gen-card {
   border-radius: 1rem;
-  background: #f4f4f5;
+  background: #efe8d8; /* primary-100 */
   padding: 1rem;
 }
 :root.dark .gen-card {
-  background: rgba(30, 41, 59, 0.5);
+  background: rgba(52, 48, 42, 0.5); /* dark-800 半透明 */
 }
 .gen-label {
   margin-bottom: 0.75rem;
   font-size: 13px;
   font-weight: 500;
-  color: #6b7280;
+  color: #8a8275; /* primary-500 */
 }
 :root.dark .gen-label {
-  color: #94a3b8;
+  color: #b4ab98; /* dark-300 */
 }
 .gen-label-sub {
   margin-left: 0.25rem;
   font-variant-numeric: tabular-nums;
-  color: #9ca3af;
+  color: #b4ab98; /* dark-300 */
 }
 .gen-stage {
   position: relative;
@@ -1056,7 +1056,7 @@ function onPromptKeydown(e: KeyboardEvent) {
 .gen-dots {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle, rgba(120, 120, 130, 0.5) 1.4px, transparent 1.6px);
+  background-image: radial-gradient(circle, rgba(138, 130, 117, 0.5) 1.4px, transparent 1.6px); /* primary-500 半透明点阵 */
   background-size: 22px 22px;
   -webkit-mask-image: linear-gradient(115deg,
     rgba(0, 0, 0, 0.18) 0%,
@@ -1075,7 +1075,7 @@ function onPromptKeydown(e: KeyboardEvent) {
   animation: gen-dots-sweep 2.6s linear infinite;
 }
 :root.dark .gen-dots {
-  background-image: radial-gradient(circle, rgba(148, 163, 184, 0.5) 1.4px, transparent 1.6px);
+  background-image: radial-gradient(circle, rgba(180, 171, 152, 0.5) 1.4px, transparent 1.6px); /* dark-300 半透明点阵 */
 }
 @keyframes gen-dots-sweep {
   0% { -webkit-mask-position: 130% 130%; mask-position: 130% 130%; }

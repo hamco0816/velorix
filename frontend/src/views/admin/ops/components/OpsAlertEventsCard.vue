@@ -328,18 +328,18 @@ watch(historyRange, () => {
 
 function severityBadgeClass(severity: string | undefined): string {
   const s = String(severity || '').trim().toLowerCase()
-  if (s === 'p0' || s === 'critical') return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
-  if (s === 'p1' || s === 'warning') return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
-  if (s === 'p2' || s === 'info') return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+  if (s === 'p0' || s === 'critical') return 'bg-danger-soft text-danger dark:bg-danger/15 dark:text-danger'
+  if (s === 'p1' || s === 'warning') return 'bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning'
+  if (s === 'p2' || s === 'info') return 'bg-info-soft text-info dark:bg-info/15 dark:text-info'
   if (s === 'p3') return 'bg-gray-100 text-gray-700 dark:bg-dark-700 dark:text-gray-300'
   return 'bg-gray-100 text-gray-700 dark:bg-dark-700 dark:text-gray-300'
 }
 
 function statusBadgeClass(status: string | undefined): string {
   const s = String(status || '').trim().toLowerCase()
-  if (s === 'firing') return 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-900/30 dark:text-red-300 dark:ring-red-500/30'
-  if (s === 'resolved') return 'bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-900/30 dark:text-green-300 dark:ring-green-500/30'
-  if (s === 'manual_resolved') return 'bg-slate-50 text-slate-700 ring-slate-600/20 dark:bg-slate-900/30 dark:text-slate-300 dark:ring-slate-500/30'
+  if (s === 'firing') return 'bg-danger-soft text-danger ring-danger/20 dark:bg-danger/15 dark:text-danger dark:ring-danger/30'
+  if (s === 'resolved') return 'bg-success-soft text-success ring-success/20 dark:bg-success/15 dark:text-tea-300 dark:ring-success/30'
+  if (s === 'manual_resolved') return 'bg-gray-50 text-gray-700 ring-gray-600/20 dark:bg-dark-700 dark:text-gray-300 dark:ring-dark-700'
   return 'bg-gray-50 text-gray-700 ring-gray-600/20 dark:bg-gray-900/30 dark:text-gray-300 dark:ring-gray-500/30'
 }
 
@@ -467,7 +467,7 @@ const empty = computed(() => events.value.length === 0 && !loading.value)
                     v-if="row.email_sent"
                     name="checkCircle"
                     size="sm"
-                    class="text-green-600 dark:text-green-400"
+                    class="text-success dark:text-tea-300"
                   />
                   <Icon
                     v-else

@@ -33,13 +33,13 @@
           :class="[
             'inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset',
             account.status === 'active'
-              ? 'bg-emerald-50 text-emerald-700 ring-emerald-200/70 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30'
+              ? 'bg-success-soft text-success ring-success/30 dark:bg-success/15 dark:text-success dark:ring-success/30'
               : 'bg-gray-50 text-gray-600 ring-gray-200/70 dark:bg-dark-700/40 dark:text-dark-200 dark:ring-dark-600/60'
           ]"
         >
           <span
             class="h-1.5 w-1.5 rounded-full"
-            :class="account.status === 'active' ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400'"
+            :class="account.status === 'active' ? 'bg-success animate-pulse' : 'bg-gray-400'"
           ></span>
           {{ account.status }}
         </span>
@@ -215,9 +215,9 @@
             status === 'connecting' || !selectedModelId
               ? 'cursor-not-allowed bg-primary-400 text-white'
               : status === 'success'
-                ? 'bg-green-500 text-white hover:bg-green-600'
+                ? 'bg-success text-white hover:bg-success-deep'
                 : status === 'error'
-                  ? 'bg-orange-500 text-white hover:bg-orange-600'
+                  ? 'bg-danger text-white hover:bg-danger-deep'
                   : 'bg-primary-500 text-white hover:bg-primary-600'
           ]"
         >

@@ -23,7 +23,7 @@
       <!-- 库存看板：移动端 2 列 -->
       <div v-if="inventory" class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <div class="metric-card">
-          <span class="metric-icon bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300">
+          <span class="metric-icon bg-info-soft text-info dark:bg-info/15 dark:text-info">
             <Icon name="badge" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0 flex-1">
@@ -32,14 +32,14 @@
           </div>
         </div>
         <div class="metric-card">
-          <span class="metric-icon bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
+          <span class="metric-icon bg-success-soft text-success dark:bg-success/15 dark:text-success">
             <Icon name="check" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0 flex-1">
             <p class="text-2xs font-medium text-gray-500 dark:text-dark-400" :title="t('payment.admin.exclusivePools.statSchedulableHint')">
               {{ t('payment.admin.exclusivePools.statAvailableNow') }}
             </p>
-            <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[24px] text-emerald-600 dark:text-emerald-400">
+            <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[24px] text-success dark:text-success">
               {{ typeof inventory.schedulable === 'number' ? inventory.schedulable : inventory.free }}
             </p>
             <p v-if="typeof inventory.schedulable === 'number' && inventory.schedulable !== inventory.free"
@@ -49,29 +49,29 @@
           </div>
         </div>
         <div class="metric-card">
-          <span class="metric-icon bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300">
+          <span class="metric-icon bg-info-soft text-info dark:bg-info/15 dark:text-info">
             <Icon name="link" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0 flex-1">
             <p class="text-2xs font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.statUsed') }}</p>
-            <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[24px] text-sky-600 dark:text-sky-400">{{ inventory.used }}</p>
+            <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[24px] text-info dark:text-info">{{ inventory.used }}</p>
           </div>
         </div>
         <!-- 7 天内到期：可点击筛选 seat 列表，运营预警入口 -->
         <button
           type="button"
           class="metric-card text-left"
-          :class="expiringFilter ? 'ring-2 ring-amber-300 dark:ring-amber-500/50' : ''"
+          :class="expiringFilter ? 'ring-2 ring-warning/50 dark:ring-warning/50' : ''"
           :disabled="inventory.expiring_in_7 === 0"
           @click="toggleExpiringFilter"
         >
-          <span class="metric-icon bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300">
+          <span class="metric-icon bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning">
             <Icon name="clock" size="sm" :stroke-width="1.75" />
           </span>
           <div class="min-w-0 flex-1">
             <p class="text-2xs font-medium text-gray-500 dark:text-dark-400">{{ t('payment.admin.exclusivePools.statExpiring') }}</p>
-            <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[24px] text-amber-600 dark:text-amber-400">{{ inventory.expiring_in_7 }}</p>
-            <p v-if="inventory.expiring_in_7 > 0" class="mt-1 text-2xs text-amber-700/80 dark:text-amber-300/70">
+            <p class="mt-1 text-xl font-semibold leading-tight tabular-nums sm:text-[24px] text-warning dark:text-warning">{{ inventory.expiring_in_7 }}</p>
+            <p v-if="inventory.expiring_in_7 > 0" class="mt-1 text-2xs text-warning/80 dark:text-warning/70">
               {{ expiringFilter ? t('payment.admin.exclusivePools.statExpiringClickClear') : t('payment.admin.exclusivePools.statExpiringClickFilter') }}
             </p>
           </div>
@@ -79,12 +79,12 @@
       </div>
 
       <!-- 7 天内到期筛选条 -->
-      <div v-if="expiringFilter" class="flex items-center justify-between rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 dark:border-amber-700 dark:bg-amber-900/20">
-        <p class="text-sm text-amber-800 dark:text-amber-200">
+      <div v-if="expiringFilter" class="flex items-center justify-between rounded-lg border border-warning/40 bg-warning-soft px-4 py-2 dark:border-warning/50 dark:bg-warning/10">
+        <p class="text-sm text-warning-deep dark:text-warning">
           <Icon name="clock" size="sm" class="mr-1 inline-block" />
           {{ t('payment.admin.exclusivePools.expiringFilterActive') }}
         </p>
-        <button class="text-xs font-semibold text-amber-700 hover:underline dark:text-amber-300" @click="expiringFilter = false">
+        <button class="text-xs font-semibold text-warning hover:underline dark:text-warning" @click="expiringFilter = false">
           {{ t('payment.admin.exclusivePools.expiringFilterClear') }}
         </button>
       </div>
@@ -142,7 +142,7 @@
                     <span class="relative flex h-1.5 w-1.5">
                       <span
                         v-if="seat.status === 'active'"
-                        class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70"
+                        class="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-70"
                       ></span>
                       <span
                         class="relative inline-flex h-1.5 w-1.5 rounded-full"
@@ -155,7 +155,7 @@
                 <td class="px-4 py-3">
                   <div class="flex flex-col items-start gap-1">
                     <span class="text-sm tabular-nums" :class="expiresColor(seat)">{{ formatDate(seat.expires_at) }}</span>
-                    <!-- 倒计时 chip：< 3 天 rose / 3-7 天 amber，更醒目 -->
+                    <!-- 倒计时 chip：< 3 天 danger / 3-7 天 warning，更醒目 -->
                     <span v-if="seat.status === 'active' && expiryDays(seat) !== null" class="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-2xs font-medium" :class="expiryChipClass(seat)">
                       <Icon name="clock" size="xs" />
                       {{ expiryChipLabel(seat) }}
@@ -168,11 +168,11 @@
                       <Icon name="calendar" size="xs" />
                       {{ t('payment.admin.exclusivePools.actExtend') }}
                     </button>
-                    <button v-if="seat.status === 'active'" @click="openSwap(seat)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-sky-600 transition-colors hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-500/10" :title="t('payment.admin.exclusivePools.actSwap')">
+                    <button v-if="seat.status === 'active'" @click="openSwap(seat)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-info transition-colors hover:bg-info-soft dark:text-info dark:hover:bg-info/10" :title="t('payment.admin.exclusivePools.actSwap')">
                       <Icon name="refresh" size="xs" />
                       {{ t('payment.admin.exclusivePools.actSwap') }}
                     </button>
-                    <button v-if="seat.status === 'active'" @click="openRelease(seat)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-rose-600 transition-colors hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10" :title="t('payment.admin.exclusivePools.actRelease')">
+                    <button v-if="seat.status === 'active'" @click="openRelease(seat)" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-danger transition-colors hover:bg-danger-soft dark:text-danger dark:hover:bg-danger/10" :title="t('payment.admin.exclusivePools.actRelease')">
                       <Icon name="trash" size="xs" />
                       {{ t('payment.admin.exclusivePools.actRelease') }}
                     </button>
@@ -234,19 +234,19 @@
             </div>
           </div>
           <p v-if="selectedUser" class="mt-1.5 text-xs">
-            <span class="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 font-medium text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
+            <span class="inline-flex items-center gap-1 rounded-md bg-success-soft px-2 py-0.5 font-medium text-success dark:bg-success/15 dark:text-tea-300">
               <Icon name="check" size="xs" />
               {{ t('payment.admin.exclusivePools.userSearchSelected') }}: #{{ selectedUser.id }} {{ selectedUser.username || selectedUser.email }}
             </span>
           </p>
-          <p v-else-if="userSearchQuery && userSearchResults.length === 0 && !userSearchLoading" class="mt-1 text-xs text-amber-600 dark:text-amber-400">
+          <p v-else-if="userSearchQuery && userSearchResults.length === 0 && !userSearchLoading" class="mt-1 text-xs text-warning dark:text-warning">
             {{ t('payment.admin.exclusivePools.userSearchNoMatch') }}
           </p>
         </div>
         <div>
           <label class="input-label">{{ t('payment.admin.exclusivePools.targetPlanID') }}</label>
           <Select v-model="grantForm.plan_id" :options="grantPlanOptions" class="mt-1 w-full" />
-          <p v-if="grantPlanOptions.length === 0" class="mt-1 text-xs text-amber-600 dark:text-amber-400">
+          <p v-if="grantPlanOptions.length === 0" class="mt-1 text-xs text-warning dark:text-warning">
             {{ t('payment.admin.exclusivePools.noPlansForPool') }}
           </p>
         </div>
@@ -336,17 +336,17 @@
           </div>
           <div class="flex justify-between py-0.5">
             <span class="text-gray-500">{{ t('payment.admin.exclusivePools.extendPreviewDelta') }}</span>
-            <span :class="['font-medium', extendDays > 0 ? 'text-emerald-600' : extendDays < 0 ? 'text-red-600' : 'text-gray-500']">
+            <span :class="['font-medium', extendDays > 0 ? 'text-success' : extendDays < 0 ? 'text-danger' : 'text-gray-500']">
               {{ extendDays > 0 ? `+${extendDays}` : extendDays }} {{ t('payment.admin.exclusivePools.daysSuffix') }}
             </span>
           </div>
           <div class="mt-1 flex justify-between border-t border-gray-200 pt-1 dark:border-dark-700">
             <span class="font-semibold text-gray-700 dark:text-gray-200">{{ t('payment.admin.exclusivePools.extendPreviewNew') }}</span>
-            <span :class="['font-semibold', extendPreviewInvalid ? 'text-red-600' : 'text-primary-600 dark:text-primary-400']">
+            <span :class="['font-semibold', extendPreviewInvalid ? 'text-danger' : 'text-primary-600 dark:text-primary-400']">
               {{ extendPreviewDate }}
             </span>
           </div>
-          <p v-if="extendPreviewInvalid" class="mt-1 text-2xs text-red-600">
+          <p v-if="extendPreviewInvalid" class="mt-1 text-2xs text-danger">
             {{ t('payment.admin.exclusivePools.extendPreviewInvalidPast') }}
           </p>
         </div>
@@ -372,7 +372,7 @@
           <div class="py-0.5"><span class="text-gray-500">{{ t('payment.admin.exclusivePools.colUser') }}:</span> <span class="font-medium">{{ userLabel(swapTarget.user_id) }} (#{{ swapTarget.user_id }})</span></div>
           <div class="py-0.5"><span class="text-gray-500">{{ t('payment.admin.exclusivePools.swapDialogOldAccount') }}:</span> <span class="font-medium">{{ accountLabel(swapTarget.account_id) }} (#{{ swapTarget.account_id }})</span></div>
         </div>
-        <p class="flex items-start gap-1.5 text-xs text-amber-700 dark:text-amber-400">
+        <p class="flex items-start gap-1.5 text-xs text-warning dark:text-warning">
           <Icon name="exclamationTriangle" size="xs" class="mt-0.5 flex-shrink-0" />
           <span>{{ t('payment.admin.exclusivePools.swapDialogWarn') }}</span>
         </p>
@@ -589,9 +589,9 @@ function msUntilExpiry(seat: AdminExclusiveSeat): number {
 function expiresColor(seat: AdminExclusiveSeat): string {
   const ms = msUntilExpiry(seat)
   const day = 24 * 60 * 60 * 1000
-  if (ms < 0) return 'text-red-600 dark:text-red-400 font-medium'
-  if (ms < 3 * day) return 'text-red-600 dark:text-red-400'
-  if (ms < 7 * day) return 'text-amber-600 dark:text-amber-400'
+  if (ms < 0) return 'text-danger dark:text-danger font-medium'
+  if (ms < 3 * day) return 'text-danger dark:text-danger'
+  if (ms < 7 * day) return 'text-warning dark:text-warning'
   return 'text-gray-700 dark:text-gray-300'
 }
 
@@ -745,18 +745,18 @@ async function confirmExtend() {
 
 function statusPillClass(status: string): string {
   switch (status) {
-    case 'active': return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
-    case 'expired': return 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
-    case 'refunded': return 'bg-violet-50 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300'
+    case 'active': return 'bg-success-soft text-success dark:bg-success/15 dark:text-tea-300'
+    case 'expired': return 'bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning'
+    case 'refunded': return 'bg-info-soft text-info dark:bg-info/15 dark:text-info'
     default: return 'bg-gray-100 text-gray-600 dark:bg-dark-700 dark:text-gray-300'
   }
 }
 
 function statusDotClass(status: string): string {
   switch (status) {
-    case 'active': return 'bg-emerald-500'
-    case 'expired': return 'bg-amber-500'
-    case 'refunded': return 'bg-violet-500'
+    case 'active': return 'bg-success'
+    case 'expired': return 'bg-warning'
+    case 'refunded': return 'bg-info'
     default: return 'bg-gray-400'
   }
 }
@@ -771,9 +771,9 @@ function expiryDays(seat: AdminExclusiveSeat): number | null {
 function expiryChipClass(seat: AdminExclusiveSeat): string {
   const days = expiryDays(seat)
   if (days === null || days >= 7) return ''
-  if (days < 0) return 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'
-  if (days < 3) return 'bg-rose-50 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'
-  return 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+  if (days < 0) return 'bg-danger-soft text-danger dark:bg-danger/15 dark:text-danger'
+  if (days < 3) return 'bg-danger-soft text-danger dark:bg-danger/15 dark:text-danger'
+  return 'bg-warning-soft text-warning dark:bg-warning/15 dark:text-warning'
 }
 
 function expiryChipLabel(seat: AdminExclusiveSeat): string {
