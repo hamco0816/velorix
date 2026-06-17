@@ -5,6 +5,19 @@
 > 源参考：`D:/Project/vue/chaye/src/styles/design-tokens.css`（chaye 宋韵编辑风）。
 >
 > **评审修正已落地（v2）**：① 夜墨 `dark` 阶改回 Tailwind 正向（50 最浅 → 950 最深），避免暗色整页发白；② 占位 / 链接 / 实心 warning 统一用更深档（达 WCAG AA），`#b4ab98` 仅作纯装饰；③ focus ring 用 brand-600 + 2px；④ 夜墨 danger 提亮到 `#d8786a`。`ink-preview.html` 样板已按此渲染。
+>
+> **提饱和修订（v3，2026-06-16）**：v1/v2 的语义色与 brand/tea 色阶饱和度过低，落到状态徽章 / 分组标签 / 计费标签 / 统计卡图标 / 迷你折线上整体「发灰发土、像没有彩色」，违背了 §8.1「功能性多色保留不收敛」。已**保持各色相不变、整体提亮提饱和**（仍是宣纸土系，不做成 NewAPI 霓虹）。中性骨架 `primary/gray/dark`、字体、圆角、投影**完全不动**。新值如下（sub2api `tailwind.config.js` 已落地，下方 §2.x / §4 / §5 旧表为 v2 历史值，以本节与实际 config 为准；velorix 桌面端 CSS 变量待同步）：
+>
+> | 令牌 | v2（旧·偏灰） | v3（新·提饱和） |
+> |------|------|------|
+> | success DEFAULT / soft / deep | `#3d5a45` / `#e7ece2` / `#2c4232` | `#3a7d52` / `#d8ecdc` / `#2f6644` |
+> | warning DEFAULT / soft / deep | `#c56b3e` / `#f4e6d8` / `#a9542c` | `#cf6f2c` / `#f8e3cd` / `#b1561f` |
+> | danger / seal DEFAULT / soft / deep | `#a23b2e` / `#f3e1dc` / `#872f24` | `#c0392b` / `#f8ddd5` / `#9c2b1f` |
+> | info DEFAULT / soft / deep | `#3a5570` / `#e3e8ee` / `#2c4256` | `#3f6ea6` / `#dde6f2` / `#2d5481` |
+> | brand 50→950 | `#fbf3ea…#3a1d11`（500 `#c56b3e`） | `#fdf3e9 #f8e3cd #f0c79e #e7a86f #dd8a44 #cf6f2c #b1561f #8f4519 #723715 #562a12 #3a1c0c` |
+> | tea 50→950 | `#eef2ec…#19251c`（600 `#3d5a45`） | `#edf5ef #d8ecdc #b8dcc0 #8fcaa0 #5fb27e #43965f #3a7d52 #2f6644 #285436 #21422c #16301e` |
+>
+> 暗色文字走 `dark:text-tea-300/400`（成功）与 `dark:text-brand-300/400`（警告），已随 tea/brand 色阶提亮自动变亮；浅色走 4 个语义令牌，随 config 提亮自动覆盖。另有 7 个文件共 26 处 config 够不到的硬编码 hex（迷你折线 / 图标渐变 / 仪表盘表盘 / 文档图标 / 图表色带）已按同一映射定点替换。
 
 ---
 

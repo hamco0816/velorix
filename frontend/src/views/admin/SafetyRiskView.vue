@@ -1168,11 +1168,11 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 0.625rem;
-  border: 1px solid #e3e8ee;
+  border: 1px solid #dde6f2;
   border-radius: 0.5rem;
   background: rgb(227 232 238 / 0.7);
   padding: 0.875rem 1rem;
-  color: #3a5570;
+  color: #3f6ea6;
   font-size: 0.875rem;
   line-height: 1.6;
 }
@@ -1180,7 +1180,7 @@ onMounted(() => {
 :global(:root.dark) .risk-info-banner {
   border-color: rgb(44 66 86 / 0.6);
   background: rgb(44 66 86 / 0.25);
-  color: #3a5570;
+  color: #3f6ea6;
 }
 
 .risk-info-icon {
@@ -1208,7 +1208,7 @@ onMounted(() => {
 }
 
 .risk-select :deep(.select-trigger-open) {
-  border-color: #3a5570;
+  border-color: #3f6ea6;
   box-shadow: 0 0 0 3px rgb(58 85 112 / 0.14);
 }
 
@@ -1237,7 +1237,7 @@ onMounted(() => {
 }
 
 .risk-filter-control:focus {
-  border-color: #3a5570;
+  border-color: #3f6ea6;
   box-shadow: 0 0 0 3px rgb(58 85 112 / 0.14);
   outline: none;
 }
@@ -1272,15 +1272,15 @@ onMounted(() => {
 }
 
 .risk-action-primary {
-  border: 1px solid #3a5570;
-  background: linear-gradient(180deg, #3a5570, #2c4256);
+  border: 1px solid #3f6ea6;
+  background: linear-gradient(180deg, #3f6ea6, #2d5481);
   color: white;
   box-shadow: 0 8px 18px rgb(58 85 112 / 0.18);
 }
 
 .risk-action-primary:hover:not(:disabled) {
-  border-color: #2c4256;
-  background: linear-gradient(180deg, #2c4256, #243646);
+  border-color: #2d5481;
+  background: linear-gradient(180deg, #2d5481, #243646);
 }
 
 .risk-action-secondary,

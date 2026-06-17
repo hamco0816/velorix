@@ -270,7 +270,7 @@ const iconInfo = computed(() => iconKey.value ? iconData[iconKey.value] : null)
   align-items: center;
   justify-content: center;
   border-radius: 4px;
-  background: linear-gradient(135deg, #c56b3e, #3d5a45);
+  background: linear-gradient(135deg, #cf6f2c, #3a7d52);
   color: white;
   font-weight: 600;
   flex-shrink: 0;

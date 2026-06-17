@@ -440,9 +440,9 @@ const healthScoreColor = computed(() => {
   if (isSystemIdle.value) return '#b4ab98' // primary-400 暖墨中性
   const score = healthScoreValue.value
   if (score == null) return '#b4ab98'
-  if (score >= 90) return '#3d5a45' // success 竹青
-  if (score >= 60) return '#c56b3e' // warning 茶橘
-  return '#a23b2e' // danger 印章红
+  if (score >= 90) return '#3a7d52' // success 竹青
+  if (score >= 60) return '#cf6f2c' // warning 茶橘
+  return '#c0392b' // danger 印章红
 })
 
 const healthScoreClass = computed(() => {
@@ -1147,7 +1147,7 @@ function handleToolbarRefresh() {
                   <path
                     d="M0 16 Q 20 16, 40 16 T 80 16 T 120 10 T 160 22 T 200 16 T 240 16 T 280 16"
                     fill="none"
-                    stroke="#3a5570"
+                    stroke="#3f6ea6"
                     stroke-width="2"
                     vector-effect="non-scaling-stroke"
                   >

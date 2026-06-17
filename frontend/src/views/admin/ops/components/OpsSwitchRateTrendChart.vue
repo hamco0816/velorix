@@ -34,8 +34,8 @@ const { t } = useI18n()
 const isDarkMode = computed(() => document.documentElement.classList.contains('dark'))
 const colors = computed(() => ({
   // 数据系列色（切换率单序列强调色，竹青绿令牌）
-  teal: '#6e8a72',
-  tealAlpha: '#6e8a7220',
+  teal: '#43965f',
+  tealAlpha: '#43965f20',
   // 图表骨架色（网格线 / 坐标轴文字，宣纸暖墨中性阶）
   grid: isDarkMode.value ? '#46413a' : '#efe8d8',
   text: isDarkMode.value ? '#b4ab98' : '#8a8275'

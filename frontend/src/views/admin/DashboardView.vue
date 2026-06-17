@@ -57,7 +57,7 @@
                 <span class="font-medium text-gray-700 dark:text-gray-300">{{ formatNumber(stats.total_requests) }}</span>
               </p>
               <div v-if="hasSparkData(requestsSeries)" class="kpi-card-spark">
-                <SparklineMini :data="requestsSeries" color="#c56b3e" :height="40" />
+                <SparklineMini :data="requestsSeries" color="#cf6f2c" :height="40" />
               </div>
             </div>
 
@@ -96,7 +96,7 @@
                 </p>
               </div>
               <div v-if="hasSparkData(tokensSeries)" class="kpi-card-spark">
-                <SparklineMini :data="tokensSeries" color="#3a5570" :height="40" />
+                <SparklineMini :data="tokensSeries" color="#3f6ea6" :height="40" />
               </div>
             </div>
 
@@ -116,7 +116,7 @@
                 <span :title="t('admin.dashboard.standard')">${{ formatCost(stats.today_cost) }}</span>
               </p>
               <div v-if="hasSparkData(costSeries)" class="kpi-card-spark">
-                <SparklineMini :data="costSeries" color="#3d5a45" :height="40" />
+                <SparklineMini :data="costSeries" color="#3a7d52" :height="40" />
               </div>
             </div>
 

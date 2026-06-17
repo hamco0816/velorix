@@ -443,10 +443,10 @@ function getDateParams(): string {
 const CIRCUMFERENCE = 2 * Math.PI * 68
 // 四枚用量进度环配色取自设计令牌（茶橘 / 竹青 / 黛蓝 / 茶橘深），仅作环间区分用
 const RING_GRADIENTS = [
-  { from: '#c56b3e', to: '#dfb088' },
-  { from: '#3d5a45', to: '#88a081' },
-  { from: '#3a5570', to: '#6e8a72' },
-  { from: '#a9542c', to: '#d18f5e' },
+  { from: '#cf6f2c', to: '#e7a86f' },
+  { from: '#3a7d52', to: '#5fb27e' },
+  { from: '#3f6ea6', to: '#43965f' },
+  { from: '#b1561f', to: '#dd8a44' },
 ]
 
 const ringAnimated = ref(false)
@@ -836,7 +836,7 @@ onUnmounted(() => {
 }
 .input-ring:focus {
   box-shadow: 0 0 0 3px rgba(197, 107, 62, 0.2);
-  border-color: #c56b3e;
+  border-color: #cf6f2c;
   outline: none;
 }
 

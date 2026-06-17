@@ -284,15 +284,15 @@ const troubleshooting = [
  * ========================================================================= */
 
 /* section header 内的 colored icon 背景（柔和 soft 浅底 + 主色描边图标） */
-.docs-icon-info    { background: #e3e8ee; color: #3a5570; }
-.docs-icon-success { background: #e7ece2; color: #3d5a45; }
-.docs-icon-warning { background: #f4e6d8; color: #c56b3e; }
-.docs-icon-danger  { background: #f3e1dc; color: #a23b2e; }
+.docs-icon-info    { background: #dde6f2; color: #3f6ea6; }
+.docs-icon-success { background: #d8ecdc; color: #3a7d52; }
+.docs-icon-warning { background: #f8e3cd; color: #cf6f2c; }
+.docs-icon-danger  { background: #f8ddd5; color: #c0392b; }
 
-:global(:root.dark) .docs-icon-info    { background: rgb(58 85 112 / 0.15); color: #e3e8ee; }
-:global(:root.dark) .docs-icon-success { background: rgb(61 90 69 / 0.15); color: #aebfa6; }
-:global(:root.dark) .docs-icon-warning { background: rgb(197 107 62 / 0.15); color: #dfb088; }
-:global(:root.dark) .docs-icon-danger  { background: rgb(162 59 46 / 0.15); color: #f3e1dc; }
+:global(:root.dark) .docs-icon-info    { background: rgb(58 85 112 / 0.15); color: #dde6f2; }
+:global(:root.dark) .docs-icon-success { background: rgb(61 90 69 / 0.15); color: #8fcaa0; }
+:global(:root.dark) .docs-icon-warning { background: rgb(197 107 62 / 0.15); color: #e7a86f; }
+:global(:root.dark) .docs-icon-danger  { background: rgb(162 59 46 / 0.15); color: #f8ddd5; }
 
 /* code 标签：信息态代码片段 */
 .docs-hint-code {
@@ -302,12 +302,12 @@ const troubleshooting = [
   padding: 0.05rem 0.35rem;
   font-family: ui-monospace, monospace;
   font-size: 0.75rem;
-  color: #3a5570;
+  color: #3f6ea6;
 }
 
 :global(:root.dark) .docs-hint-code {
   background: rgb(52 48 42 / 0.7);
-  color: #e3e8ee;
+  color: #dde6f2;
 }
 
 /* 子分组标签：与所在 panel 色调呼应 */
@@ -320,13 +320,13 @@ const troubleshooting = [
   font-weight: 500;
 }
 
-.docs-tag-info { background: #e3e8ee; color: #2c4256; }
-.docs-tag-success { background: #e7ece2; color: #2c4232; }
-.docs-tag-warning { background: #f4e6d8; color: #a9542c; }
-.docs-tag-danger { background: #f3e1dc; color: #872f24; }
+.docs-tag-info { background: #dde6f2; color: #2d5481; }
+.docs-tag-success { background: #d8ecdc; color: #2f6644; }
+.docs-tag-warning { background: #f8e3cd; color: #b1561f; }
+.docs-tag-danger { background: #f8ddd5; color: #9c2b1f; }
 
-:global(:root.dark) .docs-tag-info { background: rgb(44 66 86 / 0.25); color: #e3e8ee; }
-:global(:root.dark) .docs-tag-success { background: rgb(44 66 50 / 0.25); color: #aebfa6; }
-:global(:root.dark) .docs-tag-warning { background: rgb(169 84 44 / 0.3); color: #dfb088; }
-:global(:root.dark) .docs-tag-danger { background: rgb(135 47 36 / 0.25); color: #f3e1dc; }
+:global(:root.dark) .docs-tag-info { background: rgb(44 66 86 / 0.25); color: #dde6f2; }
+:global(:root.dark) .docs-tag-success { background: rgb(44 66 50 / 0.25); color: #8fcaa0; }
+:global(:root.dark) .docs-tag-warning { background: rgb(169 84 44 / 0.3); color: #e7a86f; }
+:global(:root.dark) .docs-tag-danger { background: rgb(135 47 36 / 0.25); color: #f8ddd5; }
 </style>
