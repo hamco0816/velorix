@@ -2569,6 +2569,7 @@ export default {
         promoLabel: '活动名称',
         promoLabelPlaceholder: '如 618 大促',
         promoStartsAt: '开始时间',
+        promoStartNow: '此刻',
         promoEndsAt: '结束时间',
         promoHint: '到点自动生效 / 到点自动失效；空字段表示不配置该项。',
         exclusiveLabel: '专属分组',

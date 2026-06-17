@@ -1780,7 +1780,16 @@
               />
             </div>
             <div>
-              <label class="input-label">{{ t("admin.groups.form.promoStartsAt") }}</label>
+              <div class="flex items-center justify-between gap-2">
+                <label class="input-label">{{ t("admin.groups.form.promoStartsAt") }}</label>
+                <button
+                  type="button"
+                  class="text-xs font-medium text-brand-600 hover:text-brand-700 dark:text-brand-300 dark:hover:text-brand-200"
+                  @click="setEditPromoStartNow"
+                >
+                  {{ t("admin.groups.form.promoStartNow") }}
+                </button>
+              </div>
               <input
                 v-model="editForm.promo_starts_at"
                 type="datetime-local"
@@ -3864,6 +3873,11 @@ function datetimeLocalToIso(local: string | null | undefined): string | null {
   const d = new Date(local)
   if (Number.isNaN(d.getTime())) return null
   return d.toISOString()
+}
+
+// 限时倍率：一键把开始时间填为当前时刻（datetime-local 本地格式）
+function setEditPromoStartNow() {
+  editForm.promo_starts_at = isoToDatetimeLocal(new Date().toISOString())
 }
 
 function clearEditPromo() {

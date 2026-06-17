@@ -2507,6 +2507,7 @@ export default {
         promoLabel: 'Campaign name',
         promoLabelPlaceholder: 'e.g., 618 Mega Sale',
         promoStartsAt: 'Starts at',
+        promoStartNow: 'Now',
         promoEndsAt: 'Ends at',
         promoHint: 'Auto-activates when starts_at reached, auto-expires when ends_at reached. Empty fields stay unset.'
       },
