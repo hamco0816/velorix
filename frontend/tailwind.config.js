@@ -12,7 +12,7 @@ export default {
           200: '#ddd5c4',
           300: '#c8bfa9',
           400: '#b4ab98',
-          500: '#8a8275',
+          500: '#736a5c',
           600: '#6b6356',
           700: '#4a453d',
           800: '#34302a',
@@ -28,7 +28,7 @@ export default {
           300: '#e7a86f',
           400: '#dd8a44',
           500: '#cf6f2c',
-          600: '#b1561f',
+          600: '#a44f1c',
           700: '#8f4519',
           800: '#723715',
           900: '#562a12',
@@ -57,7 +57,7 @@ export default {
           200: '#ddd5c4',
           300: '#c8bfa9',
           400: '#b4ab98',
-          500: '#8a8275',
+          500: '#736a5c',
           600: '#6b6356',
           700: '#4a453d',
           800: '#34302a',
@@ -81,12 +81,14 @@ export default {
         },
         // 语义色（浅色档；暗色由组件 dark: 前缀引用 tea/brand 提亮档）
         // 提饱和版：保持宣纸色相（竹青/茶橘/印章红/黛蓝），但提亮提饱和，让状态/数据徽章鲜明可辨
-        success: { DEFAULT: '#3a7d52', soft: '#d8ecdc', deep: '#2f6644' },
-        warning: { DEFAULT: '#cf6f2c', soft: '#f8e3cd', deep: '#b1561f' },
-        danger: { DEFAULT: '#c0392b', soft: '#f8ddd5', deep: '#9c2b1f' },
-        info: { DEFAULT: '#3f6ea6', soft: '#dde6f2', deep: '#2d5481' },
+        // 语义色（v3.1 对比度修订）：DEFAULT 调到在自身 soft 底上也达 WCAG AA(≥4.5)，徽章文字+图标统一可读；
+        // warning 顺势从茶橘转深琥珀，与 brand 茶橘点睛区分（原二者同色易混）
+        success: { DEFAULT: '#347049', soft: '#d8ecdc', deep: '#2f6644' },
+        warning: { DEFAULT: '#9c5712', soft: '#fbecd2', deep: '#7a440e' },
+        danger: { DEFAULT: '#b23425', soft: '#f8ddd5', deep: '#9c2b1f' },
+        info: { DEFAULT: '#3a6499', soft: '#dde6f2', deep: '#2d5481' },
         // 印章红（chaye seal，仅 danger / 关键标识，慎用）
-        seal: { DEFAULT: '#c0392b', deep: '#9c2b1f' }
+        seal: { DEFAULT: '#b23425', deep: '#9c2b1f' }
       },
       fontSize: {
         // 微型字号：徽章/角标/表格密集场景专用，统一收编历史上的 text-[9~11px] 任意值

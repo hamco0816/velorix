@@ -229,7 +229,7 @@
     @apply bg-white dark:bg-dark-800;
     @apply border border-gray-200 dark:border-dark-600;
     @apply text-gray-900 dark:text-gray-100;
-    @apply placeholder:text-gray-400 dark:placeholder:text-dark-400;
+    @apply placeholder:text-gray-500 dark:placeholder:text-dark-400;
     @apply transition-colors duration-150;
     @apply focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600/40;
     @apply dark:focus:border-brand-400 dark:focus:ring-brand-400/30;
@@ -257,7 +257,7 @@
   /* 边框输入框：标准 SaaS 输入控件视觉，focus 时边框变黑提示活动态 */
   .auth-input {
     @apply w-full rounded-md border border-gray-300 bg-white px-3.5 py-2.5 text-sm text-gray-900;
-    @apply placeholder:text-gray-400;
+    @apply placeholder:text-gray-500;
     @apply outline-none transition-colors duration-150;
     @apply focus:border-gray-900 focus:ring-1 focus:ring-gray-900/10;
     @apply disabled:cursor-not-allowed disabled:bg-gray-50 disabled:opacity-70;

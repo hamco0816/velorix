@@ -18,6 +18,8 @@
 > | tea 50→950 | `#eef2ec…#19251c`（600 `#3d5a45`） | `#edf5ef #d8ecdc #b8dcc0 #8fcaa0 #5fb27e #43965f #3a7d52 #2f6644 #285436 #21422c #16301e` |
 >
 > 暗色文字走 `dark:text-tea-300/400`（成功）与 `dark:text-brand-300/400`（警告），已随 tea/brand 色阶提亮自动变亮；浅色走 4 个语义令牌，随 config 提亮自动覆盖。另有 7 个文件共 26 处 config 够不到的硬编码 hex（迷你折线 / 图标渐变 / 仪表盘表盘 / 文档图标 / 图表色带）已按同一映射定点替换。
+>
+> **对比度修订（v3.1，2026-06-17，以本节为准）**：v3 提饱和后浅色仍有 WCAG AA 失败（实测：muted `#8a8275` 3.40 / 占位 `#b4ab98` 2.04 / 徽章文字落自身 soft 底 warning 2.83·success 4.00·danger 4.22 / 链接 brand-600 `#b1561f` 4.45，均 <4.5；**夜墨全达标，不动**）。已修：① muted = primary/gray-500 `#8a8275 → #736a5c`（4.76）；② 占位符 `gray-400 → gray-500`（共 8 处）；③ 正文链接 brand-600 `#b1561f → #a44f1c`（5.06）；④ 4 个语义色 **DEFAULT 调到「在自身 soft 底也 ≥4.5」**（因 sub2api 散落 473+ 处 `bg-X-soft text-X` 无法逐个改组件，走令牌级）：success `#3a7d52→#347049`、danger `#c0392b→#b23425`、info `#3f6ea6→#3a6499`、warning `#cf6f2c→#9c5712`（soft `#f8e3cd→#fbecd2`，**茶橘→深琥珀，与 brand 点睛区分**），seal 同 danger `#b23425`；⑤ velorix `--surface #fbf8f1→#fdfcf8`（卡片提净白增强层次）。注意：warning `#cf6f2c` 亮度过高，在任何背景上对比上限仅 3.89，故警告文字必须用更深档。
 
 ---
 
